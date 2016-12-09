@@ -1,6 +1,10 @@
 # Automation Stack
 Showcasing the power of DevOps automation.
 
+```
+(new-object Net.WebClient).DownloadString('https://raw.githubusercontent.com/paulmarsy/AutomationStack/master/bootstrap.ps1') | iex
+```
+
 ## What
 * One PowerShell command that anyone can copy & paste.
 * Fully automates the provisioning, deployment and configuration of an idealised DevOps build & deploy infrastructure
