@@ -1,139 +1,142 @@
-{
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
-  "parameters": {
-    "addressPrefix": {
-      "type": "string",
-      "defaultValue": "10.0.0.0/16"
-    },
-    "subnetAddressPrefix": {
-      "type": "string",
-      "defaultValue": "10.0.0.0/24"
-    },
-    "udp": {
-      "type": "string",
-      "metadata": {
-        "description": "Unique Deployment Prefix to avoid name collisions"
-      }
-    },
-    "sqlAdminUsername": {
-      "type": "string",
-      "metadata": {
-        "description": "Admin username for the SQL Server."
-      }
-    },
-    "sqlAdminPassword": {
-      "type": "string",
-      "metadata": {
-        "description": "Admin password for the SQL Server."
-      }
-    }
-  },
-  "variables": {
-    "vmStorageName": "[concat('vmvhds', parameters('udp'))]",
-    "sqlServerName": "[concat('sqlserver', parameters('udp'))]",
-    "automationName": "[concat('automation', parameters('udp'))]"
-  },
-  "resources": [
-    {
-      "apiVersion": "2016-03-30",
-      "type": "Microsoft.Network/virtualNetworks",
-      "name": "VirtualNetwork",
-      "location": "[resourceGroup().location]",
-      "properties": {
-        "addressSpace": {
-          "addressPrefixes": [
-            "[parameters('addressPrefix')]"
-          ]
-        },
-        "subnets": [
-          {
-            "name": "Default",
-            "properties": {
-              "addressPrefix": "[parameters('subnetAddressPrefix')]"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "apiVersion": "2016-01-01",
-      "type": "Microsoft.Storage/storageAccounts",
-      "name": "[variables('vmStorageName')]",
-      "location": "[resourceGroup().location]",
-      "sku": {
-        "name": "Premium_LRS"
+{  
+   "$schema":"https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+   "contentVersion":"1.0.0.0",
+   "parameters":{  
+      "addressPrefix":{  
+         "type":"string",
+         "defaultValue":"10.0.0.0/16"
       },
-      "kind": "Storage",
-      "properties": { }
-    },
-    {
-      "apiVersion": "2014-04-01-preview",
-      "type": "Microsoft.Sql/servers",
-      "name": "[variables('sqlServerName')]",
-      "location": "[resourceGroup().location]",
-      "kind": "v12.0",
-      "properties": {
-        "administratorLogin": "[parameters('sqlAdminUsername')]",
-        "administratorLoginPassword": "[parameters('sqlAdminPassword')]",
-        "version": "12.0"
+      "subnetAddressPrefix":{  
+         "type":"string",
+         "defaultValue":"10.0.0.0/24"
       },
-      "resources": [
-        {
-          "apiVersion": "2014-04-01-preview",
-          "type": "firewallrules",
-          "name": "AllowAllWindowsAzureIps",
-          "location": "[resourceGroup().location]",
-          "dependsOn": [
-            "[concat('Microsoft.Sql/servers/', variables('sqlServerName'))]"
-          ],
-          "properties": {
-            "endIpAddress": "0.0.0.0",
-            "startIpAddress": "0.0.0.0"
-          }
-        }
-      ],
-      "dependsOn": []
-    },
-{
-     "apiVersion": "2015-10-31",
-    "type": "Microsoft.Automation/automationAccounts",
-    "name": "[variables('automationName')]",
-   "location": "westeurope",
-    "properties": {
-        "sku": {
-            "name": "Free"
-        }
-    },
-            "resources": [
-                {
-                    "name": "[concat(variables('automationName'), '/', 'OctopusDSC')]",
-                    "type": "microsoft.automation/automationAccounts/Modules",
-                    "apiVersion": "2015-10-31",
-                    "dependsOn": [
-                        "[concat('Microsoft.Automation/automationAccounts/', variables('automationName'))]"
-                    ],
-                    "properties": {
-                        "contentLink": {
-                            "uri": "https://www.powershellgallery.com/api/v2/package/OctopusDSC/2.0.26"
-                        }
-                    }
-                },
-                {
-                    "name": "[concat(variables('automationName'), '/', 'xNetworking')]",
-                    "type": "microsoft.automation/automationAccounts/Modules",
-                    "apiVersion": "2015-10-31",
-                    "dependsOn": [
-                        "[concat('Microsoft.Automation/automationAccounts/', variables('automationName'))]"
-                    ],
-                    "properties": {
-                        "contentLink": {
-                            "uri": "https://www.powershellgallery.com/api/v2/package/xNetworking/3.1.0.0"
-                        }
-                    }
-                }
+      "udp":{  
+         "type":"string",
+         "metadata":{  
+            "description":"Unique Deployment Prefix to avoid name collisions"
+         }
+      },
+      "sqlAdminUsername":{  
+         "type":"string",
+         "metadata":{  
+            "description":"Admin username for the SQL Server."
+         }
+      },
+      "sqlAdminPassword":{  
+         "type":"string",
+         "metadata":{  
+            "description":"Admin password for the SQL Server."
+         }
+      }
+   },
+   "variables":{  
+      "vmStorageName":"[concat('vmvhds', parameters('udp'))]",
+      "sqlServerName":"[concat('sqlserver', parameters('udp'))]",
+      "automationName":"[concat('automation', parameters('udp'))]"
+   },
+   "resources":[  
+      {  
+         "apiVersion":"2016-03-30",
+         "type":"Microsoft.Network/virtualNetworks",
+         "name":"VirtualNetwork",
+         "location":"[resourceGroup().location]",
+         "properties":{  
+            "addressSpace":{  
+               "addressPrefixes":[  
+                  "[parameters('addressPrefix')]"
+               ]
+            },
+            "subnets":[  
+               {  
+                  "name":"Default",
+                  "properties":{  
+                     "addressPrefix":"[parameters('subnetAddressPrefix')]"
+                  }
+               }
             ]
-}
+         }
+      },
+      {  
+         "apiVersion":"2016-01-01",
+         "type":"Microsoft.Storage/storageAccounts",
+         "name":"[variables('vmStorageName')]",
+         "location":"[resourceGroup().location]",
+         "sku":{  
+            "name":"Premium_LRS"
+         },
+         "kind":"Storage",
+         "properties":{  
 
-  ]
+         }
+      },
+      {  
+         "apiVersion":"2014-04-01-preview",
+         "type":"Microsoft.Sql/servers",
+         "name":"[variables('sqlServerName')]",
+         "location":"[resourceGroup().location]",
+         "kind":"v12.0",
+         "properties":{  
+            "administratorLogin":"[parameters('sqlAdminUsername')]",
+            "administratorLoginPassword":"[parameters('sqlAdminPassword')]",
+            "version":"12.0"
+         },
+         "resources":[  
+            {  
+               "apiVersion":"2014-04-01-preview",
+               "type":"firewallrules",
+               "name":"AllowAllWindowsAzureIps",
+               "location":"[resourceGroup().location]",
+               "dependsOn":[  
+                  "[concat('Microsoft.Sql/servers/', variables('sqlServerName'))]"
+               ],
+               "properties":{  
+                  "endIpAddress":"0.0.0.0",
+                  "startIpAddress":"0.0.0.0"
+               }
+            }
+         ],
+         "dependsOn":[  
+
+         ]
+      },
+      {  
+         "apiVersion":"2015-10-31",
+         "type":"Microsoft.Automation/automationAccounts",
+         "name":"[variables('automationName')]",
+         "location":"westeurope",
+         "properties":{  
+            "sku":{  
+               "name":"Free"
+            }
+         },
+         "resources":[  
+            {  
+               "name":"[concat(variables('automationName'), '/', 'OctopusDSC')]",
+               "type":"microsoft.automation/automationAccounts/Modules",
+               "apiVersion":"2015-10-31",
+               "dependsOn":[  
+                  "[concat('Microsoft.Automation/automationAccounts/', variables('automationName'))]"
+               ],
+               "properties":{  
+                  "contentLink":{  
+                     "uri":"https://www.powershellgallery.com/api/v2/package/OctopusDSC/2.0.26"
+                  }
+               }
+            },
+            {  
+               "name":"[concat(variables('automationName'), '/', 'xNetworking')]",
+               "type":"microsoft.automation/automationAccounts/Modules",
+               "apiVersion":"2015-10-31",
+               "dependsOn":[  
+                  "[concat('Microsoft.Automation/automationAccounts/', variables('automationName'))]"
+               ],
+               "properties":{  
+                  "contentLink":{  
+                     "uri":"https://www.powershellgallery.com/api/v2/package/xNetworking/3.1.0.0"
+                  }
+               }
+            }
+         ]
+      }
+   ]
 }
