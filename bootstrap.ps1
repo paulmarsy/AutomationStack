@@ -35,5 +35,5 @@ if (!(Test-Path $nextStage)) {
     return
 }
 
-Write-Output 'AutomationStack repo aquired, handing over control & proceeding to authentication stage..'
+Write-Output 'AutomationStack repo aquired, handing over control & proceeding to local setup & config stage..'
 & $nextStage
