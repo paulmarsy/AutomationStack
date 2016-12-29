@@ -14,7 +14,7 @@ while ($confirmed -ne 0) {
     else { $securePassword = $AzurePassword | ConvertTo-SecureString -AsPlainText -Force }
     if (!($SubscriptionId)) { $SubscriptionId = Read-Host -Prompt "Azure Subscription ID" } 
     
-    $$confirmed = $Host.UI.PromptForChoice("Confirm", "AutomationStack will be created in Subscription ID $SubscriptionId with $AzureUsername credentials", ([System.Management.Automation.Host.ChoiceDescription[]]@(
+    $confirmed = $Host.UI.PromptForChoice("Confirm", "AutomationStack will be created in Subscription ID $SubscriptionId with $AzureUsername credentials", ([System.Management.Automation.Host.ChoiceDescription[]]@(
         (New-Object System.Management.Automation.Host.ChoiceDescription "&Yes")
         (New-Object System.Management.Automation.Host.ChoiceDescription "&No")
     )), 0)
