@@ -1,35 +1,29 @@
 param($Context)
 
-$vmName = 'OctopusVM'
-$rg = 'OctopusStack{0}' -f $Context.UDP
+$Context.Set('OctopusVMName', 'OctopusVM')
+$Context.Set('OctopusRg', 'OctopusStack#{UDP}')
 
 Write-Host 'Creating Octopus Deploy ARM Infrastructure...'
-& (Join-Path $PSScriptRoot 'DeployARM.ps1') -ResourceGroupName $rg -Location $Context.Region -TemplateFile 'appserver.json' -TemplateParameters @{
-    udp = $Context.UDP
-    infraResourceGroup = $Context.InfraRg
+& (Join-Path $PSScriptRoot 'DeployARM.ps1') -ResourceGroupName $Context.Get('OctopusRg') -Location $Context.Get('AzureRegion') -TemplateFile 'appserver.json' -TemplateParameters @{
+    udp = $Context.Get('UDP')
+    infraResourceGroup = $Context.Get('InfraRg')
     productName = 'Octopus'
-    vmAdminUsername = $Context.Username
-    vmAdminPassword = $Context.Password
+    vmAdminUsername = $Context.Get('Username')
+    vmAdminPassword = $Context.Get('Password')
 }
 
 Write-Host 'Creating Octopus Deploy SQL Database...'
-$sqlServerName = 'sqlserver{0}' -f $Context.UDP
-$octopusDb = New-AzureRmSqlDatabase -ResourceGroupName $Context.InfraRg -ServerName $sqlServerName -DatabaseName 'OctopusDeploy' -CollationName 'SQL_Latin1_General_CP1_CI_AS' -Edition 'Basic'
+$octopusDb = New-AzureRmSqlDatabase -ResourceGroupName $Context.Get('InfraRg') -ServerName $Context.Get('SqlServerName') -DatabaseName 'OctopusDeploy' -CollationName 'SQL_Latin1_General_CP1_CI_AS' -Edition 'Basic'
 Set-AzureRmSqlDatabaseTransparentDataEncryption -ResourceGroupName $octopusDb.ResourceGroupName -ServerName $octopusDb.ServerName -DatabaseName $octopusDb.DatabaseName -State Enabled
 
 Write-Host 'Applying Octopus Deploy DSC...'
-$fqdn = (Get-AzureRmPublicIpAddress -Name OctopusPublicIP -ResourceGroupName $rg).DnsSettings.Fqdn
-$hostHeader = 'http://{0}:80/' -f $fqdn
-& (Join-Path $PSScriptRoot 'DeployDSC.ps1') -UDP $Context.UDP -AzureVMName $vmName -AzureVMResourceGroup $rg -Configuration 'OctopusDeploy' -Node 'Server'  -Parameters @{
-    UDP = $Context.UDP
-    OctopusAdminUsername = $Context.Username
-    OctopusAdminPassword = $Context.Password
-    ConnectionString = ('Server=tcp:{0}.database.windows.net,1433;Initial Catalog=OctopusDeploy;Persist Security Info=False;User ID={1};Password={2};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;' -f $sqlServerName, $Context.Username, $Context.Password)
-    HostHeader = $hostHeader
-}
-
-@{
-    HostHeader = $hostHeader
-    VMName = $vmName
-    VMResourceGroup = $rg
+$Context.Set('OctopusHostName', (Get-AzureRmPublicIpAddress -Name OctopusPublicIP -ResourceGroupName $Context.Get('OctopusRg')).DnsSettings.Fqdn)
+$Context.Set('OctopusHostHeader' 'http://#{OctopusHostName}:80/')
+$Context.Set('OctopusConnectionString', 'Server=tcp:#{SqlServerName}.database.windows.net,1433;Initial Catalog=OctopusDeploy;Persist Security Info=False;User ID=#{Username};Password=#{Password};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;')
+& (Join-Path $PSScriptRoot 'DeployDSC.ps1') -UDP $Context.Get('UDP') -AzureVMName $Context.Get('OctopusVMName') -AzureVMResourceGroup $Context.Get('OctopusRg') -Configuration 'OctopusDeploy' -Node 'Server'  -Parameters @{
+    UDP = $Context.Get('UDP')
+    OctopusAdminUsername = $Context.Get('Username')
+    OctopusAdminPassword = $Context.Get('Password')
+    ConnectionString = $Context.Get('OctopusConnectionString')
+    HostHeader = $Context.Get('OctopusHostHeader')
 }

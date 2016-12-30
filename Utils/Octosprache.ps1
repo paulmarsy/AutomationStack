@@ -4,14 +4,17 @@ $octosprache.Add('token', 'value')
 $octosprache.Eval('some string with  #{token}s in it')
 $octosprache.ParseFile('file.txt')
 #>
-
+. (Join-Path $PSScriptRoot 'Get-OctopusEncryptedValue.ps1' -Resolve)
 class Octosprache {
-    Octosprache() {
+    Octosprache([string]$UDP) {
 
         $this.RegisterNuGetAssembly('Sprache', '2.1.0', 'net40', 'Sprache')
         $this.RegisterNuGetAssembly('Octostache', '2.0.7', 'net40', 'Octostache')
+        $backingFile = Join-Path $PWD ('AutomationStack {0} Config.json' -f $UDP) | Convert-Path
+        if (Test-Path $backingFile) { Write-Host 'Repopulating configuration from file' }
 
-        $this.VariableDictionary = New-Object Octostache.VariableDictionary
+        $this.VariableDictionary = New-Object Octostache.VariableDictionary $backingFile
+        Write-Warning "AutomationStack Configuration is being stored in file '$backingFile' and may contain sensitive deployment details"
     }
     RegisterNuGetAssembly($PackageId, $Version, $Framework, $Assembly) {
         $download = Invoke-WebRequest -Verbose -UseBasicParsing -Uri "https://www.nuget.org/api/v2/package/$PackageId/$Version"
@@ -24,11 +27,19 @@ class Octosprache {
         Write-Host "Loading $Assembly..."
         Add-Type -Path (Join-Path -Resolve $tempFolder "lib\$Framework\$Assembly.dll")
     }
-    $Guid = [guid]::NewGuid().Guid
-    $VariableDictionary
+    hidden $Guid = [guid]::NewGuid().Guid
+    hidden $VariableDictionary
 
-    Add([string]$Key, [string]$Value) {
+    Set([string]$Key, [string]$Value) {
          $this.VariableDictionary.Set($Key, $Value)
+         $this.VariableDictionary.Save()
+    }   
+    SetSensitive([string]$Password, [string]$Key, [string]$Value) {
+         $sensitiveValue = Get-OctopusEncryptedValue -Password $Password -Value $Value
+         $this.Set($Key, $sensitiveValue)
+    }
+    [string] Get([string]$Key) {
+        return $this.VariableDictionary.Get($Key)
     }
     [string] Eval([string]$Expression) {
         return $this.VariableDictionary.Evaluate($Expression)

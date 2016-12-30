@@ -1,13 +1,10 @@
-param($Guid, $AzureRegion)
+param($Guid)
 
 $UDP = $Guid.Substring(9,4)
 $context = @{
-    Region = $AzureRegion
     UDP = $UDP
     Username = 'Stack'
     Password = ($Guid.Substring(0,8) + (($Guid.Substring(24,10).GetEnumerator() | ? { [char]::IsLetter($_) } | % { [char]::ToUpper($_) }) -join ''))
-    Name = ('AutomationStack{0}' -f $UDP)
-    InfraRg = ('AutomationStack{0}' -f $UDP)
 }
 Write-Host ('*'*40)
 Write-Host "AutomationStack Deployment Details" 
