@@ -4,7 +4,7 @@ $stackresourcesName = 'stackresources{0}' -f $Context.UDP
 $stackresourcesKey = (Get-AzureRmStorageAccountKey -ResourceGroupName $Context.InfraRg  -Name $stackresourcesName)[0].Value
 
 $stackresources = New-AzureStorageContext -StorageAccountName $stackresourcesName -StorageAccountKey $stackresourcesKey
-New-AzureStorageContainer -Name "scripts" -Context $storagecontext
+New-AzureStorageContainer -Name "scripts" -Context $stackresources
 
 $octosprache = [octosprache]::new()
 $octosprache.Add('Password', $Context.Password)

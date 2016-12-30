@@ -29,6 +29,7 @@ $app = New-AzureRmADApplication -DisplayName $Context.Name -IdentifierUris "http
 $octosprache.Add('ServicePrincipalClientId', $app.ApplicationId)
 $octosprache.Add('ServicePrincipalEncryptedPassword', (Get-OctopusEncryptedValue -Password $Context.Password -Value $Context.Password))
 $servicePrincipal = New-AzureRmADServicePrincipal -ApplicationId $app.ApplicationId
+Start-Sleep -Seconds 20
 New-AzureRmRoleAssignment -RoleDefinitionName Contributor -ServicePrincipalName  $app.ApplicationId
 
 Write-Host 'Deploying Octopus Deploy...'

@@ -27,10 +27,10 @@ class Octosprache {
     $Guid = [guid]::NewGuid().Guid
     $VariableDictionary
 
-    Add($Key, $Value) {
+    Add([string]$Key, [string]$Value) {
          $this.VariableDictionary.Set($Key, $Value)
     }
-    [string] Eval($Expression) {
+    [string] Eval([string]$Expression) {
         return $this.VariableDictionary.Evaluate($Expression)
     }
     ParseFile($FilePath) {

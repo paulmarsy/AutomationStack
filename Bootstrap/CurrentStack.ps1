@@ -11,9 +11,9 @@ $context = @{
 }
 Write-Host ('*'*40)
 Write-Host "AutomationStack Deployment Details" 
-Write-Host "Unique Deployment Prefix: " + $context.UDP 
-Write-Host "Admin Username: " + $context.Username  
-Write-Host "Admin Password: " + $context.Password  
+Write-Host "Unique Deployment Prefix: " $context.UDP 
+Write-Host "Admin Username: " $context.Username  
+Write-Host "Admin Password: " $context.Password  
 Write-Host ('*'*40)
 
 return $context
