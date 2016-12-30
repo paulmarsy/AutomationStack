@@ -1,0 +1,90 @@
+{
+  "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
+  "Id": "deploymentprocess-Projects-3",
+  "OwnerId": "Projects-3",
+  "Version": 4,
+  "Steps": [
+    {
+      "Id": "2af4b8af-c58c-4f77-853a-cf93a9978810",
+      "Name": "Run Octopus Migrator Export",
+      "Condition": "Success",
+      "StartTrigger": "StartAfterPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "a528c115-90f8-4a4b-9a94-cccec22b8769",
+          "Name": "Run Octopus Migrator Export",
+          "ActionType": "Octopus.Script",
+          "IsDisabled": false,
+          "Environments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.RunOnServer": "true",
+            "Octopus.Action.Script.Syntax": "PowerShell",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "New-Item -ItemType Directory -Path $ExportPath\n\n& \"C:\\Program Files\\Octopus Deploy\\Octopus\\Octopus.Migrator.exe\" export --console --directory=$ExportPath --password=$ExportPassword"
+          }
+        }
+      ],
+      "Properties": {
+        "Octopus.Action.TargetRoles": "Octopus Stack"
+      }
+    },
+    {
+      "Id": "7f1e35df-e72e-4d16-b721-09bda2b61130",
+      "Name": "Compress Export",
+      "Condition": "Success",
+      "StartTrigger": "StartAfterPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "ff663808-5371-409a-b883-553e20cdb737",
+          "Name": "Compress Export",
+          "ActionType": "Octopus.Script",
+          "IsDisabled": false,
+          "Environments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.RunOnServer": "true",
+            "Octopus.Action.Script.Syntax": "PowerShell",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "Compress-Archive -Path $ExportPath -DestinationPath $ArchivePath -CompressionLevel Optimal"
+          }
+        }
+      ],
+      "Properties": {
+        "Octopus.Action.TargetRoles": "Octopus Stack"
+      }
+    },
+    {
+      "Id": "d0a433bf-5921-4ddf-8911-ba2939989b33",
+      "Name": "Publish Octopus Artifact",
+      "Condition": "Success",
+      "StartTrigger": "StartAfterPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "b1bff722-73c1-4014-a2fc-9c8f0d9df120",
+          "Name": "Publish Octopus Artifact",
+          "ActionType": "Octopus.Script",
+          "IsDisabled": false,
+          "Environments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.RunOnServer": "true",
+            "Octopus.Action.Script.Syntax": "PowerShell",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "New-OctopusArtifact -Path $ArchivePath -Name 'Octopus Export.zip'"
+          }
+        }
+      ],
+      "Properties": {
+        "Octopus.Action.TargetRoles": "Octopus Stack"
+      }
+    }
+  ],
+  "RelatedDocumentIds": []
+}

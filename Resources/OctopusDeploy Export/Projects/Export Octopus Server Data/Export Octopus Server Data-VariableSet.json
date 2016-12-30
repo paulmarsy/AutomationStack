@@ -1,0 +1,24 @@
+{
+  "$type": "Octopus.Core.Model.Variables.VariableSet, Octopus.Core",
+  "Id": "variableset-Projects-3",
+  "OwnerId": "Projects-3",
+  "Version": 2,
+  "Variables": [
+    {
+      "Id": "2e80127f-377b-331b-0b8b-e35f73087eca",
+      "Name": "ExportPath",
+      "Value": "D:\\OctopusDeploy\\#{Octopus.Release.Number}\\"
+    },
+    {
+      "Id": "ae566c92-c3ab-8648-a4cf-3383e8451b6b",
+      "Name": "ExportPassword",
+      "Value": "#{StackAdminPassword}"
+    },
+    {
+      "Id": "5c3a7c18-14f4-a79b-b403-b0d276a2fa1e",
+      "Name": "ArchivePath",
+      "Value": "D:\\OctopusDeploy\\#{Octopus.Release.Number}.zip"
+    }
+  ],
+  "RelatedDocumentIds": []
+}

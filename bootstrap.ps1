@@ -21,7 +21,7 @@ if ($LocalDevPath) {
     Write-Output 'Downloading AutomationStack archive from GitHub...'
     $download = Invoke-WebRequest -Verbose -UseBasicParsing -Uri "https://github.com/$GitHubAccount/AutomationStack/archive/master.zip"
     $tempFile = [System.IO.Path]::ChangeExtension((New-TemporaryFile).FullName, 'zip')
-    Write-Output "Saving file to ${temp}"
+    Write-Output "Saving file to ${tempFile}"
     Set-Content -Path $tempFile -Value $download.Content -Force -Encoding Byte
     Write-Output 'Extracting archive...'
     # This cmdlet requires PowerShell 5

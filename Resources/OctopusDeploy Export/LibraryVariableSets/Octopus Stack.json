@@ -1,0 +1,9 @@
+{
+  "$type": "Octopus.Core.Model.Variables.LibraryVariableSet, Octopus.Core",
+  "Id": "LibraryVariableSets-2",
+  "Name": "Octopus Stack",
+  "Description": "",
+  "VariableSetId": "variableset-LibraryVariableSets-2",
+  "ContentType": "Variables",
+  "Templates": []
+}

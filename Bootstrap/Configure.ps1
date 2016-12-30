@@ -2,23 +2,42 @@ param(
     $AzureRegion = 'North Europe'
 )
 
-Write-Host ('*'*40)
-Write-Host "AutomationStack Deployment Details" 
-$deploymentGuid = [guid]::NewGuid().guid
-$UDP = $deploymentGuid.Substring(9,4)
-Write-Host "Unique Deployment Prefix: $UDP" 
-$Username = 'Stack'
-Write-Host "Admin Username: $Username"  
-$Password = $deploymentGuid.Substring(0,8) + (($deploymentGuid.Substring(24,10).GetEnumerator() | ? { [char]::IsLetter($_) } | % { [char]::ToUpper($_) }) -join '')
-Write-Host "Admin Password: $Password"  
-Write-Host ('*'*40)
+Write-Host 'Creating Octostache tokeniser...'
+. (Join-Path $PSScriptRoot '..\Utils\Get-OctopusEncryptedValue.ps1')
+. (Join-Path $PSScriptRoot '..\Utils\Octosprache.ps1')
+$octosprache = [octosprache]::new()
+$azureRmContext = Get-AzureRmContext
+$octosprache.Add('AzureTenantId', $azureRmContext.Tenant.TenantId)
+$octosprache.Add('AzureSubscriptionId', $azureRmContext.Subscription.SubscriptionId)
+
+$Context = & (Join-Path $PSScriptRoot 'currentStack.ps1') -Guid ([guid]::NewGuid().guid) -AzureRegion $AzureRegion
+$octosprache.Add('UDP', $Context.UDP)
+$octosprache.Add('AzureRegion', $AzureRegion)
+$octosprache.Add('Username', $Context.Username)
+$octosprache.Add('Password', $Context.Password)
+
 
 Write-Host 'Deploying core infrastructure...'
-$infraParams = @{
-    udp = $UDP
-    sqlAdminUsername = $Username
-    sqlAdminPassword = $Password 
+& (Join-Path $PSScriptRoot 'DeployARM.ps1') -ResourceGroupName $Context.InfraRg -Location $Context.Region -TemplateFile 'infrastructure.json' -TemplateParameters @{
+    udp = $Context.UDP
+    sqlAdminUsername = $Context.Username
+    sqlAdminPassword = $Context.Password 
 }
-& (Join-Path $PSScriptRoot 'DeployARM.ps1') -ResourceGroupName ('AutomationStack{0}' -f $UDP) -Location $AzureRegion -TemplateFile 'infrastructure.json' -TemplateParameters $infraParams
 
-& (Join-Path $PSScriptRoot 'OctopusDeploy.ps1') -AzureRegion $AzureRegion -UDP $UDP -Username $Username -Password $Password
+Write-Host 'Creating Azure Service Principal...'
+$app = New-AzureRmADApplication -DisplayName $Context.Name -IdentifierUris "http://$($Context.Name).local" -Password $Context.Password
+$octosprache.Add('ServicePrincipalClientId', $app.ApplicationId)
+$octosprache.Add('ServicePrincipalEncryptedPassword', (Get-OctopusEncryptedValue -Password $Context.Password -Value $Context.Password))
+$servicePrincipal = New-AzureRmADServicePrincipal -ApplicationId $app.ApplicationId
+New-AzureRmRoleAssignment -RoleDefinitionName Contributor -ServicePrincipalName  $app.ApplicationId
+
+Write-Host 'Deploying Octopus Deploy...'
+$octopusStack = & (Join-Path $PSScriptRoot 'OctopusDeployBase.ps1') -Context $Context
+
+Write-Host 'Uploading Octopus Deploy Configuration...'
+& (Join-Path $PSScriptRoot 'OctopusDeployUpload.ps1') -Context $Context -octosprache $octosprache
+
+Write-Host 'Importing Automation Stack functionality into Octopus Deploy...'
+& (Join-Path $PSScriptRoot 'OctopusDeployImport.ps1') -OctopusStack  $octopusStack -Context $Context
+
+Write-Host -ForegroundColor Green "Octopus Deploy Running at: $($octopusStack.HostHeader)"

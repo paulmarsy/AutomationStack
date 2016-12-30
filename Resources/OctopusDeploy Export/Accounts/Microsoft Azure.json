@@ -1,0 +1,14 @@
+{
+  "$type": "Octopus.Core.Model.Environments.Accounts.AzureServicePrincipalAccount, Octopus.Core",
+  "SubscriptionNumber": "#{AzureSubscriptionId}",
+  "ClientId": "#{ServicePrincipalClientId}",
+  "TenantId": "#{AzureTenantId}",
+  "Password": "#{ServicePrincipalEncryptedPassword}",
+  "Id": "azureserviceprincipal-microsoft-azure",
+  "AccountType": "AzureServicePrincipal",
+  "Name": "Microsoft Azure",
+  "Description": null,
+  "EnvironmentIds": [],
+  "TenantIds": [],
+  "TenantTags": []
+}

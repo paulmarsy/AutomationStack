@@ -1,0 +1,29 @@
+{
+  "$type": "Octopus.Core.Model.Variables.VariableSet, Octopus.Core",
+  "Id": "variableset-LibraryVariableSets-1",
+  "OwnerId": "LibraryVariableSets-1",
+  "Version": 5,
+  "Variables": [
+    {
+      "Id": "e969023e-6aa0-3a3b-14af-4063729ac099",
+      "Name": "UDP",
+      "Value": "#{UDP}"
+    },
+    {
+      "Id": "c25c372f-dc20-ff6e-7df5-4a35e4bd2763",
+      "Name": "AzureRegion",
+      "Value": "#{AzureRegion}"
+    },
+    {
+      "Id": "f0a5346c-608f-c061-c6d9-7201bb2f10bc",
+      "Name": "AdminUsername",
+      "Value": "#{Username}"
+    },
+    {
+      "Id": "46c41ace-597d-46b4-8d0b-1b31bf000e40",
+      "Name": "StackAdminPassword",
+      "Value": "#{Password}"
+    }
+  ],
+  "RelatedDocumentIds": []
+}

@@ -30,6 +30,7 @@
       }
    },
    "variables":{  
+      "resourcesStorageName":"[concat('stackresources', parameters('udp'))]",
       "vmStorageName":"[concat('vmvhds', parameters('udp'))]",
       "sqlServerName":"[concat('sqlserver', parameters('udp'))]",
       "automationName":"[concat('automation', parameters('udp'))]"
@@ -59,11 +60,26 @@
       {  
          "apiVersion":"2016-01-01",
          "type":"Microsoft.Storage/storageAccounts",
+         "name":"[variables('resourcesStorageName')]",
+         "location":"[resourceGroup().location]",
+          "sku": {
+              "name": "Standard_LRS",
+              "tier": "Standard"
+          },
+         "kind":"Storage",
+         "properties":{  
+
+         }
+      },     
+      {  
+         "apiVersion":"2016-01-01",
+         "type":"Microsoft.Storage/storageAccounts",
          "name":"[variables('vmStorageName')]",
          "location":"[resourceGroup().location]",
-         "sku":{  
-            "name":"Premium_LRS"
-         },
+          "sku": {
+              "name": "Premium_LRS",
+              "tier": "Premium"
+          },
          "kind":"Storage",
          "properties":{  
 
