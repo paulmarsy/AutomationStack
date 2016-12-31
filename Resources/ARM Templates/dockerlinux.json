@@ -1,0 +1,149 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+      "infraResourceGroup":{  
+         "type":"string",
+         "metadata":{  
+            "description":"Name of the resource group containing the core automationstack infrastructure"
+         }
+      },
+      "udp":{  
+         "type":"string",
+         "metadata":{  
+            "description":"Unique Deployment Prefix to avoid name collisions"
+         }
+      },
+      "productName":{  
+         "type":"string",
+         "metadata":{  
+            "description":"Name of the product that is running on this VM"
+         }
+      },
+      "vmSize":{  
+         "type":"string",
+         "defaultValue":"Standard_DS2_v2",
+         "metadata":{  
+            "description":"Size of the VM"
+         }
+      },
+      "vmAdminUsername":{  
+         "type":"string",
+         "metadata":{  
+            "description":"Username for the Virtual Machine."
+         }
+      },
+      "vmAdminPassword":{  
+         "type":"string",
+         "metadata":{  
+            "description":"Password for the Virtual Machine."
+         }
+      }
+  },
+  "variables": {
+      "vmName":"[concat(parameters('productName'),'VM')]",
+      "vmStorageName":"[concat('vmvhds', parameters('udp'))]",
+      "nicName":"[concat(parameters('productName'),'NIC')]",
+      "publicIPAddressName":"[concat(parameters('productName'),'PublicIP')]",
+      "virtualNetworkId":"[resourceId(parameters('infraResourceGroup'), 'Microsoft.Network/virtualNetworks', 'VirtualNetwork')]",
+      "subnetId":"[concat(variables('virtualNetworkId'),'/subnets/', 'Default')]"
+  },
+  "resources": [
+      {  
+         "apiVersion":"2015-05-01-preview",
+         "type":"Microsoft.Network/publicIPAddresses",
+         "name":"[variables('publicIPAddressName')]",
+         "location":"[resourceGroup().location]",
+         "properties":{  
+            "publicIPAllocationMethod":"Static",
+            "idleTimeoutInMinutes":30,
+            "dnsSettings":{  
+               "domainNameLabel":"[toLower(concat(parameters('productName'),'-stack',parameters('udp')))]"
+            }
+         }
+      },
+      {  
+         "apiVersion":"2015-06-15",
+         "type":"Microsoft.Network/networkInterfaces",
+         "name":"[variables('nicName')]",
+         "location":"[resourceGroup().location]",
+         "dependsOn":[  
+            "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]"
+         ],
+         "properties":{  
+            "ipConfigurations":[  
+               {  
+                  "name":"[concat(parameters('productName'),'-IPConfig')]",
+                  "properties":{  
+                     "privateIPAllocationMethod":"Dynamic",
+                     "publicIPAddress":{  
+                        "id":"[resourceId('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]"
+                     },
+                     "subnet":{  
+                        "id":"[variables('subnetId')]"
+                     }
+                  }
+               }
+            ]
+         }
+      },
+    {
+      "apiVersion": "2015-05-01-preview",
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[variables('vmName')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+            "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
+      ],
+      "properties": {
+        "hardwareProfile": {
+               "vmSize":"[parameters('vmSize')]"
+        },
+        "osProfile": {
+          "computerName": "[variables('vmName')]",
+          "adminUsername": "[parameters('vmAdminUsername')]",
+          "adminPassword": "[parameters('vmAdminPassword')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "Canonical",
+            "offer": "UbuntuServer",
+            "sku": "16.04.0-LTS",
+            "version": "latest"
+          },
+               "osDisk":{  
+                  "name":"[concat(variables('vmName'),'-OS')]",
+                  "vhd":{  
+                     "uri":"[concat('http://',variables('vmStorageName'),'.blob.core.windows.net/vhds/',variables('vmName'),'-OS.vhd')]"
+                  },
+                  "caching":"ReadWrite",
+                  "createOption":"FromImage"
+               }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(variables('vmName'),'/', 'DockerExtension')]",
+      "apiVersion": "2015-05-01-preview",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
+      ],
+      "properties": {
+        "publisher": "Microsoft.Azure.Extensions",
+        "type": "DockerExtension",
+        "typeHandlerVersion": "1.0",
+        "autoUpgradeMinorVersion": true,
+        "settings": { }
+      }
+    }
+  ]
+}

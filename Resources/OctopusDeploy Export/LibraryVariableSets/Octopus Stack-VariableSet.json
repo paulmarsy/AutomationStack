@@ -18,6 +18,11 @@
       "Id": "9d1f89f3-397a-021f-e59c-b101f28efff1",
       "Name": "OctopusVMName",
       "Value": "#{OctopusVMName}"
+    },
+    {
+      "Id": "1241eb0d-b31f-577a-42b9-d79029520195",
+      "Name": "OctopusHostName",
+      "Value": "#{OctopusHostName}"
     }
   ],
   "RelatedDocumentIds": []

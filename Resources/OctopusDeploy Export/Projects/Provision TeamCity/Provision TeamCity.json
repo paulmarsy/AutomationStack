@@ -1,19 +1,22 @@
 {
   "$type": "Octopus.Core.Model.Projects.Project, Octopus.Core",
-  "Id": "Projects-2",
-  "Name": "Export Octopus Server Data",
+  "Id": "Projects-21",
+  "Name": "Provision TeamCity",
   "Description": "",
-  "Slug": "export-octopus-server-data",
+  "Slug": "provision-teamcity",
   "IsDisabled": false,
-  "VariableSetId": "variableset-Projects-2",
-  "DeploymentProcessId": "deploymentprocess-Projects-2",
-  "ProjectGroupId": "ProjectGroups-22",
+  "VariableSetId": "variableset-Projects-21",
+  "DeploymentProcessId": "deploymentprocess-Projects-21",
+  "ProjectGroupId": "ProjectGroups-41",
   "LifecycleId": "Lifecycles-21",
   "AutoCreateRelease": false,
   "IncludedLibraryVariableSetIds": [
-    "LibraryVariableSets-1"
+    "LibraryVariableSets-1",
+    "LibraryVariableSets-21"
   ],
-  "UsedPackages": [],
+  "UsedPackages": [
+    "jetbrains/teamcity-server"
+  ],
   "DefaultToSkipIfAlreadyInstalled": false,
   "TenantedDeploymentMode": "Untenanted",
   "VersioningStrategy": {

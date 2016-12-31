@@ -1,0 +1,11 @@
+{
+  "$type": "Octopus.Core.Model.Docker.DockerFeed, Octopus.Core",
+  "ApiVersion": "v1",
+  "RegistryPath": null,
+  "Id": "feeds-docker-hub",
+  "Name": "DockerHub",
+  "FeedUri": "https://index.docker.io/v1",
+  "Username": null,
+  "Password": null,
+  "FeedType": "Docker"
+}

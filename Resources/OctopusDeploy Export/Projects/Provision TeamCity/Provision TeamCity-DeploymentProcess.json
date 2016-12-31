@@ -1,0 +1,90 @@
+{
+  "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
+  "Id": "deploymentprocess-Projects-21",
+  "OwnerId": "Projects-21",
+  "Version": 5,
+  "Steps": [
+    {
+      "Id": "fe012b77-4d80-497b-9f83-2f37f42985b4",
+      "Name": "Create TeamCityStack Resource Group",
+      "Condition": "Success",
+      "StartTrigger": "StartAfterPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "bc9f665e-2250-4f26-be94-9569ea54f713",
+          "Name": "Create TeamCityStack Resource Group",
+          "ActionType": "Octopus.AzurePowerShell",
+          "IsDisabled": false,
+          "Environments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "$resourceGroup = Get-AzureRmResourceGroup -Name $ResourceGroupName -ErrorAction SilentlyContinue\r\nif(!$resourceGroup) {\r\n    Write-Host \"Creating resource group '$ResourceGroupName' in location '$AzureRegion'\"\r\n    New-AzureRmResourceGroup -Name $ResourceGroupName -Location $AzureRegion | Out-Null\r\n}\r\nelse {\r\n    Write-Host \"Using existing resource group '$ResourceGroupName'\"\r\n}\r\n"
+          }
+        }
+      ],
+      "Properties": {}
+    },
+    {
+      "Id": "56c6c260-11e3-43f9-9175-eb2d2311aa20",
+      "Name": "Ubuntu Docker VM",
+      "Condition": "Success",
+      "StartTrigger": "StartAfterPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "a54f6726-de48-4a27-a4b3-7066f4be20a2",
+          "Name": "Ubuntu Docker VM",
+          "ActionType": "Octopus.AzureResourceGroup",
+          "IsDisabled": false,
+          "Environments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure",
+            "Octopus.Action.Azure.ResourceGroupName": "#{ResourceGroupName}",
+            "Octopus.Action.Azure.TemplateSource": "Inline",
+            "Octopus.Action.Azure.ResourceGroupTemplateParameters": "{\"infraResourceGroup\":{\"value\":\"#{InfraRg}\"},\"udp\":{\"value\":\"#{UDP}\"},\"productName\":{\"value\":\"TeamCity\"},\"vmSize\":{\"value\":\"Standard_DS2_v2\"},\"vmAdminUsername\":{\"value\":\"#{StackAdminUsername}\"},\"vmAdminPassword\":{\"value\":\"#{StackAdminPassword}\"}}",
+            "Octopus.Action.Azure.ResourceGroupDeploymentMode": "Incremental",
+            "Octopus.Action.Azure.ResourceGroupTemplate": "{\r\n  \"$schema\": \"https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#\",\r\n  \"contentVersion\": \"1.0.0.0\",\r\n  \"parameters\": {\r\n      \"infraResourceGroup\":{  \r\n         \"type\":\"string\",\r\n         \"metadata\":{  \r\n            \"description\":\"Name of the resource group containing the core automationstack infrastructure\"\r\n         }\r\n      },\r\n      \"udp\":{  \r\n         \"type\":\"string\",\r\n         \"metadata\":{  \r\n            \"description\":\"Unique Deployment Prefix to avoid name collisions\"\r\n         }\r\n      },\r\n      \"productName\":{  \r\n         \"type\":\"string\",\r\n         \"metadata\":{  \r\n            \"description\":\"Name of the product that is running on this VM\"\r\n         }\r\n      },\r\n      \"vmSize\":{  \r\n         \"type\":\"string\",\r\n         \"defaultValue\":\"Standard_DS2_v2\",\r\n         \"metadata\":{  \r\n            \"description\":\"Size of the VM\"\r\n         }\r\n      },\r\n      \"vmAdminUsername\":{  \r\n         \"type\":\"string\",\r\n         \"metadata\":{  \r\n            \"description\":\"Username for the Virtual Machine.\"\r\n         }\r\n      },\r\n      \"vmAdminPassword\":{  \r\n         \"type\":\"string\",\r\n         \"metadata\":{  \r\n            \"description\":\"Password for the Virtual Machine.\"\r\n         }\r\n      }\r\n  },\r\n  \"variables\": {\r\n      \"vmName\":\"[concat(parameters('productName'),'VM')]\",\r\n      \"vmStorageName\":\"[concat('vmvhds', parameters('udp'))]\",\r\n      \"nicName\":\"[concat(parameters('productName'),'NIC')]\",\r\n      \"publicIPAddressName\":\"[concat(parameters('productName'),'PublicIP')]\",\r\n      \"virtualNetworkId\":\"[resourceId(parameters('infraResourceGroup'), 'Microsoft.Network/virtualNetworks', 'VirtualNetwork')]\",\r\n      \"subnetId\":\"[concat(variables('virtualNetworkId'),'/subnets/', 'Default')]\"\r\n  },\r\n  \"resources\": [\r\n      {  \r\n         \"apiVersion\":\"2015-05-01-preview\",\r\n         \"type\":\"Microsoft.Network/publicIPAddresses\",\r\n         \"name\":\"[variables('publicIPAddressName')]\",\r\n         \"location\":\"[resourceGroup().location]\",\r\n         \"properties\":{  \r\n            \"publicIPAllocationMethod\":\"Static\",\r\n            \"idleTimeoutInMinutes\":30,\r\n            \"dnsSettings\":{  \r\n               \"domainNameLabel\":\"[toLower(concat(parameters('productName'),'-stack',parameters('udp')))]\"\r\n            }\r\n         }\r\n      },\r\n      {  \r\n         \"apiVersion\":\"2015-06-15\",\r\n         \"type\":\"Microsoft.Network/networkInterfaces\",\r\n         \"name\":\"[variables('nicName')]\",\r\n         \"location\":\"[resourceGroup().location]\",\r\n         \"dependsOn\":[  \r\n            \"[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]\"\r\n         ],\r\n         \"properties\":{  \r\n            \"ipConfigurations\":[  \r\n               {  \r\n                  \"name\":\"[concat(parameters('productName'),'-IPConfig')]\",\r\n                  \"properties\":{  \r\n                     \"privateIPAllocationMethod\":\"Dynamic\",\r\n                     \"publicIPAddress\":{  \r\n                        \"id\":\"[resourceId('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]\"\r\n                     },\r\n                     \"subnet\":{  \r\n                        \"id\":\"[variables('subnetId')]\"\r\n                     }\r\n                  }\r\n               }\r\n            ]\r\n         }\r\n      },\r\n    {\r\n      \"apiVersion\": \"2015-05-01-preview\",\r\n      \"type\": \"Microsoft.Compute/virtualMachines\",\r\n      \"name\": \"[variables('vmName')]\",\r\n      \"location\": \"[resourceGroup().location]\",\r\n      \"dependsOn\": [\r\n            \"[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]\"\r\n      ],\r\n      \"properties\": {\r\n        \"hardwareProfile\": {\r\n               \"vmSize\":\"[parameters('vmSize')]\"\r\n        },\r\n        \"osProfile\": {\r\n          \"computerName\": \"[variables('vmName')]\",\r\n          \"adminUsername\": \"[parameters('vmAdminUsername')]\",\r\n          \"adminPassword\": \"[parameters('vmAdminPassword')]\"\r\n        },\r\n        \"storageProfile\": {\r\n          \"imageReference\": {\r\n            \"publisher\": \"Canonical\",\r\n            \"offer\": \"UbuntuServer\",\r\n            \"sku\": \"16.04.0-LTS\",\r\n            \"version\": \"latest\"\r\n          },\r\n               \"osDisk\":{  \r\n                  \"name\":\"[concat(variables('vmName'),'-OS')]\",\r\n                  \"vhd\":{  \r\n                     \"uri\":\"[concat('http://',variables('vmStorageName'),'.blob.core.windows.net/vhds/',variables('vmName'),'-OS.vhd')]\"\r\n                  },\r\n                  \"caching\":\"ReadWrite\",\r\n                  \"createOption\":\"FromImage\"\r\n               }\r\n        },\r\n        \"networkProfile\": {\r\n          \"networkInterfaces\": [\r\n            {\r\n              \"id\": \"[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]\"\r\n            }\r\n          ]\r\n        }\r\n      }\r\n    },\r\n    {\r\n      \"type\": \"Microsoft.Compute/virtualMachines/extensions\",\r\n      \"name\": \"[concat(variables('vmName'),'/', 'DockerExtension')]\",\r\n      \"apiVersion\": \"2015-05-01-preview\",\r\n      \"location\": \"[resourceGroup().location]\",\r\n      \"dependsOn\": [\r\n        \"[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]\"\r\n      ],\r\n      \"properties\": {\r\n        \"publisher\": \"Microsoft.Azure.Extensions\",\r\n        \"type\": \"DockerExtension\",\r\n        \"typeHandlerVersion\": \"1.0\",\r\n        \"autoUpgradeMinorVersion\": true,\r\n        \"settings\": { }\r\n      }\r\n    }\r\n  ]\r\n}\r\n    "
+          }
+        }
+      ],
+      "Properties": {}
+    },
+    {
+      "Id": "7bd7ab4b-e807-4c03-8dd1-caf6528a8de4",
+      "Name": "Deploy TeamCity Docker Image",
+      "Condition": "Success",
+      "StartTrigger": "StartAfterPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "5a7f8576-f81a-4a0e-a84a-016c653bc9f5",
+          "Name": "Deploy TeamCity Docker Image",
+          "ActionType": "Octopus.DockerRun",
+          "IsDisabled": false,
+          "Environments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.Docker.NetworkType": "bridge",
+            "Octopus.Action.Docker.RestartPolicy": "no",
+            "Octopus.Action.Package.FeedId": "feeds-docker-hub",
+            "Octopus.Action.Package.PackageId": "jetbrains/teamcity-server",
+            "Octopus.Action.Docker.PortMapping": "{\"8111\":\"80\"}",
+            "Octopus.Action.Docker.VolumeBindings": "{\"/data/teamcity_server/datadir\":{\"host\":\"/tmp/teamcity/data\",\"readOnly\":false,\"noCopy\":false},\"/opt/teamcity/logs\":{\"host\":\"/tmp/teamcity/logs\",\"readOnly\":false,\"noCopy\":false}}",
+            "Octopus.Action.Docker.EnvVariable": "{\"TEAMCITY_SERVER_MEM_OPTS\":\"-Xmx2g -XX:MaxPermSize=270m -XX:ReservedCodeCacheSize=350m\"}"
+          }
+        }
+      ],
+      "Properties": {
+        "Octopus.Action.TargetRoles": "TeamCity Server"
+      }
+    }
+  ],
+  "RelatedDocumentIds": []
+}

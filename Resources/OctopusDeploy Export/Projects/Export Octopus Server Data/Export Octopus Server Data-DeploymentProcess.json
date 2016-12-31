@@ -1,8 +1,8 @@
 {
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
-  "Id": "deploymentprocess-Projects-3",
-  "OwnerId": "Projects-3",
-  "Version": 4,
+  "Id": "deploymentprocess-Projects-2",
+  "OwnerId": "Projects-2",
+  "Version": 7,
   "Steps": [
     {
       "Id": "2af4b8af-c58c-4f77-853a-cf93a9978810",
@@ -23,13 +23,11 @@
             "Octopus.Action.RunOnServer": "true",
             "Octopus.Action.Script.Syntax": "PowerShell",
             "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "New-Item -ItemType Directory -Path $ExportPath\n\n& \"C:\\Program Files\\Octopus Deploy\\Octopus\\Octopus.Migrator.exe\" export --console --directory=$ExportPath --password=$ExportPassword"
+            "Octopus.Action.Script.ScriptBody": "New-Item -ItemType Directory -Path $ExportPath\n\n& \"C:\\Program Files\\Octopus Deploy\\Octopus\\Octopus.Migrator.exe\" export --console --directory=$ExportPath --password=$ExportPassword\r\n"
           }
         }
       ],
-      "Properties": {
-        "Octopus.Action.TargetRoles": "Octopus Stack"
-      }
+      "Properties": {}
     },
     {
       "Id": "7f1e35df-e72e-4d16-b721-09bda2b61130",
@@ -50,13 +48,11 @@
             "Octopus.Action.RunOnServer": "true",
             "Octopus.Action.Script.Syntax": "PowerShell",
             "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "Compress-Archive -Path $ExportPath -DestinationPath $ArchivePath -CompressionLevel Optimal"
+            "Octopus.Action.Script.ScriptBody": "Compress-Archive -Path $ExportPath -DestinationPath $ArchivePath -CompressionLevel Optimal\r\n"
           }
         }
       ],
-      "Properties": {
-        "Octopus.Action.TargetRoles": "Octopus Stack"
-      }
+      "Properties": {}
     },
     {
       "Id": "d0a433bf-5921-4ddf-8911-ba2939989b33",
@@ -77,13 +73,11 @@
             "Octopus.Action.RunOnServer": "true",
             "Octopus.Action.Script.Syntax": "PowerShell",
             "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "New-OctopusArtifact -Path $ArchivePath -Name 'Octopus Export.zip'"
+            "Octopus.Action.Script.ScriptBody": "New-OctopusArtifact -Path $ArchivePath -Name 'Octopus Export.zip'\r\n"
           }
         }
       ],
-      "Properties": {
-        "Octopus.Action.TargetRoles": "Octopus Stack"
-      }
+      "Properties": {}
     }
   ],
   "RelatedDocumentIds": []

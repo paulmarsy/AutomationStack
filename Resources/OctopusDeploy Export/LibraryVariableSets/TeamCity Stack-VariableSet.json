@@ -1,0 +1,19 @@
+{
+  "$type": "Octopus.Core.Model.Variables.VariableSet, Octopus.Core",
+  "Id": "variableset-LibraryVariableSets-21",
+  "OwnerId": "LibraryVariableSets-21",
+  "Version": 1,
+  "Variables": [
+    {
+      "Id": "9735e8b9-c0ab-e4d4-dff1-9d2ba2287d3d",
+      "Name": "ResourceGroupName",
+      "Value": "TeamCityStack#{UDP}"
+    },
+    {
+      "Id": "b89b8a8e-4cf3-562e-3ec6-df75b3ce93ed",
+      "Name": "TeamCityVMName",
+      "Value": "TeamCityVM"
+    }
+  ],
+  "RelatedDocumentIds": []
+}

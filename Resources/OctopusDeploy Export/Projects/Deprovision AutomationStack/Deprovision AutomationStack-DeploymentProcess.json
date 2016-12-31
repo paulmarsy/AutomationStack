@@ -1,0 +1,105 @@
+{
+  "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
+  "Id": "deploymentprocess-Projects-22",
+  "OwnerId": "Projects-22",
+  "Version": 4,
+  "Steps": [
+    {
+      "Id": "eb60b798-dde3-4a7e-92b5-9b39d4569e67",
+      "Name": "Remove TeamCityStack",
+      "Condition": "Success",
+      "StartTrigger": "StartAfterPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "2ce1cc38-362c-4786-b5c0-8ac3ba4baa25",
+          "Name": "Remove TeamCityStack",
+          "ActionType": "Octopus.AzurePowerShell",
+          "IsDisabled": false,
+          "Environments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "Remove-AzureRmResourceGroup -Name ('TeamCityStack{0}' -f $UDP) -Force"
+          }
+        }
+      ],
+      "Properties": {}
+    },
+    {
+      "Id": "86f75c5a-02d8-40c7-928d-cfae00b88f28",
+      "Name": "Remove OctopusStack",
+      "Condition": "Success",
+      "StartTrigger": "StartWithPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "e160ef54-24e9-4e89-980a-6ee37409f3e7",
+          "Name": "Remove OctopusStack",
+          "ActionType": "Octopus.AzurePowerShell",
+          "IsDisabled": false,
+          "Environments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "Remove-AzureRmResourceGroup -Name ('OctopusStack{0}' -f $UDP) -Force"
+          }
+        }
+      ],
+      "Properties": {}
+    },
+    {
+      "Id": "6bcfe1f1-b12e-4bc4-b19a-a50de6ca9653",
+      "Name": "Remove AutomationStack",
+      "Condition": "Success",
+      "StartTrigger": "StartWithPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "8d838fd9-f2a8-468e-933b-4b11fc869dc9",
+          "Name": "Remove AutomationStack",
+          "ActionType": "Octopus.AzurePowerShell",
+          "IsDisabled": false,
+          "Environments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "Remove-AzureRmResourceGroup -Name ('AutomationStack{0}' -f $UDP) -Force"
+          }
+        }
+      ],
+      "Properties": {}
+    },
+    {
+      "Id": "961987e7-8289-4eef-b58f-3484dba7056c",
+      "Name": "Remove Service Principal",
+      "Condition": "Success",
+      "StartTrigger": "StartWithPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "3cdcd596-a859-476a-8624-993dbcfd721f",
+          "Name": "Remove Service Principal",
+          "ActionType": "Octopus.AzurePowerShell",
+          "IsDisabled": false,
+          "Environments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "Start-Sleep 3\nGet-AzureRmADApplication -DisplayNameStartWith ('AutomationStack{0}' -f $UDP) | Remove-AzureRmADApplication -Force\n"
+          }
+        }
+      ],
+      "Properties": {}
+    }
+  ],
+  "RelatedDocumentIds": []
+}

@@ -29,6 +29,7 @@ Write-Host 'Removing Service Principal...'
 Get-AzureRmADApplication -DisplayNameStartWith ('AutomationStack{0}' -f $UDP) | Remove-AzureRmADApplication -Force
 
 $jobs = @(
+    (Remove-ResourceGroup 'TeamCity' ('TeamCityStack{0}' -f $UDP))
     (Remove-ResourceGroup 'Octopus Deploy' ('OctopusStack{0}' -f $UDP))
     (Remove-ResourceGroup 'Infrastructure' ('AutomationStack{0}' -f $UDP))
 )

@@ -2,7 +2,7 @@
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
   "Id": "deploymentprocess-Projects-1",
   "OwnerId": "Projects-1",
-  "Version": 6,
+  "Version": 7,
   "Steps": [
     {
       "Id": "1f7eaedc-d772-4fde-8a11-c298cb6e6880",
@@ -22,7 +22,7 @@
           "Properties": {
             "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure",
             "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "Get-AzureRmNetworkSecurityGroup -Name $OctopusNSGName -ResourceGroupName $ResourceGroupName |\nAdd-AzureRmNetworkSecurityRuleConfig -Name RDP -Protocol TCP -Access Allow -SourcePortRange * -SourceAddressPrefix Internet -DestinationPortRange 3389 -DestinationAddressPrefix * -Priority 300 -Direction Inbound  |\nSet-AzureRmNetworkSecurityGroup"
+            "Octopus.Action.Script.ScriptBody": "Get-AzureRmNetworkSecurityGroup -Name $OctopusNSGName -ResourceGroupName $OctopusRg |\nAdd-AzureRmNetworkSecurityRuleConfig -Name RDP -Protocol TCP -Access Allow -SourcePortRange * -SourceAddressPrefix Internet -DestinationPortRange 3389 -DestinationAddressPrefix * -Priority 300 -Direction Inbound  |\nSet-AzureRmNetworkSecurityGroup\n"
           }
         }
       ],

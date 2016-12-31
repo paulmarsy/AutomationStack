@@ -1,0 +1,14 @@
+{
+  "$type": "Octopus.Core.Model.Variables.VariableSet, Octopus.Core",
+  "Id": "variableset-Projects-22",
+  "OwnerId": "Projects-22",
+  "Version": 1,
+  "Variables": [
+    {
+      "Id": "99e1f6de-2c02-0346-e85f-fe8b1f9cdb2f",
+      "Name": "OctopusBypassDeploymentMutex",
+      "Value": "True"
+    }
+  ],
+  "RelatedDocumentIds": []
+}
