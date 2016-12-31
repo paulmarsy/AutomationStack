@@ -7,7 +7,7 @@
     {
       "Id": "3406e61a-97dc-f94f-a691-0fa1aae9c9d6",
       "Name": "ResourceGroupName",
-      "Value": "OctopusStack#{UDP}"
+      "Value": "#{OctopusRg}"
     },
     {
       "Id": "12c2e0b0-1235-2a13-a44d-ed2ce619cde9",
@@ -17,7 +17,7 @@
     {
       "Id": "9d1f89f3-397a-021f-e59c-b101f28efff1",
       "Name": "OctopusVMName",
-      "Value": "OctopusVM"
+      "Value": "#{OctopusVMName}"
     }
   ],
   "RelatedDocumentIds": []

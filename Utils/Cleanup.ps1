@@ -26,8 +26,7 @@ function Remove-ResourceGroup {
 }
 
 Write-Host 'Removing Service Principal...'
-Get-AzureRmADServicePrincipal -SearchString ('AutomationStack{0}' -f $UDP) | Remove-AzureRmADServicePrincipal
-Get-AzureRmADApplication -DisplayNameStartWith ('AutomationStack{0}' -f $UDP) | Remove-AzureRmADApplication
+Get-AzureRmADApplication -DisplayNameStartWith ('AutomationStack{0}' -f $UDP) | Remove-AzureRmADApplication -Force
 
 $jobs = @(
     (Remove-ResourceGroup 'Octopus Deploy' ('OctopusStack{0}' -f $UDP))

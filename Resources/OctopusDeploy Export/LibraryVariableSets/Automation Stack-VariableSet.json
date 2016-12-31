@@ -16,7 +16,7 @@
     },
     {
       "Id": "f0a5346c-608f-c061-c6d9-7201bb2f10bc",
-      "Name": "AdminUsername",
+      "Name": "StackAdminUsername",
       "Value": "#{Username}"
     },
     {

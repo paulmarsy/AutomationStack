@@ -75,5 +75,10 @@ Configuration OctopusDeploy
             LocalPort             = ("80", "444", "10943")
             Protocol              = "TCP"
         }
+
+    #    Invoke-WebRequest -UseBasicParsing -Uri ('{0}/api/users/authenticate/usernamepassword' -f $HostHeader) -Method Post -Body (@{Username = $OctopusAdminUsername; Password = $OctopusAdminPassword; RememberMe = $false }| ConvertTo-Json) -SessionVariable octopusSession | Out-Null		
+     #   $myOctopusUserId = Invoke-WebRequest -UseBasicParsing -Uri ('{0}/api/users/me' -f $HostHeader) -WebSession $octopusSession | % Content | ConvertFrom-Json | % Id		
+      #  $apiKey = Invoke-WebRequest -UseBasicParsing -Uri ('{0}/api/users/{1}/apikeys' -f $HostHeader, $myOctopusUserId) -WebSession $octopusSession -Method Post -Body (@{Purpose='AutomationStack'} | ConvertTo-Json) | % Content | ConvertFrom-Json | % ApiKey		
+       # Write-Verbose "Octopus API Key: $apiKey" 
     }
 }

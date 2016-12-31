@@ -8,9 +8,10 @@ $octosprache.ParseFile('file.txt')
 class Octosprache {
     Octosprache([string]$UDP) {
 
+        $this.RegisterNuGetAssembly('Newtonsoft.Json', '9.0.1', 'net40', 'Newtonsoft.Json')
         $this.RegisterNuGetAssembly('Sprache', '2.1.0', 'net40', 'Sprache')
         $this.RegisterNuGetAssembly('Octostache', '2.0.7', 'net40', 'Octostache')
-        $backingFile = Join-Path $PWD ('AutomationStack {0} Config.json' -f $UDP) | Convert-Path
+        $backingFile = Join-Path $PWD.ProviderPath ('AutomationStack {0} Config.json' -f $UDP)
         if (Test-Path $backingFile) { Write-Host 'Repopulating configuration from file' }
 
         $this.VariableDictionary = New-Object Octostache.VariableDictionary $backingFile

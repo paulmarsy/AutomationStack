@@ -12,7 +12,7 @@
     {
       "Id": "ae566c92-c3ab-8648-a4cf-3383e8451b6b",
       "Name": "ExportPassword",
-      "Value": "#{StackAdminPassword}"
+      "Value": "#{Password}"
     },
     {
       "Id": "5c3a7c18-14f4-a79b-b403-b0d276a2fa1e",

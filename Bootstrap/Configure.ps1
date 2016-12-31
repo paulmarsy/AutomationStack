@@ -29,7 +29,6 @@ $context.Set('SqlServerName', 'sqlserver#{UDP}')
 Write-Host 'Creating Azure Service Principal...'
 $app = New-AzureRmADApplication -DisplayName $context.Get('Name') -IdentifierUris "http://$($context.Get('Name')).local" -Password $context.Get('Password')
 $context.Set('ServicePrincipalClientId', $app.ApplicationId)
-$context.SetSensitive($context.Get('Password'), 'ServicePrincipalPassword', $context.Get('Password'))
 $servicePrincipal = New-AzureRmADServicePrincipal -ApplicationId $app.ApplicationId
 Start-Sleep -Seconds 20
 New-AzureRmRoleAssignment -RoleDefinitionName Contributor -ServicePrincipalName  $app.ApplicationId

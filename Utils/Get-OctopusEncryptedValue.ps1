@@ -15,5 +15,6 @@ function Get-OctopusEncryptedValue {
     $ms = New-Object System.IO.MemoryStream
     $cryptoStream = New-Object System.Security.Cryptography.CryptoStream  @($ms, $encryptor, [System.Security.Cryptography.CryptoStreamMode]::Write)
     $cryptoStream.Write($plainText, 0, $plainText.Length)
+    $cryptoStream.FlushFinalBlock()
     return ([System.Convert]::ToBase64String($ms.ToArray()) + '|' + [System.Convert]::ToBase64String($iv))
 }
