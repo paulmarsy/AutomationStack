@@ -1,5 +1,5 @@
 param(
-    $AzureRegion = 'North Europe'
+    $AzureRegion
 )
 
 $currentStack = & (Join-Path $PSScriptRoot 'CurrentStack.ps1') -Guid ([guid]::NewGuid().guid)
@@ -33,10 +33,13 @@ $servicePrincipal = New-AzureRmADServicePrincipal -ApplicationId $app.Applicatio
 Start-Sleep -Seconds 20
 New-AzureRmRoleAssignment -RoleDefinitionName Contributor -ServicePrincipalName  $app.ApplicationId
 
+Write-Host 'Deploying Octopus Deploy Infrastructure...'
+& (Join-Path $PSScriptRoot 'OctopusDeployInfrastructure.ps1') -Context $context
+
 Write-Host 'Configuring Resources Storage Account...'
 & (Join-Path $PSScriptRoot 'DeployResources.ps1') -Context $context
 
-Write-Host 'Deploying Octopus Deploy...'
-& (Join-Path $PSScriptRoot 'OctopusDeploy.ps1') -Context $context
+Write-Host 'Deploying Octopus Deploy Configuration...'
+& (Join-Path $PSScriptRoot 'OctopusDeployConfiguration.ps1') -Context $context
 
 Write-Host -ForegroundColor Green 'Octopus Deploy Running at: ' $context.Get('OctopusHostHeader')
