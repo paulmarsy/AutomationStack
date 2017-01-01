@@ -23,7 +23,7 @@ Write-Host
 try {
     $credential = New-Object PSCredential($AzureUsername, $securePassword)
     Write-Host -ForegroundColor White -BackgroundColor Black -NoNewline "Logging into Azure.. "
-    $rmContext = Add-AzureRmAccount -Credential $credential -ErrorAction Stop -SubscriptionId $SubscriptionId
+    $rmContext = Add-AzureRmAccount -Credential $credential -ErrorAction Stop
     Write-Host -ForegroundColor Green -BackgroundColor Black "Successful"
     $rmContext | Format-List | Out-Host
 }
