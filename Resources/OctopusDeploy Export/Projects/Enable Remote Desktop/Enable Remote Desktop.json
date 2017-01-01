@@ -1,19 +1,19 @@
 {
   "$type": "Octopus.Core.Model.Projects.Project, Octopus.Core",
-  "Id": "Projects-1",
+  "Id": "Projects-2",
   "Name": "Enable Remote Desktop",
   "Description": "",
   "Slug": "enable-remote-desktop",
   "IsDisabled": false,
-  "VariableSetId": "variableset-Projects-1",
-  "DeploymentProcessId": "deploymentprocess-Projects-1",
+  "VariableSetId": "variableset-Projects-2",
+  "DeploymentProcessId": "deploymentprocess-Projects-2",
   "ProjectGroupId": "ProjectGroups-22",
   "LifecycleId": "Lifecycles-21",
   "AutoCreateRelease": false,
   "IncludedLibraryVariableSetIds": [
+    "LibraryVariableSets-2",
     "LibraryVariableSets-1",
-    "LibraryVariableSets-41",
-    "LibraryVariableSets-2"
+    "LibraryVariableSets-3"
   ],
   "UsedPackages": [],
   "DefaultToSkipIfAlreadyInstalled": false,
@@ -32,6 +32,6 @@
     "TargetRoles": []
   },
   "AutoDeployReleaseOverrides": [],
-  "LogoAttachmentKey": "Projects-1",
+  "LogoAttachmentKey": "Projects-2",
   "LogoAttachmentMimeType": "image/png"
 }

@@ -1,17 +1,17 @@
 {
   "$type": "Octopus.Core.Model.Projects.Project, Octopus.Core",
-  "Id": "Projects-2",
+  "Id": "Projects-3",
   "Name": "Export Octopus Server Data",
   "Description": "",
   "Slug": "export-octopus-server-data",
   "IsDisabled": false,
-  "VariableSetId": "variableset-Projects-2",
-  "DeploymentProcessId": "deploymentprocess-Projects-2",
+  "VariableSetId": "variableset-Projects-3",
+  "DeploymentProcessId": "deploymentprocess-Projects-3",
   "ProjectGroupId": "ProjectGroups-22",
   "LifecycleId": "Lifecycles-21",
   "AutoCreateRelease": false,
   "IncludedLibraryVariableSetIds": [
-    "LibraryVariableSets-41"
+    "LibraryVariableSets-1"
   ],
   "UsedPackages": [],
   "DefaultToSkipIfAlreadyInstalled": false,
@@ -30,6 +30,6 @@
     "TargetRoles": []
   },
   "AutoDeployReleaseOverrides": [],
-  "LogoAttachmentKey": "Projects-2",
+  "LogoAttachmentKey": "Projects-3",
   "LogoAttachmentMimeType": "image/png"
 }
