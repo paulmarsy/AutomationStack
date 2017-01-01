@@ -13,7 +13,7 @@ mkdir /tmp/teamcity/logs
 apt-get -y install jq
 
 serverUrl="#{OctopusHostHeader}"
-apiKey="API-B9FUOXS1UI0CDK8W4QHIKM0O0"
+apiKey="#{ApiKey}"
 localIp=$(ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}')
 environment="Microsoft Azure"
 accountId="usernamepassword-tentacle-auth"

@@ -23,6 +23,11 @@
       "Id": "5ccfcebd-5f5c-9a39-f8fb-0bda8775ab5b",
       "Name": "AzureRegion",
       "Value": "#{AzureRegion}"
+    },
+    {
+      "Id": "9792d2a9-7798-58ae-98d8-b46435adf64a",
+      "Name": "APIKey",
+      "Value": "#{ApiKey}"
     }
   ],
   "RelatedDocumentIds": []

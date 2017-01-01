@@ -21,7 +21,7 @@ $CompilationJob = Start-AzureRmAutomationDscCompilationJob -ResourceGroupName $r
 while ($CompilationJob.EndTime -eq $null -and $CompilationJob.Exception -eq $null)
 {
         Write-Host 'Waiting for compilation...'
-        Start-Sleep -Seconds 5
+        Start-Sleep -Seconds 3
         $CompilationJob = $CompilationJob | Get-AzureRmAutomationDscCompilationJob
 }
 
@@ -30,10 +30,24 @@ $CompilationJob | Get-AzureRmAutomationDscCompilationJobOutput -Stream Any
 Write-Host "Registering $AzureVMName DSC Node..."
 Register-AzureRmAutomationDscNode -AutomationAccountName $aa -ResourceGroupName $rg -AzureVMName $AzureVMName -AzureVMResourceGroup $AzureVMResourceGroup -AzureVMLocation $AzureVMLocation -NodeConfigurationName ('{0}.{1}' -f $Configuration, $Node) -ActionAfterReboot ContinueConfiguration -ConfigurationMode ApplyAndAutocorrect -ConfigurationModeFrequencyMins 15 -RefreshFrequencyMins 30 -RebootNodeIfNeeded $true -AllowModuleOverwrite $true
 
-$node = Get-AzureRmAutomationDscNode -ResourceGroupName $rg -AutomationAccountName $aa -Name $AzureVMName
-while ($node.Status -ne 'Compliant')
-{            
-        Write-Host "Node is $($node.Status), waiting for compliance..."
-        Start-Sleep -Seconds 5
+$currentPollWait = 10
+$previousPollWait = 0
+$continueToPoll = $true
+$maxWaitSeconds = 60
+while ($continueToPoll)
+{
+	Start-Sleep -Seconds ([System.Math]::Min($currentPollWait, $maxWaitSeconds))
         $node = Get-AzureRmAutomationDscNode -ResourceGroupName $rg -AutomationAccountName $aa -Name $AzureVMName
+        if ($node.Status -eq 'Compliant') {
+                Write-Host "Node is compliant"
+                $continueToPoll = $false
+        }
+        else {
+                Write-Host "Node status is $($node.Status), waiting for compliance..."
+        }
+	if ($currentPollWait -lt $maxWaitSeconds){
+		$temp = $previousPollWait
+		$previousPollWait = $currentPollWait
+		$currentPollWait = $temp + $currentPollWait
+	}
 }

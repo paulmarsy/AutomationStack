@@ -5,6 +5,8 @@ $octosprache.Eval('some string with  #{token}s in it')
 $octosprache.ParseFile('file.txt')
 #>
 . (Join-Path $PSScriptRoot 'Get-OctopusEncryptedValue.ps1' -Resolve)
+. (Join-Path $PSScriptRoot 'Get-OctopusHashedValue.ps1' -Resolve)
+. (Join-Path $PSScriptRoot 'Get-OctopusApiKeyId.ps1' -Resolve)
 class Octosprache {
     Octosprache([string]$UDP) {
 
@@ -38,6 +40,14 @@ class Octosprache {
     SetSensitive([string]$Password, [string]$Key, [string]$Value) {
          $sensitiveValue = Get-OctopusEncryptedValue -Password $Password -Value $Value
          $this.Set($Key, $sensitiveValue)
+    }    
+    SetHashed([string]$Key, [string]$Value) {
+         $hashedValue = Get-OctopusHashedValue -Value $Value
+         $this.Set($Key, $hashedValue)
+    }   
+    SetApiKeyId([string]$Key, [string]$ApiKey) {
+         $apiKeyId = Get-OctopusApiKeyId -ApiKey $ApiKey
+         $this.Set($Key, $apiKeyId)
     }
     [string] Get([string]$Key) {
         return $this.VariableDictionary.Get($Key)

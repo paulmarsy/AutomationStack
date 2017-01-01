@@ -21,8 +21,8 @@
   "DefaultToSkipIfAlreadyInstalled": false,
   "TenantedDeploymentMode": "Untenanted",
   "VersioningStrategy": {
-    "DonorPackageStepId": null,
-    "Template": "#{Octopus.Version.LastMajor}.#{Octopus.Version.LastMinor}.#{Octopus.Version.NextPatch}"
+    "DonorPackageStepId": "5a7f8576-f81a-4a0e-a84a-016c653bc9f5",
+    "Template": null
   },
   "Templates": [],
   "ReleaseCreationStrategy": {

@@ -9,6 +9,10 @@ Write-Host -ForegroundColor Green "`tUploading Octopus Deploy..."
 $context.SetSensitive($context.Get('Password'), 'ProtectedImportHello', 'Hello')
 $context.SetSensitive($context.Get('Password'), 'ServicePrincipalPassword', $context.Get('Password'))
 $context.SetSensitive($context.Get('Password'), 'SSHPassword', $context.Get('Password'))
+$context.SetHashed('PasswordHash', $context.Get('Password'))
+$context.Set('ApiKey', ('API-AUTOMATION{0}' -f $context.Get('UDP')))
+$context.SetApiKeyId('ApiKeyId', $context.Get('ApiKey'))
+$context.SetHashed('ApiKeyHash', $context.Get('ApiKey'))
 
 $storageShare = Get-AzureStorageShare -Name octopusdeploy -Context $stackresources -ErrorAction SilentlyContinue
 if(!$storageShare) {
@@ -21,7 +25,7 @@ Get-ChildItem -Path $source -Directory -Recurse | % {
     New-AzureStorageDirectory -Share $storageShare -Path $destFolder -ErrorAction Ignore | Out-Null
 }
 Get-ChildItem -Path $source -Recurse -File | % {
-    if ($_.Name -in @('metadata.json','server.json','Automation Stack Parameters-VariableSet.json','Microsoft Azure Service Principal.json','Tentacle Auth.json','#{AzureRegion}.json')) {
+    if ($_.Name -in @('metadata.json','server.json','Automation Stack Parameters-VariableSet.json','Microsoft Azure Service Principal.json','Tentacle Auth.json','#{AzureRegion}.json','#{ApiKeyId}.json','#{Username}.json')) {
         Write-Host "Tokenising file $($_.Name)"
         $sourceFile = (New-TemporaryFile).FullName
         $Context.ParseFile($_.FullName, $sourceFile)
