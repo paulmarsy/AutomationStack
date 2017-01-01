@@ -1,0 +1,17 @@
+{
+  "$type": "Octopus.Core.Model.Users.User, Octopus.Core",
+  "Id": "Users-21",
+  "Username": "AutomationStack",
+  "DisplayName": "Automation Stack",
+  "EmailAddress": "",
+  "Notes": null,
+  "PasswordHashed": "3E8$gNJKYYJ3l2QDMM/f8tvItQ==$wdCnaIz/20TTj/Oic63zR6zRpvcZX29C",
+  "IsActive": true,
+  "IsService": true,
+  "ApiKey": null,
+  "ExternalId": null,
+  "IdentificationToken": "d7f241fd-057f-443e-921c-bb64a60ae58f",
+  "SecurityGroupIds": [],
+  "SecurityGroupsLastUpdated": null,
+  "CanPasswordBeEdited": false
+}

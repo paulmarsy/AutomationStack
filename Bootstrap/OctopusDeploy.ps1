@@ -27,3 +27,7 @@ $Context.Set('OctopusConnectionString', 'Server=tcp:#{SqlServerName}.database.wi
     ConnectionString = $Context.Get('OctopusConnectionString')
     HostHeader = $Context.Get('OctopusHostHeader')
 }
+
+Write-Host 'Importing Automation Stack functionality into Octopus Deploy...'
+Set-AzureRmVMCustomScriptExtension -ResourceGroupName $Context.Get('OctopusRg') -Location $Context.Get('AzureRegion') -VMName $Context.Get('OctopusVMName') -Name "OctopusImport" -StorageAccountName $Context.Get('StackResourcesName') -StorageAccountKey $Context.Get('StackResourcesKey')  -FileName "OctopusImport.ps1" -ContainerName "scripts"
+Get-AzureRmVMExtension -ResourceGroupName $Context.Get('OctopusRg') -VMName $Context.Get('OctopusVMName') -Name "OctopusImport"  -Status | % SubStatuses | % Message | % Replace '\n' "`n"

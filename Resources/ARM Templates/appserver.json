@@ -42,7 +42,7 @@
    },
    "variables":{  
       "vmName":"[concat(parameters('productName'),'VM')]",
-      "vmStorageName":"[concat('vmvhds', parameters('udp'))]",
+      "vmStorageName":"[concat('vmvhds', parameters('udp'), uniquestring(resourceGroup().id))]",
       "nsgName":"[concat(parameters('productName'),'NSG')]",
       "nicName":"[concat(parameters('productName'),'NIC')]",
       "publicIPAddressName":"[concat(parameters('productName'),'PublicIP')]",
@@ -50,6 +50,20 @@
       "subnetId":"[concat(variables('virtualNetworkId'),'/subnets/', 'Default')]"
    },
    "resources":[  
+      {  
+         "apiVersion":"2016-01-01",
+         "type":"Microsoft.Storage/storageAccounts",
+         "name":"[variables('vmStorageName')]",
+         "location":"[resourceGroup().location]",
+          "sku": {
+              "name": "Premium_LRS",
+              "tier": "Premium"
+          },
+         "kind":"Storage",
+         "properties":{  
+
+         }
+      },
       {  
          "apiVersion":"2015-06-15",
          "type":"Microsoft.Network/networkSecurityGroups",
@@ -134,6 +148,7 @@
          "name":"[variables('vmName')]",
          "location":"[resourceGroup().location]",
          "dependsOn":[  
+            "[concat('Microsoft.Storage/storageAccounts/', variables('vmStorageName'))]",
             "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
          ],
          "properties":{  
@@ -174,5 +189,11 @@
             }
          }
       }
-   ]
+   ],
+  "outputs": {
+    "fqdn" : {
+      "type": "string",
+      "value": "[reference(variables('publicIPAddressName')).dnsSettings.fqdn]"
+    }
+  }
 }

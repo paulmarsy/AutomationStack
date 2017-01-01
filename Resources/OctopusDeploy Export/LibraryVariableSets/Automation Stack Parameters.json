@@ -1,0 +1,9 @@
+{
+  "$type": "Octopus.Core.Model.Variables.LibraryVariableSet, Octopus.Core",
+  "Id": "LibraryVariableSets-41",
+  "Name": "Automation Stack Parameters",
+  "Description": "Deployment specific variables that are updated at import time",
+  "VariableSetId": "variableset-LibraryVariableSets-41",
+  "ContentType": "Variables",
+  "Templates": []
+}

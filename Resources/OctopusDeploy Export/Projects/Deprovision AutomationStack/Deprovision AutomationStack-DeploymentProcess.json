@@ -2,7 +2,7 @@
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
   "Id": "deploymentprocess-Projects-22",
   "OwnerId": "Projects-22",
-  "Version": 4,
+  "Version": 12,
   "Steps": [
     {
       "Id": "eb60b798-dde3-4a7e-92b5-9b39d4569e67",
@@ -20,13 +20,15 @@
           "Channels": [],
           "TenantTags": [],
           "Properties": {
-            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure",
+            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
             "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "Remove-AzureRmResourceGroup -Name ('TeamCityStack{0}' -f $UDP) -Force"
+            "Octopus.Action.Script.ScriptBody": "Remove-AzureRmResourceGroup -Name $TeamCityRg -Force"
           }
         }
       ],
-      "Properties": {}
+      "Properties": {
+        "Octopus.Action.TargetRoles": "TeamCity Server"
+      }
     },
     {
       "Id": "86f75c5a-02d8-40c7-928d-cfae00b88f28",
@@ -44,9 +46,9 @@
           "Channels": [],
           "TenantTags": [],
           "Properties": {
-            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure",
+            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
             "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "Remove-AzureRmResourceGroup -Name ('OctopusStack{0}' -f $UDP) -Force"
+            "Octopus.Action.Script.ScriptBody": "Remove-AzureRmResourceGroup -Name $OctopusRg -Force"
           }
         }
       ],
@@ -68,9 +70,9 @@
           "Channels": [],
           "TenantTags": [],
           "Properties": {
-            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure",
+            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
             "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "Remove-AzureRmResourceGroup -Name ('AutomationStack{0}' -f $UDP) -Force"
+            "Octopus.Action.Script.ScriptBody": "Remove-AzureRmResourceGroup -Name $InfraRg -Force"
           }
         }
       ],
@@ -92,7 +94,7 @@
           "Channels": [],
           "TenantTags": [],
           "Properties": {
-            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure",
+            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
             "Octopus.Action.Script.ScriptSource": "Inline",
             "Octopus.Action.Script.ScriptBody": "Start-Sleep 3\nGet-AzureRmADApplication -DisplayNameStartWith ('AutomationStack{0}' -f $UDP) | Remove-AzureRmADApplication -Force\n"
           }

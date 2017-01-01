@@ -2,12 +2,12 @@
   "$type": "Octopus.Core.Model.Variables.VariableSet, Octopus.Core",
   "Id": "variableset-LibraryVariableSets-2",
   "OwnerId": "LibraryVariableSets-2",
-  "Version": 3,
+  "Version": 5,
   "Variables": [
     {
       "Id": "3406e61a-97dc-f94f-a691-0fa1aae9c9d6",
-      "Name": "ResourceGroupName",
-      "Value": "#{OctopusRg}"
+      "Name": "OctopusRg",
+      "Value": "OctopusStack#{UDP}"
     },
     {
       "Id": "12c2e0b0-1235-2a13-a44d-ed2ce619cde9",
@@ -17,12 +17,12 @@
     {
       "Id": "9d1f89f3-397a-021f-e59c-b101f28efff1",
       "Name": "OctopusVMName",
-      "Value": "#{OctopusVMName}"
+      "Value": "OctopusVM"
     },
     {
-      "Id": "1241eb0d-b31f-577a-42b9-d79029520195",
-      "Name": "OctopusHostName",
-      "Value": "#{OctopusHostName}"
+      "Id": "9792d2a9-7798-58ae-98d8-b46435adf64a",
+      "Name": "APIKey",
+      "Value": "API-B9FUOXS1UI0CDK8W4QHIKM0O0"
     }
   ],
   "RelatedDocumentIds": []

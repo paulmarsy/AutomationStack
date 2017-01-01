@@ -12,6 +12,7 @@
   "AutoCreateRelease": false,
   "IncludedLibraryVariableSetIds": [
     "LibraryVariableSets-1",
+    "LibraryVariableSets-41",
     "LibraryVariableSets-2"
   ],
   "UsedPackages": [],
@@ -30,5 +31,7 @@
     "SkipMachineBehavior": "None",
     "TargetRoles": []
   },
-  "AutoDeployReleaseOverrides": []
+  "AutoDeployReleaseOverrides": [],
+  "LogoAttachmentKey": "Projects-1",
+  "LogoAttachmentMimeType": "image/png"
 }

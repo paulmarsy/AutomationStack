@@ -11,7 +11,7 @@
   "LifecycleId": "Lifecycles-21",
   "AutoCreateRelease": false,
   "IncludedLibraryVariableSetIds": [
-    "LibraryVariableSets-1"
+    "LibraryVariableSets-41"
   ],
   "UsedPackages": [],
   "DefaultToSkipIfAlreadyInstalled": false,
@@ -29,5 +29,7 @@
     "SkipMachineBehavior": "None",
     "TargetRoles": []
   },
-  "AutoDeployReleaseOverrides": []
+  "AutoDeployReleaseOverrides": [],
+  "LogoAttachmentKey": "Projects-2",
+  "LogoAttachmentMimeType": "image/png"
 }

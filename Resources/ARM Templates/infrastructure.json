@@ -72,20 +72,6 @@
          }
       },     
       {  
-         "apiVersion":"2016-01-01",
-         "type":"Microsoft.Storage/storageAccounts",
-         "name":"[variables('vmStorageName')]",
-         "location":"[resourceGroup().location]",
-          "sku": {
-              "name": "Premium_LRS",
-              "tier": "Premium"
-          },
-         "kind":"Storage",
-         "properties":{  
-
-         }
-      },
-      {  
          "apiVersion":"2014-04-01-preview",
          "type":"Microsoft.Sql/servers",
          "name":"[variables('sqlServerName')]",

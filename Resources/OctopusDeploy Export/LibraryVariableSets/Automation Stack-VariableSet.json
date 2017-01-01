@@ -2,27 +2,17 @@
   "$type": "Octopus.Core.Model.Variables.VariableSet, Octopus.Core",
   "Id": "variableset-LibraryVariableSets-1",
   "OwnerId": "LibraryVariableSets-1",
-  "Version": 5,
+  "Version": 6,
   "Variables": [
     {
-      "Id": "e969023e-6aa0-3a3b-14af-4063729ac099",
-      "Name": "UDP",
-      "Value": "#{UDP}"
+      "Id": "04107455-ce7d-0174-c2bc-6c75bf7f5f2a",
+      "Name": "InfraRg",
+      "Value": "AutomationStack#{UDP}"
     },
     {
-      "Id": "c25c372f-dc20-ff6e-7df5-4a35e4bd2763",
-      "Name": "AzureRegion",
-      "Value": "#{AzureRegion}"
-    },
-    {
-      "Id": "f0a5346c-608f-c061-c6d9-7201bb2f10bc",
-      "Name": "StackAdminUsername",
-      "Value": "#{Username}"
-    },
-    {
-      "Id": "46c41ace-597d-46b4-8d0b-1b31bf000e40",
-      "Name": "StackAdminPassword",
-      "Value": "#{Password}"
+      "Id": "e7e4ac86-68ba-9323-318b-82155aeb7c5d",
+      "Name": "SqlServerName",
+      "Value": "sqlserver#{UDP}"
     }
   ],
   "RelatedDocumentIds": []

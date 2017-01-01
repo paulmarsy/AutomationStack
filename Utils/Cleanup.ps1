@@ -3,8 +3,6 @@ param(
     [switch]$PassThru
 )
 
-
-
 function Remove-ResourceGroup {
     param($Name, $ResourceGroupName)
 

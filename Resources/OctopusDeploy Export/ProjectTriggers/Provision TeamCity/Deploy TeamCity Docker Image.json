@@ -1,0 +1,25 @@
+{
+  "$type": "Octopus.Core.Model.Projects.ProjectTrigger.ProjectTrigger, Octopus.Core",
+  "Id": "ProjectTriggers-1",
+  "Name": "Deploy TeamCity Docker Image",
+  "ProjectId": "Projects-21",
+  "Filter": {
+    "$type": "Octopus.Core.Model.Projects.ProjectTrigger.MachineFilter, Octopus.Core",
+    "EventGroups": [
+      "MachineAvailableForDeployment"
+    ],
+    "EventCategories": [
+      "MachineAdded"
+    ],
+    "EnvironmentIds": [
+      "Environments-1"
+    ],
+    "Roles": [
+      "TeamCity Server"
+    ]
+  },
+  "Action": {
+    "$type": "Octopus.Core.Model.Projects.ProjectTrigger.AutoDeployAction, Octopus.Core",
+    "ShouldRedeployWhenMachineHasBeenDeployedTo": false
+  }
+}

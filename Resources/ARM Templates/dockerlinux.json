@@ -38,17 +38,38 @@
          "metadata":{  
             "description":"Password for the Virtual Machine."
          }
+      },
+  "scriptFileName": {
+      "type": "string",
+      "metadata": {
+        "description": "the file name of the script configuring the VM"
       }
+    }
   },
   "variables": {
       "vmName":"[concat(parameters('productName'),'VM')]",
-      "vmStorageName":"[concat('vmvhds', parameters('udp'))]",
+      "vmStorageName":"[concat('vmvhds', parameters('udp'), uniquestring(resourceGroup().id))]",
       "nicName":"[concat(parameters('productName'),'NIC')]",
       "publicIPAddressName":"[concat(parameters('productName'),'PublicIP')]",
       "virtualNetworkId":"[resourceId(parameters('infraResourceGroup'), 'Microsoft.Network/virtualNetworks', 'VirtualNetwork')]",
-      "subnetId":"[concat(variables('virtualNetworkId'),'/subnets/', 'Default')]"
+      "subnetId":"[concat(variables('virtualNetworkId'),'/subnets/', 'Default')]",
+      "resourcesStorageName":"[concat('stackresources', parameters('udp'))]"
   },
   "resources": [
+      {  
+         "apiVersion":"2016-01-01",
+         "type":"Microsoft.Storage/storageAccounts",
+         "name":"[variables('vmStorageName')]",
+         "location":"[resourceGroup().location]",
+          "sku": {
+              "name": "Premium_LRS",
+              "tier": "Premium"
+          },
+         "kind":"Storage",
+         "properties":{  
+
+         }
+      },
       {  
          "apiVersion":"2015-05-01-preview",
          "type":"Microsoft.Network/publicIPAddresses",
@@ -93,6 +114,7 @@
       "name": "[variables('vmName')]",
       "location": "[resourceGroup().location]",
       "dependsOn": [
+            "[concat('Microsoft.Storage/storageAccounts/', variables('vmStorageName'))]",
             "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
       ],
       "properties": {
@@ -144,6 +166,35 @@
         "autoUpgradeMinorVersion": true,
         "settings": { }
       }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(variables('vmName'),'/CustomScript')]",
+      "apiVersion": "2015-06-15",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
+      ],
+      "properties": {
+        "publisher": "Microsoft.Azure.Extensions",
+        "type": "CustomScript",
+        "typeHandlerVersion": "2.0",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "fileUris": ["[concat('http://',variables('resourcesStorageName'),'.blob.core.windows.net/scripts/',parameters('scriptFileName'))]"],
+          "commandToExecute": "[concat('sh ', parameters('scriptFileName'))]"
+        },
+        "protectedSettings": {
+          "storageAccountName": "[variables('resourcesStorageName')]",
+          "storageAccountKey": "[listKeys(resourceId(parameters('infraResourceGroup'),'Microsoft.Storage/storageAccounts', variables('resourcesStorageName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value]"
+        }
+      }
     }
-  ]
+  ],
+  "outputs": {
+    "fqdn" : {
+      "type": "string",
+      "value": "[reference(variables('publicIPAddressName')).dnsSettings.fqdn]"
+    }
+  }
 }

@@ -1,1 +1,1 @@
-Set-AzureRmVMAccessExtension -Name 'ResetStackAdminPassword' -ResourceGroupName $ResourceGroupName -Location $AzureRegion -VMName $OctopusVMName -UserName $AdminUsername -Password $NewPassword
+Set-AzureRmVMAccessExtension -Name 'ResetStackAdminPassword' -ResourceGroupName $OctopusRg -Location $AzureRegion -VMName $OctopusVMName -UserName $StackAdminUsername -Password $NewPassword

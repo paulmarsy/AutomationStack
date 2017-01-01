@@ -2,11 +2,11 @@
   "$type": "Octopus.Core.Model.Variables.VariableSet, Octopus.Core",
   "Id": "variableset-LibraryVariableSets-21",
   "OwnerId": "LibraryVariableSets-21",
-  "Version": 1,
+  "Version": 4,
   "Variables": [
     {
       "Id": "9735e8b9-c0ab-e4d4-dff1-9d2ba2287d3d",
-      "Name": "ResourceGroupName",
+      "Name": "TeamCityRg",
       "Value": "TeamCityStack#{UDP}"
     },
     {

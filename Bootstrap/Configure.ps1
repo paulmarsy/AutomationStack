@@ -34,11 +34,9 @@ Start-Sleep -Seconds 20
 New-AzureRmRoleAssignment -RoleDefinitionName Contributor -ServicePrincipalName  $app.ApplicationId
 
 Write-Host 'Configuring Resources Storage Account...'
-$context.Set('StackResourcesName', 'stackresources#{UDP}')
-$context.Set('StackResourcesKey', (Get-AzureRmStorageAccountKey -ResourceGroupName $context.Get('InfraRg')  -Name $context.Get('StackResourcesName'))[0].Value)
+& (Join-Path $PSScriptRoot 'DeployResources.ps1') -Context $context
 
 Write-Host 'Deploying Octopus Deploy...'
-& (Join-Path $PSScriptRoot 'OctopusDeployBase.ps1') -Context $context
-& (Join-Path $PSScriptRoot 'OctopusDeployImport.ps1') -Context $context
+& (Join-Path $PSScriptRoot 'OctopusDeploy.ps1') -Context $context
 
-Write-Host -ForegroundColor Green "Octopus Deploy Running at: $($octopusStack.HostHeader)"
+Write-Host -ForegroundColor Green 'Octopus Deploy Running at: ' $context.Get('OctopusHostHeader')

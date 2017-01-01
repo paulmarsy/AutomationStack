@@ -1,0 +1,12 @@
+{
+  "$type": "Octopus.Core.Model.Environments.Accounts.UsernamePasswordAccount, Octopus.Core",
+  "Username": "#{Username}",
+  "Password": "#{SSHPassword}",
+  "Id": "usernamepassword-tentacle-auth",
+  "AccountType": "UsernamePassword",
+  "Name": "Tentacle Auth",
+  "Description": null,
+  "EnvironmentIds": [],
+  "TenantIds": [],
+  "TenantTags": []
+}

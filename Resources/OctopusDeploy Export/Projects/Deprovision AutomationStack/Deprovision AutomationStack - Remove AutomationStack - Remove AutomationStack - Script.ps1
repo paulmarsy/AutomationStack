@@ -1,1 +1,1 @@
-Remove-AzureRmResourceGroup -Name ('AutomationStack{0}' -f $UDP) -Force
+Remove-AzureRmResourceGroup -Name $InfraRg -Force
