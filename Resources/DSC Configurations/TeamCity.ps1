@@ -6,6 +6,7 @@ Configuration TeamCity
     )
     Import-DscResource -ModuleName PSDesiredStateConfiguration
     Import-DscResource -ModuleName OctopusDSC
+    Import-DscResource -ModuleName xNetworking
     Import-DscResource -ModuleName cChoco
     
     Node "Server"

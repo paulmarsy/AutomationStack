@@ -32,5 +32,11 @@ $jobs = @(
     (Remove-ResourceGroup 'Infrastructure' ('AutomationStack{0}' -f $UDP))
 )
 
+$configFile = Join-Path $PWD.ProviderPath ('AutomationStack {0} Config.json' -f $UDP)
+if (Test-Path $configFile) {
+    Write-Host 'Removing json deployment config file...'
+    Remove-Item -Path $configFile -Force
+}
+
 if ($PassThru) { return $jobs }
 else { $jobs | Wait-Job | Receive-Job }
