@@ -1,0 +1,14 @@
+{
+  "$type": "Octopus.Core.Model.Variables.VariableSet, Octopus.Core",
+  "Id": "variableset-LibraryVariableSets-21",
+  "OwnerId": "LibraryVariableSets-21",
+  "Version": 1,
+  "Variables": [
+    {
+      "Id": "041ea8fc-6266-4a24-a604-5f54c1832923",
+      "Name": "Octopus.Script.Module[Octopus Deploy Helper Functions]",
+      "Value": "function Get-OctopusVariable {\r\n    param(\r\n\t\t[Parameter(Position=1,Mandatory=$true)]$Name,\r\n\t\t[switch]$AllowNull\r\n\t)\r\n  \r\n    $variableValue = $OctopusParameters.GetEnumerator() | ? Key -like \"Octopus.Action[[]*[]].Output.${Name}\" | % Value\r\n    if ($variableValue -or $AllowNull) { return $variableValue }\r\n    else { throw \"Unable to find Octopus Variable $Name\" }\r\n}"
+    }
+  ],
+  "RelatedDocumentIds": []
+}

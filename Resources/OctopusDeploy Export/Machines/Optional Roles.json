@@ -7,7 +7,8 @@
   },
   "IsDisabled": true,
   "Roles": [
-    "TeamCity Server"
+    "TeamCity Server (Linux)",
+    "TeamCity Server (Windows)"
   ],
   "EnvironmentIds": [
     "Environments-1"

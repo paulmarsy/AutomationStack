@@ -28,6 +28,16 @@
       "Id": "9792d2a9-7798-58ae-98d8-b46435adf64a",
       "Name": "APIKey",
       "Value": "#{ApiKey}"
+    },
+    {
+      "Id": "db96ce14-001c-41cc-3b79-ecaf3c2b28c5",
+      "Name": "StackResourcesKey",
+      "Value": "#{StackResourcesKey}"
+    },
+    {
+      "Id": "c5fd091d-26f4-7f33-d1b2-6f07ec78af9c",
+      "Name": "OctopusHostName",
+      "Value": "#{OctopusHostName}"
     }
   ],
   "RelatedDocumentIds": []

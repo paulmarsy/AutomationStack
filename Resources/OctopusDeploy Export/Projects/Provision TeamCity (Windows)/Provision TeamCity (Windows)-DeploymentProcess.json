@@ -1,0 +1,168 @@
+{
+  "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
+  "Id": "deploymentprocess-Projects-21",
+  "OwnerId": "Projects-21",
+  "Version": 10,
+  "Steps": [
+    {
+      "Id": "b7ee23bf-e81a-49d2-8510-f83d44038445",
+      "Name": "Create TeamCityStack Resource Group",
+      "Condition": "Success",
+      "StartTrigger": "StartAfterPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "14c402f7-c5b3-4d15-b3d3-aea4ce30c7e6",
+          "Name": "Create TeamCityStack Resource Group",
+          "ActionType": "Octopus.AzurePowerShell",
+          "IsDisabled": false,
+          "Environments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "$resourceGroup = Get-AzureRmResourceGroup -Name $TeamCityRg -ErrorAction SilentlyContinue\r\nif(!$resourceGroup) {\r\n    Write-Host \"Creating resource group '$TeamCityRg' in location '$AzureRegion'\"\r\n    New-AzureRmResourceGroup -Name $TeamCityRg -Location $AzureRegion | Out-Null\r\n}\r\nelse {\r\n    Write-Host \"Using existing resource group '$TeamCityRg'\"\r\n}"
+          }
+        }
+      ],
+      "Properties": {
+        "Octopus.Action.TargetRoles": "ARM Provisioning"
+      }
+    },
+    {
+      "Id": "e3c3d1ee-cba3-4fa0-834f-d17acdab474b",
+      "Name": "Provision Windows Server 2016 VM",
+      "Condition": "Success",
+      "StartTrigger": "StartAfterPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "6d578350-a917-4272-ba30-1c7ebcebefc2",
+          "Name": "Provision Windows Server 2016 VM",
+          "ActionType": "Octopus.AzureResourceGroup",
+          "IsDisabled": false,
+          "Environments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
+            "Octopus.Action.Azure.ResourceGroupName": "#{TeamCityRg}",
+            "Octopus.Action.Azure.TemplateSource": "Inline",
+            "Octopus.Action.Azure.ResourceGroupTemplateParameters": "{\"infraResourceGroup\":{\"value\":\"#{InfraRg}\"},\"udp\":{\"value\":\"#{UDP}\"},\"productName\":{\"value\":\"TeamCity\"},\"vmSize\":{\"value\":\"Standard_DS2_v2\"},\"vmAdminUsername\":{\"value\":\"#{StackAdminUsername}\"},\"vmAdminPassword\":{\"value\":\"#{StackAdminPassword}\"}}",
+            "Octopus.Action.Azure.ResourceGroupTemplate": "{\n  \"$schema\": \"https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#\",\n  \"contentVersion\": \"1.0.0.0\",\n  \"parameters\": {\n    \"infraResourceGroup\": {\n      \"type\": \"string\",\n      \"metadata\": {\n        \"description\": \"Name of the resource group containing the core automationstack infrastructure\"\n      }\n    },\n    \"udp\": {\n      \"type\": \"string\",\n      \"metadata\": {\n        \"description\": \"Unique Deployment Prefix to avoid name collisions\"\n      }\n    },\n    \"productName\": {\n      \"type\": \"string\",\n      \"metadata\": {\n        \"description\": \"Name of the product that is running on this VM\"\n      }\n    },\n    \"vmSize\": {\n      \"type\": \"string\",\n      \"defaultValue\": \"Standard_DS2_v2\",\n      \"metadata\": {\n        \"description\": \"Size of the VM\"\n      }\n    },\n    \"vmAdminUsername\": {\n      \"type\": \"string\",\n      \"metadata\": {\n        \"description\": \"Username for the Virtual Machine.\"\n      }\n    },\n    \"vmAdminPassword\": {\n      \"type\": \"string\",\n      \"metadata\": {\n        \"description\": \"Password for the Virtual Machine.\"\n      }\n    }\n  },\n  \"variables\": {\n    \"vmName\": \"[concat(parameters('productName'),'VM')]\",\n    \"vmStorageName\": \"[concat('vmvhds', parameters('udp'), uniquestring(resourceGroup().id))]\",\n    \"nsgName\": \"[concat(parameters('productName'),'NSG')]\",\n    \"nicName\": \"[concat(parameters('productName'),'NIC')]\",\n    \"publicIPAddressName\": \"[concat(parameters('productName'),'PublicIP')]\",\n    \"virtualNetworkId\": \"[resourceId(parameters('infraResourceGroup'), 'Microsoft.Network/virtualNetworks', 'VirtualNetwork')]\",\n    \"subnetId\": \"[concat(variables('virtualNetworkId'),'/subnets/', 'Default')]\"\n  },\n  \"resources\": [{\n    \"apiVersion\": \"2016-01-01\",\n    \"type\": \"Microsoft.Storage/storageAccounts\",\n    \"name\": \"[variables('vmStorageName')]\",\n    \"location\": \"[resourceGroup().location]\",\n    \"sku\": {\n      \"name\": \"Premium_LRS\",\n      \"tier\": \"Premium\"\n    },\n    \"kind\": \"Storage\",\n    \"properties\": {\n\n    }\n  }, {\n    \"apiVersion\": \"2015-06-15\",\n    \"type\": \"Microsoft.Network/networkSecurityGroups\",\n    \"name\": \"[variables('nsgName')]\",\n    \"location\": \"[resourceGroup().location]\",\n    \"properties\": {\n      \"securityRules\": [{\n        \"name\": \"HTTP\",\n        \"properties\": {\n          \"protocol\": \"TCP\",\n          \"sourcePortRange\": \"*\",\n          \"destinationPortRange\": \"80\",\n          \"sourceAddressPrefix\": \"Internet\",\n          \"destinationAddressPrefix\": \"*\",\n          \"access\": \"Allow\",\n          \"priority\": 100,\n          \"direction\": \"Inbound\"\n        }\n      }, {\n        \"name\": \"HTTPS\",\n        \"properties\": {\n          \"protocol\": \"TCP\",\n          \"sourcePortRange\": \"*\",\n          \"destinationPortRange\": \"443\",\n          \"sourceAddressPrefix\": \"Internet\",\n          \"destinationAddressPrefix\": \"*\",\n          \"access\": \"Allow\",\n          \"priority\": 110,\n          \"direction\": \"Inbound\"\n        }\n      }]\n    }\n  }, {\n    \"apiVersion\": \"2015-06-15\",\n    \"type\": \"Microsoft.Network/networkInterfaces\",\n    \"name\": \"[variables('nicName')]\",\n    \"location\": \"[resourceGroup().location]\",\n    \"dependsOn\": [\n      \"[concat('Microsoft.Network/networkSecurityGroups/', variables('nsgName'))]\",\n      \"[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]\"\n    ],\n    \"properties\": {\n      \"ipConfigurations\": [{\n        \"name\": \"[concat(parameters('productName'),'-IPConfig')]\",\n        \"properties\": {\n          \"privateIPAllocationMethod\": \"Dynamic\",\n          \"publicIPAddress\": {\n            \"id\": \"[resourceId('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]\"\n          },\n          \"subnet\": {\n            \"id\": \"[variables('subnetId')]\"\n          }\n        }\n      }],\n      \"networkSecurityGroup\": {\n        \"id\": \"[resourceId('Microsoft.Network/networkSecurityGroups/', variables('nsgName'))]\"\n      }\n    }\n  }, {\n    \"apiVersion\": \"2015-05-01-preview\",\n    \"type\": \"Microsoft.Network/publicIPAddresses\",\n    \"name\": \"[variables('publicIPAddressName')]\",\n    \"location\": \"[resourceGroup().location]\",\n    \"properties\": {\n      \"publicIPAllocationMethod\": \"Static\",\n      \"idleTimeoutInMinutes\": 30,\n      \"dnsSettings\": {\n        \"domainNameLabel\": \"[toLower(concat(parameters('productName'),'-stack',parameters('udp')))]\"\n      }\n    }\n  }, {\n    \"apiVersion\": \"2015-06-15\",\n    \"type\": \"Microsoft.Compute/virtualMachines\",\n    \"name\": \"[variables('vmName')]\",\n    \"location\": \"[resourceGroup().location]\",\n    \"dependsOn\": [\n      \"[concat('Microsoft.Storage/storageAccounts/', variables('vmStorageName'))]\",\n      \"[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]\"\n    ],\n    \"properties\": {\n      \"hardwareProfile\": {\n        \"vmSize\": \"[parameters('vmSize')]\"\n      },\n      \"osProfile\": {\n        \"computerName\": \"[variables('vmName')]\",\n        \"adminUsername\": \"[parameters('vmAdminUsername')]\",\n        \"adminPassword\": \"[parameters('vmAdminPassword')]\",\n        \"windowsConfiguration\": {\n          \"provisionVMAgent\": true,\n          \"enableAutomaticUpdates\": true\n        }\n      },\n      \"storageProfile\": {\n        \"imageReference\": {\n          \"publisher\": \"MicrosoftWindowsServer\",\n          \"offer\": \"WindowsServer\",\n          \"sku\": \"2016-Datacenter\",\n          \"version\": \"latest\"\n        },\n        \"osDisk\": {\n          \"name\": \"[concat(variables('vmName'),'-OS')]\",\n          \"vhd\": {\n            \"uri\": \"[concat('http://',variables('vmStorageName'),'.blob.core.windows.net/vhds/',variables('vmName'),'-OS.vhd')]\"\n          },\n          \"caching\": \"ReadWrite\",\n          \"createOption\": \"FromImage\"\n        }\n      },\n      \"networkProfile\": {\n        \"networkInterfaces\": [{\n          \"id\": \"[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]\"\n        }]\n      }\n    }\n  }],\n  \"outputs\": {\n    \"fqdn\": {\n      \"type\": \"string\",\n      \"value\": \"[reference(variables('publicIPAddressName')).dnsSettings.fqdn]\"\n    }\n  }\n}",
+            "Octopus.Action.Azure.ResourceGroupDeploymentMode": "Complete"
+          }
+        }
+      ],
+      "Properties": {
+        "Octopus.Action.TargetRoles": "ARM Provisioning"
+      }
+    },
+    {
+      "Id": "03eb56d0-5a5b-470e-8cd6-5012003c0774",
+      "Name": "Create TeamCity SQL Database",
+      "Condition": "Success",
+      "StartTrigger": "StartWithPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "2d96a19b-8741-4794-a001-0c16c8254569",
+          "Name": "Create TeamCity SQL Database",
+          "ActionType": "Octopus.AzurePowerShell",
+          "IsDisabled": false,
+          "Environments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "$teamCityDb = New-AzureRmSqlDatabase -ResourceGroupName $InfraRg -ServerName $SqlServerName -DatabaseName 'TeamCity' -CollationName 'SQL_Latin1_General_CP1_CI_AS' -Edition 'Basic'\n$teamCityDb\nSet-AzureRmSqlDatabaseTransparentDataEncryption -ResourceGroupName $teamCityDb.ResourceGroupName -ServerName $teamCityDb.ServerName -DatabaseName $teamCityDb.DatabaseName -State Enabled\n\nSet-OctopusVariable -Name TeamCityConnectionString -Value ('Server=tcp:{0}.database.windows.net,1433;Initial Catalog=TeamCity;Persist Security Info=False;User ID={1};Password={2};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;' -f $SqlServerName, $StackAdminUsername, $StackAdminPassword)"
+          }
+        }
+      ],
+      "Properties": {
+        "Octopus.Action.TargetRoles": "ARM Provisioning"
+      }
+    },
+    {
+      "Id": "d32d67d8-89f5-4750-ba6d-319566fb9d76",
+      "Name": "Import DSC Configuration",
+      "Condition": "Success",
+      "StartTrigger": "StartWithPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "4226865d-5a2b-41d2-8397-cb848b3d09e3",
+          "Name": "Import DSC Configuration",
+          "ActionType": "Octopus.AzurePowerShell",
+          "IsDisabled": false,
+          "Environments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "& net use T: \\\\$StackResourcesName.file.core.windows.net\\dsc /u:$StackResourcesName $StackResourcesKey\nImport-AzureRmAutomationDscConfiguration -ResourceGroupName $InfraRg -AutomationAccountName $AutomationAccountName -SourcePath $DSCConfigPath -Force -Published\n& net use T: /DELETE\n\n$CompilationJob = Start-AzureRmAutomationDscCompilationJob -ResourceGroupName $InfraRg -AutomationAccountName $AutomationAccountName -ConfigurationName $DSCConfigurationName -Parameters @{\n    ApiKey = $APIKey\n    OctopusServerUrl = $OctopusHostHeader\n}\n\nwhile ($CompilationJob.EndTime -eq $null -and $CompilationJob.Exception -eq $null)\n{\n        Write-Host 'Waiting for compilation...'\n        Start-Sleep -Seconds 3\n        $CompilationJob = $CompilationJob | Get-AzureRmAutomationDscCompilationJob\n}\n\n$CompilationJob | Get-AzureRmAutomationDscCompilationJobOutput -Stream Any"
+          }
+        }
+      ],
+      "Properties": {
+        "Octopus.Action.TargetRoles": "ARM Provisioning"
+      }
+    },
+    {
+      "Id": "bff968a9-73ce-484a-8eec-4fe24342cf02",
+      "Name": "Add Octopus Tentacle NSG Rule",
+      "Condition": "Success",
+      "StartTrigger": "StartAfterPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "eb3a5933-d283-4935-8fe9-1839a630874d",
+          "Name": "Add Octopus Tentacle NSG Rule",
+          "ActionType": "Octopus.AzurePowerShell",
+          "IsDisabled": false,
+          "Environments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "Get-AzureRmNetworkSecurityGroup -Name $TeamCityNSGName -ResourceGroupName $TeamCityRg |\nAdd-AzureRmNetworkSecurityRuleConfig -Name OctopusTentacle -Protocol TCP -Access Allow -SourcePortRange * -SourceAddressPrefix Internet -DestinationPortRange 10933 -DestinationAddressPrefix * -Priority 300 -Direction Inbound  |\nSet-AzureRmNetworkSecurityGroup\n"
+          }
+        }
+      ],
+      "Properties": {
+        "Octopus.Action.TargetRoles": "ARM Provisioning"
+      }
+    },
+    {
+      "Id": "909b2814-fd4d-45fb-8a3c-9194dd130338",
+      "Name": "Register DSC Node",
+      "Condition": "Success",
+      "StartTrigger": "StartAfterPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "0b905c83-3650-445d-b639-4e7ddc6b624e",
+          "Name": "Register DSC Node",
+          "ActionType": "Octopus.AzurePowerShell",
+          "IsDisabled": false,
+          "Environments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "Register-AzureRmAutomationDscNode -AutomationAccountName $AutomationAccountName -ResourceGroupName $InfraRg -AzureVMName $TeamCityVMName -AzureVMResourceGroup $TeamCityRg -AzureVMLocation $AzureRegion -NodeConfigurationName ('{0}.{1}' -f $DSCConfigurationName, $DSCNodeName) -ActionAfterReboot ContinueConfiguration -ConfigurationMode ApplyAndAutocorrect -ConfigurationModeFrequencyMins 15 -RefreshFrequencyMins 30 -RebootNodeIfNeeded $true -AllowModuleOverwrite $true\n\n$currentPollWait = 10\n$previousPollWait = 0\n$continueToPoll = $true\n$maxWaitSeconds = 60\nwhile ($continueToPoll)\n{\n\tStart-Sleep -Seconds ([System.Math]::Min($currentPollWait, $maxWaitSeconds))\n        $node = Get-AzureRmAutomationDscNode -ResourceGroupName $InfraRg -AutomationAccountName $AutomationAccountName -Name $TeamCityVMName\n        if ($node.Status -eq 'Compliant') {\n                Write-Host \"Node is compliant\"\n                $continueToPoll = $false\n        }\n        else {\n                Write-Host \"Node status is $($node.Status), waiting for compliance...\"\n        }\n\tif ($currentPollWait -lt $maxWaitSeconds){\n\t\t$temp = $previousPollWait\n\t\t$previousPollWait = $currentPollWait\n\t\t$currentPollWait = $temp + $currentPollWait\n\t}\n}"
+          }
+        }
+      ],
+      "Properties": {
+        "Octopus.Action.TargetRoles": "ARM Provisioning"
+      }
+    }
+  ],
+  "RelatedDocumentIds": []
+}

@@ -2,7 +2,7 @@
   "$type": "Octopus.Core.Model.Variables.VariableSet, Octopus.Core",
   "Id": "variableset-LibraryVariableSets-2",
   "OwnerId": "LibraryVariableSets-2",
-  "Version": 6,
+  "Version": 7,
   "Variables": [
     {
       "Id": "04107455-ce7d-0174-c2bc-6c75bf7f5f2a",
@@ -13,6 +13,16 @@
       "Id": "e7e4ac86-68ba-9323-318b-82155aeb7c5d",
       "Name": "SqlServerName",
       "Value": "sqlserver#{UDP}"
+    },
+    {
+      "Id": "a8c12932-590b-5fb7-0de7-e59047a4c4d7",
+      "Name": "StackResourcesName",
+      "Value": "stackresources#{UDP}"
+    },
+    {
+      "Id": "5eefe522-98ee-418b-6414-36cdc6707946",
+      "Name": "AutomationAccountName",
+      "Value": "automation#{UDP}"
     }
   ],
   "RelatedDocumentIds": []

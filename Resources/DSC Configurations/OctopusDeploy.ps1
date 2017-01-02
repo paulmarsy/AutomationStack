@@ -55,7 +55,6 @@ Configuration OctopusDeploy
                 )
                 & 'C:\Program Files\Octopus Deploy\Octopus\Octopus.Server.exe' $args
                 [System.IO.FIle]::WriteAllText("$($env:SystemDrive)\Octopus\Octopus.Server.DSC.licensestate", $LASTEXITCODE,[System.Text.Encoding]::ASCII)
-
             }
             TestScript = {
                 ((Test-Path "$($env:SystemDrive)\Octopus\Octopus.Server.DSC.licensestate") -and ([System.IO.FIle]::ReadAllText("$($env:SystemDrive)\Octopus\Octopus.Server.DSC.licensestate").Trim()) -eq '0')

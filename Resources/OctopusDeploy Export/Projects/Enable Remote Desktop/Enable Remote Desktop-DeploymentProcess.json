@@ -2,18 +2,18 @@
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
   "Id": "deploymentprocess-Projects-2",
   "OwnerId": "Projects-2",
-  "Version": 8,
+  "Version": 22,
   "Steps": [
     {
       "Id": "1f7eaedc-d772-4fde-8a11-c298cb6e6880",
-      "Name": "Enable NSG Rule",
+      "Name": "Octopus",
       "Condition": "Success",
       "StartTrigger": "StartAfterPrevious",
       "RequiresPackagesToBeAcquired": false,
       "Actions": [
         {
           "Id": "786699e4-133c-4d95-bc2c-11ada76887ff",
-          "Name": "Enable NSG Rule",
+          "Name": "Enable Octopus NSG Rule",
           "ActionType": "Octopus.AzurePowerShell",
           "IsDisabled": false,
           "Environments": [],
@@ -24,9 +24,63 @@
             "Octopus.Action.Script.ScriptSource": "Inline",
             "Octopus.Action.Script.ScriptBody": "Get-AzureRmNetworkSecurityGroup -Name $OctopusNSGName -ResourceGroupName $OctopusRg |\nAdd-AzureRmNetworkSecurityRuleConfig -Name RDP -Protocol TCP -Access Allow -SourcePortRange * -SourceAddressPrefix Internet -DestinationPortRange 3389 -DestinationAddressPrefix * -Priority 300 -Direction Inbound  |\nSet-AzureRmNetworkSecurityGroup\n"
           }
+        },
+        {
+          "Id": "b7931f09-6166-4d5d-98f9-4fdf3bd693ee",
+          "Name": "Get Octopus RDP Details",
+          "ActionType": "Octopus.AzurePowerShell",
+          "IsDisabled": false,
+          "Environments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "$ip = (Get-AzureRmPublicIpAddress -Name OctopusPublicIP -ResourceGroupName $OctopusRg).IpAddress\nWrite-Warning \"IP: $ip\"\nWrite-Warning \"Password: $StackAdminPassword\"\nWrite-Warning \"Username: $StackAdminUsername\""
+          }
         }
       ],
       "Properties": {}
+    },
+    {
+      "Id": "e046ef07-c3a0-4f2d-af29-1d5775b8f80e",
+      "Name": "TeamCity",
+      "Condition": "Success",
+      "StartTrigger": "StartWithPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "a294520f-b12e-4790-9ad8-f87c7448b628",
+          "Name": "Enable TeamCity NSG Rule",
+          "ActionType": "Octopus.AzurePowerShell",
+          "IsDisabled": false,
+          "Environments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "Get-AzureRmNetworkSecurityGroup -Name $TeamCityNSGName -ResourceGroupName $TeamCityRg |\nAdd-AzureRmNetworkSecurityRuleConfig -Name RDP -Protocol TCP -Access Allow -SourcePortRange * -SourceAddressPrefix Internet -DestinationPortRange 3389 -DestinationAddressPrefix * -Priority 300 -Direction Inbound  |\nSet-AzureRmNetworkSecurityGroup\n"
+          }
+        },
+        {
+          "Id": "b82a6e2b-0174-427f-8842-b7c3fe243f6d",
+          "Name": "Get TeamCity RDP Details",
+          "ActionType": "Octopus.AzurePowerShell",
+          "IsDisabled": false,
+          "Environments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "$ip = (Get-AzureRmPublicIpAddress -Name TeamCityPublicIP -ResourceGroupName $TeamCityRg).IpAddress\nWrite-Warning \"IP: $ip\"\nWrite-Warning \"Password: $StackAdminPassword\"\nWrite-Warning \"Username: $StackAdminUsername\""
+          }
+        }
+      ],
+      "Properties": {
+        "Octopus.Action.TargetRoles": "TeamCity Server (Windows)"
+      }
     }
   ],
   "RelatedDocumentIds": []

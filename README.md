@@ -1,28 +1,40 @@
 # Automation Stack
-Showcasing the power of DevOps automation.
+DevOps Automation Sandbox
 
-```
+## Build The Environment
+
+```PowerShell
 (new-object Net.WebClient).DownloadString('https://raw.githubusercontent.com/paulmarsy/AutomationStack/master/bootstrap.ps1') | iex
 ```
 
-## What
-* One PowerShell command that anyone can copy & paste.
-* Fully automates the provisioning, deployment and configuration of an idealised DevOps build & deploy infrastructure
-* Leaves you with a usable sandbox environment, and the ability to automate the tearing down and clean up of any resources used.
+### Cleanup an unwanted deployment
 
-## How
-* All scripts, code or config must come from this repository
-* It should be clear what is happening, and for the process to be as transparent and easy to follow as is possible
-* The only user interaction that is permitted is the first command that is run, after that everything is automated the only exception is for passwords or other senstivie config and this must be collected within the first few seconds.
+```PowerShell
+.\AutomationStack\Utils\Cleanup.ps1 <UDP>
+```
 
-## Using
-* Windows PowerShell 5 (bootstrap script)
-* Infrastructure
-  * Microsoft Azure - ARM Templates
-  * Windows Server 2016
-* Build
-  * TeamCity
-* Package Repository
-  * ProGet
-* Deploy
-  * Octopus Deploy
+#### Example
+
+1. One of the first messages is as follows, if you don't see this then the only thing to cleanup is the `AutomationStack` folder in the current directory.
+  <pre>
+  ****************************************
+  AutomationStack Deployment Details
+  Unique Deployment Prefix:  7d18
+  Admin Username:  Stack
+  Admin Password:  a65d6673DCCF
+  ****************************************
+  </pre>
+
+2. In this example to cleanup any Azure resources created you would issue
+  ```PowerShell
+  & .\AutomationStack\Utils\Cleanup.ps1 7d18
+  ```
+  
+3. After this the only remnanents are
+  * The `AutomationStack` folder in the current directory 
+  * A few files in the `$Env:TEMP` directory which can be cleaned up in the normal way
+  * The Azure PowerShell Cmdlets if they weren't previously installed, they can be removed with the command
+
+  ```PowerShell
+  Get-InstalledModule -Name Azure* | Uninstall-Module
+  ```

@@ -64,7 +64,14 @@
         },
         "kind": "Storage",
         "properties": {
-
+            "encryption": {
+                "keySource": "Microsoft.Storage",
+                "services": {
+                    "blob": {
+                        "enabled": true
+                    }
+                }
+            }
         }
     }, {
         "apiVersion": "2014-04-01-preview",
@@ -125,6 +132,18 @@
             "properties": {
                 "contentLink": {
                     "uri": "https://www.powershellgallery.com/api/v2/package/xNetworking/3.1.0.0"
+                }
+            }
+        }, {
+            "name": "[concat(variables('automationName'), '/', 'cChoco')]",
+            "type": "microsoft.automation/automationAccounts/Modules",
+            "apiVersion": "2015-10-31",
+            "dependsOn": [
+                "[concat('Microsoft.Automation/automationAccounts/', variables('automationName'))]"
+            ],
+            "properties": {
+                "contentLink": {
+                    "uri": "https://www.powershellgallery.com/api/v2/package/cChoco/2.3.0.0"
                 }
             }
         }]

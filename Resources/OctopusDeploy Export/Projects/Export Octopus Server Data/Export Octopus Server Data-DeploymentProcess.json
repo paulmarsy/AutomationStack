@@ -2,7 +2,7 @@
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
   "Id": "deploymentprocess-Projects-3",
   "OwnerId": "Projects-3",
-  "Version": 9,
+  "Version": 11,
   "Steps": [
     {
       "Id": "2af4b8af-c58c-4f77-853a-cf93a9978810",
@@ -24,6 +24,31 @@
             "Octopus.Action.Script.Syntax": "PowerShell",
             "Octopus.Action.Script.ScriptSource": "Inline",
             "Octopus.Action.Script.ScriptBody": "New-Item -ItemType Directory -Path $ExportPath\n \n if ($ProjectToExport -eq 'All') {\n     & \"C:\\Program Files\\Octopus Deploy\\Octopus\\Octopus.Migrator.exe\" export --console --directory=$ExportPath --password=$ExportPassword\n } else {\n    & \"C:\\Program Files\\Octopus Deploy\\Octopus\\Octopus.Migrator.exe\" partial-export --console --directory=$ExportPath --password=$ExportPassword  --ignore-deployments  --ignore-machines --ignore-tenants --project=\"$ProjectToExport\" \n}"
+          }
+        }
+      ],
+      "Properties": {}
+    },
+    {
+      "Id": "a5dc04a2-ba3d-45ec-a306-396f937e3ed9",
+      "Name": "Remove unimportant object types",
+      "Condition": "Success",
+      "StartTrigger": "StartAfterPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "97143226-7f96-4981-b01b-4e1463b78f01",
+          "Name": "Remove unimportant object types",
+          "ActionType": "Octopus.Script",
+          "IsDisabled": false,
+          "Environments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.RunOnServer": "true",
+            "Octopus.Action.Script.Syntax": "PowerShell",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "Get-ChildItem -Path $ExportPath -Directory | ? Name -in @('Certificates','CommunityActionTemplates','Deployments','Events','ExtensionConfigurations','Releases','ServerTasks') |\n    Remove-Item -Force -Recurse"
           }
         }
       ],

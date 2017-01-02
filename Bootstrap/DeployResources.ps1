@@ -5,7 +5,6 @@ $context.Set('StackResourcesKey', (Get-AzureRmStorageAccountKey -ResourceGroupNa
 
 $stackresources = New-AzureStorageContext -StorageAccountName $Context.Get('StackResourcesName') -StorageAccountKey $context.Get('StackResourcesKey')
 
-Write-Host -ForegroundColor Green "`tUploading Octopus Deploy..."
 $context.SetSensitive($context.Get('Password'), 'ProtectedImportHello', 'Hello')
 $context.SetSensitive($context.Get('Password'), 'ServicePrincipalPassword', $context.Get('Password'))
 $context.SetSensitive($context.Get('Password'), 'SSHPassword', $context.Get('Password'))
@@ -14,15 +13,15 @@ $context.Set('ApiKey', ('API-AUTOMATION{0}' -f $context.Get('UDP')))
 $context.SetApiKeyId('ApiKeyId', $context.Get('ApiKey'))
 $context.SetHashed('ApiKeyHash', $context.Get('ApiKey'))
 
-$storageShare = Get-AzureStorageShare -Name octopusdeploy -Context $stackresources -ErrorAction SilentlyContinue
-if(!$storageShare) {
-    $storageShare = New-AzureStorageShare -Name octopusdeploy -Context $stackresources
+Write-Host -ForegroundColor Green "`tUploading Octopus Deploy..."
+$octopusStorageShare = Get-AzureStorageShare -Name octopusdeploy -Context $stackresources -ErrorAction SilentlyContinue
+if(!$octopusStorageShare) {
+    $octopusStorageShare = New-AzureStorageShare -Name octopusdeploy -Context $stackresources
 }
-
 $source = Get-Item -Path (Join-Path -Resolve $PSScriptRoot '..\Resources\OctopusDeploy Export') | % FullName
 Get-ChildItem -Path $source -Directory -Recurse | % {
     $destFolder = $_.FullName.Substring($source.Length)
-    New-AzureStorageDirectory -Share $storageShare -Path $destFolder -ErrorAction Ignore | Out-Null
+    New-AzureStorageDirectory -Share $octopusStorageShare -Path $destFolder -ErrorAction Ignore | Out-Null
 }
 Get-ChildItem -Path $source -Recurse -File | % {
     if ($_.Name -in @('metadata.json','server.json','Automation Stack Parameters-VariableSet.json','Microsoft Azure Service Principal.json','Tentacle Auth.json','#{AzureRegion}.json','#{ApiKeyId}.json','#{Username}.json')) {
@@ -34,7 +33,7 @@ Get-ChildItem -Path $source -Recurse -File | % {
     }
     $destFile = $Context.Eval($_.FullName.Substring($source.Length+1).Replace('\','/'))
     Write-Host "Uploading $destFile"
-    Set-AzureStorageFileContent -Share $storageShare -Source $sourceFile -Path $destFile -Force
+    Set-AzureStorageFileContent -Share $octopusStorageShare -Source $sourceFile -Path $destFile -Force
 }
 Write-Host
 Write-Host -ForegroundColor Green "`tUploading ARM Custom Scripts..."
@@ -49,5 +48,16 @@ Get-ChildItem -Path $source -Recurse -File | % {
 
     Write-Host "Uploading $($_.Name)"
     $storageContainer | Set-AzureStorageBlobContent -File $sourceFile -Blob $_.Name -Force | Out-Null
+}
+Write-Host
+Write-Host -ForegroundColor Green "`tUploading DSC Configurations..."
+$dscStorageShare = Get-AzureStorageShare -Name dsc -Context $stackresources -ErrorAction SilentlyContinue
+if(!$dscStorageShare) {
+    $dscStorageShare = New-AzureStorageShare -Name dsc -Context $stackresources
+}
+$source = Get-Item -Path (Join-Path -Resolve $PSScriptRoot '..\Resources\DSC Configurations') | % FullName
+Get-ChildItem -Path $source -Recurse -File | % {
+    Write-Host "Uploading $($_.Name)"
+    Set-AzureStorageFileContent -Share $dscStorageShare -Source $_.FullName -Path $_.Name -Force
 }
 Write-Host

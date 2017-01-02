@@ -2,7 +2,7 @@
   "$type": "Octopus.Core.Model.Variables.VariableSet, Octopus.Core",
   "Id": "variableset-LibraryVariableSets-4",
   "OwnerId": "LibraryVariableSets-4",
-  "Version": 4,
+  "Version": 5,
   "Variables": [
     {
       "Id": "9735e8b9-c0ab-e4d4-dff1-9d2ba2287d3d",
@@ -13,6 +13,11 @@
       "Id": "b89b8a8e-4cf3-562e-3ec6-df75b3ce93ed",
       "Name": "TeamCityVMName",
       "Value": "TeamCityVM"
+    },
+    {
+      "Id": "4f202977-b81f-33d9-6540-116790c95378",
+      "Name": "TeamCityNSGName",
+      "Value": "TeamCityNSG"
     }
   ],
   "RelatedDocumentIds": []

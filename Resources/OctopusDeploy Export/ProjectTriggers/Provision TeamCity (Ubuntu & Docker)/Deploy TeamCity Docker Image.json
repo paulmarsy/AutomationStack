@@ -5,9 +5,7 @@
   "ProjectId": "Projects-4",
   "Filter": {
     "$type": "Octopus.Core.Model.Projects.ProjectTrigger.MachineFilter, Octopus.Core",
-    "EventGroups": [
-      "MachineAvailableForDeployment"
-    ],
+    "EventGroups": [],
     "EventCategories": [
       "MachineAdded"
     ],
@@ -15,7 +13,7 @@
       "Environments-1"
     ],
     "Roles": [
-      "TeamCity Server"
+      "TeamCity Server (Linux)"
     ]
   },
   "Action": {

@@ -22,6 +22,6 @@ machineName="TeamCity"
 
 environmentId=$(wget --header="X-Octopus-ApiKey: $apiKey" -O- ${serverUrl}/api/environments | jq ".Items[] | select(.Name==\"${environment}\") | .Id" -r)
 
-machineId=$(wget --header="X-Octopus-ApiKey: $apiKey" --post-data "{\"Endpoint\": {\"CommunicationStyle\":\"Ssh\",\"AccountId\":\"$accountId\",\"Host\":\"$localIp\",\"Port\":\"22\",\"Uri\":\"ssh://$localIp:22/\",\"Fingerprint\":\"$fingerprint\"},\"EnvironmentIds\":[\"$environmentId\"],\"Name\":\"$machineName\",\"IsDisabled\":false,\"Uri\":null,\"Thumbprint\":null,\"TenantIds\":[],\"TenantTags\":[],\"Roles\":[\"TeamCity Server\"]}" -O- ${serverUrl}/api/machines | jq ".Id" -r)
+machineId=$(wget --header="X-Octopus-ApiKey: $apiKey" --post-data "{\"Endpoint\": {\"CommunicationStyle\":\"Ssh\",\"AccountId\":\"$accountId\",\"Host\":\"$localIp\",\"Port\":\"22\",\"Uri\":\"ssh://$localIp:22/\",\"Fingerprint\":\"$fingerprint\"},\"EnvironmentIds\":[\"$environmentId\"],\"Name\":\"$machineName\",\"IsDisabled\":false,\"Uri\":null,\"Thumbprint\":null,\"TenantIds\":[],\"TenantTags\":[],\"Roles\":[\"TeamCity Server (Linux)\"]}" -O- ${serverUrl}/api/machines | jq ".Id" -r)
 
 healthTaskId=$(wget --header="X-Octopus-ApiKey: $apiKey" --post-data "{\"Name\":\"Health\",\"Description\":\"Check $machineName health\",\"Arguments\":{\"Timeout\":\"00:05:00\",\"MachineIds\":[\"$machineId\"]}}" -O-  ${serverUrl}/api/tasks | jq ".Id" -r)
