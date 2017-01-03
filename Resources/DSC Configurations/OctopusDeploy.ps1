@@ -59,7 +59,7 @@ Configuration OctopusDeploy
             TestScript = {
                 ((Test-Path "$($env:SystemDrive)\Octopus\Octopus.Server.DSC.licensestate") -and ([System.IO.FIle]::ReadAllText("$($env:SystemDrive)\Octopus\Octopus.Server.DSC.licensestate").Trim()) -eq '0')
             }
-            GetScript = { }
+            GetScript = { @{} }
             DependsOn = '[cOctopusServer]OctopusServer'
         }
         xFirewall Firewall

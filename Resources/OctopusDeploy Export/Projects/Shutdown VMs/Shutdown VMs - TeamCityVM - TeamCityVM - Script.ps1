@@ -1,0 +1,1 @@
+Stop-AzureRmVM -ResourceGroupName $TeamCityRg -Name $TeamCityVMName -Force

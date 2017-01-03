@@ -1,8 +1,8 @@
 param(
-    $AzureRegion
+    [Parameter(Mandatory=$true)]$AzureRegion
 )
-
-$currentStack = & (Join-Path $PSScriptRoot 'CurrentStack.ps1') -Guid ([guid]::NewGuid().guid)
+$deploymentGuid = [guid]::NewGuid().guid
+$currentStack = & (Join-Path $PSScriptRoot 'CurrentStack.ps1') -Guid $deploymentGuid
 
 Write-Host 'Creating Octostache Config Store...'
 . (Join-Path $PSScriptRoot '..\Utils\Octosprache.ps1')
@@ -42,4 +42,5 @@ Write-Host 'Configuring Resources Storage Account...'
 Write-Host 'Deploying Octopus Deploy Configuration...'
 & (Join-Path $PSScriptRoot 'OctopusDeployConfiguration.ps1') -Context $context
 
+$currentStack = & (Join-Path $PSScriptRoot 'CurrentStack.ps1') -Guid $deploymentGuid
 Write-Host -ForegroundColor Green 'Octopus Deploy Running at: ' $context.Get('OctopusHostHeader')

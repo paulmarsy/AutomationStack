@@ -1,0 +1,23 @@
+{
+  "$type": "Octopus.Core.Model.Projects.ProjectTrigger.ProjectTrigger, Octopus.Core",
+  "Id": "ProjectTriggers-21",
+  "Name": "Deploy TeamCity Data",
+  "ProjectId": "Projects-5",
+  "Filter": {
+    "$type": "Octopus.Core.Model.Projects.ProjectTrigger.MachineFilter, Octopus.Core",
+    "EventGroups": [],
+    "EventCategories": [
+      "MachineAdded"
+    ],
+    "EnvironmentIds": [
+      "Environments-1"
+    ],
+    "Roles": [
+      "TeamCity Server (Windows)"
+    ]
+  },
+  "Action": {
+    "$type": "Octopus.Core.Model.Projects.ProjectTrigger.AutoDeployAction, Octopus.Core",
+    "ShouldRedeployWhenMachineHasBeenDeployedTo": false
+  }
+}

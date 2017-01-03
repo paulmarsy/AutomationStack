@@ -22,19 +22,19 @@ Configuration TeamCity
             OctopusServerUrl = $OctopusServerUrl
             Environments = 'Microsoft Azure'
             Roles = "TeamCity Server (Windows)"
-            DependsOn = '[xFirewall]OctopusTentacleFirewall'
+            DependsOn = @('[xFirewall]OctopusTentacleFirewall','[Environment]TeamCityDataDir')
         }
-        Script 'Octopus License'
+        Script 'Octopus Tentacle Name'
         {
             SetScript = {
-                & "C:\Program Files\Octopus Deploy\Tentacle\Tentacle.exe" deregister-from --instance=Tentacle --server=$($using:OctopusServerUrl) --apikey=$($using:ApiKey) -m
-                & "C:\Program Files\Octopus Deploy\Tentacle\Tentacle.exe" register-with --instance=Tentacle --server=$($using:OctopusServerUrl) --apikey=$($using:ApiKey) --environment='Microsoft Azure' --role='TeamCity Server (Windows)' --name='TeamCity Server'
+                & "C:\Program Files\Octopus Deploy\Tentacle\Tentacle.exe" deregister-from --instance=Tentacle --server=$($using:OctopusServerUrl) --apikey=$($using:ApiKey) -m | Write-Output
+                & "C:\Program Files\Octopus Deploy\Tentacle\Tentacle.exe" register-with --instance=Tentacle --server=$($using:OctopusServerUrl) --apikey=$($using:ApiKey) --environment='Microsoft Azure' --role='TeamCity Server (Windows)' --name='TeamCity Server' | Write-Output
                 [System.IO.FIle]::WriteAllText("$($env:SystemDrive)\Octopus\Octopus.Server.DSC.regstate", $LASTEXITCODE,[System.Text.Encoding]::ASCII)
             }
             TestScript = {
                 ((Test-Path "$($env:SystemDrive)\Octopus\Octopus.Server.DSC.regstate") -and ([System.IO.FIle]::ReadAllText("$($env:SystemDrive)\Octopus\Octopus.Server.DSC.regstate").Trim()) -eq '0')
             }
-            GetScript = { }
+            GetScript = { @{} }
             DependsOn = '[cTentacleAgent]OctopusTentacle'
         }
         xFirewall OctopusTentacleFirewall
@@ -75,5 +75,11 @@ Configuration TeamCity
             Name = "teamcity" 
             DependsOn = "[cChocoPackageInstaller]JRE"
         } 
+        Environment TeamCityDataDir
+        {
+            Ensure = "Present" 
+            Name = "TEAMCITY_DATA_PATH"
+            Value = "${env:ALLUSERSPROFILE}\JetBrains\TeamCity"
+        }
     }
 }

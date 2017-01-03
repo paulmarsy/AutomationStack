@@ -1,0 +1,2 @@
+group_id, role_id, project_int_id
+ALL_USERS_GROUP, PROJECT_DEVELOPER, 

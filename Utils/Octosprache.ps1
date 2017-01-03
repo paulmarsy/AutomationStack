@@ -1,12 +1,14 @@
 <#
-$octosprache = [octosprache]::new()
-$octosprache.Add('token', 'value')
-$octosprache.Eval('some string with  #{token}s in it')
-$octosprache.ParseFile('file.txt')
+. '..\Utils\Octosprache.ps1'
+$context = [octosprache]::new('')
+
+. 'AutomationStack\Utils\Octosprache.ps1'
+$context = [octosprache]::new('')
 #>
-. (Join-Path $PSScriptRoot 'Get-OctopusEncryptedValue.ps1' -Resolve)
-. (Join-Path $PSScriptRoot 'Get-OctopusHashedValue.ps1' -Resolve)
-. (Join-Path $PSScriptRoot 'Get-OctopusApiKeyId.ps1' -Resolve)
+. (Join-Path $PSScriptRoot 'Import Helpers\Get-OctopusEncryptedValue.ps1' -Resolve)
+. (Join-Path $PSScriptRoot 'Import Helpers\Get-OctopusHashedValue.ps1' -Resolve)
+. (Join-Path $PSScriptRoot 'Import Helpers\Get-OctopusApiKeyId.ps1' -Resolve)
+. (Join-Path $PSScriptRoot 'Import Helpers\Get-TeamCityHashedValue.ps1' -Resolve)
 class Octosprache {
     Octosprache([string]$UDP) {
 
@@ -41,8 +43,12 @@ class Octosprache {
          $sensitiveValue = Get-OctopusEncryptedValue -Password $Password -Value $Value
          $this.Set($Key, $sensitiveValue)
     }    
-    SetHashed([string]$Key, [string]$Value) {
+    SetOctopusHashed([string]$Key, [string]$Value) {
          $hashedValue = Get-OctopusHashedValue -Value $Value
+         $this.Set($Key, $hashedValue)
+    }   
+    SetTeamCityHashed([string]$Key, [string]$Value) {
+         $hashedValue = Get-TeamCityHashedValue -Value $Value
          $this.Set($Key, $hashedValue)
     }   
     SetApiKeyId([string]$Key, [string]$ApiKey) {
@@ -56,13 +62,13 @@ class Octosprache {
         return $this.VariableDictionary.Evaluate($Expression)
     }
     ParseFile($FilePath) {
-        $content = Get-Content -Path $FilePath -Raw -Encoding UTF8
+        $content = Get-Content -Path $FilePath -Raw
         $tokenised = $this.Eval($content)
-        Set-Content -Path $FilePath -Value $tokenised -Encoding UTF8
+        Set-Content -Path $FilePath -Value $tokenised -Encoding ASCII
     }
     ParseFile($From, $To) {
-        $content = Get-Content -Path $From -Raw -Encoding UTF8
+        $content = Get-Content -Path $From -Raw
         $tokenised = $this.Eval($content)
-        Set-Content -Path $To -Value $tokenised -Encoding UTF8
+        Set-Content -Path $To -Value $tokenised -Encoding ASCII
     }
 }

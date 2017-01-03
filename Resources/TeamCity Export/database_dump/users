@@ -1,0 +1,2 @@
+id, username, password, name, email, last_login_timestamp
+1, #{Username}, #{TeamCityPasswordHash}, "", "", 1483361818374

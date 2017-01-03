@@ -5,7 +5,7 @@
   "DisplayName": null,
   "EmailAddress": null,
   "Notes": null,
-  "PasswordHashed": "#{PasswordHash}",
+  "PasswordHashed": "#{OctopusPasswordHash}",
   "IsActive": true,
   "IsService": false,
   "ApiKey": null,

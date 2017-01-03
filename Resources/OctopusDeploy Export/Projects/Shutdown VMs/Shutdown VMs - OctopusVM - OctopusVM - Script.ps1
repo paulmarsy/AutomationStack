@@ -1,0 +1,1 @@
+Stop-AzureRmVM -ResourceGroupName $OctopusRg -Name $OctopusVMName -Force

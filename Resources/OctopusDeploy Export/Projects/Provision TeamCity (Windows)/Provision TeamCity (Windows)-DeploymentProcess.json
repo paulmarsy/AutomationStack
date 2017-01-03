@@ -1,8 +1,8 @@
 {
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
-  "Id": "deploymentprocess-Projects-21",
-  "OwnerId": "Projects-21",
-  "Version": 10,
+  "Id": "deploymentprocess-Projects-5",
+  "OwnerId": "Projects-5",
+  "Version": 19,
   "Steps": [
     {
       "Id": "b7ee23bf-e81a-49d2-8510-f83d44038445",
@@ -161,6 +161,63 @@
       ],
       "Properties": {
         "Octopus.Action.TargetRoles": "ARM Provisioning"
+      }
+    },
+    {
+      "Id": "0aadda3f-2fae-4ecb-8717-f44a38deeb60",
+      "Name": "Retrieve TeamCity Export",
+      "Condition": "Success",
+      "StartTrigger": "StartAfterPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "5f12d880-c3fa-4ba3-980d-12e88173ea00",
+          "Name": "Retrieve TeamCity Export",
+          "ActionType": "Octopus.Script",
+          "IsDisabled": false,
+          "Environments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.RunOnServer": "false",
+            "Octopus.Action.Script.Syntax": "PowerShell",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "if (Test-Path $ExportPath) {\n    Remove-Item $ExportPath -Recurse -Force\n}\nNew-Item -ItemType Directory -Path $ExportPath\n\n& net use T: \\\\$StackResourcesName.file.core.windows.net\\dsc /u:$StackResourcesName $StackResourcesKey\nCopy-Item -Path T:\\* -Destination $ExportPath -Recurse\n& net use T: /DELETE\n"
+          }
+        },
+        {
+          "Id": "60a2239f-48c9-433a-9ff8-9e3851480c3b",
+          "Name": "Compress Export",
+          "ActionType": "Octopus.Script",
+          "IsDisabled": false,
+          "Environments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.RunOnServer": "false",
+            "Octopus.Action.Script.Syntax": "PowerShell",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "if (Test-Path $ArchivePath) {\r\n    Remove-Item $ArchivePath -Force\r\n}\r\nCompress-Archive -Path $ExportPath -DestinationPath $ArchivePath -CompressionLevel Fastest\r\n"
+          }
+        },
+        {
+          "Id": "18330634-5115-4bd1-8726-5a4463d840d8",
+          "Name": "Run maintainDB Restore",
+          "ActionType": "Octopus.Script",
+          "IsDisabled": false,
+          "Environments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.RunOnServer": "false",
+            "Octopus.Action.Script.Syntax": "PowerShell",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "& C:\\TeamCity\\bin\\maintainDB.cmd restore -F $ArchivePath -T (Join-Path $ExportPath 'config\\database.properties' -Resolve)"
+          }
+        }
+      ],
+      "Properties": {
+        "Octopus.Action.TargetRoles": "TeamCity Server (Windows)"
       }
     }
   ],

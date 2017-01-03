@@ -13,8 +13,8 @@
   "IncludedLibraryVariableSetIds": [
     "LibraryVariableSets-2",
     "LibraryVariableSets-1",
-    "LibraryVariableSets-3",
-    "LibraryVariableSets-4"
+    "LibraryVariableSets-4",
+    "LibraryVariableSets-5"
   ],
   "UsedPackages": [],
   "DefaultToSkipIfAlreadyInstalled": false,

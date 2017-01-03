@@ -1,0 +1,3 @@
+group_id, rule_id, additional_data
+ALL_USERS_GROUP, 1, "userChangesOnly=\'true\'"
+ALL_USERS_GROUP, 2, "userChangesOnly=\'true\'"

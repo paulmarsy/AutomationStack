@@ -1,0 +1,2 @@
+agent_pool_id, agent_pool_name, min_agents, max_agents
+0, Default, , 

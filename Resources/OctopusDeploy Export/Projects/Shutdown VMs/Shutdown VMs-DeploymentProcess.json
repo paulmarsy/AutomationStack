@@ -1,0 +1,59 @@
+{
+  "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
+  "Id": "deploymentprocess-Projects-21",
+  "OwnerId": "Projects-21",
+  "Version": 2,
+  "Steps": [
+    {
+      "Id": "fee38a73-11f6-4f97-b047-5a2d14958c29",
+      "Name": "OctopusVM",
+      "Condition": "Success",
+      "StartTrigger": "StartAfterPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "4bd9c033-a033-498f-a875-8c755df65d2b",
+          "Name": "OctopusVM",
+          "ActionType": "Octopus.AzurePowerShell",
+          "IsDisabled": false,
+          "Environments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "Stop-AzureRmVM -ResourceGroupName $OctopusRg -Name $OctopusVMName -Force"
+          }
+        }
+      ],
+      "Properties": {}
+    },
+    {
+      "Id": "0924cb01-fb7f-42a7-9b5e-fbea13339a1e",
+      "Name": "TeamCityVM",
+      "Condition": "Success",
+      "StartTrigger": "StartWithPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "587b830e-72aa-44a3-83f7-32b24ef31be8",
+          "Name": "TeamCityVM",
+          "ActionType": "Octopus.AzurePowerShell",
+          "IsDisabled": false,
+          "Environments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "Stop-AzureRmVM -ResourceGroupName $TeamCityRg -Name $TeamCityVMName -Force"
+          }
+        }
+      ],
+      "Properties": {
+        "Octopus.Action.TargetRoles": "TeamCity Server (Linux),TeamCity Server (Windows)"
+      }
+    }
+  ],
+  "RelatedDocumentIds": []
+}

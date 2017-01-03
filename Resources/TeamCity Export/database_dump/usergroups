@@ -1,0 +1,2 @@
+group_id, name, description
+ALL_USERS_GROUP, "All Users", "Contains all TeamCity users"

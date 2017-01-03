@@ -1,20 +1,20 @@
 {
   "$type": "Octopus.Core.Model.Projects.Project, Octopus.Core",
-  "Id": "Projects-21",
+  "Id": "Projects-5",
   "Name": "Provision TeamCity (Windows)",
   "Description": "",
   "Slug": "provision-teamcity-windows",
   "IsDisabled": false,
-  "VariableSetId": "variableset-Projects-21",
-  "DeploymentProcessId": "deploymentprocess-Projects-21",
+  "VariableSetId": "variableset-Projects-5",
+  "DeploymentProcessId": "deploymentprocess-Projects-5",
   "ProjectGroupId": "ProjectGroups-23",
   "LifecycleId": "Lifecycles-21",
   "AutoCreateRelease": false,
   "IncludedLibraryVariableSetIds": [
     "LibraryVariableSets-2",
     "LibraryVariableSets-1",
-    "LibraryVariableSets-3",
-    "LibraryVariableSets-4"
+    "LibraryVariableSets-4",
+    "LibraryVariableSets-5"
   ],
   "UsedPackages": [],
   "DefaultToSkipIfAlreadyInstalled": false,
@@ -33,6 +33,6 @@
     "TargetRoles": []
   },
   "AutoDeployReleaseOverrides": [],
-  "LogoAttachmentKey": "Projects-21",
+  "LogoAttachmentKey": "Projects-5",
   "LogoAttachmentMimeType": "image/png"
 }

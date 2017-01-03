@@ -1,8 +1,8 @@
 {
   "$type": "Octopus.Core.Model.Variables.VariableSet, Octopus.Core",
-  "Id": "variableset-Projects-21",
-  "OwnerId": "Projects-21",
-  "Version": 1,
+  "Id": "variableset-Projects-5",
+  "OwnerId": "Projects-5",
+  "Version": 3,
   "Variables": [
     {
       "Id": "f8698758-6c72-efb6-6c4f-805a3d0a3196",
@@ -18,6 +18,16 @@
       "Id": "3a773a4d-5378-1ff2-50de-11f3483ee5b1",
       "Name": "DSCNodeName",
       "Value": "Server"
+    },
+    {
+      "Id": "cb58baa4-5f31-08ce-5cd8-75f7b99894af",
+      "Name": "ExportPath",
+      "Value": "D:\\TeamCityExport"
+    },
+    {
+      "Id": "e8f7bff4-82fc-fc31-a48c-0c3e7498f3d4",
+      "Name": "ArchivePath",
+      "Value": "D:\\TeamCityExport\\export.zip"
     }
   ],
   "RelatedDocumentIds": []
