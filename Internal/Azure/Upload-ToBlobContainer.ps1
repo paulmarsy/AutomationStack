@@ -3,7 +3,7 @@ function Upload-ToBlobContainer {
         [string]$Source,
         [string]$ContainerName,
         [string[]]$TokeniseFiles,
-        $Context
+        $Context,
         [switch]$ResetStorage
     )
 

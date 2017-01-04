@@ -1,7 +1,7 @@
 function Connect-AzureRm {
     param(
         $AzureUsername,
-        $AzurePassword,
+        $AzurePassword
     )
 
     Write-Host -ForegroundColor Magenta "Azure Authentication Details"

@@ -1,12 +1,14 @@
 $ResourcesPath = Join-Path -Resolve $PSScriptRoot 'Resources' | Convert-Path
-$DeploymentsPath = Join-Path -Resolve $PSScriptRoot 'Deployments' | Convert-Path
+$DeploymentsPath = Join-Path -Resolve $PSScriptRoot 'Deployments'
 if (!(Test-Path $DeploymentsPath)) {
     New-Item -ItemType Directory -Path $DeploymentsPath | Out-Null
 }
-$TempPath = Join-Path -Resolve $PSScriptRoot 'Temp' | Convert-Path
+$DeploymentsPath = Get-Item -Path $DeploymentsPath | % FullName
+$TempPath = Join-Path -Resolve $PSScriptRoot 'Temp'
 if (!(Test-Path $TempPath)) {
     New-Item -ItemType Directory -Path $TempPath | Out-Null
 }
+$TempPath = Get-Item -Path $TempPath | % FullName
 $ConcurrentTaskCount = 8
 $CurrentContext = $null
 
