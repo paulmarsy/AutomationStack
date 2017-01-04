@@ -20,7 +20,7 @@ function Upload-ToBlobContainer {
     Get-ChildItem -Path $sourcePath -Recurse -File | % {
         if ($_.Name -in $TokeniseFiles) {
             [Console]::WriteLine("Tokenising $($_.Name)")
-            $sourceFile = Join-Path $TempPath $_.Name | Convert-Path
+            $sourceFile = Join-Path $TempPath $_.Name
             $CurrentContext.ParseFile($_.FullName, $sourceFile)
         } else {
             $sourceFile = $_.FullName

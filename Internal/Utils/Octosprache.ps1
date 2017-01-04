@@ -1,12 +1,6 @@
 class Octosprache {
     Octosprache([string]$UDP) {
-        if ($null -eq [Octosprache]::Guid) {
-            [Octosprache]::Guid = [guid]::NewGuid().Guid
-            [Octosprache]::RegisterNuGetAssembly('Newtonsoft.Json', '9.0.1', 'net40', 'Newtonsoft.Json')
-            [Octosprache]::RegisterNuGetAssembly('Sprache', '2.1.0', 'net40', 'Sprache')
-            [Octosprache]::RegisterNuGetAssembly('Octostache', '2.0.7', 'net40', 'Octostache')
-        }
-        $backingFile = Join-Path $using:DeploymentsPath ('{0}.json' -f $UDP)
+        $backingFile = Join-Path $script:DeploymentsPath ('{0}.json' -f $UDP)
         if (Test-Path $backingFile) { Write-Host 'Repopulating configuration from file' }
 
         $this.VariableDictionary = New-Object Octostache.VariableDictionary $backingFile
@@ -14,12 +8,18 @@ class Octosprache {
 
         $this.Set('UDP', $UDP)
     }
+    static Init() {
+        [Octosprache]::Guid = [guid]::NewGuid().Guid
+        [Octosprache]::RegisterNuGetAssembly('Newtonsoft.Json', '9.0.1', 'net40', 'Newtonsoft.Json')
+        [Octosprache]::RegisterNuGetAssembly('Sprache', '2.1.0', 'net40', 'Sprache')
+        [Octosprache]::RegisterNuGetAssembly('Octostache', '2.0.7', 'net40', 'Octostache')
+    }
     static RegisterNuGetAssembly($PackageId, $Version, $Framework, $Assembly) {
         $download = Invoke-WebRequest -Verbose -UseBasicParsing -Uri "https://www.nuget.org/api/v2/package/$PackageId/$Version"
         $tempFile = [System.IO.Path]::ChangeExtension((New-TemporaryFile).FullName, 'zip')
         Write-Host "Saving $PackageId $Version to ${tempFile}"
         Set-Content -Path $tempFile -Value $download.Content -Force -Encoding Byte
-        $tempFolder = Join-Path $using:TempPath ([Octosprache]::Guid) | Convert-Path
+        $tempFolder = Join-Path $script:TempPath ([Octosprache]::Guid)
         Expand-Archive -Path $tempFile -DestinationPath $tempFolder -Force
             
         Write-Host "Loading $Assembly..."

@@ -1,3 +1,5 @@
+$ErrorActionPreference = 'Stop'
+
 $script:ResourcesPath = Join-Path -Resolve $PSScriptRoot 'Resources' | Convert-Path
 $DeploymentsPath = Join-Path $PSScriptRoot 'Deployments'
 if (!(Test-Path $DeploymentsPath)) {
@@ -21,3 +23,5 @@ Get-ChildItem -File -Filter *.ps1 -Path (Join-Path $PSScriptRoot 'Public') -Recu
 	. "$($_.FullName)"	
 	Export-ModuleMember -Function $_.BaseName
 }
+
+[Octosprache]::Init()

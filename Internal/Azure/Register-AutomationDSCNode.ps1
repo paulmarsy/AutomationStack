@@ -7,7 +7,7 @@ function Register-AutomationDSCNode {
                 $Parameters
         )
 
-        $CurrentContext.Set('AutomationAccountName', 'automation#{UDP}' -f $UDP)
+        $CurrentContext.Set('AutomationAccountName', 'automation#{UDP}')
 
         Write-Host "Importing $Configuration DSC Configuration..."
         $NodeConfigurationFile = Join-Path -Resolve $ResourcesPath ('DSC Configurations\{0}.ps1' -f $Configuration) | Convert-Path

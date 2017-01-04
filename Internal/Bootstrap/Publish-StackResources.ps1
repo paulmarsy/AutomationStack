@@ -4,7 +4,7 @@ function Publish-StackResources {
     Write-Host 'Configuring Stack Resources Storage Account...'
 
     $CurrentContext.Set('StackResourcesName', 'stackresources#{UDP}')
-    $CurrentContext.Set('StackResourcessKey', (Get-AzureRmStorageAccountKey -ResourceGroupName $CurrentContext.Get('InfraRg')  -Name $CurrentContext.Get('StackResourcesName'))[0].Value)
+    $CurrentContext.Set('StackResourcesKey', (Get-AzureRmStorageAccountKey -ResourceGroupName $CurrentContext.Get('InfraRg')  -Name $CurrentContext.Get('StackResourcesName'))[0].Value)
     $stackresources = New-AzureStorageContext -StorageAccountName $CurrentContext.Get('StackResourcesName') -StorageAccountKey $CurrentContext.Get('StackResourcesKey')
 
     $CurrentContext.SetSensitive($CurrentContext.Get('Password'), 'ProtectedImportHello', 'Hello')
@@ -19,19 +19,19 @@ function Publish-StackResources {
 
     Write-Host
     Write-Host -ForegroundColor Green "`tARM Custom Scripts..."
-    Upload-ToBlobContainer -ContainerName scripts -Source (Join-Path -Resolve $ResourcesPath 'ARM Custom Scripts') -TokeniseFiles @()
+    Upload-ToBlobContainer -ContainerName scripts -Source (Join-Path -Resolve $ResourcesPath 'ARM Custom Scripts') -TokeniseFiles @('OctopusImport.ps1','TeamCityPrepare.sh') -Context $stackresources -ResetStorage:$ResetStorage
     
     Write-Host
     Write-Host -ForegroundColor Green "`tDSC Configurations..."
-    Upload-ToFileShare -FileShareName dsc -Source (Join-Path -Resolve $ResourcesPath 'DSC Configurations') -TokeniseFiles @()
+    Upload-ToFileShare -FileShareName dsc -Source (Join-Path -Resolve $ResourcesPath 'DSC Configurations') -TokeniseFiles @() -Context $stackresources -ResetStorage:$ResetStorage
 
     Write-Host
     Write-Host -ForegroundColor Green "`tOctopus Deploy..."
-    Upload-ToFileShare -FileShareName octopusdeploy -Source (Join-Path -Resolve $ResourcesPath 'OctopusDeploy Export') -TokeniseFiles @('metadata.json','server.json','Automation Stack Parameters-VariableSet.json','Microsoft Azure Service Principal.json','Tentacle Auth.json','#{AzureRegion}.json','#{ApiKeyId}.json','#{Username}.json')
+    Upload-ToFileShare -FileShareName octopusdeploy -Source (Join-Path -Resolve $ResourcesPath 'OctopusDeploy Export') -TokeniseFiles @('metadata.json','server.json','Automation Stack Parameters-VariableSet.json','Microsoft Azure Service Principal.json','Tentacle Auth.json','#{AzureRegion}.json','#{ApiKeyId}.json','#{Username}.json') -Context $stackresources -ResetStorage:$ResetStorage
 
     Write-Host
     Write-Host -ForegroundColor Green "`tTeamCity..."
-    Upload-ToFileShare -FileShareName teamcity -Source (Join-Path -Resolve $ResourcesPath 'TeamCity Export') -TokeniseFiles @('vcs_username','users','database.properties')
+    Upload-ToFileShare -FileShareName teamcity -Source (Join-Path -Resolve $ResourcesPath 'TeamCity Export') -TokeniseFiles @('vcs_username','users','database.properties') -Context $stackresources -ResetStorage:$ResetStorage
 
     Write-Host
 }

@@ -1,42 +1,50 @@
 function New-AutomationStack {
     param(
-        [Parameter(Mandatory=$true)]$AzureRegion = 'West Europe' #'North Europe' - SQL Server isn't able to be provisioned in EUN currently
+        [Parameter(Mandatory=$false)]$AzureRegion = 'West Europe', #'North Europe' - SQL Server isn't able to be provisioned in EUN currently
+        $Stage = 1
     )
-    
-    $deploymentGuid = [guid]::NewGuid().guid
-    Write-Host "Deployment Guid: $deploymentGuid"
-    
-    Write-Progress -Activity 'AutomationStack Deployment' -Status 'Authenticating with Azure' -PercentComplete (1/7*100) 
-    Connect-AzureRm
-    Set-AzureSubscriptionSelection
+   
+    while ($Stage -le 8) {
+        switch ($Stage) {
+            1 {
+                Write-Progress -Activity 'AutomationStack Deployment' -Status 'Authenticating with Azure' -PercentComplete (1/9*100) 
+                Connect-AzureRm
+                Set-AzureSubscriptionSelection
+            }
+            2 {
+                Write-Progress -Activity 'AutomationStack Deployment' -Status 'Creating Deployment Context' -PercentComplete (2/9*100) 
+                New-DeploymentContext
+            }
+            3 {
+                Write-Progress -Activity 'AutomationStack Deployment' -Status 'Creating Azure Service Principal' -PercentComplete (3/9*100) 
+                New-AzureServicePrincipal
+            }
+            4 {
+                Write-Progress -Activity 'AutomationStack Deployment' -Status 'Provisioning Core Infrastructure' -PercentComplete (4/9*100) 
+                Initialize-CoreInfrastructure
+            }
+            5 {
+                Write-Progress -Activity 'AutomationStack Deployment' -Status 'Provisioning Octopus Deploy' -PercentComplete (5/9*100) 
+                Initialize-OctopusDeployInfrastructure
+            }
+            6 {
+                Write-Progress -Activity 'AutomationStack Deployment' -Status 'Uploading AutomationStack Resources' -PercentComplete (6/9*100) 
+                Publish-StackResources
+            }
+            7 {
+               Write-Progress -Activity 'AutomationStack Deployment' -Status 'Configuring Octopus Deploy' -PercentComplete (7/9*100) 
+               Resume-OctopusDeployConfiguration
+            }
+            8 {
+               Write-Progress -Activity 'AutomationStack Deployment' -Status 'Importing Octopus Deploy Initial State' -PercentComplete (8/9*100) 
+               Import-OctopusDeployInitialState
+            }
+        }
+        $Stage++
+    }
 
-    $automationStackDetail = Show-AutomationStackDetail -Guid $deploymentGuid -AzureRegion $AzureRegion -PassThru
-
-    Write-Host 'Creating Octostache Config Store...'
-    $script:CurrentContext  = Get-OctospracheState -UDP $automationStackDetail.UDP
-    $CurrentContext.Set('Username', $automationStackDetail.Username)
-    $CurrentContext.Set('Password', $automationStackDetail.Password)    
-    $CurrentContext.Set('Name', 'AutomationStack#{UDP}')
-
-    $azureRmContext = Get-AzureRmContext
-    $CurrentContext.Set('AzureTenantId', $azureRmContext.Tenant.TenantId)
-    $CurrentContext.Set('AzureSubscriptionId', $azureRmContext.Subscription.SubscriptionId)
-    $CurrentContext.Set('AzureRegion', $automationStackDetail.AzureRegion)
-    
-    <# Deployment starts here #>
-    Write-Progress -Activity 'AutomationStack Deployment' -Status 'Creating Azure Service Principal' -PercentComplete (2/7*100) 
-    New-AzureServicePrincipal
-    Write-Progress -Activity 'AutomationStack Deployment' -Status 'Provisioning Core Infrastructure' -PercentComplete (3/7*100) 
-    Initialize-CoreInfrastructure
-    Write-Progress -Activity 'AutomationStack Deployment' -Status 'Provisioning Octopus Deploy' -PercentComplete (4/7*100) 
-    Initialize-OctopusDeployInfrastructure
-    Write-Progress -Activity 'AutomationStack Deployment' -Status 'Uploading AutomationStack Resources' -PercentComplete (5/7*100) 
-    Publish-StackResources
-    Write-Progress -Activity 'AutomationStack Deployment' -Status 'Configuring Octopus Deploy' -PercentComplete (6/7*100) 
-    Resume-OctopusDeployConfiguration
-
-    Write-Progress -Activity 'AutomationStack Deployment' -Status 'Done' -PercentComplete (7/7*100) 
+    Write-Progress -Activity 'AutomationStack Deployment' -Status 'Done' -PercentComplete (9/9*100) 
     Show-AutomationStackDetail -Octosprache $CurrentContext
-    Write-Host -ForegroundColor Green 'Octopus Deploy Running at:' $context.Get('OctopusHostHeader')
+    Write-Host -ForegroundColor Green 'Octopus Deploy Running at:' $CurrentContext.Get('OctopusHostHeader')
     $CurrentContext.Set('DeploymentComplete', $true)
 }

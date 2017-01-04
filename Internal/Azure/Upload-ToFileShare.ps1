@@ -25,11 +25,11 @@ function Upload-ToFileShare {
         $runspaceId++
         $batch = @($i..($i+$batchSize) | ? { $null -ne $items[$_] } |  % { $items[$_] })
         $ps = [powershell]::Create().AddScript({
-            param($batch, $CurrentContext, $TokeniseFiles, $fileShare, $sourcePath, $runspaceId, $ConcurrentTaskCount)
-            $batch | % {
+            param($batch, $CurrentContext, $TokeniseFiles, $fileShare, $sourcePath, $runspaceId, $ConcurrentTaskCount, $TempPath)
+           $batch | % {
                 if ($_.Name -in $TokeniseFiles) {
                     [Console]::WriteLine("[$runspaceId] Tokenising $($_.Name)")
-                    $sourceFile = Join-Path $TempPath $_.Name | Convert-Path
+                    $sourceFile = Join-Path $TempPath $_.Name
                     $CurrentContext.ParseFile($_.FullName, $sourceFile)
                 } else {
                     $sourceFile = $_.FullName
@@ -38,9 +38,9 @@ function Upload-ToFileShare {
                $destFile = $CurrentContext.Eval($_.FullName.Substring($sourcePath.Length+1).Replace('\','/'))
                 [Console]::WriteLine("[$runspaceId] Uploading $destFile")
                 New-AzureStorageDirectory -Share $fileShare -Path ([System.IO.Path]::GetDirectoryName($destFile)) -ErrorAction Ignore -ConcurrentTaskCount $ConcurrentTaskCount | Out-Null
-               Set-AzureStorageFileContent -Share $fileShare -Source $sourceFile -Path $destFile -Force --ConcurrentTaskCount $ConcurrentTaskCount
+               Set-AzureStorageFileContent -Share $fileShare -Source $sourceFile -Path $destFile -Force -ConcurrentTaskCount $ConcurrentTaskCount -ErrorAction Stop
             }
-        }).AddArgument($batch).AddArgument($CurrentContext).AddArgument($TokeniseFiles).AddArgument($fileShare).AddArgument($sourcePath).AddArgument($runspaceId).AddArgument($ConcurrentTaskCount)
+        }).AddArgument($batch).AddArgument($CurrentContext).AddArgument($TokeniseFiles).AddArgument($fileShare).AddArgument($sourcePath).AddArgument($runspaceId).AddArgument($ConcurrentTaskCount).AddArgument($TempPath)
         $jobs.Add(@{
             PowerShell = $ps
             Async = ($ps.BeginInvoke())

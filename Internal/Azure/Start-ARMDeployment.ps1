@@ -21,5 +21,5 @@ function Start-ARMDeployment {
     Test-AzureRmResourceGroupDeployment -ResourceGroupName $ResourceGroupName -TemplateFile $TemplateFilePath -TemplateParameterObject $TemplateParameters -Mode Complete
 
     Write-Host "Starting deployment..."
-    New-AzureRmResourceGroupDeployment -Name ('AutomationStack-{0}-{1}' -f ([system.io.path]::GetFileNameWithoutExtension($TemplateFile)), $CurrentContext.Get('UDP')) -ResourceGroupName $ResourceGroupName -TemplateFile $TemplateFilePath -TemplateParameterObject $TemplateParameters -Mode Complete
+    New-AzureRmResourceGroupDeployment -Name ('AutomationStack-{0}-{1}' -f ([system.io.path]::GetFileNameWithoutExtension($TemplateFile)), $CurrentContext.Get('UDP')) -ResourceGroupName $ResourceGroupName -TemplateFile $TemplateFilePath -TemplateParameterObject $TemplateParameters -Mode Complete -Force
 }
