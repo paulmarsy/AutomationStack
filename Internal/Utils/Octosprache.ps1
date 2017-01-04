@@ -6,7 +6,7 @@ class Octosprache {
             [Octosprache]::RegisterNuGetAssembly('Sprache', '2.1.0', 'net40', 'Sprache')
             [Octosprache]::RegisterNuGetAssembly('Octostache', '2.0.7', 'net40', 'Octostache')
         }
-        $backingFile = Join-Path $DeploymentsPath ('{0}.json' -f $UDP)
+        $backingFile = Join-Path $using:DeploymentsPath ('{0}.json' -f $UDP)
         if (Test-Path $backingFile) { Write-Host 'Repopulating configuration from file' }
 
         $this.VariableDictionary = New-Object Octostache.VariableDictionary $backingFile
@@ -19,7 +19,7 @@ class Octosprache {
         $tempFile = [System.IO.Path]::ChangeExtension((New-TemporaryFile).FullName, 'zip')
         Write-Host "Saving $PackageId $Version to ${tempFile}"
         Set-Content -Path $tempFile -Value $download.Content -Force -Encoding Byte
-        $tempFolder = Join-Path $TempPath ([Octosprache]::Guid) | Convert-Path
+        $tempFolder = Join-Path $using:TempPath ([Octosprache]::Guid) | Convert-Path
         Expand-Archive -Path $tempFile -DestinationPath $tempFolder -Force
             
         Write-Host "Loading $Assembly..."
