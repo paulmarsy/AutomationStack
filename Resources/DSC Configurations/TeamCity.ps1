@@ -6,8 +6,8 @@ Configuration TeamCity
     )
     Import-DscResource -ModuleName PSDesiredStateConfiguration
     Import-DscResource -ModuleName OctopusDSC
+    Import-DscResource -ModuleName xPSDesiredStateConfiguration
     Import-DscResource -ModuleName xNetworking
-    Import-DscResource -ModuleName cChoco
     
     Node "Server"
     {
@@ -61,20 +61,34 @@ Configuration TeamCity
             LocalPort             = ("80", "444")
             Protocol              = "TCP"
         }
-         cChocoInstaller InstallChocolatey
-        { 
-            InstallDir = "C:\Chocolatey" 
+        $version = '10.0.4'
+        xRemoteFile TeamCityDownloader
+        {
+            Uri = "https://download.jetbrains.com/teamcity/TeamCity-$($version).tar.gz"
+            DestinationPath = "D:\TeamCity-$($version).tar.gz"
         }
-        cChocoPackageInstaller JRE 
-        {            
-            Name = "server-jre8" 
-            DependsOn = "[cChocoInstaller]InstallChocolatey"
-        } 
-        cChocoPackageInstaller TeamCity 
-        {            
-            Name = "teamcity" 
-            DependsOn = "[cChocoPackageInstaller]JRE"
-        } 
+        Archive TeamCityExtract
+        {
+            Path = "D:\TeamCity-$($version).tar.gz"
+            Destination = "C:\"
+            DependsOn = "[xRemoteFile]TeamCityDownloader"
+        }
+        
+        $BundleId = "216432" # jre-8u111-windows-i586.exe
+        xRemoteFile JreDownloader
+        {
+            Uri = "http://javadl.oracle.com/webapps/download/AutoDL?BundleId=$BundleId"
+            DestinationPath = "D:\JreInstall$BundleId.exe"
+        }
+        Package Installer
+        {
+            Ensure = 'Present'
+            Name = "Java 8"
+            Path = "D:\JreInstall$BundleId.exe"
+            Arguments = "/s REBOOT=0 SPONSORS=0 REMOVEOUTOFDATEJRES=1 INSTALL_SILENT=1 AUTO_UPDATE=0 EULA=0 /l*v `"D:\JreInstall$BundleId.log`""
+            ProductId = "26A24AE4-039D-4CA4-87B4-2F64180101F0"
+            DependsOn = "[xRemoteFile]JreDownloader"
+        }
         Environment TeamCityDataDir
         {
             Ensure = "Present" 

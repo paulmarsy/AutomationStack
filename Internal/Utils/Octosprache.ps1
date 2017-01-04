@@ -1,38 +1,31 @@
-<#
-. '..\Utils\Octosprache.ps1'
-$context = [octosprache]::new('')
-
-. 'AutomationStack\Utils\Octosprache.ps1'
-$context = [octosprache]::new('')
-#>
-. (Join-Path $PSScriptRoot 'Import Helpers\Get-OctopusEncryptedValue.ps1' -Resolve)
-. (Join-Path $PSScriptRoot 'Import Helpers\Get-OctopusHashedValue.ps1' -Resolve)
-. (Join-Path $PSScriptRoot 'Import Helpers\Get-OctopusApiKeyId.ps1' -Resolve)
-. (Join-Path $PSScriptRoot 'Import Helpers\Get-TeamCityHashedValue.ps1' -Resolve)
 class Octosprache {
     Octosprache([string]$UDP) {
-
-        $this.RegisterNuGetAssembly('Newtonsoft.Json', '9.0.1', 'net40', 'Newtonsoft.Json')
-        $this.RegisterNuGetAssembly('Sprache', '2.1.0', 'net40', 'Sprache')
-        $this.RegisterNuGetAssembly('Octostache', '2.0.7', 'net40', 'Octostache')
-        $backingFile = Join-Path $PWD.ProviderPath ('AutomationStack {0} Config.json' -f $UDP)
+        if ($null -eq [Octosprache]::Guid) {
+            [Octosprache]::Guid = [guid]::NewGuid().Guid
+            [Octosprache]::RegisterNuGetAssembly('Newtonsoft.Json', '9.0.1', 'net40', 'Newtonsoft.Json')
+            [Octosprache]::RegisterNuGetAssembly('Sprache', '2.1.0', 'net40', 'Sprache')
+            [Octosprache]::RegisterNuGetAssembly('Octostache', '2.0.7', 'net40', 'Octostache')
+        }
+        $backingFile = Join-Path $DeploymentsPath ('{0}.json' -f $UDP)
         if (Test-Path $backingFile) { Write-Host 'Repopulating configuration from file' }
 
         $this.VariableDictionary = New-Object Octostache.VariableDictionary $backingFile
         Write-Warning "AutomationStack Configuration is being stored in file '$backingFile' and may contain sensitive deployment details"
+
+        $this.Set('UDP', $UDP)
     }
-    RegisterNuGetAssembly($PackageId, $Version, $Framework, $Assembly) {
+    static RegisterNuGetAssembly($PackageId, $Version, $Framework, $Assembly) {
         $download = Invoke-WebRequest -Verbose -UseBasicParsing -Uri "https://www.nuget.org/api/v2/package/$PackageId/$Version"
         $tempFile = [System.IO.Path]::ChangeExtension((New-TemporaryFile).FullName, 'zip')
         Write-Host "Saving $PackageId $Version to ${tempFile}"
         Set-Content -Path $tempFile -Value $download.Content -Force -Encoding Byte
-        $tempFolder = [System.IO.Path]::Combine([System.IO.Path]::GetTempPath(), $this.Guid)
+        $tempFolder = Join-Path $TempPath ([Octosprache]::Guid) | Convert-Path
         Expand-Archive -Path $tempFile -DestinationPath $tempFolder -Force
             
         Write-Host "Loading $Assembly..."
         Add-Type -Path (Join-Path -Resolve $tempFolder "lib\$Framework\$Assembly.dll")
     }
-    hidden $Guid = [guid]::NewGuid().Guid
+    static hidden $Guid
     hidden $VariableDictionary
 
     Set([string]$Key, [string]$Value) {
@@ -70,5 +63,9 @@ class Octosprache {
         $content = Get-Content -Path $From -Raw
         $tokenised = $this.Eval($content)
         Set-Content -Path $To -Value $tokenised -Encoding ASCII
+    }
+    [string] ToString()
+    {
+        return $this.Get('UDP')
     }
 }

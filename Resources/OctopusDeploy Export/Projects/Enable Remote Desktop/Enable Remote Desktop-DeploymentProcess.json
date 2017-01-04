@@ -2,7 +2,7 @@
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
   "Id": "deploymentprocess-Projects-2",
   "OwnerId": "Projects-2",
-  "Version": 22,
+  "Version": 33,
   "Steps": [
     {
       "Id": "1f7eaedc-d772-4fde-8a11-c298cb6e6880",
@@ -24,7 +24,17 @@
             "Octopus.Action.Script.ScriptSource": "Inline",
             "Octopus.Action.Script.ScriptBody": "Get-AzureRmNetworkSecurityGroup -Name $OctopusNSGName -ResourceGroupName $OctopusRg |\nAdd-AzureRmNetworkSecurityRuleConfig -Name RDP -Protocol TCP -Access Allow -SourcePortRange * -SourceAddressPrefix Internet -DestinationPortRange 3389 -DestinationAddressPrefix * -Priority 300 -Direction Inbound  |\nSet-AzureRmNetworkSecurityGroup\n"
           }
-        },
+        }
+      ],
+      "Properties": {}
+    },
+    {
+      "Id": "5ebf899b-5e7a-4878-a19f-f1504707d4c8",
+      "Name": "Get Octopus RDP Details",
+      "Condition": "Always",
+      "StartTrigger": "StartWithPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
         {
           "Id": "b7931f09-6166-4d5d-98f9-4fdf3bd693ee",
           "Name": "Get Octopus RDP Details",
@@ -44,8 +54,8 @@
     },
     {
       "Id": "e046ef07-c3a0-4f2d-af29-1d5775b8f80e",
-      "Name": "TeamCity",
-      "Condition": "Success",
+      "Name": "Enable TeamCity NSG Rule",
+      "Condition": "Always",
       "StartTrigger": "StartWithPrevious",
       "RequiresPackagesToBeAcquired": false,
       "Actions": [
@@ -60,9 +70,21 @@
           "Properties": {
             "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
             "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "Get-AzureRmNetworkSecurityGroup -Name $TeamCityNSGName -ResourceGroupName $TeamCityRg |\nAdd-AzureRmNetworkSecurityRuleConfig -Name RDP -Protocol TCP -Access Allow -SourcePortRange * -SourceAddressPrefix Internet -DestinationPortRange 3389 -DestinationAddressPrefix * -Priority 300 -Direction Inbound  |\nSet-AzureRmNetworkSecurityGroup\n"
+            "Octopus.Action.Script.ScriptBody": "Get-AzureRmNetworkSecurityGroup -Name $TeamCityNSGName -ResourceGroupName $TeamCityRg |\nAdd-AzureRmNetworkSecurityRuleConfig -Name RDP -Protocol TCP -Access Allow -SourcePortRange * -SourceAddressPrefix Internet -DestinationPortRange 3389 -DestinationAddressPrefix * -Priority 400 -Direction Inbound  |\nSet-AzureRmNetworkSecurityGroup\n"
           }
-        },
+        }
+      ],
+      "Properties": {
+        "Octopus.Action.TargetRoles": "TeamCity Server (Windows)"
+      }
+    },
+    {
+      "Id": "1d47a5fa-fa51-4d81-98ff-b380b3f3348a",
+      "Name": "Get TeamCity RDP Details",
+      "Condition": "Always",
+      "StartTrigger": "StartWithPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
         {
           "Id": "b82a6e2b-0174-427f-8842-b7c3fe243f6d",
           "Name": "Get TeamCity RDP Details",

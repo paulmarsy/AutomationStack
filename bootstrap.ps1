@@ -29,11 +29,12 @@ if ($LocalDevPath) {
     Move-Item -Path (Join-Path $Path 'AutomationStack-master\*') -Destination $Path
 }
 
-$nextStage = Join-Path $Path 'Bootstrap\Auth.ps1'
-if (!(Test-Path $nextStage)) {
-    Write-Error 'Unable to find the configure bootstrap stage from within the AutomationStack repository'
+$moduleManifest = Join-Path $Path 'AutomationStack.psd1' | Convert-Path
+if (!(Test-Path $moduleManifest)) {
+    Write-Error 'Unable to find the AutomationStack module'
     return
 }
 
-Write-Output 'AutomationStack repo aquired, handing over control & proceeding to local setup & config stage..'
-& $nextStage
+Write-Output 'AutomationStack repo aquired, importing module & starting new deployment'
+Import-Module $moduleManifest -Force
+New-AutomationStack

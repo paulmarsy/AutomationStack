@@ -2,7 +2,7 @@
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
   "Id": "deploymentprocess-Projects-5",
   "OwnerId": "Projects-5",
-  "Version": 19,
+  "Version": 39,
   "Steps": [
     {
       "Id": "b7ee23bf-e81a-49d2-8510-f83d44038445",
@@ -77,7 +77,7 @@
           "Properties": {
             "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
             "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "$teamCityDb = New-AzureRmSqlDatabase -ResourceGroupName $InfraRg -ServerName $SqlServerName -DatabaseName 'TeamCity' -CollationName 'SQL_Latin1_General_CP1_CI_AS' -Edition 'Basic'\n$teamCityDb\nSet-AzureRmSqlDatabaseTransparentDataEncryption -ResourceGroupName $teamCityDb.ResourceGroupName -ServerName $teamCityDb.ServerName -DatabaseName $teamCityDb.DatabaseName -State Enabled\n\nSet-OctopusVariable -Name TeamCityConnectionString -Value ('Server=tcp:{0}.database.windows.net,1433;Initial Catalog=TeamCity;Persist Security Info=False;User ID={1};Password={2};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;' -f $SqlServerName, $StackAdminUsername, $StackAdminPassword)"
+            "Octopus.Action.Script.ScriptBody": "Remove-AzureRmSqlDatabase -ResourceGroupName $InfraRg -ServerName $SqlServerName -DatabaseName 'TeamCity' -Force -ErrorAction Ignore\n$teamCityDb = New-AzureRmSqlDatabase -ResourceGroupName $InfraRg -ServerName $SqlServerName -DatabaseName 'TeamCity' -CollationName 'SQL_Latin1_General_CP1_CI_AS' -Edition 'Basic'\n$teamCityDb\nSet-AzureRmSqlDatabaseTransparentDataEncryption -ResourceGroupName $teamCityDb.ResourceGroupName -ServerName $teamCityDb.ServerName -DatabaseName $teamCityDb.DatabaseName -State Enabled"
           }
         }
       ],
@@ -171,6 +171,21 @@
       "RequiresPackagesToBeAcquired": false,
       "Actions": [
         {
+          "Id": "c8022bc0-bcc1-4cb1-b2ee-01beeb54a415",
+          "Name": "Reset to known state",
+          "ActionType": "Octopus.Script",
+          "IsDisabled": false,
+          "Environments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.RunOnServer": "false",
+            "Octopus.Action.Script.Syntax": "PowerShell",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "Stop-Service TeamCity -Force\n\nif (Test-Path $ExportPath) {\n    Remove-Item $ExportPath -Recurse -Force\n}\nNew-Item -ItemType Directory -Path $ExportPath\n\nif (Test-Path $TeamCityDataDir) {\n    Remove-Item $TeamCityDataDir -Recurse -Force\n}\nNew-Item -ItemType Directory -Path $TeamCityDataDir\n"
+          }
+        },
+        {
           "Id": "5f12d880-c3fa-4ba3-980d-12e88173ea00",
           "Name": "Retrieve TeamCity Export",
           "ActionType": "Octopus.Script",
@@ -182,12 +197,12 @@
             "Octopus.Action.RunOnServer": "false",
             "Octopus.Action.Script.Syntax": "PowerShell",
             "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "if (Test-Path $ExportPath) {\n    Remove-Item $ExportPath -Recurse -Force\n}\nNew-Item -ItemType Directory -Path $ExportPath\n\n& net use T: \\\\$StackResourcesName.file.core.windows.net\\dsc /u:$StackResourcesName $StackResourcesKey\nCopy-Item -Path T:\\* -Destination $ExportPath -Recurse\n& net use T: /DELETE\n"
+            "Octopus.Action.Script.ScriptBody": "& net use T: \\\\$StackResourcesName.file.core.windows.net\\teamcity /u:$StackResourcesName $StackResourcesKey\nCopy-Item -Path T:\\* -Destination $ExportPath -Recurse\n& net use T: /DELETE\n"
           }
         },
         {
           "Id": "60a2239f-48c9-433a-9ff8-9e3851480c3b",
-          "Name": "Compress Export",
+          "Name": "Prepare export for import",
           "ActionType": "Octopus.Script",
           "IsDisabled": false,
           "Environments": [],
@@ -197,7 +212,7 @@
             "Octopus.Action.RunOnServer": "false",
             "Octopus.Action.Script.Syntax": "PowerShell",
             "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "if (Test-Path $ArchivePath) {\r\n    Remove-Item $ArchivePath -Force\r\n}\r\nCompress-Archive -Path $ExportPath -DestinationPath $ArchivePath -CompressionLevel Fastest\r\n"
+            "Octopus.Action.Script.ScriptBody": "Compress-Archive -Path \"${ExportPath}\\*\" -DestinationPath $ArchivePath -CompressionLevel Fastest\r\n\r\nNew-Item -Path $JDBCDst -ItemType Directory\r\nCopy-Item -Path $JDBCSrc -Destination $JDBCDst\r\n\r\n[system.io.file]::WriteAllText($DatabaseConfig, ([system.io.file]::ReadAllText($DatabaseConfig, [system.text.encoding]::UTF8)), [system.text.encoding]::ASCII)"
           }
         },
         {
@@ -212,7 +227,37 @@
             "Octopus.Action.RunOnServer": "false",
             "Octopus.Action.Script.Syntax": "PowerShell",
             "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "& C:\\TeamCity\\bin\\maintainDB.cmd restore -F $ArchivePath -T (Join-Path $ExportPath 'config\\database.properties' -Resolve)"
+            "Octopus.Action.Script.ScriptBody": "& C:\\TeamCity\\bin\\maintainDB.cmd restore -F $ArchivePath -T $DatabaseConfig"
+          }
+        },
+        {
+          "Id": "1136ddc9-bbf3-4660-94d5-441eaf5d8aad",
+          "Name": "Copy TeamCity Config",
+          "ActionType": "Octopus.Script",
+          "IsDisabled": false,
+          "Environments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.RunOnServer": "false",
+            "Octopus.Action.Script.Syntax": "PowerShell",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "$srcConfig = Join-Path $ExportPath 'config'\n$dstConfig = Join-Path $TeamCityDataDir 'config'\nif (Test-Path $dstConfig) {\n    Remove-Item -Path $dstConfig -Recurse -Force \n}\nCopy-Item -Recurse -Force -Path $srcConfig -Destination $TeamCityDataDir"
+          }
+        },
+        {
+          "Id": "3c132e0f-539f-48db-8936-41fcdb56f6f6",
+          "Name": "Start TeamCity",
+          "ActionType": "Octopus.Script",
+          "IsDisabled": false,
+          "Environments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.RunOnServer": "false",
+            "Octopus.Action.Script.Syntax": "PowerShell",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "Start-Service TeamCity"
           }
         }
       ],
