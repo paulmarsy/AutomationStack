@@ -1,0 +1,40 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "nsgName": {
+            "type": "string"
+        },
+        "nsgRules": {
+            "type": "array",
+            "defaultValue": [{
+                "name": "HTTP1",
+                "port": 801
+            }, {
+                "name": "HTTPS1",
+                "port": 4431
+            }]
+        }
+    },
+    "resources": [{
+        "copy": {
+            "name": "allowCopy",
+            "count": 2
+        },
+        "apiVersion": "2016-03-30",
+        "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+        "name": "[concat(parameters('nsgName'), '/', parameters('nsgRules')[copyIndex()].name)]",
+        "location": "[resourceGroup().location]",
+        "properties": {
+            "protocol": "*",
+            "sourcePortRange": "*",
+            "destinationPortRange": "[parameters('nsgRules')[copyIndex()].port]",
+            "sourceAddressPrefix": "*",
+            "destinationAddressPrefix": "*",
+            "access": "Allow",
+            "priority": "[copyIndex(175)]",
+            "direction": "Inbound"
+        }
+
+    }]
+}
