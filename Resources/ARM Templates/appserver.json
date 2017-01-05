@@ -34,9 +34,21 @@
       }
     },
     "vmAdminPassword": {
-      "type": "string",
+      "type": "securestring",
       "metadata": {
         "description": "Password for the Virtual Machine."
+      }
+    },
+    "clientID": {
+      "type": "string",
+      "metadata": {
+        "description": "Client ID of AAD app which has permissions to KeyVault"
+      }
+    },
+    "clientSecret": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Client Secret of AAD app which has permissions to KeyVault"
       }
     }
   },
@@ -47,7 +59,8 @@
     "nicName": "[concat(parameters('productName'),'NIC')]",
     "publicIPAddressName": "[concat(parameters('productName'),'PublicIP')]",
     "virtualNetworkId": "[resourceId(parameters('infraResourceGroup'), 'Microsoft.Network/virtualNetworks', 'VirtualNetwork')]",
-    "subnetId": "[concat(variables('virtualNetworkId'),'/subnets/', 'Default')]"
+    "subnetId": "[concat(variables('virtualNetworkId'),'/subnets/', 'Default')]",
+    "keyVaultName": "[concat('keyvault', parameters('udp'))]"
   },
   "resources": [{
     "apiVersion": "2016-01-01",
@@ -60,7 +73,14 @@
     },
     "kind": "Storage",
     "properties": {
-
+      "encryption": {
+        "keySource": "Microsoft.Storage",
+        "services": {
+          "blob": {
+            "enabled": true
+          }
+        }
+      }
     }
   }, {
     "apiVersion": "2015-06-15",
@@ -175,12 +195,41 @@
           "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]"
         }]
       }
-    }
+    },
+    "resources": [{
+      "type": "extensions",
+      "name": "AzureDiskEncryption",
+      "apiVersion": "2016-03-30",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "publisher": "Microsoft.Azure.Security",
+        "type": "AzureDiskEncryption",
+        "typeHandlerVersion": "1.1",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "AADClientID": "[parameters('clientId')]",
+          "KeyVaultURL": "[concat('https://', variables('keyVaultName'), '.vault.azure.net/')]",
+          "KeyEncryptionAlgorithm": "RSA-OAEP",
+          "VolumeType": "All",
+          "EncryptionOperation": "EnableEncryption"
+        },
+        "protectedSettings": {
+          "AADClientSecret": "[parameters('clientSecret')]"
+        }
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
+      ]
+    }]
   }],
   "outputs": {
     "fqdn": {
       "type": "string",
       "value": "[reference(variables('publicIPAddressName')).dnsSettings.fqdn]"
+    },
+    "keyVaultSecretUrl": {
+            "type": "string",
+            "value": "[reference(resourceId('Microsoft.Compute/virtualMachines/extensions',  variables('vmName'),  'AzureDiskEncryption')).instanceView.statuses[0].message]"
     }
   }
 }

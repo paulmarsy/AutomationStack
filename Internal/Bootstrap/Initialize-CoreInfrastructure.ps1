@@ -1,10 +1,7 @@
 function Initialize-CoreInfrastructure {
-    Write-Host 'Deploying core infrastructure...'
-    $CurrentContext.Set('InfraRg', 'AutomationStack#{UDP}')
     $CurrentContext.Set('SqlServerName', 'sqlserver#{UDP}')
-    Start-ARMDeployment -ResourceGroupName $CurrentContext.Get('InfraRg') -TemplateFile 'infrastructure.json' -TemplateParameters @{
+    Start-ARMDeployment -ResourceGroupName $CurrentContext.Get('InfraRg') -Template 'infrastructure' -Mode Incremental -TemplateParameters @{
         udp = $CurrentContext.Get('UDP')
         sqlAdminUsername = $CurrentContext.Get('Username')
-        sqlAdminPassword = $CurrentContext.Get('Password')
-    }
+    } | Out-Null
 }

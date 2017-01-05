@@ -1,0 +1,47 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "productName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the product that is running on this VM"
+            }
+        },
+        "keyVaultResourceID": {
+            "type": "string",
+            "metadata": {
+                "description": "KeyVault resource id. Ex: /subscriptions/9135e259-1f76-4dbd-a5c8-bc4fcdf3cf1c/resourceGroups/DiskEncryptionTest/providers/Microsoft.KeyVault/vaults/DiskEncryptionTestAus"
+            }
+        },
+        "keyVaultSecretUrl": {
+            "type": "string",
+            "metadata": {
+                "description": "KeyVault secret Url. Ex: https://diskencryptiontestaus.vault.azure.net/secrets/BitLockerEncryptionSecretWithKek/e088818e865e48488cf363af16dea596"
+            }
+        }
+    },
+    "variables": {
+        "vmName": "[concat(parameters('productName'),'VM')]"
+    },
+    "resources": [{
+        "apiVersion": "2015-06-15",
+        "type": "Microsoft.Compute/virtualMachines",
+        "name": "[variables('vmName')]",
+        "location": "[resourceGroup().location]",
+        "properties": {
+            "storageProfile": {
+                "osDisk": {
+                    "encryptionSettings": {
+                        "diskEncryptionKey": {
+                            "sourceVault": {
+                                "id": "[parameters('keyVaultResourceID')]"
+                            },
+                            "secretUrl": "[parameters('keyVaultSecretUrl')]"
+                        }
+                    }
+                }
+            }
+        }
+    }]
+}

@@ -13,4 +13,5 @@ function New-DeploymentContext {
     $CurrentContext.Set('AzureTenantId', $azureRmContext.Tenant.TenantId)
     $CurrentContext.Set('AzureSubscriptionId', $azureRmContext.Subscription.SubscriptionId)
     $CurrentContext.Set('AzureRegion', $automationStackDetail.AzureRegion)
+    $CurrentContext.Set('InfraRg', 'AutomationStack#{UDP}')
 }

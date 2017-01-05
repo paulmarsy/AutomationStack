@@ -7,10 +7,20 @@ DevOps Automation Sandbox
 (new-object Net.WebClient).DownloadString('https://raw.githubusercontent.com/paulmarsy/AutomationStack/master/bootstrap.ps1') | iex
 ```
 
-### Cleanup an unwanted deployment
-
+_If you have downloaded the repository independently the process can be started with_
 ```PowerShell
-.\AutomationStack\Utils\Cleanup.ps1 <UDP>
+Import-Module .\AutomationStack.psd1
+New-AutomationStack [-AzureRegion 'North Europe']
+```
+
+### Creating a TeamCity Deployment
+Deploy the _Provision TeamCity (Windows)_ project in Octopus, or after the environment has been provisioned use the followup command
+```PowerShell
+New-TeamCityStack
+```
+### Cleanup an unwanted deployment
+```PowerShell
+Remove-AutomationStack <UDP>
 ```
 
 #### Example
@@ -27,12 +37,11 @@ DevOps Automation Sandbox
 
 2. In this example to cleanup any Azure resources created you would issue
   ```PowerShell
-  & .\AutomationStack\Utils\Cleanup.ps1 7d18
+  Remove-AutomationStack 7d18
   ```
   
 3. After this the only remnanents are
   * The `AutomationStack` folder in the current directory 
-  * A few files in the `$Env:TEMP` directory which can be cleaned up in the normal way
   * The Azure PowerShell Cmdlets if they weren't previously installed, they can be removed with the command
 
   ```PowerShell

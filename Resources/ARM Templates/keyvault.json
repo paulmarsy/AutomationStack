@@ -1,0 +1,110 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "udp": {
+            "type": "string",
+            "metadata": {
+                "description": "Unique Deployment Prefix to avoid name collisions"
+            }
+        },
+        "tenantId": {
+            "type": "string",
+            "metadata": {
+                "description": "Tenant Id for the subscription and use assigned access to the vault. Available from the Get-AzureRMSubscription PowerShell cmdlet"
+            }
+        },
+        "objectId": {
+            "type": "string",
+            "metadata": {
+                "description": "Object Id of the AAD user or service principal that will have access to the vault. Available from the Get-AzureRMADUser or the Get-AzureRMADServicePrincipal cmdlets"
+            }
+        },
+        "sqlAdminPassword": {
+            "type": "string",
+            "metadata": {
+                "description": "Value of the secret to store in the vault"
+            }
+        },
+        "vmAdminPassword": {
+            "type": "string",
+            "metadata": {
+                "description": "Value of the secret to store in the vault"
+            }
+        },
+        "servicePrincipalClientSecret": {
+            "type": "string",
+            "metadata": {
+                "description": "Value of the secret to store in the vault"
+            }
+        }
+    },
+    "variables": {
+        "keyVaultName": "[concat('keyvault', parameters('udp'))]"
+    },
+    "resources": [{
+        "type": "Microsoft.KeyVault/vaults",
+        "name": "[variables('keyVaultName')]",
+        "apiVersion": "2015-06-01",
+        "location": "[resourceGroup().location]",
+        "properties": {
+            "enabledForDeployment": false,
+            "enabledForTemplateDeployment": true,
+            "enabledForVolumeEncryption": true,
+            "tenantId": "[parameters('tenantId')]",
+            "accessPolicies": [{
+                "tenantId": "[parameters('tenantId')]",
+                "objectId": "[parameters('objectId')]",
+                "permissions": {
+                    "keys": ["all"],
+                    "secrets": ["all"]
+                }
+            }],
+            "sku": {
+                "name": "Standard",
+                "family": "A"
+            }
+        },
+        "resources": [{
+            "type": "secrets",
+            "name": "SqlAdminPassword",
+            "apiVersion": "2015-06-01",
+            "properties": {
+                "value": "[parameters('sqlAdminPassword')]"
+            },
+            "dependsOn": [
+                "[concat('Microsoft.KeyVault/vaults/', variables('keyVaultName'))]"
+            ]
+        }, {
+            "type": "secrets",
+            "name": "VMAdminPassword",
+            "apiVersion": "2015-06-01",
+            "properties": {
+                "value": "[parameters('vmAdminPassword')]"
+            },
+            "dependsOn": [
+                "[concat('Microsoft.KeyVault/vaults/', variables('keyVaultName'))]"
+            ]
+        }, {
+            "type": "secrets",
+            "name": "ServicePrincipalClientSecret",
+            "apiVersion": "2015-06-01",
+            "properties": {
+                "value": "[parameters('servicePrincipalClientSecret')]"
+            },
+            "dependsOn": [
+                "[concat('Microsoft.KeyVault/vaults/', variables('keyVaultName'))]"
+            ]
+        }]
+    }],
+    "outputs": {
+        "KeyVaultId": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.KeyVault/vaults',variables('keyVaultName'))]"
+        },
+        "vaultUri": {
+            "type": "string",
+            "value": "[reference(variables('keyVaultName')).vaultUri]"
+        }
+    }
+}

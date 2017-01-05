@@ -1,8 +1,9 @@
 function Start-ARMDeployment {
     param(
         $ResourceGroupName,
-        $TemplateFile,
-        $TemplateParameters
+        $Template,
+        $TemplateParameters,
+        [ValidateSet('Complete', 'Incremental')]$Mode
     )
 
     $resourceGroup = Get-AzureRmResourceGroup -Name $ResourceGroupName -ErrorAction SilentlyContinue
@@ -14,12 +15,28 @@ function Start-ARMDeployment {
     else {
         Write-Host "Using existing resource group '$ResourceGroupName'"
     }
+    $args = @{
+        ResourceGroupName = $ResourceGroupName
+        TemplateFile = (Join-Path -Resolve $ResourcesPath ('ARM Templates\{0}.json' -f $Template))
+        Mode = $Mode
+    }
 
-    $TemplateFilePath = Join-Path -Resolve $ResourcesPath ('ARM Templates\{0}' -f $TemplateFile)
+    $TemplateParametersFilePath = Join-Path $ResourcesPath ('ARM Templates\{0}.parameters.json' -f $Template)
+    if (Test-Path $TemplateParametersFilePath) {
+        $tokenisedTemplateParameterFile = Join-Path $TempPath ('{0}.parameters.json' -f $Template)
+        $CurrentContext.ParseFile($TemplateParametersFilePath, $tokenisedTemplateParameterFile)
+        $args += @{ TemplateParameterFile = $tokenisedTemplateParameterFile }
+        $args += $TemplateParameters
+    } else {
+        $args += @{ TemplateParameterObject = $TemplateParameters }
+    }
 
     Write-Host "Testing deployment..."
-    Test-AzureRmResourceGroupDeployment -ResourceGroupName $ResourceGroupName -TemplateFile $TemplateFilePath -TemplateParameterObject $TemplateParameters -Mode Complete
+    Test-AzureRmResourceGroupDeployment @args
 
     Write-Host "Starting deployment..."
-    New-AzureRmResourceGroupDeployment -Name ('AutomationStack-{0}-{1}' -f ([system.io.path]::GetFileNameWithoutExtension($TemplateFile)), $CurrentContext.Get('UDP')) -ResourceGroupName $ResourceGroupName -TemplateFile $TemplateFilePath -TemplateParameterObject $TemplateParameters -Mode Complete -Force
-}
+    $deployment = New-AzureRmResourceGroupDeployment -Name ('AutomationStack-{0}-{1}' -f $Template, $CurrentContext.Get('UDP')) -Force @args
+
+    $deployment | Format-List -Property @('DeploymentName','ResourceGroupName','Mode','ProvisioningState','Timestamp','ParametersString', 'OutputsString') | Out-Host
+    $deployment.Outputs
+} 

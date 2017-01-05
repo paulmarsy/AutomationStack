@@ -23,7 +23,7 @@
             }
         },
         "sqlAdminPassword": {
-            "type": "string",
+            "type": "securestring",
             "metadata": {
                 "description": "Admin password for the SQL Server."
             }
@@ -31,9 +31,9 @@
     },
     "variables": {
         "resourcesStorageName": "[concat('stackresources', parameters('udp'))]",
-        "vmStorageName": "[concat('vmvhds', parameters('udp'))]",
         "sqlServerName": "[concat('sqlserver', parameters('udp'))]",
-        "automationName": "[concat('automation', parameters('udp'))]"
+        "automationName": "[concat('automation', parameters('udp'))]",
+        "keyVaultName": "[concat('keyvault', parameters('udp'))]"
     },
     "resources": [{
         "apiVersion": "2016-03-30",
@@ -74,6 +74,18 @@
             }
         }
     }, {
+        "type": "Microsoft.KeyVault/vaults/secrets",
+        "name": "[concat(variables('keyVaultName'), '/StackResourcesKey')]",
+        "apiVersion": "2015-06-01",
+        "properties": {
+            "value": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('resourcesStorageName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value]"
+        },
+        "dependsOn": [
+            "[concat('Microsoft.Storage/storageAccounts/',variables('resourcesStorageName'))]"
+
+        ]
+
+    }, {
         "apiVersion": "2014-04-01-preview",
         "type": "Microsoft.Sql/servers",
         "name": "[variables('sqlServerName')]",
@@ -96,10 +108,7 @@
                 "endIpAddress": "0.0.0.0",
                 "startIpAddress": "0.0.0.0"
             }
-        }],
-        "dependsOn": [
-
-        ]
+        }]
     }, {
         "apiVersion": "2015-10-31",
         "type": "Microsoft.Automation/automationAccounts",

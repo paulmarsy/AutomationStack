@@ -1,31 +1,37 @@
 class Octosprache {
     Octosprache([string]$UDP) {
         $backingFile = Join-Path $script:DeploymentsPath ('{0}.json' -f $UDP)
-        if (Test-Path $backingFile) { Write-Host 'Repopulating configuration from file' }
-
+        if (Test-Path $backingFile) { Write-Host 'Repopulating Octosprache configuration from file' }
+        else { Write-Host 'Creating new Octosprache configuration' }
+        
         $this.VariableDictionary = New-Object Octostache.VariableDictionary $backingFile
-        Write-Warning "AutomationStack Configuration is being stored in file '$backingFile' and may contain sensitive deployment details"
 
         $this.Set('UDP', $UDP)
     }
     static Init() {
-        [Octosprache]::Guid = [guid]::NewGuid().Guid
+        $tempFolder = Join-Path $script:TempPath 'Octosprache'
+        if (!(Test-Path $tempFolder)) {
+            New-Item -Path $tempFolder -ItemType Directory | Out-Null
+        }
         [Octosprache]::RegisterNuGetAssembly('Newtonsoft.Json', '9.0.1', 'net40', 'Newtonsoft.Json')
         [Octosprache]::RegisterNuGetAssembly('Sprache', '2.1.0', 'net40', 'Sprache')
         [Octosprache]::RegisterNuGetAssembly('Octostache', '2.0.7', 'net40', 'Octostache')
     }
     static RegisterNuGetAssembly($PackageId, $Version, $Framework, $Assembly) {
-        $download = Invoke-WebRequest -Verbose -UseBasicParsing -Uri "https://www.nuget.org/api/v2/package/$PackageId/$Version"
-        $tempFile = [System.IO.Path]::ChangeExtension((New-TemporaryFile).FullName, 'zip')
-        Write-Host "Saving $PackageId $Version to ${tempFile}"
-        Set-Content -Path $tempFile -Value $download.Content -Force -Encoding Byte
-        $tempFolder = Join-Path $script:TempPath ([Octosprache]::Guid)
-        Expand-Archive -Path $tempFile -DestinationPath $tempFolder -Force
+        $tempFolder = Join-Path $script:TempPath 'Octosprache'
+        $assemblyPath = Join-Path $tempFolder "lib\$Framework\$Assembly.dll"
+        if (!(Test-Path $assemblyPath)) {
+            Write-Verbose "Downloading $PackageId ($Version)"
+            $download = Invoke-WebRequest -UseBasicParsing -Uri "https://www.nuget.org/api/v2/package/$PackageId/$Version"
+        
+            $tempFile = Join-Path $tempFolder ('{0}.{1}.zip' -f $PackageId, $Version)
+            Set-Content -Path $tempFile -Value $download.Content -Force -Encoding Byte
             
-        Write-Host "Loading $Assembly..."
-        Add-Type -Path (Join-Path -Resolve $tempFolder "lib\$Framework\$Assembly.dll")
+            Expand-Archive -Path $tempFile -DestinationPath $tempFolder -Force
+        }
+        Write-Verbose "Loading $Assembly..."
+        Add-Type -Path $assemblyPath
     }
-    static hidden $Guid
     hidden $VariableDictionary
 
     Set([string]$Key, [string]$Value) {
