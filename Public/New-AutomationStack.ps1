@@ -47,7 +47,7 @@ function New-AutomationStack {
                 Publish-StackResources
             }
             7 {
-                Write-DeploymentUpdate $_ 'Octopus Deploy - Configuration' 'Deploying Octopus Deploy'
+                Write-DeploymentUpdate $_ 'Octopus Deploy - Desired State Configuration' 'Deploying Octopus Deploy'
                Resume-OctopusDeployConfiguration
             }
             8 {

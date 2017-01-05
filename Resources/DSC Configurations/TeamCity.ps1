@@ -16,19 +16,18 @@ Configuration TeamCity
             Ensure = "Present"
             State = "Started"
             Name = "Tentacle"
-
-            # Registration - all parameters required
             ApiKey = $ApiKey
             OctopusServerUrl = $OctopusServerUrl
             Environments = 'Microsoft Azure'
             Roles = "TeamCity Server (Windows)"
-            DependsOn = @('[xFirewall]OctopusTentacleFirewall','[Environment]TeamCityDataDir')
+            DependsOn = @('[xFirewall]OctopusTentacleFirewall','[Environment]TeamCityDataDir','[Environment]JavaHome')
         }
         Script 'Octopus Tentacle Name'
         {
             SetScript = {
-                & "C:\Program Files\Octopus Deploy\Tentacle\Tentacle.exe" deregister-from --instance=Tentacle --server=$($using:OctopusServerUrl) --apikey=$($using:ApiKey) -m | Write-Output
-                & "C:\Program Files\Octopus Deploy\Tentacle\Tentacle.exe" register-with --instance=Tentacle --server=$($using:OctopusServerUrl) --apikey=$($using:ApiKey) --environment='Microsoft Azure' --role='TeamCity Server (Windows)' --name='TeamCity Server' | Write-Output
+                if ((Get-Service 'OctopusDeploy Tentacle' -ErrorAction Ignore | % Status) -ne 'Running' -or -not (Test-Path "$($env:SystemDrive)\Octopus\Octopus.DSC.installstate")) { return }
+                & "C:\Program Files\Octopus Deploy\Tentacle\Tentacle.exe" deregister-from --instance=Tentacle --server=$($using:OctopusServerUrl) --apikey=$($using:ApiKey) -m | Add-Content -Path 'C:\Octopus\logs\rename.log'
+                & "C:\Program Files\Octopus Deploy\Tentacle\Tentacle.exe" register-with --instance=Tentacle --server=$($using:OctopusServerUrl) --apikey=$($using:ApiKey) --environment='Microsoft Azure' --role='TeamCity Server (Windows)' --name='TeamCity Server' | Add-Content -Path 'C:\Octopus\logs\rename.log'
                 [System.IO.FIle]::WriteAllText("$($env:SystemDrive)\Octopus\Octopus.Server.DSC.regstate", $LASTEXITCODE,[System.Text.Encoding]::ASCII)
             }
             TestScript = {
@@ -61,17 +60,20 @@ Configuration TeamCity
             LocalPort             = ("80", "444")
             Protocol              = "TCP"
         }
-        $version = '10.0.4'
-        xRemoteFile TeamCityDownloader
+
+        xRemoteFile SevenZipDownloader
         {
-            Uri = "https://download.jetbrains.com/teamcity/TeamCity-$($version).tar.gz"
-            DestinationPath = "D:\TeamCity-$($version).tar.gz"
+            Uri = 'http://www.7-zip.org/a/7z1604-x64.msi'
+            DestinationPath = 'D:\7z1604-x64.msi'
         }
-        Archive TeamCityExtract
+        Package SevenZip
         {
-            Path = "D:\TeamCity-$($version).tar.gz"
-            Destination = "C:\"
-            DependsOn = "[xRemoteFile]TeamCityDownloader"
+            Ensure = 'Present'
+            Path = 'D:\7z1604-x64.msi'
+            Name = '7-Zip 16.04 (x64 edition)'
+            Arguments = "/qn /l*v `"D:\7ZipInstall.log`""
+            ProductId = '23170F69-40C1-2702-1604-000001000000'
+            DependsOn = "[xRemoteFile]SevenZipDownloader"
         }
         
         $BundleId = "216432" # jre-8u111-windows-i586.exe
@@ -80,20 +82,48 @@ Configuration TeamCity
             Uri = "http://javadl.oracle.com/webapps/download/AutoDL?BundleId=$BundleId"
             DestinationPath = "D:\JreInstall$BundleId.exe"
         }
-        Package Installer
+        $javaInstallPath = 'C:\jre8'
+        Package Java
         {
             Ensure = 'Present'
-            Name = "Java 8"
+            Name = "Java 8 Update 111"
             Path = "D:\JreInstall$BundleId.exe"
-            Arguments = "/s REBOOT=0 SPONSORS=0 REMOVEOUTOFDATEJRES=1 INSTALL_SILENT=1 AUTO_UPDATE=0 EULA=0 /l*v `"D:\JreInstall$BundleId.log`""
-            ProductId = "26A24AE4-039D-4CA4-87B4-2F64180101F0"
+            Arguments = "/qn REBOOT=0 SPONSORS=0 REMOVEOUTOFDATEJRES=1 INSTALL_SILENT=1 AUTO_UPDATE=0 REMOVEOLDERJRES=1 NOSTARTMENU=Enable INSTALLDIR=`"$javaInstallPath`" /l*v `"D:\JreInstall$BundleId.log`""
+            # {26A24AE4-039D-4CA4-87B4-2F864xxxyyyF0} 1.8.0_111 = 180111
+            ProductId = "26A24AE4-039D-4CA4-87B4-2F64180111F0"
             DependsOn = "[xRemoteFile]JreDownloader"
         }
+
+        $version = '10.0.4'
+        xRemoteFile TeamCityDownloader
+        {
+            Uri = "https://download.jetbrains.com/teamcity/TeamCity-$($version).tar.gz"
+            DestinationPath = "D:\TeamCity-$($version).tar.gz"
+        }
+        Script TeamCityExtract
+        {
+            SetScript = {
+                & "${env:ProgramFiles}\7-Zip\7z.exe" e "D:\TeamCity-$($version).tar.gz" -o"D:\TeamCity-$($version)"
+                & "${env:ProgramFiles}\7-Zip\7z.exe" x "D:\TeamCity-$($version)\TeamCity-$($version).tar" -o"C:\"
+            }
+            TestScript = {
+                (Test-Path "$($env:SystemDrive)\TeamCity\BUILD_42538")
+            }
+            GetScript = { @{} }
+            DependsOn = @("[xRemoteFile]TeamCityDownloader","[Package]SevenZip")
+        }
+
         Environment TeamCityDataDir
         {
             Ensure = "Present" 
             Name = "TEAMCITY_DATA_PATH"
             Value = "${env:ALLUSERSPROFILE}\JetBrains\TeamCity"
+        }
+        Environment JavaHome
+        {
+            Ensure = "Present" 
+            Name = "JAVA_HOME"
+            Value = $javaInstallPath
         }
     }
 }

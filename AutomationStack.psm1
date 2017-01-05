@@ -1,3 +1,5 @@
+param($UDP)
+
 $ErrorActionPreference = 'Stop'
 
 $script:ResourcesPath = Join-Path -Resolve $PSScriptRoot 'Resources' | Convert-Path
@@ -25,3 +27,7 @@ Get-ChildItem -File -Filter *.ps1 -Path (Join-Path $PSScriptRoot 'Public') -Recu
 }
 
 [Octosprache]::Init()
+
+if ($UDP) {
+    $script:CurrentContext  = Get-OctospracheState -UDP $UDP
+}
