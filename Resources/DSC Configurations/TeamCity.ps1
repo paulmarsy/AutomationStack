@@ -76,22 +76,33 @@ Configuration TeamCity
             DependsOn = "[xRemoteFile]SevenZipDownloader"
         }
         
-        $BundleId = "216432" # jre-8u111-windows-i586.exe
-        xRemoteFile JreDownloader
+        Script JDKDownloader
         {
-            Uri = "http://javadl.oracle.com/webapps/download/AutoDL?BundleId=$BundleId"
-            DestinationPath = "D:\JreInstall$BundleId.exe"
+            SetScript = {
+                $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+                $cookie = New-Object System.Net.Cookie 
+                $cookie.Name = "oraclelicense"
+                $cookie.Value = "accept-securebackup-cookie"
+                $cookie.Domain = ".oracle.com"
+                $session.Cookies.Add($cookie);
+                $uri = 'http://download.oracle.com/otn-pub/java/jdk/8u112-b15/jdk-8u112-windows-i586.exe'
+                Invoke-WebRequest -Uri $uri -UseBasicParsing -WebSession $session -OutFile 'D:\JDKInstall.exe'
+            }
+            TestScript = {
+                (Test-Path 'D:\JDKInstall.exe')
+            }
+            GetScript = { @{} }
         }
-        $javaInstallPath = 'C:\jre8'
+        $javaInstallPath = 'C:\jdk8'
+        $id = "180112"
         Package Java
         {
             Ensure = 'Present'
-            Name = "Java 8 Update 111"
-            Path = "D:\JreInstall$BundleId.exe"
-            Arguments = "/s REBOOT=0 SPONSORS=0 REMOVEOUTOFDATEJRES=1 INSTALL_SILENT=1 AUTO_UPDATE=0 EULA=0 INSTALLDIR=`"$javaInstallPath`" /l*v `"D:\JreInstall$BundleId.log`""
-            # {26A24AE4-039D-4CA4-87B4-2F864xxxyyyF0} 1.8.0_111 = 180111
-            ProductID = '4EA42A62-D930-4AC4-784B-F2238110110F'
-            DependsOn = "[xRemoteFile]JreDownloader"
+            Name = "Java SE Development Kit 8 Update 112"
+            Path = "D:\JDKInstall.exe"
+            Arguments = "/s REBOOT=0 SPONSORS=0 REMOVEOUTOFDATEJRES=1 INSTALL_SILENT=1 AUTO_UPDATE=0 EULA=0 INSTALLDIR=`"$javaInstallPath`" /l*v `"D:\JDKInstall.log`""
+            ProductID = "32A3A4F4-B792-11D6-A78A-00B0D0${id}"
+            DependsOn = "[Script]JDKDownloader"
         }
 
         $version = '10.0.4'

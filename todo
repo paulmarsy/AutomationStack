@@ -1,0 +1,13 @@
+remove octo project - warn user that spn wont be removed and they should use the module's remove in addition
+remove-stack module - check if context.user.type -eq service principal - stop if it is and ask to reauth
+resize octo + tc vm's project
+remove + resize + shutdown projects should start job so the deploy can finish before the server dies
+
+retry in new-auto stack - run once with it retrying all  stages to confirm idempotency
+
+tokenise arm templates in octo import - use spache's json encode function
+
+tc agent cloud
+new project group
+new env 'Agent Cloud'
+project to create + capture genersalised image

@@ -67,13 +67,11 @@ PowerShellVersion = '5.0'
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = 'New-AutomationStack',
                     'Remove-AutomationStack',
-                    'Get-OctospracheState',
+                    
                     'New-TeamCityStack',
-                    'Show-AutomationStackDetail',
-                    'Publish-AutomationStackResources',
-                    'Set-AutomationStackContext',
-                    'Clear-AutomationStackTempFiles',
                     'Start-AutomationStackFeature',
+
+                    'Publish-AutomationStackResources',
                     'Connect-RDPStack'
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = ''

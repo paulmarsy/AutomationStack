@@ -2,8 +2,7 @@ function Show-AutomationStackDetail {
     param(
           [Parameter(ParameterSetName='ByGuid',Mandatory=$true)][string]$Guid,
           [Parameter(ParameterSetName='ByGuid',Mandatory=$true)][string]$AzureRegion,
-          [Parameter(ParameterSetName='ByOctosprache',Mandatory=$true)][Octosprache]$Octosprache,
-          [switch]$PassThru
+          [Parameter(ParameterSetName='ByOctosprache',Mandatory=$true)][Octosprache]$Octosprache
     )
     if ($Guid) {
         $UDP = $Guid.Substring(9,4)
@@ -30,5 +29,5 @@ function Show-AutomationStackDetail {
     Write-Host "Admin Password:" $context.Password  
     Write-Host ('*'*40)
 
-    if ($PassThru) { $context }
+    $context
 }

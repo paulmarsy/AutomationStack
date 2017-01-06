@@ -29,5 +29,5 @@ Get-ChildItem -File -Filter *.ps1 -Path (Join-Path $PSScriptRoot 'Public') -Recu
 [Octosprache]::Init()
 
 if ($UDP) {
-    $script:CurrentContext  = Get-OctospracheState -UDP $UDP
+    $script:CurrentContext  =  [octosprache]::new($UDP)
 }
