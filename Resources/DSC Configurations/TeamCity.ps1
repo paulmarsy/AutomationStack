@@ -26,8 +26,8 @@ Configuration TeamCity
         {
             SetScript = {
                 if ((Get-Service 'OctopusDeploy Tentacle' -ErrorAction Ignore | % Status) -ne 'Running' -or -not (Test-Path "$($env:SystemDrive)\Octopus\Octopus.DSC.installstate")) { return }
-                & "C:\Program Files\Octopus Deploy\Tentacle\Tentacle.exe" deregister-from --instance=Tentacle --server=$($using:OctopusServerUrl) --apikey=$($using:ApiKey) -m | Add-Content -Path 'C:\Octopus\logs\rename.log'
-                & "C:\Program Files\Octopus Deploy\Tentacle\Tentacle.exe" register-with --instance=Tentacle --server=$($using:OctopusServerUrl) --apikey=$($using:ApiKey) --environment='Microsoft Azure' --role='TeamCity Server (Windows)' --name='TeamCity Server' | Add-Content -Path 'C:\Octopus\logs\rename.log'
+                & "C:\Program Files\Octopus Deploy\Tentacle\Tentacle.exe" deregister-from --instance=Tentacle --server="$($using:OctopusServerUrl)" --apikey="$($using:ApiKey)" --console -m | Add-Content -Path 'C:\Octopus\logs\rename.log'
+                & "C:\Program Files\Octopus Deploy\Tentacle\Tentacle.exe" register-with --instance=Tentacle --server="$($using:OctopusServerUrl)" --apikey="$($using:ApiKey)" --console --environment='Microsoft Azure' --role='TeamCity Server (Windows)' --name='TeamCity Server' | Add-Content -Path 'C:\Octopus\logs\rename.log'
                 [System.IO.FIle]::WriteAllText("$($env:SystemDrive)\Octopus\Octopus.Server.DSC.regstate", $LASTEXITCODE,[System.Text.Encoding]::ASCII)
             }
             TestScript = {
@@ -88,9 +88,9 @@ Configuration TeamCity
             Ensure = 'Present'
             Name = "Java 8 Update 111"
             Path = "D:\JreInstall$BundleId.exe"
-            Arguments = "/qn REBOOT=0 SPONSORS=0 REMOVEOUTOFDATEJRES=1 INSTALL_SILENT=1 AUTO_UPDATE=0 REMOVEOLDERJRES=1 NOSTARTMENU=Enable INSTALLDIR=`"$javaInstallPath`" /l*v `"D:\JreInstall$BundleId.log`""
+            Arguments = "/s REBOOT=0 SPONSORS=0 REMOVEOUTOFDATEJRES=1 INSTALL_SILENT=1 AUTO_UPDATE=0 EULA=0 INSTALLDIR=`"$javaInstallPath`" /l*v `"D:\JreInstall$BundleId.log`"'"
             # {26A24AE4-039D-4CA4-87B4-2F864xxxyyyF0} 1.8.0_111 = 180111
-            ProductId = "26A24AE4-039D-4CA4-87B4-2F64180111F0"
+            ProductID = '4EA42A62-D930-4AC4-784B-F2238110110F'
             DependsOn = "[xRemoteFile]JreDownloader"
         }
 
@@ -103,8 +103,8 @@ Configuration TeamCity
         Script TeamCityExtract
         {
             SetScript = {
-                & "${env:ProgramFiles}\7-Zip\7z.exe" e "D:\TeamCity-$($version).tar.gz" -o"D:\TeamCity-$($version)"
-                & "${env:ProgramFiles}\7-Zip\7z.exe" x "D:\TeamCity-$($version)\TeamCity-$($version).tar" -o"C:\"
+                & "${env:ProgramFiles}\7-Zip\7z.exe" e "D:\TeamCity-$($using:version).tar.gz" -o"D:\TeamCity-$($using:version)"
+                & "${env:ProgramFiles}\7-Zip\7z.exe" x "D:\TeamCity-$($using:version)\TeamCity-$($using:version).tar" -o"C:\"
             }
             TestScript = {
                 (Test-Path "$($env:SystemDrive)\TeamCity\BUILD_42538")

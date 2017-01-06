@@ -84,43 +84,10 @@
     }
   }, {
     "apiVersion": "2015-06-15",
-    "type": "Microsoft.Network/networkSecurityGroups",
-    "name": "[variables('nsgName')]",
-    "location": "[resourceGroup().location]",
-    "properties": {
-      "securityRules": [{
-        "name": "HTTP",
-        "properties": {
-          "protocol": "TCP",
-          "sourcePortRange": "*",
-          "destinationPortRange": "80",
-          "sourceAddressPrefix": "Internet",
-          "destinationAddressPrefix": "*",
-          "access": "Allow",
-          "priority": 100,
-          "direction": "Inbound"
-        }
-      }, {
-        "name": "HTTPS",
-        "properties": {
-          "protocol": "TCP",
-          "sourcePortRange": "*",
-          "destinationPortRange": "443",
-          "sourceAddressPrefix": "Internet",
-          "destinationAddressPrefix": "*",
-          "access": "Allow",
-          "priority": 110,
-          "direction": "Inbound"
-        }
-      }]
-    }
-  }, {
-    "apiVersion": "2015-06-15",
     "type": "Microsoft.Network/networkInterfaces",
     "name": "[variables('nicName')]",
     "location": "[resourceGroup().location]",
     "dependsOn": [
-      "[concat('Microsoft.Network/networkSecurityGroups/', variables('nsgName'))]",
       "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]"
     ],
     "properties": {
@@ -137,7 +104,7 @@
         }
       }],
       "networkSecurityGroup": {
-        "id": "[resourceId('Microsoft.Network/networkSecurityGroups/', variables('nsgName'))]"
+        "id": "[resourceId(parameters('infraResourceGroup'), 'Microsoft.Network/networkSecurityGroups/', variables('nsgName'))]"
       }
     }
   }, {
@@ -228,8 +195,8 @@
       "value": "[reference(variables('publicIPAddressName')).dnsSettings.fqdn]"
     },
     "keyVaultSecretUrl": {
-            "type": "string",
-            "value": "[reference(resourceId('Microsoft.Compute/virtualMachines/extensions',  variables('vmName'),  'AzureDiskEncryption')).instanceView.statuses[0].message]"
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Compute/virtualMachines/extensions',  variables('vmName'),  'AzureDiskEncryption')).instanceView.statuses[0].message]"
     }
   }
 }
