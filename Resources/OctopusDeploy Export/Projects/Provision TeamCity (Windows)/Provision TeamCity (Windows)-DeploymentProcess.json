@@ -2,7 +2,7 @@
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
   "Id": "deploymentprocess-Projects-5",
   "OwnerId": "Projects-5",
-  "Version": 61,
+  "Version": 62,
   "Steps": [
     {
       "Id": "b7ee23bf-e81a-49d2-8510-f83d44038445",
@@ -238,7 +238,7 @@
         },
         {
           "Id": "3c132e0f-539f-48db-8936-41fcdb56f6f6",
-          "Name": "Start TeamCity",
+          "Name": "Install & Start TeamCity Service",
           "ActionType": "Octopus.Script",
           "IsDisabled": false,
           "Environments": [],
@@ -248,7 +248,7 @@
             "Octopus.Action.RunOnServer": "false",
             "Octopus.Action.Script.Syntax": "PowerShell",
             "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "Start-Service TeamCity"
+            "Octopus.Action.Script.ScriptBody": "& \"${TeamCityBin}teamcity-server.bat\" service install /runAsSystem\nStart-Service TeamCity"
           }
         }
       ],

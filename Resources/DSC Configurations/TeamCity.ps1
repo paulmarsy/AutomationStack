@@ -112,6 +112,21 @@ Configuration TeamCity
             GetScript = { @{} }
             DependsOn = @("[xRemoteFile]TeamCityDownloader","[Package]SevenZip")
         }
+        Script TeamCityServerConfig
+        {
+            SetScript = {
+                Move-Item -Path "$($env:SystemDrive)\TeamCity\conf\server.xml" -Destination "$($env:SystemDrive)\TeamCity\conf\server.xml.dscbackup"
+				$serverConfigFile = [System.IO.File]::ReadAllText("$($env:SystemDrive)\TeamCity\conf\server.xml.dscbackup")
+				$serverConfigFile = $serverConfigFile.Replace(' port="8111" ', ' port="80" ')
+				[System.IO.File]::WriteAllText("$($env:SystemDrive)\TeamCity\conf\server.xml", $serverConfigFile, [System.Text.Encoding]::ASCII)
+
+            }
+            TestScript = {
+                (Test-Path "$($env:SystemDrive)\TeamCity\conf\server.xml.dscbackup")
+            }
+            GetScript = { @{} }
+            DependsOn = '[Script]TeamCityExtract'
+        }
 
         Environment TeamCityDataDir
         {

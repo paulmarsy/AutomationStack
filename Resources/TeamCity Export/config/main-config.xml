@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<server rootURL="http://localhost:8111" uuid="fba73f7f-29b0-4ba8-a3cc-8f437622cb17">
+<server rootURL="http://localhost" uuid="fba73f7f-29b0-4ba8-a3cc-8f437622cb17">
   <version number="787" />
   <db-compact enabled="true">
     <scheduler hour="3" minute="0" />
