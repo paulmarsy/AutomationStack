@@ -5,7 +5,8 @@ Configuration OctopusDeploy
         $OctopusAdminUsername,
         $OctopusAdminPassword,
         $ConnectionString,
-        $HostHeader
+        $HostHeader,
+        $OctopusVersion = 'latest'
     )
     Import-DscResource -ModuleName PSDesiredStateConfiguration
     Import-DscResource -ModuleName OctopusDSC
@@ -13,6 +14,11 @@ Configuration OctopusDeploy
 
     Node "Server"
     {
+        if ($OctopusVersion -eq 'latest') {
+            $octopusDownloadUri = "https://octopus.com/downloads/latest/WindowsX64/OctopusServer"
+        } else {
+            $octopusDownloadUri = "https://download.octopusdeploy.com/octopus/Octopus.${OctopusVersion}-x64.msi"
+        }
         cOctopusServer OctopusServer
         {
             Ensure = "Present"
@@ -26,7 +32,7 @@ Configuration OctopusDeploy
             AllowCollectionOfAnonymousUsageStatistics = $false
             ForceSSL = $false
             ListenPort = 10943
-            DownloadUrl = "https://octopus.com/downloads/latest/WindowsX64/OctopusServer"
+            DownloadUrl = $octopusDownloadUri
         }
         cOctopusServerUsernamePasswordAuthentication "Enable Username/Password Auth"
         {
