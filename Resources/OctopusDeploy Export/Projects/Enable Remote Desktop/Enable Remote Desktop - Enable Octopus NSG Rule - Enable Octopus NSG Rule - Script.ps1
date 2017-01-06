@@ -1,4 +1,4 @@
-$nsg = Get-AzureRmNetworkSecurityGroup -Name $TeamCityNSGName -ResourceGroupName $InfraRg
+$nsg = Get-AzureRmNetworkSecurityGroup -Name $OctopusNSGName -ResourceGroupName $InfraRg
 
 $rdpRule = $nsg | % SecurityRules | ? { $_.Name -eq 'RDP' -and $_.Priority -eq 999 }
 $rdpRule.Access = 'Allow'

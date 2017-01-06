@@ -88,7 +88,7 @@ Configuration TeamCity
             Ensure = 'Present'
             Name = "Java 8 Update 111"
             Path = "D:\JreInstall$BundleId.exe"
-            Arguments = "/s REBOOT=0 SPONSORS=0 REMOVEOUTOFDATEJRES=1 INSTALL_SILENT=1 AUTO_UPDATE=0 EULA=0 INSTALLDIR=`"$javaInstallPath`" /l*v `"D:\JreInstall$BundleId.log`"'"
+            Arguments = "/s REBOOT=0 SPONSORS=0 REMOVEOUTOFDATEJRES=1 INSTALL_SILENT=1 AUTO_UPDATE=0 EULA=0 INSTALLDIR=`"$javaInstallPath`" /l*v `"D:\JreInstall$BundleId.log`""
             # {26A24AE4-039D-4CA4-87B4-2F864xxxyyyF0} 1.8.0_111 = 180111
             ProductID = '4EA42A62-D930-4AC4-784B-F2238110110F'
             DependsOn = "[xRemoteFile]JreDownloader"

@@ -2,11 +2,11 @@
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
   "Id": "deploymentprocess-Projects-2",
   "OwnerId": "Projects-2",
-  "Version": 33,
+  "Version": 39,
   "Steps": [
     {
       "Id": "1f7eaedc-d772-4fde-8a11-c298cb6e6880",
-      "Name": "Octopus",
+      "Name": "Enable Octopus NSG Rule",
       "Condition": "Success",
       "StartTrigger": "StartAfterPrevious",
       "RequiresPackagesToBeAcquired": false,
@@ -22,7 +22,7 @@
           "Properties": {
             "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
             "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "Get-AzureRmNetworkSecurityGroup -Name $OctopusNSGName -ResourceGroupName $OctopusRg |\nAdd-AzureRmNetworkSecurityRuleConfig -Name RDP -Protocol TCP -Access Allow -SourcePortRange * -SourceAddressPrefix Internet -DestinationPortRange 3389 -DestinationAddressPrefix * -Priority 300 -Direction Inbound  |\nSet-AzureRmNetworkSecurityGroup\n"
+            "Octopus.Action.Script.ScriptBody": "$nsg = Get-AzureRmNetworkSecurityGroup -Name $OctopusNSGName -ResourceGroupName $InfraRg\n\n$rdpRule = $nsg | % SecurityRules | ? { $_.Name -eq 'RDP' -and $_.Priority -eq 999 }\n$rdpRule.Access = 'Allow'\n\n$nsg | Set-AzureRmNetworkSecurityGroup\n"
           }
         }
       ],
@@ -70,7 +70,7 @@
           "Properties": {
             "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
             "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "Get-AzureRmNetworkSecurityGroup -Name $TeamCityNSGName -ResourceGroupName $TeamCityRg |\nAdd-AzureRmNetworkSecurityRuleConfig -Name RDP -Protocol TCP -Access Allow -SourcePortRange * -SourceAddressPrefix Internet -DestinationPortRange 3389 -DestinationAddressPrefix * -Priority 400 -Direction Inbound  |\nSet-AzureRmNetworkSecurityGroup\n"
+            "Octopus.Action.Script.ScriptBody": "$nsg = Get-AzureRmNetworkSecurityGroup -Name $TeamCityNSGName -ResourceGroupName $InfraRg\n\n$rdpRule = $nsg | % SecurityRules | ? { $_.Name -eq 'RDP' -and $_.Priority -eq 999 }\n$rdpRule.Access = 'Allow'\n\n$nsg | Set-AzureRmNetworkSecurityGroup\n"
           }
         }
       ],

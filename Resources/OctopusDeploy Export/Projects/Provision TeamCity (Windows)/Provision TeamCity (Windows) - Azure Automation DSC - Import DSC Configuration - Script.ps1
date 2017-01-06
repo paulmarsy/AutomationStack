@@ -10,7 +10,7 @@ $CompilationJob = Start-AzureRmAutomationDscCompilationJob -ResourceGroupName $I
 while ($CompilationJob.EndTime -eq $null -and $CompilationJob.Exception -eq $null)
 {
         Write-Host 'Waiting for compilation...'
-        Start-Sleep -Seconds 3
+        Start-Sleep -Seconds 10
         $CompilationJob = $CompilationJob | Get-AzureRmAutomationDscCompilationJob
 }
 

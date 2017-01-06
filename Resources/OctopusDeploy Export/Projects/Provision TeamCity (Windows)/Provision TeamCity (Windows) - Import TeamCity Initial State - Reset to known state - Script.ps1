@@ -1,5 +1,3 @@
-Stop-Service TeamCity -Force
-
 if (Test-Path $ExportPath) {
     Remove-Item $ExportPath -Recurse -Force
 }
