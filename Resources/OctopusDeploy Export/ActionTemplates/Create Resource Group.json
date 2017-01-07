@@ -1,0 +1,37 @@
+{
+  "$type": "Octopus.Core.Model.Projects.ActionTemplate, Octopus.Core",
+  "Id": "ActionTemplates-1",
+  "Name": "Create Resource Group",
+  "Description": "Creates an Azure resource group",
+  "Version": 2,
+  "ActionType": "Octopus.AzurePowerShell",
+  "CommunityActionTemplateId": null,
+  "Properties": {
+    "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
+    "Octopus.Action.Script.ScriptSource": "Inline",
+    "Octopus.Action.Script.ScriptBody": "$resourceGroup = Get-AzureRmResourceGroup -Name $ResourceGroupName -ErrorAction SilentlyContinue\r\nif(!$resourceGroup) {\r\n    Write-Output \"Creating resource group '$ResourceGroupName' in location '$Location'\"\r\n    New-AzureRmResourceGroup -Name $ResourceGroupName -Location $Location | Out-Default\r\n}\r\nelse {\r\n    Write-Output \"Using existing resource group '$ResourceGroupName'\"\r\n    $resourceGroup | Out-Default\r\n}"
+  },
+  "Parameters": [
+    {
+      "Id": "764e44ce-12d8-49ca-8a06-2a4623c6d57a",
+      "Name": "ResourceGroupName",
+      "Label": "Resource Group Name",
+      "HelpText": "Specifies a name for the resource group. This parameter is required. The resource name must be unique in the subscription.",
+      "DefaultValue": null,
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "189e5f7a-e01c-4139-8bc4-2981d0141a57",
+      "Name": "Location",
+      "Label": "Location",
+      "HelpText": "Specifies the location of the resource group. This parameter is required. Enter an Azure data center location, such as \"West US\" or \"Southeast Asia\".You can place a resource group in any location. The resource group does not have to be in the same location your Azure subscription or the same location as its resources. Resource groups can contain resources from different locations. To determine which location support each resource type, use the Get-AzureRmResourceProvider with the ProviderNamespace parameter cmdlet.",
+      "DefaultValue": "",
+      "DisplaySettings": {
+        "Octopus.ControlType": "Select",
+        "Octopus.SelectOptions": "eastasia|East Asia\nsoutheastasia|Southeast Asia\ncentralus|Central US\neastus|East US\neastus2|East US 2\nwestus|West US\nnorthcentralus|North Central US\nsouthcentralus|South Central US\nnortheurope|North Europe\nwesteurope|West Europe\njapanwest|Japan West\njapaneast|Japan East\nbrazilsouth|Brazil South\naustraliaeast|Australia East\naustraliasoutheast|Australia Southeast\ncanadacentral|Canada Central\ncanadaeast|Canada East\nuksouth|UK South\nukwest|UK West\nwestcentralus|West Central US\nwestus2|West US 2"
+      }
+    }
+  ]
+}

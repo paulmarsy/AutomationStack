@@ -1,0 +1,59 @@
+{
+  "$type": "Octopus.Core.Model.Projects.ActionTemplate, Octopus.Core",
+  "Id": "ActionTemplates-4",
+  "Name": "ARM Template - Enable Encryption",
+  "Description": null,
+  "Version": 0,
+  "ActionType": "Octopus.AzureResourceGroup",
+  "CommunityActionTemplateId": null,
+  "Properties": {
+    "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
+    "Octopus.Action.Azure.ResourceGroupName": "#{ResourceGroupName}",
+    "Octopus.Action.Azure.TemplateSource": "Inline",
+    "Octopus.Action.Azure.ResourceGroupTemplateParameters": "{\"productName\":{\"value\":\"#{ProductName}\"},\"keyVaultResourceID\":{\"value\":\"#{KeyVaultResourceId}\"},\"keyVaultSecretUrl\":{\"value\":\"#{KeyVaultSecretUrl}\"}}",
+    "Octopus.Action.Azure.ResourceGroupDeploymentMode": "Incremental",
+    "Octopus.Action.Azure.ResourceGroupTemplate": "{\r\n    \"$schema\": \"https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#\",\r\n    \"contentVersion\": \"1.0.0.0\",\r\n    \"parameters\": {\r\n        \"productName\": {\r\n            \"type\": \"string\",\r\n            \"metadata\": {\r\n                \"description\": \"Name of the product that is running on this VM\"\r\n            }\r\n        },\r\n        \"keyVaultResourceID\": {\r\n            \"type\": \"string\",\r\n            \"metadata\": {\r\n                \"description\": \"KeyVault resource id. Ex: /subscriptions/9135e259-1f76-4dbd-a5c8-bc4fcdf3cf1c/resourceGroups/DiskEncryptionTest/providers/Microsoft.KeyVault/vaults/DiskEncryptionTestAus\"\r\n            }\r\n        },\r\n        \"keyVaultSecretUrl\": {\r\n            \"type\": \"string\",\r\n            \"metadata\": {\r\n                \"description\": \"KeyVault secret Url. Ex: https://diskencryptiontestaus.vault.azure.net/secrets/BitLockerEncryptionSecretWithKek/e088818e865e48488cf363af16dea596\"\r\n            }\r\n        }\r\n    },\r\n    \"variables\": {\r\n        \"vmName\": \"[concat(parameters('productName'),'VM')]\"\r\n    },\r\n    \"resources\": [{\r\n        \"apiVersion\": \"2015-06-15\",\r\n        \"type\": \"Microsoft.Compute/virtualMachines\",\r\n        \"name\": \"[variables('vmName')]\",\r\n        \"location\": \"[resourceGroup().location]\",\r\n        \"properties\": {\r\n            \"storageProfile\": {\r\n                \"osDisk\": {\r\n                    \"encryptionSettings\": {\r\n                        \"diskEncryptionKey\": {\r\n                            \"sourceVault\": {\r\n                                \"id\": \"[parameters('keyVaultResourceID')]\"\r\n                            },\r\n                            \"secretUrl\": \"[parameters('keyVaultSecretUrl')]\"\r\n                        }\r\n                    }\r\n                }\r\n            }\r\n        }\r\n    }]\r\n}"
+  },
+  "Parameters": [
+    {
+      "Id": "d920a713-630a-4b9c-9326-61f055f64759",
+      "Name": "ResourceGroupName",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": null,
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "e5d857be-5e9a-4acb-8ffe-ffe35937fb54",
+      "Name": "ProductName",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": null,
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "1b9f6d7e-59be-44a4-9e72-cdb887bce545",
+      "Name": "KeyVaultResourceId",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": "#{KeyVaultResourceId}",
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "ac2fcb87-9c3a-400c-961a-f6034bdf630f",
+      "Name": "KeyVaultSecretUrl",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": null,
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    }
+  ]
+}

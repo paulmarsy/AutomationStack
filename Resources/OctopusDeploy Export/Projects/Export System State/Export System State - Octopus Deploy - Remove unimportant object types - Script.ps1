@@ -1,0 +1,2 @@
+Get-ChildItem -Path $OctopusExportPath -Directory | ? Name -in @('Certificates','CommunityActionTemplates','Deployments','Events','ExtensionConfigurations','Releases','ServerTasks') |
+    Remove-Item -Force -Recurse

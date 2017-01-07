@@ -1,0 +1,29 @@
+{
+  "$type": "Octopus.Core.Model.Lifecycles.Lifecycle, Octopus.Core",
+  "Id": "Lifecycles-41",
+  "Name": "Automation Stack Utility Project",
+  "Description": null,
+  "Phases": [
+    {
+      "Id": "f4c264e5-d950-48ba-8249-ecca2c97e068",
+      "Name": "Auto Deploy",
+      "AutomaticDeploymentTargets": [
+        "Environments-21"
+      ],
+      "OptionalDeploymentTargets": [],
+      "MinimumEnvironmentsBeforePromotion": 0,
+      "ReleaseRetentionPolicy": null,
+      "TentacleRetentionPolicy": null
+    }
+  ],
+  "ReleaseRetentionPolicy": {
+    "Unit": "Items",
+    "QuantityToKeep": 1,
+    "ShouldKeepForever": false
+  },
+  "TentacleRetentionPolicy": {
+    "Unit": "Items",
+    "QuantityToKeep": 1,
+    "ShouldKeepForever": false
+  }
+}

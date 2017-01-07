@@ -1,0 +1,90 @@
+{
+  "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
+  "Id": "deploymentprocess-Projects-22",
+  "OwnerId": "Projects-22",
+  "Version": 11,
+  "Steps": [
+    {
+      "Id": "3fc39e82-4b71-4403-beb2-34a921d10219",
+      "Name": "Update DSC Configuration",
+      "Condition": "Success",
+      "StartTrigger": "StartAfterPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "08f51293-c749-4331-afff-c51bfad3893c",
+          "Name": "Update DSC Configuration",
+          "ActionType": "Octopus.AzurePowerShell",
+          "IsDisabled": false,
+          "Environments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "$CompilationJob = Start-AzureRmAutomationDscCompilationJob -ResourceGroupName $InfraRg -AutomationAccountName $AutomationAccountName -ConfigurationName $DSCConfigurationName -Parameters @{\n    UDP = $UDP\n    OctopusAdminUsername = $StackAdminUsername\n    OctopusAdminPassword = $StackAdminPassword\n    ConnectionString = $OctopusConnectionString\n    HostHeader = $OctopusHostHeader\n    OctopusVersion = $OctopusParameters['Octopus.Release.Number']\n}\n\nwhile ($CompilationJob.EndTime -eq $null -and $CompilationJob.Exception -eq $null)\n{\n        Write-Host 'Waiting for compilation...'\n        Start-Sleep -Seconds 10\n        $CompilationJob = $CompilationJob | Get-AzureRmAutomationDscCompilationJob\n}\n\n$CompilationJob | Get-AzureRmAutomationDscCompilationJobOutput -Stream Any"
+          }
+        }
+      ],
+      "Properties": {
+        "Octopus.Action.TargetRoles": "Azure Automation"
+      }
+    },
+    {
+      "Id": "bc73d848-51a3-4536-b9b5-5dfb19d6a87b",
+      "Name": "Run DSC on OctopusVM",
+      "Condition": "Success",
+      "StartTrigger": "StartAfterPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "23a7a06e-20ef-4204-81f0-d864545e4852",
+          "Name": "Run DSC on OctopusVM",
+          "ActionType": "Octopus.Script",
+          "IsDisabled": false,
+          "Environments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.RunOnServer": "true",
+            "Octopus.Action.Script.Syntax": "PowerShell",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "Update-DscConfiguration"
+          }
+        }
+      ],
+      "Properties": {
+        "Octopus.Action.TargetRoles": "Azure Automation"
+      }
+    },
+    {
+      "Id": "0762e2e5-7561-4418-8e28-0475c5f04e31",
+      "Name": "Octopus Deploy Version",
+      "Condition": "Failure",
+      "StartTrigger": "StartAfterPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "8f92e3bd-6be4-4de4-a8aa-e240d5308d29",
+          "Name": "Octopus Deploy Version",
+          "ActionType": "Octopus.TentaclePackage",
+          "IsDisabled": false,
+          "Environments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.Package.AutomaticallyRunConfigurationTransformationFiles": "False",
+            "Octopus.Action.Package.AutomaticallyUpdateAppSettingsAndConnectionStrings": "False",
+            "Octopus.Action.Package.DownloadOnTentacle": "True",
+            "Octopus.Action.Package.FeedId": "feeds-chocolatey",
+            "Octopus.Action.Package.PackageId": "OctopusDeploy"
+          }
+        }
+      ],
+      "Properties": {
+        "Octopus.Action.TargetRoles": "Octopus Deploy Server"
+      }
+    }
+  ],
+  "RelatedDocumentIds": []
+}

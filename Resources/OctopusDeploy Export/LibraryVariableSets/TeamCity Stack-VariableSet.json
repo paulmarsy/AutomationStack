@@ -18,6 +18,11 @@
       "Id": "4f202977-b81f-33d9-6540-116790c95378",
       "Name": "TeamCityNSGName",
       "Value": "TeamCityNSG"
+    },
+    {
+      "Id": "ecd59520-b866-5ece-2201-5385a056dfd5",
+      "Name": "TeamCityConnectionString",
+      "Value": "jdbc:sqlserver://#{SqlServerName}.database.windows.net;database=TeamCity;user=#{StackAdminUsername}@#{SqlServerName};password=#{StackAdminPassword};encrypt=true;trustServerCertificate=true;hostNameInCertificate=*.database.windows.net;loginTimeout=30;"
     }
   ],
   "RelatedDocumentIds": []

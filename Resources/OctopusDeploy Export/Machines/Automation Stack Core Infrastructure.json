@@ -1,0 +1,19 @@
+{
+  "$type": "Octopus.Core.Model.Environments.Machine, Octopus.Core",
+  "Id": "Machines-23",
+  "Name": "Automation Stack Core Infrastructure",
+  "Endpoint": {
+    "$type": "Octopus.Core.Model.Environments.Endpoints.CloudRegionEndpoint, Octopus.Core"
+  },
+  "IsDisabled": false,
+  "Roles": [
+    "ARM Provisioning",
+    "Azure Automation"
+  ],
+  "EnvironmentIds": [
+    "Environments-21"
+  ],
+  "TenantIds": [],
+  "TenantTags": [],
+  "MachinePolicyId": "MachinePolicies-1"
+}

@@ -1,0 +1,49 @@
+{
+  "$type": "Octopus.Core.Model.Variables.VariableSet, Octopus.Core",
+  "Id": "variableset-Projects-3",
+  "OwnerId": "Projects-3",
+  "Version": 7,
+  "Variables": [
+    {
+      "Id": "2e80127f-377b-331b-0b8b-e35f73087eca",
+      "Name": "OctopusExportPath",
+      "Value": "D:\\OctopusDeploy\\#{Octopus.Release.Number}\\"
+    },
+    {
+      "Id": "ae566c92-c3ab-8648-a4cf-3383e8451b6b",
+      "Name": "ExportPassword",
+      "Value": "#{StackAdminPassword}"
+    },
+    {
+      "Id": "5c3a7c18-14f4-a79b-b403-b0d276a2fa1e",
+      "Name": "OctopusArchivePath",
+      "Value": "D:\\OctopusDeploy\\#{OctopusArchiveName}"
+    },
+    {
+      "Id": "e5183151-416f-b45a-9a5b-cb4dff7a91df",
+      "Name": "ProjectToExport",
+      "Value": "All",
+      "Prompt": {
+        "Label": "Project To Export",
+        "Description": "",
+        "Required": false
+      }
+    },
+    {
+      "Id": "0174fd01-b341-1696-5b16-5d9de1fa0713",
+      "Name": "TeamCityArchivePath",
+      "Value": "D:\\TeamCity\\#{TeamCityArchiveName}"
+    },
+    {
+      "Id": "f18b6aa8-2136-eb53-8cb1-c17b0378a510",
+      "Name": "OctopusArchiveName",
+      "Value": "Octopus - #{Octopus.Release.Number}.zip"
+    },
+    {
+      "Id": "d08ce746-27e5-d943-0667-6d6ae5c60d79",
+      "Name": "TeamCityArchiveName",
+      "Value": "TeamCity - #{Octopus.Release.Number}.zip"
+    }
+  ],
+  "RelatedDocumentIds": []
+}

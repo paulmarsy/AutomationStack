@@ -1,0 +1,20 @@
+{
+  "$type": "Octopus.Core.Model.Projects.Channel, Octopus.Core",
+  "Id": "Channels-22",
+  "Name": "Octopus Deploy",
+  "Description": null,
+  "ProjectId": "Projects-22",
+  "LifecycleId": null,
+  "IsDefault": true,
+  "TenantTags": [],
+  "Rules": [
+    {
+      "Id": "e67dcca2-d746-40e7-aa38-a8bb6ca45741",
+      "Actions": [
+        "8f92e3bd-6be4-4de4-a8aa-e240d5308d29"
+      ],
+      "VersionRange": "[3.7.0,]",
+      "Tag": null
+    }
+  ]
+}

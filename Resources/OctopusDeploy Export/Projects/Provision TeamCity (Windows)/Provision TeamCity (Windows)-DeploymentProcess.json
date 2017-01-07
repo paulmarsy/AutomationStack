@@ -2,17 +2,17 @@
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
   "Id": "deploymentprocess-Projects-5",
   "OwnerId": "Projects-5",
-  "Version": 62,
+  "Version": 71,
   "Steps": [
     {
-      "Id": "b7ee23bf-e81a-49d2-8510-f83d44038445",
+      "Id": "de8a4950-683f-4ef5-82be-483909a15040",
       "Name": "Create TeamCityStack Resource Group",
       "Condition": "Success",
       "StartTrigger": "StartAfterPrevious",
       "RequiresPackagesToBeAcquired": false,
       "Actions": [
         {
-          "Id": "14c402f7-c5b3-4d15-b3d3-aea4ce30c7e6",
+          "Id": "7938d04d-4ac5-4c6f-9c46-514a8cb466e8",
           "Name": "Create TeamCityStack Resource Group",
           "ActionType": "Octopus.AzurePowerShell",
           "IsDisabled": false,
@@ -22,7 +22,11 @@
           "Properties": {
             "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
             "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "$resourceGroup = Get-AzureRmResourceGroup -Name $TeamCityRg -ErrorAction SilentlyContinue\r\nif(!$resourceGroup) {\r\n    Write-Host \"Creating resource group '$TeamCityRg' in location '$AzureRegion'\"\r\n    New-AzureRmResourceGroup -Name $TeamCityRg -Location $AzureRegion | Out-Null\r\n}\r\nelse {\r\n    Write-Host \"Using existing resource group '$TeamCityRg'\"\r\n}"
+            "Octopus.Action.Script.ScriptBody": "$resourceGroup = Get-AzureRmResourceGroup -Name $ResourceGroupName -ErrorAction SilentlyContinue\r\nif(!$resourceGroup) {\r\n    Write-Output \"Creating resource group '$ResourceGroupName' in location '$Location'\"\r\n    New-AzureRmResourceGroup -Name $ResourceGroupName -Location $Location | Out-Default\r\n}\r\nelse {\r\n    Write-Output \"Using existing resource group '$ResourceGroupName'\"\r\n    $resourceGroup | Out-Default\r\n}",
+            "Octopus.Action.Template.Id": "ActionTemplates-1",
+            "Octopus.Action.Template.Version": "2",
+            "ResourceGroupName": "#{TeamCityRg}",
+            "Location": "#{AzureRegion}"
           }
         }
       ],
@@ -31,14 +35,14 @@
       }
     },
     {
-      "Id": "e3c3d1ee-cba3-4fa0-834f-d17acdab474b",
+      "Id": "79aa8fe7-2b0b-47f6-a79f-5a3394c0962a",
       "Name": "Provision Windows Server 2016 VM",
       "Condition": "Success",
       "StartTrigger": "StartAfterPrevious",
       "RequiresPackagesToBeAcquired": false,
       "Actions": [
         {
-          "Id": "6d578350-a917-4272-ba30-1c7ebcebefc2",
+          "Id": "3ad48ac9-832b-46b0-b58a-8209010f9089",
           "Name": "Provision Windows Server 2016 VM",
           "ActionType": "Octopus.AzureResourceGroup",
           "IsDisabled": false,
@@ -47,11 +51,23 @@
           "TenantTags": [],
           "Properties": {
             "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
-            "Octopus.Action.Azure.ResourceGroupName": "#{TeamCityRg}",
             "Octopus.Action.Azure.TemplateSource": "Inline",
-            "Octopus.Action.Azure.ResourceGroupTemplateParameters": "{\"infraResourceGroup\":{\"value\":\"#{InfraRg}\"},\"udp\":{\"value\":\"#{UDP}\"},\"productName\":{\"value\":\"TeamCity\"},\"vmSize\":{\"value\":\"Standard_DS2_v2\"},\"vmAdminUsername\":{\"value\":\"#{StackAdminUsername}\"},\"vmAdminPassword\":{\"reference\":{\"keyVault\":{\"id\":\"#{KeyVaultResourceId}\"},\"secretName\":\"VMAdminPassword\"}},\"clientID\":{\"value\":\"#{ServicePrincipalClientId}\"},\"clientSecret\":{\"reference\":{\"keyVault\":{\"id\":\"#{KeyVaultResourceId}\"},\"secretName\":\"ServicePrincipalClientSecret\"}}}",
+            "Octopus.Action.Azure.ResourceGroupTemplateParameters": "{\"infraResourceGroup\":{\"value\":\"#{InfraResourceGroup}\"},\"udp\":{\"value\":\"#{UDP}\"},\"productName\":{\"value\":\"#{ProductName}\"},\"vmSize\":{\"value\":\"#{VMSize}\"},\"vmAdminUsername\":{\"value\":\"#{VMAdminUsername}\"},\"vmAdminPassword\":{\"reference\":{\"keyVault\":{\"id\":\"#{KeyVaultResourceId}\"},\"secretName\":\"#{VMAdminPasswordSecretName}\"}},\"clientID\":{\"value\":\"#{ClientID}\"},\"clientSecret\":{\"reference\":{\"keyVault\":{\"id\":\"#{KeyVaultResourceId}\"},\"secretName\":\"#{ClientSecretSecretName}\"}}}",
+            "Octopus.Action.Azure.ResourceGroupDeploymentMode": "Complete",
             "Octopus.Action.Azure.ResourceGroupTemplate": "{\r\n  \"$schema\": \"https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#\",\r\n  \"contentVersion\": \"1.0.0.0\",\r\n  \"parameters\": {\r\n    \"infraResourceGroup\": {\r\n      \"type\": \"string\",\r\n      \"metadata\": {\r\n        \"description\": \"Name of the resource group containing the core automationstack infrastructure\"\r\n      }\r\n    },\r\n    \"udp\": {\r\n      \"type\": \"string\",\r\n      \"metadata\": {\r\n        \"description\": \"Unique Deployment Prefix to avoid name collisions\"\r\n      }\r\n    },\r\n    \"productName\": {\r\n      \"type\": \"string\",\r\n      \"metadata\": {\r\n        \"description\": \"Name of the product that is running on this VM\"\r\n      }\r\n    },\r\n    \"vmSize\": {\r\n      \"type\": \"string\",\r\n      \"defaultValue\": \"Standard_DS2_v2\",\r\n      \"metadata\": {\r\n        \"description\": \"Size of the VM\"\r\n      }\r\n    },\r\n    \"vmAdminUsername\": {\r\n      \"type\": \"string\",\r\n      \"metadata\": {\r\n        \"description\": \"Username for the Virtual Machine.\"\r\n      }\r\n    },\r\n    \"vmAdminPassword\": {\r\n      \"type\": \"securestring\",\r\n      \"metadata\": {\r\n        \"description\": \"Password for the Virtual Machine.\"\r\n      }\r\n    },\r\n    \"clientID\": {\r\n      \"type\": \"string\",\r\n      \"metadata\": {\r\n        \"description\": \"Client ID of AAD app which has permissions to KeyVault\"\r\n      }\r\n    },\r\n    \"clientSecret\": {\r\n      \"type\": \"securestring\",\r\n      \"metadata\": {\r\n        \"description\": \"Client Secret of AAD app which has permissions to KeyVault\"\r\n      }\r\n    }\r\n  },\r\n  \"variables\": {\r\n    \"vmName\": \"[concat(parameters('productName'),'VM')]\",\r\n    \"vmStorageName\": \"[concat('vmvhds', parameters('udp'), uniquestring(resourceGroup().id))]\",\r\n    \"nsgName\": \"[concat(parameters('productName'),'NSG')]\",\r\n    \"nicName\": \"[concat(parameters('productName'),'NIC')]\",\r\n    \"publicIPAddressName\": \"[concat(parameters('productName'),'PublicIP')]\",\r\n    \"virtualNetworkId\": \"[resourceId(parameters('infraResourceGroup'), 'Microsoft.Network/virtualNetworks', 'VirtualNetwork')]\",\r\n    \"subnetId\": \"[concat(variables('virtualNetworkId'),'/subnets/', 'Default')]\",\r\n    \"keyVaultName\": \"[concat('keyvault', parameters('udp'))]\"\r\n  },\r\n  \"resources\": [{\r\n    \"apiVersion\": \"2016-01-01\",\r\n    \"type\": \"Microsoft.Storage/storageAccounts\",\r\n    \"name\": \"[variables('vmStorageName')]\",\r\n    \"location\": \"[resourceGroup().location]\",\r\n    \"sku\": {\r\n      \"name\": \"Premium_LRS\",\r\n      \"tier\": \"Premium\"\r\n    },\r\n    \"kind\": \"Storage\",\r\n    \"properties\": {\r\n      \"encryption\": {\r\n        \"keySource\": \"Microsoft.Storage\",\r\n        \"services\": {\r\n          \"blob\": {\r\n            \"enabled\": true\r\n          }\r\n        }\r\n      }\r\n    }\r\n  }, {\r\n    \"apiVersion\": \"2015-06-15\",\r\n    \"type\": \"Microsoft.Network/networkInterfaces\",\r\n    \"name\": \"[variables('nicName')]\",\r\n    \"location\": \"[resourceGroup().location]\",\r\n    \"dependsOn\": [\r\n      \"[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]\"\r\n    ],\r\n    \"properties\": {\r\n      \"ipConfigurations\": [{\r\n        \"name\": \"[concat(parameters('productName'),'-IPConfig')]\",\r\n        \"properties\": {\r\n          \"privateIPAllocationMethod\": \"Dynamic\",\r\n          \"publicIPAddress\": {\r\n            \"id\": \"[resourceId('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]\"\r\n          },\r\n          \"subnet\": {\r\n            \"id\": \"[variables('subnetId')]\"\r\n          }\r\n        }\r\n      }],\r\n      \"networkSecurityGroup\": {\r\n        \"id\": \"[resourceId(parameters('infraResourceGroup'), 'Microsoft.Network/networkSecurityGroups/', variables('nsgName'))]\"\r\n      }\r\n    }\r\n  }, {\r\n    \"apiVersion\": \"2015-05-01-preview\",\r\n    \"type\": \"Microsoft.Network/publicIPAddresses\",\r\n    \"name\": \"[variables('publicIPAddressName')]\",\r\n    \"location\": \"[resourceGroup().location]\",\r\n    \"properties\": {\r\n      \"publicIPAllocationMethod\": \"Static\",\r\n      \"idleTimeoutInMinutes\": 30,\r\n      \"dnsSettings\": {\r\n        \"domainNameLabel\": \"[toLower(concat(parameters('productName'),'-stack',parameters('udp')))]\"\r\n      }\r\n    }\r\n  }, {\r\n    \"apiVersion\": \"2015-06-15\",\r\n    \"type\": \"Microsoft.Compute/virtualMachines\",\r\n    \"name\": \"[variables('vmName')]\",\r\n    \"location\": \"[resourceGroup().location]\",\r\n    \"dependsOn\": [\r\n      \"[concat('Microsoft.Storage/storageAccounts/', variables('vmStorageName'))]\",\r\n      \"[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]\"\r\n    ],\r\n    \"properties\": {\r\n      \"hardwareProfile\": {\r\n        \"vmSize\": \"[parameters('vmSize')]\"\r\n      },\r\n      \"osProfile\": {\r\n        \"computerName\": \"[variables('vmName')]\",\r\n        \"adminUsername\": \"[parameters('vmAdminUsername')]\",\r\n        \"adminPassword\": \"[parameters('vmAdminPassword')]\",\r\n        \"windowsConfiguration\": {\r\n          \"provisionVMAgent\": true,\r\n          \"enableAutomaticUpdates\": true\r\n        }\r\n      },\r\n      \"storageProfile\": {\r\n        \"imageReference\": {\r\n          \"publisher\": \"MicrosoftWindowsServer\",\r\n          \"offer\": \"WindowsServer\",\r\n          \"sku\": \"2016-Datacenter\",\r\n          \"version\": \"latest\"\r\n        },\r\n        \"osDisk\": {\r\n          \"name\": \"[concat(variables('vmName'),'-OS')]\",\r\n          \"vhd\": {\r\n            \"uri\": \"[concat('http://',variables('vmStorageName'),'.blob.core.windows.net/vhds/',variables('vmName'),'-OS.vhd')]\"\r\n          },\r\n          \"caching\": \"ReadWrite\",\r\n          \"createOption\": \"FromImage\"\r\n        }\r\n      },\r\n      \"networkProfile\": {\r\n        \"networkInterfaces\": [{\r\n          \"id\": \"[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]\"\r\n        }]\r\n      }\r\n    },\r\n    \"resources\": [{\r\n      \"type\": \"extensions\",\r\n      \"name\": \"AzureDiskEncryption\",\r\n      \"apiVersion\": \"2016-03-30\",\r\n      \"location\": \"[resourceGroup().location]\",\r\n      \"properties\": {\r\n        \"publisher\": \"Microsoft.Azure.Security\",\r\n        \"type\": \"AzureDiskEncryption\",\r\n        \"typeHandlerVersion\": \"1.1\",\r\n        \"autoUpgradeMinorVersion\": true,\r\n        \"settings\": {\r\n          \"AADClientID\": \"[parameters('clientId')]\",\r\n          \"KeyVaultURL\": \"[concat('https://', variables('keyVaultName'), '.vault.azure.net/')]\",\r\n          \"KeyEncryptionAlgorithm\": \"RSA-OAEP\",\r\n          \"VolumeType\": \"All\",\r\n          \"EncryptionOperation\": \"EnableEncryption\"\r\n        },\r\n        \"protectedSettings\": {\r\n          \"AADClientSecret\": \"[parameters('clientSecret')]\"\r\n        }\r\n      },\r\n      \"dependsOn\": [\r\n        \"[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]\"\r\n      ]\r\n    }]\r\n  }],\r\n  \"outputs\": {\r\n    \"fqdn\": {\r\n      \"type\": \"string\",\r\n      \"value\": \"[reference(variables('publicIPAddressName')).dnsSettings.fqdn]\"\r\n    },\r\n    \"keyVaultSecretUrl\": {\r\n      \"type\": \"string\",\r\n      \"value\": \"[reference(resourceId('Microsoft.Compute/virtualMachines/extensions',  variables('vmName'),  'AzureDiskEncryption')).instanceView.statuses[0].message]\"\r\n    }\r\n  }\r\n}",
-            "Octopus.Action.Azure.ResourceGroupDeploymentMode": "Complete"
+            "Octopus.Action.Azure.ResourceGroupName": "#{ResourceGroupName}",
+            "Octopus.Action.Template.Id": "ActionTemplates-3",
+            "Octopus.Action.Template.Version": "2",
+            "InfraResourceGroup": "#{InfraRg}",
+            "UDP": "#{UDP}",
+            "VMSize": "Standard_DS2_v2",
+            "VMAdminUsername": "#{StackAdminUsername}",
+            "KeyVaultResourceId": "#{KeyVaultResourceId}",
+            "ClientSecretSecretName": "ServicePrincipalClientSecret",
+            "ClientID": "#{ServicePrincipalClientId}",
+            "VMAdminPasswordSecretName": "VMAdminPassword",
+            "ResourceGroupName": "#{TeamCityRg}",
+            "ProductName": "TeamCity"
           }
         }
       ],
@@ -60,14 +76,14 @@
       }
     },
     {
-      "Id": "43c88d76-2412-45ed-a44c-844f962f4bb6",
+      "Id": "04461a02-728d-4c9b-be71-e328fe016010",
       "Name": "Enable KeyVault Disk Encryption",
       "Condition": "Success",
       "StartTrigger": "StartAfterPrevious",
       "RequiresPackagesToBeAcquired": false,
       "Actions": [
         {
-          "Id": "94a6703a-1788-47c9-a0a5-2860f9925ffb",
+          "Id": "777ec44e-d16d-4433-941f-cc1a7d8a86a2",
           "Name": "Enable KeyVault Disk Encryption",
           "ActionType": "Octopus.AzureResourceGroup",
           "IsDisabled": false,
@@ -76,11 +92,17 @@
           "TenantTags": [],
           "Properties": {
             "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
-            "Octopus.Action.Azure.ResourceGroupName": "#{TeamCityRg}",
+            "Octopus.Action.Azure.ResourceGroupName": "#{ResourceGroupName}",
             "Octopus.Action.Azure.TemplateSource": "Inline",
-            "Octopus.Action.Azure.ResourceGroupTemplateParameters": "{\"productName\":{\"value\":\"TeamCity\"},\"keyVaultResourceID\":{\"value\":\"#{KeyVaultResourceId}\"},\"keyVaultSecretUrl\":{\"value\":\"#{Octopus.Action[Provision Windows Server 2016 VM].Output.AzureRMOutputs[keyVaultSecretUrl]}\"}}",
+            "Octopus.Action.Azure.ResourceGroupTemplateParameters": "{\"productName\":{\"value\":\"#{ProductName}\"},\"keyVaultResourceID\":{\"value\":\"#{KeyVaultResourceId}\"},\"keyVaultSecretUrl\":{\"value\":\"#{KeyVaultSecretUrl}\"}}",
             "Octopus.Action.Azure.ResourceGroupDeploymentMode": "Incremental",
-            "Octopus.Action.Azure.ResourceGroupTemplate": "{\r\n    \"$schema\": \"https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#\",\r\n    \"contentVersion\": \"1.0.0.0\",\r\n    \"parameters\": {\r\n        \"productName\": {\r\n            \"type\": \"string\",\r\n            \"metadata\": {\r\n                \"description\": \"Name of the product that is running on this VM\"\r\n            }\r\n        },\r\n        \"keyVaultResourceID\": {\r\n            \"type\": \"string\",\r\n            \"metadata\": {\r\n                \"description\": \"KeyVault resource id. Ex: /subscriptions/9135e259-1f76-4dbd-a5c8-bc4fcdf3cf1c/resourceGroups/DiskEncryptionTest/providers/Microsoft.KeyVault/vaults/DiskEncryptionTestAus\"\r\n            }\r\n        },\r\n        \"keyVaultSecretUrl\": {\r\n            \"type\": \"string\",\r\n            \"metadata\": {\r\n                \"description\": \"KeyVault secret Url. Ex: https://diskencryptiontestaus.vault.azure.net/secrets/BitLockerEncryptionSecretWithKek/e088818e865e48488cf363af16dea596\"\r\n            }\r\n        }\r\n    },\r\n    \"variables\": {\r\n        \"vmName\": \"[concat(parameters('productName'),'VM')]\"\r\n    },\r\n    \"resources\": [{\r\n        \"apiVersion\": \"2015-06-15\",\r\n        \"type\": \"Microsoft.Compute/virtualMachines\",\r\n        \"name\": \"[variables('vmName')]\",\r\n        \"location\": \"[resourceGroup().location]\",\r\n        \"properties\": {\r\n            \"storageProfile\": {\r\n                \"osDisk\": {\r\n                    \"encryptionSettings\": {\r\n                        \"diskEncryptionKey\": {\r\n                            \"sourceVault\": {\r\n                                \"id\": \"[parameters('keyVaultResourceID')]\"\r\n                            },\r\n                            \"secretUrl\": \"[parameters('keyVaultSecretUrl')]\"\r\n                        }\r\n                    }\r\n                }\r\n            }\r\n        }\r\n    }]\r\n}"
+            "Octopus.Action.Azure.ResourceGroupTemplate": "{\r\n    \"$schema\": \"https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#\",\r\n    \"contentVersion\": \"1.0.0.0\",\r\n    \"parameters\": {\r\n        \"productName\": {\r\n            \"type\": \"string\",\r\n            \"metadata\": {\r\n                \"description\": \"Name of the product that is running on this VM\"\r\n            }\r\n        },\r\n        \"keyVaultResourceID\": {\r\n            \"type\": \"string\",\r\n            \"metadata\": {\r\n                \"description\": \"KeyVault resource id. Ex: /subscriptions/9135e259-1f76-4dbd-a5c8-bc4fcdf3cf1c/resourceGroups/DiskEncryptionTest/providers/Microsoft.KeyVault/vaults/DiskEncryptionTestAus\"\r\n            }\r\n        },\r\n        \"keyVaultSecretUrl\": {\r\n            \"type\": \"string\",\r\n            \"metadata\": {\r\n                \"description\": \"KeyVault secret Url. Ex: https://diskencryptiontestaus.vault.azure.net/secrets/BitLockerEncryptionSecretWithKek/e088818e865e48488cf363af16dea596\"\r\n            }\r\n        }\r\n    },\r\n    \"variables\": {\r\n        \"vmName\": \"[concat(parameters('productName'),'VM')]\"\r\n    },\r\n    \"resources\": [{\r\n        \"apiVersion\": \"2015-06-15\",\r\n        \"type\": \"Microsoft.Compute/virtualMachines\",\r\n        \"name\": \"[variables('vmName')]\",\r\n        \"location\": \"[resourceGroup().location]\",\r\n        \"properties\": {\r\n            \"storageProfile\": {\r\n                \"osDisk\": {\r\n                    \"encryptionSettings\": {\r\n                        \"diskEncryptionKey\": {\r\n                            \"sourceVault\": {\r\n                                \"id\": \"[parameters('keyVaultResourceID')]\"\r\n                            },\r\n                            \"secretUrl\": \"[parameters('keyVaultSecretUrl')]\"\r\n                        }\r\n                    }\r\n                }\r\n            }\r\n        }\r\n    }]\r\n}",
+            "Octopus.Action.Template.Id": "ActionTemplates-4",
+            "Octopus.Action.Template.Version": "0",
+            "KeyVaultResourceId": "#{KeyVaultResourceId}",
+            "ResourceGroupName": "#{TeamCityRg}",
+            "ProductName": "TeamCity",
+            "KeyVaultSecretUrl": "#{Octopus.Action[Provision Windows Server 2016 VM].Output.AzureRMOutputs[keyVaultSecretUrl]}"
           }
         }
       ],

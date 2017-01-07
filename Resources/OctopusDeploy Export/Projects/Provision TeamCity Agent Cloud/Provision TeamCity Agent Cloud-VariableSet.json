@@ -1,0 +1,14 @@
+{
+  "$type": "Octopus.Core.Model.Variables.VariableSet, Octopus.Core",
+  "Id": "variableset-Projects-23",
+  "OwnerId": "Projects-23",
+  "Version": 1,
+  "Variables": [
+    {
+      "Id": "45e8041f-13ab-7df4-5782-5cb15715defb",
+      "Name": "TeamCityAgentCloudRg",
+      "Value": "#{TeamCityRg}Agents"
+    }
+  ],
+  "RelatedDocumentIds": []
+}

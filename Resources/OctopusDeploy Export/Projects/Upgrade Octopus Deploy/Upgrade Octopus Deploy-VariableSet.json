@@ -1,0 +1,14 @@
+{
+  "$type": "Octopus.Core.Model.Variables.VariableSet, Octopus.Core",
+  "Id": "variableset-Projects-22",
+  "OwnerId": "Projects-22",
+  "Version": 4,
+  "Variables": [
+    {
+      "Id": "dd63cd63-d9a3-126a-a785-b381f7f2cc6c",
+      "Name": "DSCConfigurationName",
+      "Value": "OctopusDeploy"
+    }
+  ],
+  "RelatedDocumentIds": []
+}

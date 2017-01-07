@@ -1,0 +1,123 @@
+{
+  "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
+  "Id": "deploymentprocess-Projects-3",
+  "OwnerId": "Projects-3",
+  "Version": 35,
+  "Steps": [
+    {
+      "Id": "7f1e35df-e72e-4d16-b721-09bda2b61130",
+      "Name": "Octopus Deploy",
+      "Condition": "Success",
+      "StartTrigger": "StartAfterPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "a528c115-90f8-4a4b-9a94-cccec22b8769",
+          "Name": "Run Octopus Migrator Export",
+          "ActionType": "Octopus.Script",
+          "IsDisabled": false,
+          "Environments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.RunOnServer": "true",
+            "Octopus.Action.Script.Syntax": "PowerShell",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "New-Item -ItemType Directory -Path $OctopusExportPath\n \n if ($ProjectToExport -eq 'All') {\n     & \"C:\\Program Files\\Octopus Deploy\\Octopus\\Octopus.Migrator.exe\" export --console --directory=$OctopusExportPath --password=$ExportPassword\n } else {\n    & \"C:\\Program Files\\Octopus Deploy\\Octopus\\Octopus.Migrator.exe\" partial-export --console --directory=$OctopusExportPath --password=$ExportPassword  --ignore-deployments  --ignore-machines --ignore-tenants --project=\"$ProjectToExport\" \n}"
+          }
+        },
+        {
+          "Id": "97143226-7f96-4981-b01b-4e1463b78f01",
+          "Name": "Remove unimportant object types",
+          "ActionType": "Octopus.Script",
+          "IsDisabled": false,
+          "Environments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.RunOnServer": "true",
+            "Octopus.Action.Script.Syntax": "PowerShell",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "Get-ChildItem -Path $OctopusExportPath -Directory | ? Name -in @('Certificates','CommunityActionTemplates','Deployments','Events','ExtensionConfigurations','Releases','ServerTasks') |\n    Remove-Item -Force -Recurse"
+          }
+        },
+        {
+          "Id": "ff663808-5371-409a-b883-553e20cdb737",
+          "Name": "Compress Export",
+          "ActionType": "Octopus.Script",
+          "IsDisabled": false,
+          "Environments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.RunOnServer": "true",
+            "Octopus.Action.Script.Syntax": "PowerShell",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "Compress-Archive -Path $OctopusExportPath -DestinationPath $OctopusArchivePath -CompressionLevel Optimal\r\n"
+          }
+        },
+        {
+          "Id": "7854bc86-9720-43a0-9c9e-882d21b9e31e",
+          "Name": "Publish Octopus Artifact",
+          "ActionType": "Octopus.Script",
+          "IsDisabled": false,
+          "Environments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.RunOnServer": "true",
+            "Octopus.Action.Script.Syntax": "PowerShell",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "New-OctopusArtifact -Path $OctopusArchivePath -Name $OctopusArchiveName"
+          }
+        }
+      ],
+      "Properties": {
+        "Octopus.Action.TargetRoles": "Octopus Deploy Server"
+      }
+    },
+    {
+      "Id": "af1a390c-27e3-4afc-87e4-ffd569c83afe",
+      "Name": "TeamCity",
+      "Condition": "Success",
+      "StartTrigger": "StartWithPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "83cd794e-f5e4-4640-986c-76896760dba7",
+          "Name": "Run maintainDB backup",
+          "ActionType": "Octopus.Script",
+          "IsDisabled": false,
+          "Environments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.RunOnServer": "false",
+            "Octopus.Action.Script.Syntax": "PowerShell",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "$backupfile = Join-Path ([System.IO.Path]::GetDirectoryName($TeamCityArchivePath)) ([System.IO.Path]::GetFileNameWithoutExtension($TeamCityArchivePath))\nC:\\TeamCity\\bin\\maintainDB.cmd backup --include-database --include-config  --include-supplementary-data --backup-file $backupfile"
+          }
+        },
+        {
+          "Id": "3faf97fb-71c3-4e1a-aadc-f66d40036fa5",
+          "Name": "Publish TeamCity Artifact",
+          "ActionType": "Octopus.Script",
+          "IsDisabled": false,
+          "Environments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.RunOnServer": "false",
+            "Octopus.Action.Script.Syntax": "PowerShell",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "New-OctopusArtifact -Path $TeamCityArchivePath -Name $TeamCityArchiveName"
+          }
+        }
+      ],
+      "Properties": {
+        "Octopus.Action.TargetRoles": "TeamCity Server (Windows)"
+      }
+    }
+  ],
+  "RelatedDocumentIds": []
+}

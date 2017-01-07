@@ -1,0 +1,35 @@
+{
+  "$type": "Octopus.Core.Model.Projects.Project, Octopus.Core",
+  "Id": "Projects-3",
+  "Name": "Export System State",
+  "Description": "",
+  "Slug": "export-system-state",
+  "IsDisabled": false,
+  "VariableSetId": "variableset-Projects-3",
+  "DeploymentProcessId": "deploymentprocess-Projects-3",
+  "ProjectGroupId": "ProjectGroups-21",
+  "LifecycleId": "Lifecycles-41",
+  "AutoCreateRelease": false,
+  "IncludedLibraryVariableSetIds": [
+    "LibraryVariableSets-1"
+  ],
+  "UsedPackages": [],
+  "DefaultToSkipIfAlreadyInstalled": false,
+  "TenantedDeploymentMode": "Untenanted",
+  "VersioningStrategy": {
+    "DonorPackageStepId": null,
+    "Template": "#{Octopus.Date.Year}.#{Octopus.Date.Month}.#{Octopus.Date.Day}+#{Octopus.Time.Hour}-#{Octopus.Time.Minute}"
+  },
+  "Templates": [],
+  "ReleaseCreationStrategy": {
+    "ReleaseCreationPackageStepId": "",
+    "ChannelId": null
+  },
+  "ProjectConnectivityPolicy": {
+    "SkipMachineBehavior": "None",
+    "TargetRoles": []
+  },
+  "AutoDeployReleaseOverrides": [],
+  "LogoAttachmentKey": "Projects-3",
+  "LogoAttachmentMimeType": "image/jpeg"
+}

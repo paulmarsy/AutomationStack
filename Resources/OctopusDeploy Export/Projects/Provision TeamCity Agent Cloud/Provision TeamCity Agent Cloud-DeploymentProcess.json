@@ -1,0 +1,39 @@
+{
+  "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
+  "Id": "deploymentprocess-Projects-23",
+  "OwnerId": "Projects-23",
+  "Version": 2,
+  "Steps": [
+    {
+      "Id": "6ea370e7-796b-4d7d-b5ae-4cdf1f1025e1",
+      "Name": "Create Resource Group",
+      "Condition": "Success",
+      "StartTrigger": "StartAfterPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "2cb1274b-c27e-4372-a0e1-536de71fd578",
+          "Name": "Create Resource Group",
+          "ActionType": "Octopus.AzurePowerShell",
+          "IsDisabled": false,
+          "Environments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "$resourceGroup = Get-AzureRmResourceGroup -Name $ResourceGroupName -ErrorAction SilentlyContinue\r\nif(!$resourceGroup) {\r\n    Write-Output \"Creating resource group '$ResourceGroupName' in location '$Location'\"\r\n    New-AzureRmResourceGroup -Name $ResourceGroupName -Location $Location | Out-Default\r\n}\r\nelse {\r\n    Write-Output \"Using existing resource group '$ResourceGroupName'\"\r\n    $resourceGroup | Out-Default\r\n}",
+            "ResourceGroupName": "#{TeamCityAgentCloudRg}",
+            "Location": "#{AzureRegion}",
+            "Octopus.Action.Template.Id": "ActionTemplates-1",
+            "Octopus.Action.Template.Version": "2"
+          }
+        }
+      ],
+      "Properties": {
+        "Octopus.Action.TargetRoles": "ARM Provisioning"
+      }
+    }
+  ],
+  "RelatedDocumentIds": []
+}

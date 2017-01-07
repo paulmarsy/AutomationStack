@@ -1,0 +1,2 @@
+$backupfile = Join-Path ([System.IO.Path]::GetDirectoryName($TeamCityArchivePath)) ([System.IO.Path]::GetFileNameWithoutExtension($TeamCityArchivePath))
+C:\TeamCity\bin\maintainDB.cmd backup --include-database --include-config  --include-supplementary-data --backup-file $backupfile

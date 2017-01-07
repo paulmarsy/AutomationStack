@@ -1,8 +1,9 @@
-$resourceGroup = Get-AzureRmResourceGroup -Name $TeamCityRg -ErrorAction SilentlyContinue
+$resourceGroup = Get-AzureRmResourceGroup -Name $ResourceGroupName -ErrorAction SilentlyContinue
 if(!$resourceGroup) {
-    Write-Host "Creating resource group '$TeamCityRg' in location '$AzureRegion'"
-    New-AzureRmResourceGroup -Name $TeamCityRg -Location $AzureRegion | Out-Null
+    Write-Output "Creating resource group '$ResourceGroupName' in location '$Location'"
+    New-AzureRmResourceGroup -Name $ResourceGroupName -Location $Location | Out-Default
 }
 else {
-    Write-Host "Using existing resource group '$TeamCityRg'"
+    Write-Output "Using existing resource group '$ResourceGroupName'"
+    $resourceGroup | Out-Default
 }
