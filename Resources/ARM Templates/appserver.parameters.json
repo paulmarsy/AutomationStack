@@ -17,6 +17,14 @@
         },
         "secretName": "ServicePrincipalClientSecret"
       }
+    },
+    "registrationKey": {
+      "reference": {
+        "keyVault": {
+          "id": "#{KeyVaultResourceId}"
+        },
+        "secretName": "AutomationRegistrationKey"
+      }
     }
   }
 }

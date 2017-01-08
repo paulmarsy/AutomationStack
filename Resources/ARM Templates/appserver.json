@@ -50,6 +50,31 @@
       "metadata": {
         "description": "Client Secret of AAD app which has permissions to KeyVault"
       }
+    },
+    "registrationKey": {
+      "type": "securestring",
+      "metadata": {
+        "Description": "Registration key to use to onboard to the Azure Automation DSC pull/reporting server"
+      }
+    },
+    "registrationUrl": {
+      "type": "string",
+      "metadata": {
+        "Description": "Registration url of the Azure Automation DSC pull/reporting server"
+      }
+    },
+    "nodeConfigurationName": {
+      "type": "string",
+      "metadata": {
+        "Description": "The name of the node configuration, on the Azure Automation DSC pull server, that this node to pick up"
+      }
+    },
+    "timestamp": {
+      "type": "string",
+      "defaultValue": "MM/dd/yyyy H:mm:ss tt",
+      "metadata": {
+        "description": "The current datetime, as a string, to force the request to go through ARM even if all fields are the same as last ARM deployment of this template; example in parameters file is in MM/dd/yyyy H:mm:ss tt format"
+      }
     }
   },
   "variables": {
@@ -116,7 +141,7 @@
       "publicIPAllocationMethod": "Static",
       "idleTimeoutInMinutes": 30,
       "dnsSettings": {
-        "domainNameLabel": "[toLower(concat(parameters('productName'),'-stack',parameters('udp')))]"
+        "domainNameLabel": "[toLower(concat(parameters('productName'),'stack-',parameters('udp')))]"
       }
     }
   }, {
@@ -187,6 +212,74 @@
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
       ]
+    }, {
+      "type": "extensions",
+      "name": "Microsoft.Powershell.DSC",
+      "apiVersion": "2015-06-15",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "publisher": "Microsoft.Powershell",
+        "type": "DSC",
+        "typeHandlerVersion": "2.19",
+        "autoUpgradeMinorVersion": true,
+        "protectedSettings": {
+          "Items": {
+            "registrationKeyPrivate": "[parameters('registrationKey')]"
+          }
+        },
+        "settings": {
+          "ModulesUrl": "https://eus2oaasibizamarketprod1.blob.core.windows.net/automationdscpreview/RegistrationMetaConfigV2.zip",
+          "SasToken": "",
+          "ConfigurationFunction": "RegistrationMetaConfigV2.ps1\\RegistrationMetaConfigV2",
+          "Properties": [{
+            "Name": "RegistrationKey",
+            "Value": {
+              "UserName": "PLACEHOLDER_DONOTUSE",
+              "Password": "PrivateSettingsRef:registrationKeyPrivate"
+            },
+            "TypeName": "System.Management.Automation.PSCredential"
+          }, {
+            "Name": "RegistrationUrl",
+            "Value": "[parameters('registrationUrl')]",
+            "TypeName": "System.String"
+          }, {
+            "Name": "NodeConfigurationName",
+            "Value": "[parameters('nodeConfigurationName')]",
+            "TypeName": "System.String"
+          }, {
+            "Name": "ConfigurationMode",
+            "Value": "ApplyAndAutocorrect",
+            "TypeName": "System.String"
+          }, {
+            "Name": "ConfigurationModeFrequencyMins",
+            "Value": 15,
+            "TypeName": "System.Int32"
+          }, {
+            "Name": "RefreshFrequencyMins",
+            "Value": 30,
+            "TypeName": "System.Int32"
+          }, {
+            "Name": "RebootNodeIfNeeded",
+            "Value": true,
+            "TypeName": "System.Boolean"
+          }, {
+            "Name": "ActionAfterReboot",
+            "Value": "ContinueConfiguration",
+            "TypeName": "System.String"
+          }, {
+            "Name": "AllowModuleOverwrite",
+            "Value": true,
+            "TypeName": "System.Boolean"
+          }, {
+            "Name": "Timestamp",
+            "Value": "[parameters('timestamp')]",
+            "TypeName": "System.String"
+          }]
+        }
+      },
+        "dependsOn": [
+          "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
+        ]
     }]
   }],
   "outputs": {

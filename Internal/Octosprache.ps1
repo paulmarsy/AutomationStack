@@ -1,3 +1,5 @@
+Get-ChildItem -Path (Join-Path $PSScriptRoot '.\Import Helpers') -File | % { . $_.FullName }
+
 class Octosprache {
     Octosprache([string]$UDP) {
         $backingFile = Join-Path $script:DeploymentsPath ('{0}.json' -f $UDP)
@@ -5,6 +7,7 @@ class Octosprache {
         else { Write-Host 'Creating new Octosprache configuration' }
         
         $this.VariableDictionary = New-Object Octostache.VariableDictionary $backingFile
+        $this.ARMTemplateVariableDictionary = New-Object Octostache.VariableDictionary
 
         $this.Set('UDP', $UDP)
     }
@@ -33,11 +36,23 @@ class Octosprache {
         Add-Type -Path $assemblyPath
     }
     hidden $VariableDictionary
+    hidden $ARMTemplateVariableDictionary
 
     Set([string]$Key, [string]$Value) {
          $this.VariableDictionary.Set($Key, $Value)
          $this.VariableDictionary.Save()
     }   
+    SetARMTemplate([string]$Key, [string]$Template) {
+        $this.ARMTemplateVariableDictionary.Set(('AzureResourceManager[{0}].Template' -f $Key), $Template)
+    }  
+    SetARMParameters([string]$Key, [string]$Parameters) {
+        $this.ARMTemplateVariableDictionary.Set(('AzureResourceManager[{0}].Parameters' -f $Key), $Parameters)
+    }
+    ParseARMTemplateFile($From, $To) {
+        $content = Get-Content -Path $From -Raw
+        $tokenised = $this.ARMTemplateVariableDictionary.Evaluate($content)
+        Set-Content -Path $To -Value $tokenised -Encoding ASCII
+    }
     SetSensitive([string]$Password, [string]$Key, [string]$Value) {
          $sensitiveValue = Get-OctopusEncryptedValue -Password $Password -Value $Value
          $this.Set($Key, $sensitiveValue)

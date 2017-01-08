@@ -3,6 +3,7 @@ function Upload-ToFileShare {
         [string]$Source,
         [string]$FileShareName,
         [string[]]$TokeniseFiles,
+        [string[]]$ARMTemplateFiles,
         $Context,
         [switch]$ResetStorage
     )
@@ -33,6 +34,10 @@ function Upload-ToFileShare {
             if ($item.Name -in $TokeniseFiles) {
                     $sourceFile = (Join-Path $TempPath $item.Name)
                     $CurrentContext.ParseFile($item.FullName, $sourceFile)
+                    $tokenised = $true
+            } elseif ($item.Name -in $ARMTemplateFiles) {
+                    $sourceFile = (Join-Path $TempPath $item.Name)
+                    $CurrentContext.ParseARMTemplateFile($item.FullName, $sourceFile)
                     $tokenised = $true
             } else {
                     $sourceFile = $item.FullName

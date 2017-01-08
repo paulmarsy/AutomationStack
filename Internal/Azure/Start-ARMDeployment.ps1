@@ -35,7 +35,7 @@ function Start-ARMDeployment {
     Test-AzureRmResourceGroupDeployment @args
 
     Write-Host "Starting deployment..."
-    $deployment = New-AzureRmResourceGroupDeployment -Name ('AutomationStack-{0}-{1}' -f $Template, $CurrentContext.Get('UDP')) -Force @args
+    $deployment = New-AzureRmResourceGroupDeployment -Name ('{0}-{1}' -f $Template, [datetime]::UtcNow.tostring('o').Replace(':','.').Substring(0,19)) -Force @args
 
     $deployment | Format-List -Property @('DeploymentName','ResourceGroupName','Mode','ProvisioningState','Timestamp','ParametersString', 'OutputsString') | Out-Host
     $deployment.Outputs

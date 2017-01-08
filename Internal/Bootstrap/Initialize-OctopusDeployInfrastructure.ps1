@@ -8,9 +8,11 @@ function Initialize-OctopusDeployInfrastructure {
         productName = 'Octopus'
         vmAdminUsername = $CurrentContext.Get('Username')
         clientId = $CurrentContext.Get('ServicePrincipalClientId')
+        registrationUrl = $CurrentContext.Get('AutomationRegistrationUrl')
+        nodeConfigurationName = 'OctopusDeploy.Server'
+        timestamp = ([DateTimeOffset]::UtcNow.ToString("o"))
     }
-    $CurrentContext.Set('OctopusHostName', (Get-AzureRmPublicIpAddress -Name OctopusPublicIP -ResourceGroupName $CurrentContext.Get('OctopusRg')).DnsSettings.Fqdn)
-    $CurrentContext.Set('OctopusHostHeader', 'http://#{OctopusHostName}:80/')
+
 
     Write-Host 'Enabling KeyVault Disk Encryption for Octopus Deploy VM...'
     Start-ARMDeployment -ResourceGroupName $CurrentContext.Get('OctopusRg') -Template 'appserver.enableencryption' -Mode Incremental -TemplateParameters @{
@@ -18,11 +20,33 @@ function Initialize-OctopusDeployInfrastructure {
         keyVaultResourceID = $CurrentContext.Get('KeyVaultResourceId')
         keyVaultSecretUrl = $octopusDeploy.keyVaultSecretUrl.Value
     } | Out-Null
+
     Write-Host 'Creating Octopus Deploy SQL Database...'
     $dbName = 'OctopusDeploy'
-
     Remove-AzureRmSqlDatabase  -ResourceGroupName $CurrentContext.Get('InfraRg') -ServerName $CurrentContext.Get('SqlServerName') -DatabaseName $dbName -Force -ErrorAction Ignore  | Out-Null
     $octopusDb = New-AzureRmSqlDatabase -ResourceGroupName $CurrentContext.Get('InfraRg') -ServerName $CurrentContext.Get('SqlServerName') -DatabaseName $dbName -CollationName 'SQL_Latin1_General_CP1_CI_AS' -Edition 'Basic'
     Set-AzureRmSqlDatabaseTransparentDataEncryption -ResourceGroupName $octopusDb.ResourceGroupName -ServerName $octopusDb.ServerName -DatabaseName $octopusDb.DatabaseName -State Enabled
-    $CurrentContext.Set('OctopusConnectionString', 'Server=tcp:#{SqlServerName}.database.windows.net,1433;Initial Catalog=OctopusDeploy;Persist Security Info=False;User ID=#{Username};Password=#{Password};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;')
+
+    Write-Host "Waiting for DSC Node Compliance..."
+    $currentPollWait = 10
+    $previousPollWait = 0
+    $continueToPoll = $true
+    $maxWaitSeconds = 60
+    while ($continueToPoll)
+    {
+        Start-Sleep -Seconds ([System.Math]::Min($currentPollWait, $maxWaitSeconds))
+        $node = Get-AzureRmAutomationDscNode -ResourceGroupName $CurrentContext.Get('InfraRg') -AutomationAccountName $CurrentContext.Get('AutomationAccountName') -Name $CurrentContext.Get('OctopusVMName')
+        if ($node.Status -eq 'Compliant') {
+                Write-Host "Node is compliant"
+                $continueToPoll = $false
+        }
+        else {
+                Write-Host "Node status is $($node.Status), waiting for compliance..."
+        }
+        if ($currentPollWait -lt $maxWaitSeconds){
+                $temp = $previousPollWait
+                $previousPollWait = $currentPollWait
+                $currentPollWait = $temp + $currentPollWait
+        }
+    }
 }
