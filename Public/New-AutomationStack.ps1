@@ -1,7 +1,7 @@
 function New-AutomationStack {
     [CmdletBinding()]
     param(
-        $Stages = 1..8
+        $Stages = 1..9
     )
     DynamicParam {
         $Dictionary = New-Object System.Management.Automation.RuntimeDefinedParameterDictionary
@@ -74,7 +74,7 @@ function New-AutomationStack {
                         Import-OctopusDeployInitialState
                     }
                 }
-                7 {
+                8 {
                     $ProgressText = 'Octopus Deploy - Resize VM' 
                     $Heading = 'Resizing Octopus Deploy VM'
                     {
@@ -83,7 +83,7 @@ function New-AutomationStack {
                         $vm | Update-AzureRmVM
                     }
                 }
-                8 {
+                9 {
                     $ProgressText = 'Complete' 
                     $Heading = 'AutomationStack Provisioning Complete'
                     {
@@ -100,7 +100,7 @@ function New-AutomationStack {
                 }
             }
 
-            Write-DeploymentUpdate -SequenceNumber $sequenceNumber -TotalStages 8 -ProgressText $ProgressText -Heading $Heading
+            Write-DeploymentUpdate -SequenceNumber $sequenceNumber -TotalStages 9 -ProgressText $ProgressText -Heading $Heading
 
             try {
                 $ScriptBlock.Invoke()
@@ -108,7 +108,7 @@ function New-AutomationStack {
             catch {
                 Write-Warning  $_.Exception.GetBaseException().ErrorRecord.Exception.Message
                 Write-Warning 'Retrying stage...'
-                Write-DeploymentUpdate -SequenceNumber $sequenceNumber -TotalStages 8 -ProgressText $ProgressText -Heading ('{0} (Attempt #2)' -f $Heading)
+                Write-DeploymentUpdate -SequenceNumber $sequenceNumber -TotalStages 9 -ProgressText $ProgressText -Heading ('{0} (Attempt #2)' -f $Heading)
                 $ScriptBlock.Invoke() 
             }
         }
