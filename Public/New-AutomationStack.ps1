@@ -1,7 +1,7 @@
 function New-AutomationStack {
     [CmdletBinding()]
     param(
-        $Stages = 1..10
+        $Stages = 1..8
     )
     DynamicParam {
         $Dictionary = New-Object System.Management.Automation.RuntimeDefinedParameterDictionary
@@ -15,6 +15,8 @@ function New-AutomationStack {
         if (!$AzureRegion) {
             $AzureRegion = 'West Europe' # SQL Server isn't able to be provisioned in EUN currently
         }
+        Install-AzurePowerShellModule
+        Connect-AzureRm
     }
     process{
         try {
@@ -22,28 +24,13 @@ function New-AutomationStack {
             $sequenceNumber = $_
             $ScriptBlock = switch ($sequenceNumber) {
                 1 {
-                    $ProgressText = 'Prerequisites'
-                    $Heading = 'installing prerequisites'
-                    {
-                        Install-AzurePowerShellModule
-                    }
-                }
-                2 {
-                    $ProgressText = 'Authenticating with Azure'
-                    $Heading = 'Azure Authentication'
-                    {
-                        Connect-AzureRm
-                        Set-AzureSubscriptionSelection
-                    }
-                }
-                3 {
                     $ProgressText = 'Deployment Context' 
                     $Heading = 'Creating AutomationStack Deployment Details'
                     {
                         New-DeploymentContext
                     }
                 }
-                4 {
+                2 {
                     $ProgressText = 'Azure Service Principal & KeyVault' 
                     $Heading = 'Creating & Switching Authentication to Service Principal & KeyVault'
                     {
@@ -52,64 +39,76 @@ function New-AutomationStack {
                         Connect-AzureRmServicePrincipal
                     }
                 }
-                5 {
+                3 {
                     $ProgressText = 'Core Infrastructure' 
                     $Heading = 'Provisioning Core Infrastructure'
                     {
                         Initialize-CoreInfrastructure
                     }
                 }
-                6 {
+                4 {
                     $ProgressText = 'Octopus Deploy - DSC Configuration'
                     $Heading = 'Compiling Octopus Deploy DSC Configuration'
                     {
                         Register-OctopusDSCConfiguration
                     }
                 }
-                7 {
+                5 {
                     $ProgressText = 'Octopus Deploy - Infrastructure'
                     $Heading = 'Provisioning Octopus Deploy'
                     {
                         Initialize-OctopusDeployInfrastructure
                     }
                 }
-                8 {
+                6 {
                     $ProgressText = 'AutomationStack Resources' 
                     $Heading = 'Uploading Resources to Azure Storage'
                     {
                         Publish-StackResources
                     }
                 }
-                9 {
+                7 {
                     $ProgressText = 'Octopus Deploy - Initial State' 
                     $Heading = 'Importing AutomationStack Optional Functionality'
                     {
                         Import-OctopusDeployInitialState
                     }
                 }
-                10 {
+                7 {
+                    $ProgressText = 'Octopus Deploy - Resize VM' 
+                    $Heading = 'Resizing Octopus Deploy VM'
+                    {
+                        $vm = Get-AzureRmVM  -ResourceGroupName $CurrentContext.Get('OctopusRg') -Name $CurrentContext.Get('OctopusVMName')
+                        $vm.HardwareProfile.VmSize = 'Standard_DS1_v2'
+                        $vm | Update-AzureRmVM
+                    }
+                }
+                8 {
                     $ProgressText = 'Complete' 
                     $Heading = 'AutomationStack Provisioning Complete'
                     {
                         Show-AutomationStackDetail -Octosprache $CurrentContext | Out-Null
+                        $CurrentContext.Set('EndDateTime', (Get-Date))
                         Write-Host -ForegroundColor Magenta "`tAdditional functionality can be deployed/enabled using Octopus Deploy"
                         Write-Host
                         Write-Host -ForegroundColor Green 'Octopus Deploy Running at:' $CurrentContext.Get('OctopusHostHeader')
+                        Write-Host
+                        $duration = ([datetime]$CurrentContext.Get('EndDateTime')) - ([datetime]$CurrentContext.Get('StartDateTime'))
+                        Write-Host "Total deployment time: $($duration.Minutes) minutes, $($duration.Seconds) seconds"
                         $CurrentContext.Set('DeploymentComplete', $true)
                     }
                 }
             }
 
-            Write-DeploymentUpdate -SequenceNumber $sequenceNumber -TotalStages 10 -ProgressText $ProgressText -Heading $Heading
+            Write-DeploymentUpdate -SequenceNumber $sequenceNumber -TotalStages 8 -ProgressText $ProgressText -Heading $Heading
 
             try {
                 $ScriptBlock.Invoke()
-              #  throw 'test retry on all stages'
             }
             catch {
-                Write-Warning $_.Exception.Message
+                Write-Warning  $_.Exception.GetBaseException().ErrorRecord.Exception.Message
                 Write-Warning 'Retrying stage...'
-                Write-DeploymentUpdate -SequenceNumber $sequenceNumber -TotalStages 10 -ProgressText $ProgressText -Heading ('{0} (Attempt #2)' -f $Heading)
+                Write-DeploymentUpdate -SequenceNumber $sequenceNumber -TotalStages 8 -ProgressText $ProgressText -Heading ('{0} (Attempt #2)' -f $Heading)
                 $ScriptBlock.Invoke() 
             }
         }
@@ -118,7 +117,7 @@ function New-AutomationStack {
         $azureRmProfilePath = Join-Path $TempPath 'AzureRmProfile.json'
         if (Test-Path $azureRmProfilePath) {
             Write-Host -NoNewLine 'Restoring original Azure context...'
-            Select-AzureRmProfile -Path $azureRmProfilePath
+            Select-AzureRmProfile -Path $azureRmProfilePath | Out-Null
             Remove-Item -Path $azureRmProfilePath -Force
             Write-Host 'Restored'
         }

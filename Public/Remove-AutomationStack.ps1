@@ -5,7 +5,7 @@ function Remove-AutomationStack {
     )
 
     if (!$UDP) {
-        $UDP = $Octosprache.Get('UDP')
+        $UDP = $CurrentContext.Get('UDP')
     }
 
     Write-Host 'Removing Service Principal...'

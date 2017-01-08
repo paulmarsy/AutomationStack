@@ -99,15 +99,15 @@
         "resources": [{
             "apiVersion": "2014-04-01-preview",
             "type": "firewallrules",
-            "name": "AutomationStackSubnet",
+             "name": "AllowAllWindowsAzureIps",
             "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[concat('Microsoft.Sql/servers/', variables('sqlServerName'))]"
             ],
-            "properties": {
-                "endIpAddress": "10.20.30.255",
-                "startIpAddress": "10.20.30.0"
-            }
+          "properties": {
+            "endIpAddress": "0.0.0.0",
+            "startIpAddress": "0.0.0.0"
+          }
         }]
     }, {
         "apiVersion": "2015-10-31",

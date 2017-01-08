@@ -1,4 +1,11 @@
 function Connect-AzureRmServicePrincipal {
+    $existingContext = Get-AzureRmContext
+    if ($existingContext -and $existingContext.Account.AccountType -eq 'User') {
+        Write-Host -NoNewline 'Saving current AzureRm context... '
+        $azureProfilePath =  Join-Path $TempPath 'AzureRmProfile.json'
+        Save-AzureRmProfile -Path $azureProfilePath
+        Write-Host 'Done'
+    }
     Write-Host -ForegroundColor Green 'Changing Azure Authentiction Context from User Account to AutomationStack Service Principal'
     $securePassword = ConvertTo-SecureString $CurrentContext.Get('ServicePrincipalClientSecret') -AsPlainText -Force
     $credential = New-Object System.Management.Automation.PSCredential ($CurrentContext.Get('ServicePrincipalClientId'), $securePassword)

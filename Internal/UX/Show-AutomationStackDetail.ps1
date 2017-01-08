@@ -2,7 +2,7 @@ function Show-AutomationStackDetail {
     param(
           [Parameter(ParameterSetName='ByGuid',Mandatory=$true)][string]$Guid,
           [Parameter(ParameterSetName='ByGuid',Mandatory=$true)][string]$AzureRegion,
-          [Parameter(ParameterSetName='ByOctosprache',Mandatory=$true)][Octosprache]$Octosprache
+          [Parameter(ParameterSetName='ByOctosprache',Mandatory=$true)]$Octosprache
     )
     if ($Guid) {
         $UDP = $Guid.Substring(9,4)

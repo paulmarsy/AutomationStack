@@ -1,7 +1,6 @@
 param(
-    $LocalDevPath,
     $GitHubAccount = 'paulmarsy',
-    $Path = (Join-Path $PWD 'AutomationStack')
+    $Path = (Join-Path $PWD.ProviderPath 'AutomationStack')
 )
 
 if ($PSVersionTable.PSVersion.Major -lt 5) {
@@ -14,22 +13,17 @@ if (Test-Path $Path) {
     Remove-Item $Path -Recurse -Force
 }
 
-if ($LocalDevPath) {
-    Write-Output "Local Dev version will be used from: $LocalDevPath"
-    Copy-Item -Path $LocalDevPath -Destination $Path -Recurse
-} else {
-    Write-Output 'Downloading AutomationStack archive from GitHub...'
-    $download = Invoke-WebRequest -Verbose -UseBasicParsing -Uri "https://github.com/$GitHubAccount/AutomationStack/archive/master.zip"
-    $tempFile = [System.IO.Path]::ChangeExtension((New-TemporaryFile).FullName, 'zip')
-    Write-Output "Saving file to ${tempFile}"
-    Set-Content -Path $tempFile -Value $download.Content -Force -Encoding Byte
-    Write-Output 'Extracting archive...'
-    # This cmdlet requires PowerShell 5
-    Expand-Archive -Path $tempFile -DestinationPath $Path -Force
-    Move-Item -Path (Join-Path $Path 'AutomationStack-master\*') -Destination $Path
-}
+Write-Output 'Downloading AutomationStack archive from GitHub...'
+$download = Invoke-WebRequest -Verbose -UseBasicParsing -Uri "https://github.com/$GitHubAccount/AutomationStack/archive/master.zip"
+$tempFile = [System.IO.Path]::ChangeExtension((New-TemporaryFile).FullName, 'zip')
+Write-Output "Saving file to ${tempFile}"
+Set-Content -Path $tempFile -Value $download.Content -Force -Encoding Byte
+Write-Output 'Extracting archive...'
+# This cmdlet requires PowerShell 5
+Expand-Archive -Path $tempFile -DestinationPath $Path -Force
+Move-Item -Path (Join-Path $Path 'AutomationStack-master\*') -Destination $Path
 
-$moduleManifest = Join-Path $Path 'AutomationStack.psd1' | Convert-Path
+$moduleManifest = Join-Path $Path 'AutomationStack.psd1'
 if (!(Test-Path $moduleManifest)) {
     Write-Error 'Unable to find the AutomationStack module'
     return

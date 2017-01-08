@@ -35,6 +35,12 @@ class Octosprache {
         Write-Verbose "Loading $Assembly..."
         Add-Type -Path $assemblyPath
     }
+    hidden static [string] PrepareJson([string]$Json) {
+        $deserialized = ConvertFrom-Json -InputObject $Json
+        $minifiedJson = ConvertTo-Json -InputObject $deserialized -Depth 100 -Compress | % { $_ -replace '\{\s*\}', '{}' } 
+        $decodedJson = [regex]::replace($minifiedJson,'\\u[a-fA-F0-9]{4}',{[char]::ConvertFromUtf32(($args[0].Value -replace '\\u','0x'))})
+        return $decodedJson
+    }
     hidden $VariableDictionary
     hidden $ARMTemplateVariableDictionary
 
@@ -43,14 +49,17 @@ class Octosprache {
          $this.VariableDictionary.Save()
     }   
     SetARMTemplate([string]$Key, [string]$Template) {
-        $this.ARMTemplateVariableDictionary.Set(('AzureResourceManager[{0}].Template' -f $Key), $Template)
+        $this.ARMTemplateVariableDictionary.Set(('AzureResourceManager[{0}].Template' -f $Key), [Octosprache]::PrepareJson($Template))
     }  
     SetARMParameters([string]$Key, [string]$Parameters) {
-        $this.ARMTemplateVariableDictionary.Set(('AzureResourceManager[{0}].Parameters' -f $Key), $Parameters)
+        $this.ARMTemplateVariableDictionary.Set(('AzureResourceManager[{0}].Parameters' -f $Key), [Octosprache]::PrepareJson($Parameters))
+    }
+    [string] EvalARMTemplate([string]$Expression) {
+        return $this.ARMTemplateVariableDictionary.Evaluate($Expression)
     }
     ParseARMTemplateFile($From, $To) {
         $content = Get-Content -Path $From -Raw
-        $tokenised = $this.ARMTemplateVariableDictionary.Evaluate($content)
+        $tokenised = $this.EvalARMTemplate($content)
         Set-Content -Path $To -Value $tokenised -Encoding ASCII
     }
     SetSensitive([string]$Password, [string]$Key, [string]$Value) {

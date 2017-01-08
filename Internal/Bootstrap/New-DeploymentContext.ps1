@@ -5,6 +5,7 @@ function New-DeploymentContext {
 
     Write-Host 'Creating Octostache Config Store...'
     $script:CurrentContext = [octosprache]::new($automationStackDetail.UDP)
+    $CurrentContext.Set('StartDateTime', (Get-Date))
     $CurrentContext.Set('Username', $automationStackDetail.Username)
     $CurrentContext.Set('Password', $automationStackDetail.Password)    
     $CurrentContext.Set('Name', 'AutomationStack#{UDP}')
