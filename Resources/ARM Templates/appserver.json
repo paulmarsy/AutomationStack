@@ -22,7 +22,7 @@
     },
     "vmSize": {
       "type": "string",
-      "defaultValue": "Standard_DS2_v2",
+      "defaultValue": "Standard_F4s",
       "metadata": {
         "description": "Size of the VM"
       }
@@ -179,7 +179,8 @@
             "uri": "[concat('http://',variables('vmStorageName'),'.blob.core.windows.net/vhds/',variables('vmName'),'-OS.vhd')]"
           },
           "caching": "ReadWrite",
-          "createOption": "FromImage"
+          "createOption": "FromImage",
+          "DiskSizeGB": "256"
         }
       },
       "networkProfile": {
