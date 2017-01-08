@@ -21,5 +21,11 @@ function Update-AutomationStackModule {
     Remove-Item -Path (Join-Path $Path 'Public') -Recurse -Force
     Remove-Item -Path (Join-Path $Path 'Resources') -Recurse -Force
     Remove-Item -Path (Join-Path $Path 'AutomationStack.ps?1') -Force
-    Move-Item -Path (Join-Path $Path 'AutomationStack-master\*') -Destination $Path
+    Move-Item -Path (Join-Path $Path 'AutomationStack-master\*') -Destination $Path -Force
+    Remove-Module AutomationStack -Force
+    if ($null -ne $CurrentContext) {
+        Import-Module (Join-Path $Path 'AutomationStack.psd1') -Force -ArgumentList $CurrentContext.Get('UDP')
+    } else {
+        Import-Module (Join-Path $Path 'AutomationStack.psd1') -Force
+    }
 }
