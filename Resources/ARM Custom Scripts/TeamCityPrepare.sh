@@ -1,13 +1,13 @@
 #!/bin/bash
 apt-get -y update
 
-# install mono
-apt-get -y install mono-complete 
-
 # teamcity's docker mount points
 mkdir /tmp/teamcity/
 mkdir /tmp/teamcity/data
 mkdir /tmp/teamcity/logs
+
+# install mono - required for octopus calamari
+apt-get -y install mono-complete 
 
 # register the vm with octopus as a new ssh connection
 apt-get -y install jq
@@ -16,7 +16,7 @@ serverUrl="#{OctopusHostHeader}"
 apiKey="#{ApiKey}"
 
 environment="Microsoft Azure"
-machineName="TeamCity"
+machineName="TeamCity (Ubuntu Docker)"
 roles="TeamCity Server (Linux)"
 
 localIp=$(ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}')
