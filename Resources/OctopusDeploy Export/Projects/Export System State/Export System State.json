@@ -8,7 +8,7 @@
   "VariableSetId": "variableset-Projects-3",
   "DeploymentProcessId": "deploymentprocess-Projects-3",
   "ProjectGroupId": "ProjectGroups-21",
-  "LifecycleId": "Lifecycles-41",
+  "LifecycleId": "Lifecycles-21",
   "AutoCreateRelease": false,
   "IncludedLibraryVariableSetIds": [
     "LibraryVariableSets-1"

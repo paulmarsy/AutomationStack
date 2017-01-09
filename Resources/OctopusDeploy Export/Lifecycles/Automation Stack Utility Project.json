@@ -1,6 +1,6 @@
 {
   "$type": "Octopus.Core.Model.Lifecycles.Lifecycle, Octopus.Core",
-  "Id": "Lifecycles-41",
+  "Id": "Lifecycles-21",
   "Name": "Automation Stack Utility Project",
   "Description": null,
   "Phases": [
@@ -8,7 +8,7 @@
       "Id": "f4c264e5-d950-48ba-8249-ecca2c97e068",
       "Name": "Auto Deploy",
       "AutomaticDeploymentTargets": [
-        "Environments-21"
+        "Environments-1"
       ],
       "OptionalDeploymentTargets": [],
       "MinimumEnvironmentsBeforePromotion": 0,

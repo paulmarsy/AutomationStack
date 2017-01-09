@@ -1,15 +1,15 @@
 {
   "$type": "Octopus.Core.Model.Projects.ActionTemplate, Octopus.Core",
-  "Id": "ActionTemplates-3",
+  "Id": "ActionTemplates-1",
   "Name": "ARM Template - App Server",
   "Description": null,
-  "Version": 3,
+  "Version": 5,
   "ActionType": "Octopus.AzureResourceGroup",
   "CommunityActionTemplateId": null,
   "Properties": {
     "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
     "Octopus.Action.Azure.TemplateSource": "Inline",
-    "Octopus.Action.Azure.ResourceGroupTemplateParameters": "{\"infraResourceGroup\":{\"value\":\"#{InfraResourceGroup}\"},\"udp\":{\"value\":\"#{UDP}\"},\"productName\":{\"value\":\"#{ProductName}\"},\"vmSize\":{\"value\":\"#{VMSize}\"},\"vmAdminUsername\":{\"value\":\"#{VMAdminUsername}\"},\"vmAdminPassword\":{\"reference\":{\"keyVault\":{\"id\":\"#{KeyVaultResourceId}\"},\"secretName\":\"#{VMAdminPasswordSecretName}\"}},\"clientID\":{\"value\":\"#{ClientID}\"},\"clientSecret\":{\"reference\":{\"keyVault\":{\"id\":\"#{KeyVaultResourceId}\"},\"secretName\":\"#{ClientSecretSecretName}\"}}}",
+    "Octopus.Action.Azure.ResourceGroupTemplateParameters": "{\"infraResourceGroup\":{\"value\":\"#{InfraResourceGroup}\"},\"udp\":{\"value\":\"#{UDP}\"},\"productName\":{\"value\":\"#{ProductName}\"},\"vmSize\":{\"value\":\"#{VMSize}\"},\"vmAdminUsername\":{\"value\":\"#{VMAdminUsername}\"},\"vmAdminPassword\":{\"reference\":{\"keyVault\":{\"id\":\"#{KeyVaultResourceId}\"},\"secretName\":\"#{VMAdminPasswordSecretName}\"}},\"clientID\":{\"value\":\"#{ClientID}\"},\"clientSecret\":{\"reference\":{\"keyVault\":{\"id\":\"#{KeyVaultResourceId}\"},\"secretName\":\"#{ClientSecretSecretName}\"}},\"registrationKey\":{\"reference\":{\"keyVault\":{\"id\":\"#{KeyVaultResourceId}\"},\"secretName\":\"#{AutomationRegistrationKey}\"}},\"registrationUrl\":{\"value\":\"#{registrationUrl}\"},\"nodeConfigurationName\":{\"value\":\"#{nodeConfigurationName}\"},\"timestamp\":{\"value\":\"#{Octopus.Deployment.CreatedUtc}\"}}",
     "Octopus.Action.Azure.ResourceGroupDeploymentMode": "Complete",
     "Octopus.Action.Azure.ResourceGroupTemplate": "#{AzureResourceManager[appserver].Template | JsonEscape}",
     "Octopus.Action.Azure.ResourceGroupName": "#{ResourceGroupName}"
@@ -60,7 +60,7 @@
       "Name": "VMSize",
       "Label": "",
       "HelpText": null,
-      "DefaultValue": "Standard_DS2_v2",
+      "DefaultValue": "Standard_F4s",
       "DisplaySettings": {
         "Octopus.ControlType": "SingleLineText"
       }
@@ -111,6 +111,36 @@
       "Label": "",
       "HelpText": null,
       "DefaultValue": "VMAdminPassword",
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "cbdc3e30-7d56-47ed-a69a-31b9bec77a2f",
+      "Name": "AutomationRegistrationKey",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": "AutomationRegistrationKey",
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "d54a2bc6-7556-46e1-8247-6f5c4fd83f64",
+      "Name": "nodeConfigurationName",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": null,
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "b7b67c1b-cde5-4af3-b9c0-a9cb00002065",
+      "Name": "registrationUrl",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": "#{AutomationRegistrationUrl}",
       "DisplaySettings": {
         "Octopus.ControlType": "SingleLineText"
       }

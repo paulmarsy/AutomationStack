@@ -1,6 +1,6 @@
 {
   "$type": "Octopus.Core.Model.Environments.DeploymentEnvironment, Octopus.Core",
-  "Id": "Environments-1",
+  "Id": "Environments-2",
   "Name": "Microsoft Azure",
   "Description": "",
   "SortOrder": 0,

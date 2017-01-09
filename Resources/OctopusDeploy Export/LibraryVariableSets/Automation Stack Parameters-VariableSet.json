@@ -2,7 +2,7 @@
   "$type": "Octopus.Core.Model.Variables.VariableSet, Octopus.Core",
   "Id": "variableset-LibraryVariableSets-1",
   "OwnerId": "LibraryVariableSets-1",
-  "Version": 3,
+  "Version": 4,
   "Variables": [
     {
       "Id": "97c0ebe0-d669-1654-8f4a-a872980b204e",
@@ -48,6 +48,11 @@
       "Id": "e1e388df-545f-dc22-2ac7-f7a01952f4e9",
       "Name": "ServicePrincipalClientId",
       "Value": "#{ServicePrincipalClientId}"
+    },
+    {
+      "Id": "fea81dc9-c5dd-c051-e911-a529c528ef3f",
+      "Name": "AutomationRegistrationUrl",
+      "Value": "#{AutomationRegistrationUrl}"
     }
   ],
   "RelatedDocumentIds": []

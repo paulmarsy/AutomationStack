@@ -2,7 +2,8 @@
   "$type": "Octopus.Migrator.ExportProcess.ServerMetadata, Octopus.Migrator",
   "Id": "#{OctopusVMName}",
   "Name": "#{OctopusVMName}",
-  "Created": "2016-12-29T22:09:34.5469594+00:00",
-  "DatabaseVersion": "3.7.10",
+  "Created": "2017-01-09T01:55:45.0771938+00:00",
+  "DatabaseVersion": "3.7.11",
+
   "Hello": "#{ProtectedImportHello}"
 }

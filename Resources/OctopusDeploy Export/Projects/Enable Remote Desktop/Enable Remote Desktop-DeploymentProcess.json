@@ -2,7 +2,7 @@
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
   "Id": "deploymentprocess-Projects-2",
   "OwnerId": "Projects-2",
-  "Version": 39,
+  "Version": 45,
   "Steps": [
     {
       "Id": "1f7eaedc-d772-4fde-8a11-c298cb6e6880",
@@ -26,36 +26,14 @@
           }
         }
       ],
-      "Properties": {}
-    },
-    {
-      "Id": "5ebf899b-5e7a-4878-a19f-f1504707d4c8",
-      "Name": "Get Octopus RDP Details",
-      "Condition": "Always",
-      "StartTrigger": "StartWithPrevious",
-      "RequiresPackagesToBeAcquired": false,
-      "Actions": [
-        {
-          "Id": "b7931f09-6166-4d5d-98f9-4fdf3bd693ee",
-          "Name": "Get Octopus RDP Details",
-          "ActionType": "Octopus.AzurePowerShell",
-          "IsDisabled": false,
-          "Environments": [],
-          "Channels": [],
-          "TenantTags": [],
-          "Properties": {
-            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
-            "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "$ip = (Get-AzureRmPublicIpAddress -Name OctopusPublicIP -ResourceGroupName $OctopusRg).IpAddress\nWrite-Warning \"IP: $ip\"\nWrite-Warning \"Password: $StackAdminPassword\"\nWrite-Warning \"Username: $StackAdminUsername\""
-          }
-        }
-      ],
-      "Properties": {}
+      "Properties": {
+        "Octopus.Action.TargetRoles": "Octopus Deploy Server"
+      }
     },
     {
       "Id": "e046ef07-c3a0-4f2d-af29-1d5775b8f80e",
       "Name": "Enable TeamCity NSG Rule",
-      "Condition": "Always",
+      "Condition": "Success",
       "StartTrigger": "StartWithPrevious",
       "RequiresPackagesToBeAcquired": false,
       "Actions": [
@@ -79,9 +57,35 @@
       }
     },
     {
+      "Id": "5ebf899b-5e7a-4878-a19f-f1504707d4c8",
+      "Name": "Get Octopus RDP Details",
+      "Condition": "Success",
+      "StartTrigger": "StartAfterPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "b7931f09-6166-4d5d-98f9-4fdf3bd693ee",
+          "Name": "Get Octopus RDP Details",
+          "ActionType": "Octopus.AzurePowerShell",
+          "IsDisabled": false,
+          "Environments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "$ip = (Get-AzureRmPublicIpAddress -Name OctopusPublicIP -ResourceGroupName $OctopusRg).IpAddress\n\"IP: $ip\"\n\"Password: $StackAdminPassword\"\n\"Username: $StackAdminUsername\""
+          }
+        }
+      ],
+      "Properties": {
+        "Octopus.Action.TargetRoles": "Octopus Deploy Server"
+      }
+    },
+    {
       "Id": "1d47a5fa-fa51-4d81-98ff-b380b3f3348a",
       "Name": "Get TeamCity RDP Details",
-      "Condition": "Always",
+      "Condition": "Success",
       "StartTrigger": "StartWithPrevious",
       "RequiresPackagesToBeAcquired": false,
       "Actions": [
@@ -96,7 +100,7 @@
           "Properties": {
             "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
             "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "$ip = (Get-AzureRmPublicIpAddress -Name TeamCityPublicIP -ResourceGroupName $TeamCityRg).IpAddress\nWrite-Warning \"IP: $ip\"\nWrite-Warning \"Password: $StackAdminPassword\"\nWrite-Warning \"Username: $StackAdminUsername\""
+            "Octopus.Action.Script.ScriptBody": "$ip = (Get-AzureRmPublicIpAddress -Name TeamCityPublicIP -ResourceGroupName $TeamCityRg).IpAddress\n\"IP: $ip\""
           }
         }
       ],

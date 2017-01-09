@@ -1,9 +1,9 @@
 {
   "$type": "Octopus.Core.Model.Projects.ActionTemplate, Octopus.Core",
-  "Id": "ActionTemplates-4",
+  "Id": "ActionTemplates-2",
   "Name": "ARM Template - Enable Encryption",
   "Description": null,
-  "Version": 0,
+  "Version": 1,
   "ActionType": "Octopus.AzureResourceGroup",
   "CommunityActionTemplateId": null,
   "Properties": {

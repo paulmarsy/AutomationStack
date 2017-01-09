@@ -1,0 +1,109 @@
+{
+  "$type": "Octopus.Core.Model.Projects.ActionTemplate, Octopus.Core",
+  "Id": "ActionTemplates-21",
+  "Name": "ARM Template - Docker Linux",
+  "Description": null,
+  "Version": 1,
+  "ActionType": "Octopus.AzureResourceGroup",
+  "CommunityActionTemplateId": null,
+  "Properties": {
+    "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
+    "Octopus.Action.Azure.ResourceGroupName": "#{ResourceGroupName}",
+    "Octopus.Action.Azure.TemplateSource": "Inline",
+    "Octopus.Action.Azure.ResourceGroupTemplateParameters": "{\"infraResourceGroup\":{\"value\":\"#{InfraResourceGroup}\"},\"udp\":{\"value\":\"#{UDP}\"},\"productName\":{\"value\":\"#{ProductName}\"},\"vmSize\":{\"value\":\"#{VMSize}\"},\"vmAdminUsername\":{\"value\":\"#{VMAdminUsername}\"},\"vmAdminPassword\":{\"reference\":{\"keyVault\":{\"id\":\"#{KeyVaultResourceId}\"},\"secretName\":\"#{VMAdminPasswordSecretName}\"}},\"scriptFileName\":{\"value\":\"#{ScriptFileName}\"}}",
+    "Octopus.Action.Azure.ResourceGroupDeploymentMode": "Complete",
+    "Octopus.Action.Azure.ResourceGroupTemplate": "#{AzureResourceManager[dockerlinux].Template | JsonEscape}"
+  },
+  "Parameters": [
+    {
+      "Id": "70fc18b2-d273-4006-af77-9014babb3051",
+      "Name": "ResourceGroupName",
+      "Label": "ResourceGroupName",
+      "HelpText": null,
+      "DefaultValue": null,
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "0da209cc-add5-4fb3-ae94-6669f07d4f55",
+      "Name": "InfraResourceGroup",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": "#{InfraRg}",
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "3ef58979-2d79-4695-8d16-0865558ed0ba",
+      "Name": "UDP",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": "#{UDP}",
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "e2baec3b-17eb-423b-bc13-fb8bdc53c215",
+      "Name": "ProductName",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": null,
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "a4fd7ef5-b6e0-45f0-b0aa-37ae91c2c6cf",
+      "Name": "VMSize",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": "Standard_DS2_v2",
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "62a1faca-4c28-4336-bb62-1c6dd7974123",
+      "Name": "VMAdminUsername",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": "#{StackAdminUsername}",
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "d9149a67-ad1b-45ca-8214-0a8c9cce391e",
+      "Name": "KeyVaultResourceId",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": "#{KeyVaultResourceId}",
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "707b87da-6ef7-45a4-ad37-bec59f583b91",
+      "Name": "VMAdminPasswordSecretName",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": "VMAdminPassword",
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "2c217e28-3d20-4451-a796-3dc2b621736b",
+      "Name": "ScriptFileName",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": null,
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    }
+  ]
+}

@@ -1,9 +1,21 @@
 {
   "$type": "Octopus.Core.Model.Lifecycles.Lifecycle, Octopus.Core",
-  "Id": "Lifecycles-21",
+  "Id": "Lifecycles-22",
   "Name": "Automation Stack",
   "Description": null,
-  "Phases": [],
+  "Phases": [
+    {
+      "Id": "0b14585c-7c0e-485a-b783-235600ec18b4",
+      "Name": "Automation Stack",
+      "AutomaticDeploymentTargets": [],
+      "OptionalDeploymentTargets": [
+        "Environments-1"
+      ],
+      "MinimumEnvironmentsBeforePromotion": 0,
+      "ReleaseRetentionPolicy": null,
+      "TentacleRetentionPolicy": null
+    }
+  ],
   "ReleaseRetentionPolicy": {
     "Unit": "Items",
     "QuantityToKeep": 0,

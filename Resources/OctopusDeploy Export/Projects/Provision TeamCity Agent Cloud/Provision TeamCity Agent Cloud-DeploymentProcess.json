@@ -1,7 +1,7 @@
 {
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
-  "Id": "deploymentprocess-Projects-23",
-  "OwnerId": "Projects-23",
+  "Id": "deploymentprocess-Projects-6",
+  "OwnerId": "Projects-6",
   "Version": 2,
   "Steps": [
     {
@@ -25,7 +25,7 @@
             "Octopus.Action.Script.ScriptBody": "$resourceGroup = Get-AzureRmResourceGroup -Name $ResourceGroupName -ErrorAction SilentlyContinue\r\nif(!$resourceGroup) {\r\n    Write-Output \"Creating resource group '$ResourceGroupName' in location '$Location'\"\r\n    New-AzureRmResourceGroup -Name $ResourceGroupName -Location $Location | Out-Default\r\n}\r\nelse {\r\n    Write-Output \"Using existing resource group '$ResourceGroupName'\"\r\n    $resourceGroup | Out-Default\r\n}",
             "ResourceGroupName": "#{TeamCityAgentCloudRg}",
             "Location": "#{AzureRegion}",
-            "Octopus.Action.Template.Id": "ActionTemplates-1",
+            "Octopus.Action.Template.Id": "ActionTemplates-3",
             "Octopus.Action.Template.Version": "2"
           }
         }
