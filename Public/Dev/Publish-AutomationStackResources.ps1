@@ -16,11 +16,7 @@ function Publish-AutomationStackResources {
                 HostHeader = $CurrentContext.Get('OctopusHostHeader')
             }
 
-            Import-AzureRmAutomationDscConfiguration -ResourceGroupName $CurrentContext.Get('InfraRg') -AutomationAccountName $CurrentContext.Get('AutomationAccountName') -Force -Published -SourcePath (Join-Path -Resolve $ResourcesPath 'DSC Configurations\TeamCity.ps1' | Convert-Path)
-            Start-AzureRmAutomationDscCompilationJob -ResourceGroupName $CurrentContext.Get('InfraRg') -AutomationAccountName $CurrentContext.Get('AutomationAccountName') -ConfigurationName 'TeamCity' -Parameters @{
-                ApiKey = $CurrentContext.Get('ApiKey')
-                OctopusServerUrl = $CurrentContext.Get('OctopusHostHeader')
-            }
+
         }
     }
     finally {
