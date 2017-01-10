@@ -22,19 +22,19 @@ function Publish-StackResources {
     $teamCityEncoder = New-Object TeamCityEncoder @($CurrentContext)
     $teamCityEncoder.Hash('TeamCityPasswordHash', $CurrentContext.Get('Password'))
 
-    Write-Host "Encoding ARM Templates into Octopus Deploy import..."
-    Get-ChildItem -Path (Join-Path -Resolve $ResourcesPath 'ARM Templates') -File | % {
-        $name = $_.BaseName
-        $content = Get-Content -Path $_.FullName -Raw
-        if ($name.EndsWith('.parameters')) {
-            $name = $name.Substring(0,($name.Length-'.parameters'.Length))
-            Write-Host "Adding ARM Parameter File $name"
-            $CurrentContext.SetARMParameters($name, $content)
-        } else {
-            Write-Host "Adding ARM Template File $name"
-            $CurrentContext.SetARMTemplate($name, $content)
-        }
-    }
+    # Write-Host "Encoding ARM Templates into Octopus Deploy import..."
+    # Get-ChildItem -Path (Join-Path -Resolve $ResourcesPath 'ARM Templates') -File | % {
+    #     $name = $_.BaseName
+    #     $content = Get-Content -Path $_.FullName -Raw
+    #     if ($name.EndsWith('.parameters')) {
+    #         $name = $name.Substring(0,($name.Length-'.parameters'.Length))
+    #         Write-Host "Adding ARM Parameter File $name"
+    #         $CurrentContext.SetARMParameters($name, $content)
+    #     } else {
+    #         Write-Host "Adding ARM Template File $name"
+    #         $CurrentContext.SetARMTemplate($name, $content)
+    #     }
+    # }
 
     Write-Host
     Write-Host -ForegroundColor Green "`tUploading ARM Custom Scripts..."

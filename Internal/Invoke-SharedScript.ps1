@@ -1,6 +1,6 @@
 function Invoke-SharedScript {
     param(
-        [Parameter(Position=1, Mandatory)][ValidateSet('Automation','AzureResources')]$Category,
+        [Parameter(Position=1, Mandatory)][ValidateSet('Automation','AzureSQL','Resources')]$Category,
         [Parameter(Position=2, Mandatory)]$Script
     )
     DynamicParam {

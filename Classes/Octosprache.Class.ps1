@@ -5,7 +5,7 @@ class Octosprache {
         else { Write-Host 'Creating new Octosprache configuration' }
         
         $this.VariableDictionary = New-Object Octostache.VariableDictionary $backingFile
-        $this.ARMTemplateVariableDictionary = New-Object Octostache.VariableDictionary
+        # $this.ARMTemplateVariableDictionary = New-Object Octostache.VariableDictionary
 
         $this.Set('UDP', $UDP)
     }
@@ -16,26 +16,26 @@ class Octosprache {
         return $decodedJson
     }
     hidden $VariableDictionary
-    hidden $ARMTemplateVariableDictionary
+    # hidden $ARMTemplateVariableDictionary
 
     Set([string]$Key, [string]$Value) {
          $this.VariableDictionary.Set($Key, $Value)
          $this.VariableDictionary.Save()
     }   
-    SetARMTemplate([string]$Key, [string]$Template) {
-        $this.ARMTemplateVariableDictionary.Set(('AzureResourceManager[{0}].Template' -f $Key), [Octosprache]::PrepareJson($Template))
-    }  
-    SetARMParameters([string]$Key, [string]$Parameters) {
-        $this.ARMTemplateVariableDictionary.Set(('AzureResourceManager[{0}].Parameters' -f $Key), [Octosprache]::PrepareJson($Parameters))
-    }
-    [string] EvalARMTemplate([string]$Expression) {
-        return $this.ARMTemplateVariableDictionary.Evaluate($Expression)
-    }
-    ParseARMTemplateFile($From, $To) {
-        $content = Get-Content -Path $From -Raw
-        $tokenised = $this.EvalARMTemplate($content)
-        Set-Content -Path $To -Value $tokenised -Encoding ASCII
-    }
+    # SetARMTemplate([string]$Key, [string]$Template) {
+    #     $this.ARMTemplateVariableDictionary.Set(('AzureResourceManager[{0}].Template' -f $Key), [Octosprache]::PrepareJson($Template))
+    # }  
+    # SetARMParameters([string]$Key, [string]$Parameters) {
+    #     $this.ARMTemplateVariableDictionary.Set(('AzureResourceManager[{0}].Parameters' -f $Key), [Octosprache]::PrepareJson($Parameters))
+    # }
+    # [string] EvalARMTemplate([string]$Expression) {
+    #     return $this.ARMTemplateVariableDictionary.Evaluate($Expression)
+    # }
+    # ParseARMTemplateFile($From, $To) {
+    #     $content = Get-Content -Path $From -Raw
+    #     $tokenised = $this.EvalARMTemplate($content)
+    #     Set-Content -Path $To -Value $tokenised -Encoding ASCII
+    # }
     [string] Get([string]$Key) {
         return $this.VariableDictionary.Get($Key)
     }

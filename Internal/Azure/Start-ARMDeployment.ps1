@@ -6,16 +6,11 @@ function Start-ARMDeployment {
         [ValidateSet('Complete', 'Incremental')]$Mode
     )
 
-    Write-Host
-    $resourceGroup = Get-AzureRmResourceGroup -Name $ResourceGroupName -ErrorAction SilentlyContinue
-    if(!$resourceGroup) {
-        $location = $CurrentContext.Get('AzureRegion')
-        Write-Host "Creating resource group '$ResourceGroupName' in location '$location'"
-        New-AzureRmResourceGroup -Name $ResourceGroupName -Location $location | Out-Null
-    }
-    else {
-        Write-Host "Using existing resource group '$ResourceGroupName'"
-    }
+    Write-Host 
+    Write-Host -ForegroundColor Cyan "`tStarting Resource Group Deployment"
+
+    Invoke-SharedScript Resources 'New-ResourceGroup' -ResourceGroupName $ResourceGroupName -Location $CurrentContext.Get('AzureRegion')
+
     Write-Host
     $args = @{
         ResourceGroupName = $ResourceGroupName
@@ -33,12 +28,15 @@ function Start-ARMDeployment {
         $args += @{ TemplateParameterObject = $TemplateParameters }
     }
 
-    Write-Host "Testing deployment..."
+    Write-Host
+
+    Write-Host "Testing ARM deployment..."
     Test-AzureRmResourceGroupDeployment @args
 
-    Write-Host "Starting deployment..."
+    Write-Host "Starting ARM deployment..."
     $deployment = New-AzureRmResourceGroupDeployment -Name ('{0}-{1}' -f $Template, [datetime]::UtcNow.tostring('o').Replace(':','.').Substring(0,19)) -Force @args
 
     $deployment | Format-List -Property @('DeploymentName','ResourceGroupName','Mode','ProvisioningState','Timestamp','ParametersString', 'OutputsString') | Out-Host
+    Write-Host
     $deployment.Outputs
 } 

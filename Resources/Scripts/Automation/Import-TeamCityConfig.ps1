@@ -6,10 +6,10 @@ $compilationJob = Start-AzureRmAutomationDscCompilationJob -ResourceGroupName $I
     ApiKey = $ApiKey
     OctopusServerUrl = $OctopusServerUrl
 }
-while ($compilationJob.EndTime -eq $null -and $CompilationJob.Exception -eq $null)
+while ($null -eq $compilationJob.EndTime -and $null -eq $CompilationJob.Exception)
 {
     Write-Host 'Waiting for compilation...'
-    Start-Sleep -Seconds 10
+    Start-Sleep -Seconds 30
     $compilationJob = $compilationJob | Get-AzureRmAutomationDscCompilationJob
 }
 $compilationJob | Get-AzureRmAutomationDscCompilationJobOutput -Stream Any
