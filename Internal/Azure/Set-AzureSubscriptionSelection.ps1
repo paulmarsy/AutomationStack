@@ -1,18 +1,19 @@
 function Set-AzureSubscriptionSelection {
-    $azureRm = Get-AzureRmContext | % Subscription | % SubscriptionId 
-    $azureSm = Get-AzureSubscription -Current | % SubscriptionID
+    $currentAzureRmSub = Get-AzureRmContext | % Subscription | % SubscriptionId 
 
     $subscriptions = Get-AzureRmSubscription
+    $defaultChoice = -1
     $i = 0
-    $result = $Host.UI.PromptForChoice("Azure Subscripton", "Select Azure Subscription where AutomationStack should be deployed", ([System.Management.Automation.Host.ChoiceDescription[]]($subscriptions | % {
+    $result = $Host.UI.PromptForChoice("Azure Subscripton", "Select Azure Subscription for AutomationStack", ([System.Management.Automation.Host.ChoiceDescription[]]($subscriptions | % {
         $additionalText = ''
-        if ($_.SubscriptionId -eq $azureRm -and $_.SubscriptionId -eq $azureSm) { $additionalText = '- Current RM & SM Context' }
-        elseif ($_.SubscriptionId -eq $azureRm) { $additionalText = '- Current RM Context' }
-        elseif ($_.SubscriptionId -eq $azureSm) { $additionalText = '- Current SM Context' }
+        if ($_.SubscriptionId -eq $currentAzureRmSub) {
+            $additionalText = '- Current subscription'
+            $defaultChoice = $i
+        }
         $i = $i + 1
-        New-Object System.Management.Automation.Host.ChoiceDescription " [&$i] $($_.SubscriptionName.PadRight(40)) $($_.SubscriptionId) $($additionalText.PadRight(400))"
-    })), -1)
+        if ($i -eq $subscriptions.Count) { $lastLineSpacing = "`nSelect where to deploy AutomationStack"}
+        New-Object System.Management.Automation.Host.ChoiceDescription ("$($_.SubscriptionName.PadRight(40)) ($($_.SubscriptionId)) [&$i] $($additionalText)`n$($lastLineSpacing)")
+    })), $defaultChoice)
 
-    Select-AzureSubscription -SubscriptionId  $subscriptions[$result].SubscriptionId
     Set-AzureRmContext -SubscriptionId  $subscriptions[$result].SubscriptionId
 }

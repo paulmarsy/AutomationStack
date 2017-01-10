@@ -1,6 +1,6 @@
 {
   "$type": "Octopus.Core.Model.Lifecycles.Lifecycle, Octopus.Core",
-  "Id": "Lifecycles-22",
+  "Id": "Lifecycles-3",
   "Name": "Automation Stack",
   "Description": null,
   "Phases": [

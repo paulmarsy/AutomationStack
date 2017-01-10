@@ -6,6 +6,7 @@ function Start-ARMDeployment {
         [ValidateSet('Complete', 'Incremental')]$Mode
     )
 
+    Write-Host
     $resourceGroup = Get-AzureRmResourceGroup -Name $ResourceGroupName -ErrorAction SilentlyContinue
     if(!$resourceGroup) {
         $location = $CurrentContext.Get('AzureRegion')
@@ -15,6 +16,7 @@ function Start-ARMDeployment {
     else {
         Write-Host "Using existing resource group '$ResourceGroupName'"
     }
+    Write-Host
     $args = @{
         ResourceGroupName = $ResourceGroupName
         TemplateFile = (Join-Path -Resolve $ResourcesPath ('ARM Templates\{0}.json' -f $Template))

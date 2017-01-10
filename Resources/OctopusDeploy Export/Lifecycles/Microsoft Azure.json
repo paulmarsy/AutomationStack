@@ -1,0 +1,31 @@
+{
+  "$type": "Octopus.Core.Model.Lifecycles.Lifecycle, Octopus.Core",
+  "Id": "Lifecycles-23",
+  "Name": "Microsoft Azure",
+  "Description": null,
+  "Phases": [
+    {
+      "Id": "9dd1b13b-b06e-4aec-939e-016a237ed8cf",
+      "Name": "Microsoft Azure",
+      "AutomaticDeploymentTargets": [],
+      "OptionalDeploymentTargets": [
+        "Environments-1",
+        "Environments-21",
+        "Environments-22"
+      ],
+      "MinimumEnvironmentsBeforePromotion": 0,
+      "ReleaseRetentionPolicy": null,
+      "TentacleRetentionPolicy": null
+    }
+  ],
+  "ReleaseRetentionPolicy": {
+    "Unit": "Items",
+    "QuantityToKeep": 0,
+    "ShouldKeepForever": true
+  },
+  "TentacleRetentionPolicy": {
+    "Unit": "Items",
+    "QuantityToKeep": 0,
+    "ShouldKeepForever": true
+  }
+}

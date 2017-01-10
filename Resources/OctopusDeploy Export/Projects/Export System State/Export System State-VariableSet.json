@@ -2,7 +2,7 @@
   "$type": "Octopus.Core.Model.Variables.VariableSet, Octopus.Core",
   "Id": "variableset-Projects-3",
   "OwnerId": "Projects-3",
-  "Version": 7,
+  "Version": 8,
   "Variables": [
     {
       "Id": "2e80127f-377b-331b-0b8b-e35f73087eca",
@@ -18,16 +18,6 @@
       "Id": "5c3a7c18-14f4-a79b-b403-b0d276a2fa1e",
       "Name": "OctopusArchivePath",
       "Value": "D:\\OctopusDeploy\\#{OctopusArchiveName}"
-    },
-    {
-      "Id": "e5183151-416f-b45a-9a5b-cb4dff7a91df",
-      "Name": "ProjectToExport",
-      "Value": "All",
-      "Prompt": {
-        "Label": "Project To Export",
-        "Description": "",
-        "Required": false
-      }
     },
     {
       "Id": "0174fd01-b341-1696-5b16-5d9de1fa0713",

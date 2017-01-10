@@ -12,7 +12,7 @@ function Initialize-CoreInfrastructure {
     $CurrentContext.Set('AutomationRegistrationUrl', $automationRegInfo.Endpoint)
 
     $registrationKey = ConvertTo-SecureString -String $automationRegInfo.PrimaryKey -AsPlainText -Force
-    Set-AzureKeyVaultSecret -VaultName $CurrentContext.Get('KeyVaultName') -Name 'AutomationRegistrationKey' -SecretValue $registrationKey
+    Set-AzureKeyVaultSecret -VaultName $CurrentContext.Get('KeyVaultName') -Name 'AutomationRegistrationKey' -SecretValue $registrationKey | Out-Null
 
     Write-Host 'Provisioning Network Security Groups...'
     Start-ARMDeployment -ResourceGroupName $CurrentContext.Get('InfraRg') -Template 'nsgrules' -Mode Incremental -TemplateParameters @{} | Out-Null

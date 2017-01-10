@@ -1,0 +1,29 @@
+{
+  "$type": "Octopus.Core.Model.Lifecycles.Lifecycle, Octopus.Core",
+  "Id": "Lifecycles-24",
+  "Name": "Agent Cloud",
+  "Description": null,
+  "Phases": [
+    {
+      "Id": "ff2babff-d1fb-4215-911e-2846512edf39",
+      "Name": "Agent Cloud",
+      "AutomaticDeploymentTargets": [],
+      "OptionalDeploymentTargets": [
+        "Environments-23"
+      ],
+      "MinimumEnvironmentsBeforePromotion": 0,
+      "ReleaseRetentionPolicy": null,
+      "TentacleRetentionPolicy": null
+    }
+  ],
+  "ReleaseRetentionPolicy": {
+    "Unit": "Items",
+    "QuantityToKeep": 0,
+    "ShouldKeepForever": true
+  },
+  "TentacleRetentionPolicy": {
+    "Unit": "Items",
+    "QuantityToKeep": 0,
+    "ShouldKeepForever": true
+  }
+}

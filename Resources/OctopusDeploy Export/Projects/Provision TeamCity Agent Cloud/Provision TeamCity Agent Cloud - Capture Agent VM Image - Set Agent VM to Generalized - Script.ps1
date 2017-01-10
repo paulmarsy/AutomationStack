@@ -1,0 +1,1 @@
+ Set-AzureRmVm -ResourceGroupName $ResourceGroup -Name $VMName -Generalized

@@ -1,0 +1,8 @@
+{
+  "$type": "Octopus.Core.Model.Environments.DeploymentEnvironment, Octopus.Core",
+  "Id": "Environments-23",
+  "Name": "Agent Cloud",
+  "Description": "",
+  "SortOrder": 3,
+  "UseGuidedFailure": false
+}

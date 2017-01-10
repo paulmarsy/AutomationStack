@@ -7,7 +7,7 @@
   "IsDisabled": false,
   "VariableSetId": "variableset-Projects-4",
   "DeploymentProcessId": "deploymentprocess-Projects-4",
-  "ProjectGroupId": "ProjectGroups-23",
+  "ProjectGroupId": "ProjectGroups-4",
   "LifecycleId": "Lifecycles-22",
   "AutoCreateRelease": false,
   "IncludedLibraryVariableSetIds": [

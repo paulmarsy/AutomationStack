@@ -2,7 +2,7 @@
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
   "Id": "deploymentprocess-Projects-3",
   "OwnerId": "Projects-3",
-  "Version": 35,
+  "Version": 36,
   "Steps": [
     {
       "Id": "7f1e35df-e72e-4d16-b721-09bda2b61130",
@@ -23,7 +23,7 @@
             "Octopus.Action.RunOnServer": "true",
             "Octopus.Action.Script.Syntax": "PowerShell",
             "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "New-Item -ItemType Directory -Path $OctopusExportPath\n \n if ($ProjectToExport -eq 'All') {\n     & \"C:\\Program Files\\Octopus Deploy\\Octopus\\Octopus.Migrator.exe\" export --console --directory=$OctopusExportPath --password=$ExportPassword\n } else {\n    & \"C:\\Program Files\\Octopus Deploy\\Octopus\\Octopus.Migrator.exe\" partial-export --console --directory=$OctopusExportPath --password=$ExportPassword  --ignore-deployments  --ignore-machines --ignore-tenants --project=\"$ProjectToExport\" \n}"
+            "Octopus.Action.Script.ScriptBody": "New-Item -ItemType Directory -Path $OctopusExportPath\n \n& \"C:\\Program Files\\Octopus Deploy\\Octopus\\Octopus.Migrator.exe\" export --console --directory=$OctopusExportPath --password=$ExportPassword\n"
           }
         },
         {

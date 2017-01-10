@@ -2,7 +2,7 @@ function Write-DeploymentUpdate {
     param($SequenceNumber, $TotalStages, $ProgressText, $Heading)
 
     $text = '{0}{1}{0}' -f (' '*3), $Heading
-    Write-Progress -Activity 'AutomationStack Deployment' -Status $ProgressText -PercentComplete ($SequenceNumber/$TotalStages*100) 
+    Write-Progress -Activity ('AutomationStack Deployment - Stage #{0} of {1}' -f $SequenceNumber, $TotalStages) -Status $ProgressText -PercentComplete ($SequenceNumber/$TotalStages*100) 
     Write-Host 
     # Box corner, line for top of box, box corner
     Write-Host -ForegroundColor White -BackgroundColor Black (@(

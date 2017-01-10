@@ -2,12 +2,22 @@
   "$type": "Octopus.Core.Model.Variables.VariableSet, Octopus.Core",
   "Id": "variableset-Projects-6",
   "OwnerId": "Projects-6",
-  "Version": 1,
+  "Version": 4,
   "Variables": [
     {
-      "Id": "45e8041f-13ab-7df4-5782-5cb15715defb",
-      "Name": "TeamCityAgentCloudRg",
-      "Value": "#{TeamCityRg}Agents"
+      "Id": "b865582a-7529-d39d-0db8-8c44626fd608",
+      "Name": "DSCConfigPath",
+      "Value": "T:\\TeamCity.ps1"
+    },
+    {
+      "Id": "61fa3889-c44a-6bb3-4edc-fd4ba1f68672",
+      "Name": "DSCConfigurationName",
+      "Value": "TeamCity"
+    },
+    {
+      "Id": "3767c492-09cf-45e0-7bed-77a3dc23c2f1",
+      "Name": "DSCNodeName",
+      "Value": "CloudAgent"
     }
   ],
   "RelatedDocumentIds": []

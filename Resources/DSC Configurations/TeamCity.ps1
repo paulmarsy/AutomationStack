@@ -163,15 +163,15 @@ Configuration TeamCity
             ApiKey = $ApiKey
             OctopusServerUrl = $OctopusServerUrl
             Environments = 'Agent Cloud'
-            Roles = "TeamCity Agent"
-            DependsOn = @('[xFirewall]OctopusTentacleFirewall','[Environment]TeamCityDataDir','[Environment]JavaHome')
+            Roles = "TeamCity Agent Image"
+            DependsOn = @('[xFirewall]OctopusTentacleFirewall','[Environment]JavaHome')
         }
         Script 'Octopus Tentacle Name'
         {
             SetScript = {
                 if ((Get-Service 'OctopusDeploy Tentacle' -ErrorAction Ignore | % Status) -ne 'Running' -or -not (Test-Path "$($env:SystemDrive)\Octopus\Octopus.DSC.installstate")) { return }
                 & "C:\Program Files\Octopus Deploy\Tentacle\Tentacle.exe" deregister-from --instance=Tentacle --server="$($using:OctopusServerUrl)" --apikey="$($using:ApiKey)" --console -m | Add-Content -Path 'C:\Octopus\logs\rename.log'
-                & "C:\Program Files\Octopus Deploy\Tentacle\Tentacle.exe" register-with --instance=Tentacle --server="$($using:OctopusServerUrl)" --apikey="$($using:ApiKey)" --console --environment='Agent Cloud' --role='TeamCity Agent' --name='TeamCity Agent Cloud Blueprint' | Add-Content -Path 'C:\Octopus\logs\rename.log'
+                & "C:\Program Files\Octopus Deploy\Tentacle\Tentacle.exe" register-with --instance=Tentacle --server="$($using:OctopusServerUrl)" --apikey="$($using:ApiKey)" --console --environment='Agent Cloud' --role='TeamCity Agent Image' --name='TeamCity Agent Cloud Blueprint' | Add-Content -Path 'C:\Octopus\logs\rename.log'
                 [System.IO.FIle]::WriteAllText("$($env:SystemDrive)\Octopus\Octopus.Server.DSC.regstate", $LASTEXITCODE,[System.Text.Encoding]::ASCII)
             }
             TestScript = {

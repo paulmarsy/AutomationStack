@@ -1,0 +1,1 @@
+ Save-AzureRmVMImage -ResourceGroupName $ResourceGroup -Name $VMName -DestinationContainerName images -VHDNamePrefix AgentCloud -Path ('D:\TCAgent-{0}.json' -f $OctopusParameters['Octopus.Deployment.Id'])

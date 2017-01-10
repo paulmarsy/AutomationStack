@@ -4,8 +4,8 @@ function New-DeploymentContext {
     $automationStackDetail = Show-AutomationStackDetail -Guid $deploymentGuid -AzureRegion $AzureRegion
 
     Write-Host 'Creating Octostache Config Store...'
-    $script:CurrentContext = [octosprache]::new($automationStackDetail.UDP)
-    $CurrentContext.Set('StartDateTime', (Get-Date))
+    $script:CurrentContext = New-Object Octosprache $automationStackDetail.UDP
+    $CurrentContext.TimingStart('Deployment')
     $CurrentContext.Set('Username', $automationStackDetail.Username)
     $CurrentContext.Set('Password', $automationStackDetail.Password)    
     $CurrentContext.Set('Name', 'AutomationStack#{UDP}')

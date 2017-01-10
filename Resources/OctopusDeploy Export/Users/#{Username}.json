@@ -1,8 +1,8 @@
 {
   "$type": "Octopus.Core.Model.Users.User, Octopus.Core",
-  "Id": "Users-1",
+  "Id": "Users-2",
   "Username": "#{Username}",
-  "DisplayName": null,
+  "DisplayName": "#{Username}",
   "EmailAddress": null,
   "Notes": null,
   "PasswordHashed": "#{OctopusPasswordHash}",

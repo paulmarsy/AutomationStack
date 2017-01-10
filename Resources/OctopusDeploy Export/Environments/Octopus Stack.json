@@ -1,0 +1,8 @@
+{
+  "$type": "Octopus.Core.Model.Environments.DeploymentEnvironment, Octopus.Core",
+  "Id": "Environments-21",
+  "Name": "Octopus Stack",
+  "Description": "",
+  "SortOrder": 2,
+  "UseGuidedFailure": false
+}

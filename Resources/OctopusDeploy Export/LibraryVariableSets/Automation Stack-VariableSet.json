@@ -2,7 +2,7 @@
   "$type": "Octopus.Core.Model.Variables.VariableSet, Octopus.Core",
   "Id": "variableset-LibraryVariableSets-2",
   "OwnerId": "LibraryVariableSets-2",
-  "Version": 7,
+  "Version": 9,
   "Variables": [
     {
       "Id": "04107455-ce7d-0174-c2bc-6c75bf7f5f2a",
@@ -23,6 +23,11 @@
       "Id": "5eefe522-98ee-418b-6414-36cdc6707946",
       "Name": "AutomationAccountName",
       "Value": "automation#{UDP}"
+    },
+    {
+      "Id": "9a2aa1a4-e333-6eb9-1dcb-cde3e66ba61b",
+      "Name": "OctopusHostHeader",
+      "Value": "http://#{OctopusHostName}/"
     }
   ],
   "RelatedDocumentIds": []

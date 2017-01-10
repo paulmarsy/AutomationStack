@@ -7,8 +7,8 @@
   "IsDisabled": false,
   "VariableSetId": "variableset-Projects-2",
   "DeploymentProcessId": "deploymentprocess-Projects-2",
-  "ProjectGroupId": "ProjectGroups-21",
-  "LifecycleId": "Lifecycles-21",
+  "ProjectGroupId": "ProjectGroups-2",
+  "LifecycleId": "Lifecycles-2",
   "AutoCreateRelease": false,
   "IncludedLibraryVariableSetIds": [
     "LibraryVariableSets-2",
@@ -21,7 +21,7 @@
   "TenantedDeploymentMode": "Untenanted",
   "VersioningStrategy": {
     "DonorPackageStepId": null,
-    "Template": "#{Octopus.Version.LastMajor}.#{Octopus.Version.LastMinor}.#{Octopus.Version.NextPatch}"
+    "Template": "#{Octopus.Date.Year}.#{Octopus.Date.Month}.#{Octopus.Date.Day}+#{Octopus.Time.Hour}-#{Octopus.Time.Minute}"
   },
   "Templates": [],
   "ReleaseCreationStrategy": {

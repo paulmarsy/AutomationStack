@@ -13,20 +13,14 @@ if (!(Test-Path $TempPath)) { New-Item -ItemType Directory -Path $TempPath | Out
 $script:TempPath = Get-Item -Path $TempPath | % FullName
 
 $script:ConcurrentTaskCount = 8
+$script:ModuleRootPath = $PSScriptRoot
 
-Get-ChildItem -File -Filter *.ps1 -Path (Join-Path $PSScriptRoot 'Internal') -Recurse | % {
-	. "$($_.FullName)"
-}
-
-Get-ChildItem -File -Filter *.ps1 -Path (Join-Path $PSScriptRoot 'Public') -Recurse | % {
-	. "$($_.FullName)"	
-	Export-ModuleMember -Function $_.BaseName
-}
-
-[Octosprache]::Init()
+. (Join-Path $PSScriptRoot 'Classes\Loader.ps1')
+Get-ChildItem -File -Filter *.ps1 -Path (Join-Path $PSScriptRoot 'Internal') -Recurse | % { . "$($_.FullName)" }
+Get-ChildItem -File -Filter *.ps1 -Path (Join-Path $PSScriptRoot 'Public') -Recurse | % { . "$($_.FullName)" }
 
 if ($UDP) {
-    $script:CurrentContext = [octosprache]::new($UDP)
+    $script:CurrentContext = New-Object Octosprache $UDP
 } else {
     $script:CurrentContext = $null
 }

@@ -1,5 +1,3 @@
-Get-ChildItem -Path (Join-Path $PSScriptRoot '.\Import Helpers') -File | % { . $_.FullName }
-
 class Octosprache {
     Octosprache([string]$UDP) {
         $backingFile = Join-Path $script:DeploymentsPath ('{0}.json' -f $UDP)
@@ -10,30 +8,6 @@ class Octosprache {
         $this.ARMTemplateVariableDictionary = New-Object Octostache.VariableDictionary
 
         $this.Set('UDP', $UDP)
-    }
-    static Init() {
-        $tempFolder = Join-Path $script:TempPath 'Octosprache'
-        if (!(Test-Path $tempFolder)) {
-            New-Item -Path $tempFolder -ItemType Directory | Out-Null
-        }
-        [Octosprache]::RegisterNuGetAssembly('Newtonsoft.Json', '9.0.1', 'net40', 'Newtonsoft.Json')
-        [Octosprache]::RegisterNuGetAssembly('Sprache', '2.1.0', 'net40', 'Sprache')
-        [Octosprache]::RegisterNuGetAssembly('Octostache', '2.0.7', 'net40', 'Octostache')
-    }
-    static RegisterNuGetAssembly($PackageId, $Version, $Framework, $Assembly) {
-        $tempFolder = Join-Path $script:TempPath 'Octosprache'
-        $assemblyPath = Join-Path $tempFolder "lib\$Framework\$Assembly.dll"
-        if (!(Test-Path $assemblyPath)) {
-            Write-Verbose "Downloading $PackageId ($Version)"
-            $download = Invoke-WebRequest -UseBasicParsing -Uri "https://www.nuget.org/api/v2/package/$PackageId/$Version"
-        
-            $tempFile = Join-Path $tempFolder ('{0}.{1}.zip' -f $PackageId, $Version)
-            Set-Content -Path $tempFile -Value $download.Content -Force -Encoding Byte
-            
-            Expand-Archive -Path $tempFile -DestinationPath $tempFolder -Force
-        }
-        Write-Verbose "Loading $Assembly..."
-        Add-Type -Path $assemblyPath
     }
     hidden static [string] PrepareJson([string]$Json) {
         $deserialized = ConvertFrom-Json -InputObject $Json
@@ -62,22 +36,6 @@ class Octosprache {
         $tokenised = $this.EvalARMTemplate($content)
         Set-Content -Path $To -Value $tokenised -Encoding ASCII
     }
-    SetSensitive([string]$Password, [string]$Key, [string]$Value) {
-         $sensitiveValue = Get-OctopusEncryptedValue -Password $Password -Value $Value
-         $this.Set($Key, $sensitiveValue)
-    }    
-    SetOctopusHashed([string]$Key, [string]$Value) {
-         $hashedValue = Get-OctopusHashedValue -Value $Value
-         $this.Set($Key, $hashedValue)
-    }   
-    SetTeamCityHashed([string]$Key, [string]$Value) {
-         $hashedValue = Get-TeamCityHashedValue -Value $Value
-         $this.Set($Key, $hashedValue)
-    }   
-    SetApiKeyId([string]$Key, [string]$ApiKey) {
-         $apiKeyId = Get-OctopusApiKeyId -ApiKey $ApiKey
-         $this.Set($Key, $apiKeyId)
-    }
     [string] Get([string]$Key) {
         return $this.VariableDictionary.Get($Key)
     }
@@ -94,8 +52,26 @@ class Octosprache {
         $tokenised = $this.Eval($content)
         Set-Content -Path $To -Value $tokenised -Encoding ASCII
     }
+    TimingStart([string]$Key) {
+        $this.Set(('Timing[{0}].Start' -f $Key), (Get-Date))
+    }
+    TimingEnd([string]$Key) {
+        $this.Set(('Timing[{0}].End' -f $Key), (Get-Date))
+    }
+    [string] GetTiming([string]$Key) {
+        $startdatetime = $this.Get(('Timing[{0}].Start' -f $Key))
+        if (!$startdatetime) {
+            return "Not started"
+        }
+        $enddatetime = $this.Get(('Timing[{0}].End' -f $Key))
+        if (!$enddatetime) {
+            return "Not completed"
+        }
+        $timespan = ([datetime]$enddatetime) - ([datetime]$startdatetime)
+        return [Humanizer.TimeSpanHumanizeExtensions]::Humanize($timespan, 2)
+    }
     [string] ToString()
     {
-        return $this.Get('UDP')
+        return ('Octosprache[{0}]' -f $this.Get('UDP'))
     }
 }

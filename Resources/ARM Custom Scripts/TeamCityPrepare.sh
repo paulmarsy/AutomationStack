@@ -15,7 +15,7 @@ apt-get -y install jq
 serverUrl="#{OctopusHostHeader}"
 apiKey="#{ApiKey}"
 
-environment="Microsoft Azure"
+environment="TeamCity Stack"
 machineName="TeamCity (Ubuntu Docker)"
 roles="TeamCity Server (Linux)"
 

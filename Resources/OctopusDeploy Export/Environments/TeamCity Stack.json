@@ -1,8 +1,8 @@
 {
   "$type": "Octopus.Core.Model.Environments.DeploymentEnvironment, Octopus.Core",
-  "Id": "Environments-2",
-  "Name": "Microsoft Azure",
+  "Id": "Environments-22",
+  "Name": "TeamCity Stack",
   "Description": "",
-  "SortOrder": 0,
+  "SortOrder": 3,
   "UseGuidedFailure": false
 }

@@ -1,0 +1,29 @@
+{
+  "$type": "Octopus.Core.Model.Lifecycles.Lifecycle, Octopus.Core",
+  "Id": "Lifecycles-21",
+  "Name": "Octopus Stack",
+  "Description": null,
+  "Phases": [
+    {
+      "Id": "29bd643e-6384-4602-b1a4-abf0391c3138",
+      "Name": "Octopus Stack",
+      "AutomaticDeploymentTargets": [],
+      "OptionalDeploymentTargets": [
+        "Environments-21"
+      ],
+      "MinimumEnvironmentsBeforePromotion": 0,
+      "ReleaseRetentionPolicy": null,
+      "TentacleRetentionPolicy": null
+    }
+  ],
+  "ReleaseRetentionPolicy": {
+    "Unit": "Items",
+    "QuantityToKeep": 0,
+    "ShouldKeepForever": true
+  },
+  "TentacleRetentionPolicy": {
+    "Unit": "Items",
+    "QuantityToKeep": 0,
+    "ShouldKeepForever": true
+  }
+}

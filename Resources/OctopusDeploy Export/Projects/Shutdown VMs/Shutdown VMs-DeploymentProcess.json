@@ -2,7 +2,7 @@
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
   "Id": "deploymentprocess-Projects-8",
   "OwnerId": "Projects-8",
-  "Version": 2,
+  "Version": 3,
   "Steps": [
     {
       "Id": "fee38a73-11f6-4f97-b047-5a2d14958c29",
@@ -26,7 +26,9 @@
           }
         }
       ],
-      "Properties": {}
+      "Properties": {
+        "Octopus.Action.TargetRoles": "Octopus Deploy Server"
+      }
     },
     {
       "Id": "0924cb01-fb7f-42a7-9b5e-fbea13339a1e",
