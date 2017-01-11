@@ -12,7 +12,8 @@ function New-AzureServicePrincipal {
     $CurrentContext.Set('ServicePrincipalObjectId', $servicePrincipal.Id.Guid)
 
     Start-Sleep -Seconds 20
-    
     New-AzureRmRoleAssignment -RoleDefinitionName Contributor -ServicePrincipalName  $app.ApplicationId
+    Start-Sleep -Seconds 20
+
     $CurrentContext.Set('ServicePrincipalCreated', $true)
 }

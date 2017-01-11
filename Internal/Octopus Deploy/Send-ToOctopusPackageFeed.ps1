@@ -4,7 +4,10 @@ function Send-ToOctopusPackageFeed {
         $PackageName
     )
 
-    $packageFile = Join-Path $TempPath ('{0}.{1}.zip' -f $PackageName, (Get-InternalSemVer))
+    $version = Get-InternalSemVer
+    Write-Host "Uploading $PackageName ($version) package to Octopus Deploy... " -NoNewline
+    $packageFile = Join-Path $TempPath ('{0}.{1}.zip' -f $PackageName, $version)
+
     if (Test-Path $packageFile) {
         Remove-Item $packageFile -Force
     }
@@ -13,4 +16,5 @@ function Send-ToOctopusPackageFeed {
     $wc = new-object System.Net.WebClient
     $uri = '{0}api/packages/raw?apiKey={1}' -f $CurrentContext.Get('OctopusHostHeader'), $CurrentContext.Get('ApiKey')
     $wc.UploadFile($uri, $packageFile) | Out-Null
+    Write-Host 'done'
 }

@@ -6,6 +6,7 @@ function Start-DeploymentStage {
     $attempt = 0
     $currentHeading = $Heading
     while ($attempt -lt $RetryAttemptsAllowed) {
+        $attempt++
         Write-DeploymentUpdate -SequenceNumber $SequenceNumber -TotalStages $TotalStages -ProgressText $ProgressText -Heading $currentHeading
 
         try {
@@ -39,8 +40,7 @@ function Start-DeploymentStage {
             }
             Write-Warning 'Retrying stage in 30 seconds...'
             Start-Sleep -Seconds 30
-            $attempt++
-            $currentHeading = ('{0} (Attempt #{1} of {2}' -f $Heading, ($attempt + 1), $RetryAttemptsAllowed)
+            $currentHeading = ('{0} (Attempt #{1} of {2})' -f $Heading, ($attempt + 1), $RetryAttemptsAllowed)
         }
                 
     }

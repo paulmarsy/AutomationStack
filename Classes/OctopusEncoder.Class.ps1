@@ -31,8 +31,8 @@ class OctopusEncoder {
         $this.Octosprache.Set($Key, ((1000).ToString('X') + '$' + [System.Convert]::ToBase64String($salt) + '$' + [System.Convert]::ToBase64String($hashedValue)))
     }
     ApiKeyID([string]$Key, [string]$ApiKey) {
-        [byte[]]$key = [System.Text.Encoding]::UTF8.GetBytes("Octopus-ApiKey-${ApiKey}")
+        [byte[]]$plainText = [System.Text.Encoding]::UTF8.GetBytes("Octopus-ApiKey-${ApiKey}")
         $csp = New-Object System.Security.Cryptography.SHA1CryptoServiceProvider
-        $this.Octosprache.Set($Key, ("apikeys-" + (([System.Convert]::ToBase64String($csp.ComputeHash($key)).GetEnumerator() | ? { [char]::IsLetterOrDigit($_) }) -join '')))
+        $this.Octosprache.Set($Key, ("apikeys-" + (([System.Convert]::ToBase64String($csp.ComputeHash($plainText)).GetEnumerator() | ? { [char]::IsLetterOrDigit($_) }) -join '')))
     }
 }

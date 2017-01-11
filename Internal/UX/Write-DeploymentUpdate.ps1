@@ -6,13 +6,14 @@ function Write-DeploymentUpdate {
     Write-Host 
     # Box corner, line for top of box, box corner
     Write-Host -ForegroundColor White -BackgroundColor Black (@(
+        (' ')
         ([string][char]0x2554)
-        ([string][char]0x2550)*([System.Console]::BufferWidth-2)
+        ([string][char]0x2550)*([System.Console]::BufferWidth-4)
         ([string][char]0x2557)) -join '')
     # Box edge
-    Write-Host -NoNewLine ([string][char]0x2551)
+    Write-Host -NoNewLine (@(' ',([string][char]0x2551)) -join '')
     # Left spacing so the center of the text is the center of the console
-    $padding = [System.Math]::Floor((([System.Console]::BufferWidth-2) - $text.Length) / 2)
+    $padding = [System.Math]::Floor((([System.Console]::BufferWidth-4) - $text.Length) / 2)
     Write-Host -NoNewLine (" "*$padding)
     # The heading..
     Write-Host -NoNewLine -BackgroundColor DarkCyan -ForegroundColor White $text
@@ -23,8 +24,9 @@ function Write-DeploymentUpdate {
     Write-Host ([string][char]0x2551)
     # Box corner, line for bottom of box, box corner
     Write-Host -ForegroundColor White -BackgroundColor Black (@(
+        (' ')
         ([string][char]0x255A)
-        ([string][char]0x2550)*([System.Console]::BufferWidth-2)
+        ([string][char]0x2550)*([System.Console]::BufferWidth-4)
         ([string][char]0x255D)) -join '')
     Write-Host
     Write-Host 
