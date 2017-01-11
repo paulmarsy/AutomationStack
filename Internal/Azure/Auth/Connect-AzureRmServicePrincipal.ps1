@@ -1,4 +1,5 @@
 function Connect-AzureRmServicePrincipal {
+    Write-Host
     try {
         $existingContext = Get-AzureRmContext
         if ($existingContext -and $existingContext.Account.AccountType -eq 'User') {
@@ -14,6 +15,6 @@ function Connect-AzureRmServicePrincipal {
     Write-Host -ForegroundColor White -BackgroundColor Black -NoNewline "Authenticating as AutomationStack Service Principal.. "
     $rmContext = Add-AzureRmAccount -Credential $credential -SubscriptionId $CurrentContext.Get('AzureSubscriptionId') -TenantId $CurrentContext.Get('AzureTenantId') -ServicePrincipal
     Write-Host -ForegroundColor Green -BackgroundColor Black "Successful"
-    $rmContext | Format-List | Out-Host
-    $rmContext | % Account | Format-List | Out-Host
+    $rmContext | Format-List | Out-String | % Trim |  Out-Host
+    $rmContext | % Account | Format-List | Out-String | % Trim |  Out-Host
 }

@@ -2,7 +2,9 @@ param($UDP)
 
 $ErrorActionPreference = 'Stop'
 
+$script:ExportsPath = Join-Path -Resolve $PSScriptRoot 'Exports' | Convert-Path
 $script:ResourcesPath = Join-Path -Resolve $PSScriptRoot 'Resources' | Convert-Path
+$script:ScriptsPath = Join-Path -Resolve $ResourcesPath 'Scripts' | Convert-Path
 
 $DeploymentsPath = Join-Path $PSScriptRoot 'Deployments'
 if (!(Test-Path $DeploymentsPath)) { New-Item -ItemType Directory -Path $DeploymentsPath | Out-Null }
@@ -11,6 +13,8 @@ $script:DeploymentsPath = Get-Item -Path $DeploymentsPath | % FullName
 $TempPath = Join-Path $PSScriptRoot 'Temp'
 if (!(Test-Path $TempPath)) { New-Item -ItemType Directory -Path $TempPath | Out-Null }
 $script:TempPath = Get-Item -Path $TempPath | % FullName
+
+
 
 $script:ConcurrentTaskCount = 8
 $script:ModuleRootPath = $PSScriptRoot

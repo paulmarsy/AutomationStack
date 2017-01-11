@@ -9,7 +9,7 @@ function Start-DeploymentStage {
         Write-DeploymentUpdate -SequenceNumber $SequenceNumber -TotalStages $TotalStages -ProgressText $ProgressText -Heading $currentHeading
 
         try {
-            $CurrentContext.TimingStart($SequenceNumber)
+            if ($null -ne $CurrentContext) { $CurrentContext.TimingStart($SequenceNumber) }
             $ScriptBlock.Invoke()
             break
         }

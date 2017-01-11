@@ -10,7 +10,7 @@ function Initialize-OctopusDeployInfrastructure {
         udp = $CurrentContext.Get('UDP')
         infraResourceGroup = $CurrentContext.Get('InfraRg')
         productName = 'Octopus'
-        vmAdminUsername = $CurrentContext.Get('Username')
+        vmAdminUsername = $CurrentContext.Get('StackAdminUsername')
         clientId = $CurrentContext.Get('ServicePrincipalClientId')
         registrationUrl = $CurrentContext.Get('AutomationRegistrationUrl')
         nodeConfigurationName = 'OctopusDeploy.Server'

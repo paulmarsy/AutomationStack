@@ -4,8 +4,8 @@ function Initialize-KeyVault {
         udp = $CurrentContext.Get('UDP')
         tenantId = $CurrentContext.Get('AzureTenantId')
         objectId = $CurrentContext.Get('ServicePrincipalObjectId')
-        sqlAdminPassword = $CurrentContext.Get('Password')
-        vmAdminPassword = $CurrentContext.Get('Password')
+        sqlAdminPassword = $CurrentContext.Get('SqlServerPassword')
+        vmAdminPassword = $CurrentContext.Get('StackAdminPassword')
         servicePrincipalClientSecret = $CurrentContext.Get('ServicePrincipalClientSecret')
     }
     $CurrentContext.Set('KeyVaultResourceId', $keyvaultdeploy.keyVaultId.Value)

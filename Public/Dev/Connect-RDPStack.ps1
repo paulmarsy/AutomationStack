@@ -9,7 +9,7 @@ function Connect-RDPStack {
         default { throw 'You must specify the service to RDP to' }
     }
     $ip = (Get-AzureRmPublicIpAddress -Name $ipName -ResourceGroupName $rg).IpAddress
-    Start-Process -FilePath "cmdkey.exe" -ArgumentList @("/generic:`"TERMSRV/$ip`"", "/user:`"$($CurrentContext.Get('Username'))`"", "/pass:`"$($CurrentContext.Get('Password'))`"") -WindowStyle Hidden -Wait
+    Start-Process -FilePath "cmdkey.exe" -ArgumentList @("/generic:`"TERMSRV/$ip`"", "/user:`"$($CurrentContext.Get('StackAdminUsername'))`"", "/pass:`"$($CurrentContext.Get('StackAdminPassword'))`"") -WindowStyle Hidden -Wait
 
     $arguments = @(
         "/v:`"$($ip)`""

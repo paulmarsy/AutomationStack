@@ -12,12 +12,12 @@
     {
       "Id": "8b491057-6ef8-e871-0eb3-7f5c3f3054bb",
       "Name": "StackAdminUsername",
-      "Value": "#{Username}"
+      "Value": "#{StackAdminUsername}"
     },
     {
       "Id": "7053abf3-47bb-f068-bf98-32788163223f",
       "Name": "StackAdminPassword",
-      "Value": "#{Password}"
+      "Value": "#{StackAdminPassword}"
     },
     {
       "Id": "5ccfcebd-5f5c-9a39-f8fb-0bda8775ab5b",

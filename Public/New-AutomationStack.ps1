@@ -28,7 +28,8 @@ function New-AutomationStack {
                         $ProgressText = 'Deployment Context' 
                         $Heading = 'Creating AutomationStack Deployment Details'
                         {
-                            New-DeploymentContext
+                            New-DeploymentContext -AzureRegion $AzureRegion
+                            Show-AutomationStackDetail
                         }
                     }
                     2 {
@@ -80,7 +81,7 @@ function New-AutomationStack {
                         $Heading = 'Publishing AutomationStack to Octopus Deploy Package Feed'
                         {
                             Send-ToOctopusPackageFeed (Join-Path -Resolve $ResourcesPath 'ARM Templates') 'ARMTemplates'
-                            Send-ToOctopusPackageFeed (Join-Path -Resolve $ModuleRootPath 'Internal') 'AutomationStackScripts'
+                            Send-ToOctopusPackageFeed $ScriptsPath 'AutomationStackScripts'
                         }
                     }
                     9 {
@@ -97,7 +98,7 @@ function New-AutomationStack {
                         $Heading = 'AutomationStack Provisioning Complete'
                         {
                             $CurrentContext.TimingEnd('Deployment')
-                            Show-AutomationStackDetail -Octosprache $CurrentContext | Out-Null
+                            Show-AutomationStackDetail
                             Write-Host
                             Write-Host -ForegroundColor Magenta "`tAdditional functionality can be deployed/enabled using Octopus Deploy"
                             Write-Host

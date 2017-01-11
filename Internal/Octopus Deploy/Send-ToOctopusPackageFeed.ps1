@@ -4,7 +4,7 @@ function Send-ToOctopusPackageFeed {
         $PackageName
     )
 
-    $packageFile = Join-Path $TempPath ('{0}.1.0.0.zip' -f $PackageName)
+    $packageFile = Join-Path $TempPath ('{0}.{1}.zip' -f $PackageName, (Get-InternalSemVer))
     if (Test-Path $packageFile) {
         Remove-Item $packageFile -Force
     }

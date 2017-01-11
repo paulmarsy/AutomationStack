@@ -10,31 +10,16 @@ function Publish-StackResources {
     Write-Host
 
     Write-Host 'Encoding required values for Octopus & TeamCity data import...'
-    $octopusEncoder = New-Object  OctopusEncoder @($CurrentContext, $CurrentContext.Get('Password'))
+    $octopusEncoder = New-Object  OctopusEncoder @($CurrentContext, $CurrentContext.Get('StackAdminPassword'))
     $octopusEncoder.Encrypt('ProtectedImportHello', 'Hello')
     $octopusEncoder.Encrypt('ServicePrincipalPassword', $CurrentContext.Get('ServicePrincipalClientSecret'))
-    $octopusEncoder.Encrypt('SSHPassword', $CurrentContext.Get('Password'))
-    $octopusEncoder.Hash('OctopusPasswordHash', $CurrentContext.Get('Password')) 
-    $CurrentContext.Set('ApiKey', ('API-AUTOMATION{0}' -f $CurrentContext.Get('UDP')))
+    $octopusEncoder.Encrypt('SSHPassword', $CurrentContext.Get('StackAdminPassword'))
+    $octopusEncoder.Hash('OctopusPasswordHash', $CurrentContext.Get('StackAdminPassword')) 
     $octopusEncoder.Hash('ApiKeyHash', $CurrentContext.Get('ApiKey'))
     $octopusEncoder.ApiKeyID('ApiKeyId', $CurrentContext.Get('ApiKey'))
 
     $teamCityEncoder = New-Object TeamCityEncoder @($CurrentContext)
-    $teamCityEncoder.Hash('TeamCityPasswordHash', $CurrentContext.Get('Password'))
-
-    # Write-Host "Encoding ARM Templates into Octopus Deploy import..."
-    # Get-ChildItem -Path (Join-Path -Resolve $ResourcesPath 'ARM Templates') -File | % {
-    #     $name = $_.BaseName
-    #     $content = Get-Content -Path $_.FullName -Raw
-    #     if ($name.EndsWith('.parameters')) {
-    #         $name = $name.Substring(0,($name.Length-'.parameters'.Length))
-    #         Write-Host "Adding ARM Parameter File $name"
-    #         $CurrentContext.SetARMParameters($name, $content)
-    #     } else {
-    #         Write-Host "Adding ARM Template File $name"
-    #         $CurrentContext.SetARMTemplate($name, $content)
-    #     }
-    # }
+    $teamCityEncoder.Hash('TeamCityPasswordHash', $CurrentContext.Get('StackAdminPassword'))
 
     Write-Host
     Write-Host -ForegroundColor Green "`tUploading ARM Custom Scripts..."
@@ -46,11 +31,11 @@ function Publish-StackResources {
 
     Write-Host
     Write-Host -ForegroundColor Green "`tUploading Octopus Deploy Data Import..."
-    Upload-ToFileShare -FileShareName octopusdeploy -Source (Join-Path -Resolve $ResourcesPath 'OctopusDeploy Export') -TokeniseFiles @('metadata.json','server.json','Automation Stack Parameters-VariableSet.json','Microsoft Azure Service Principal.json','Tentacle Auth.json','#{AzureRegion}.json','#{ApiKeyId}.json','#{Username}.json') -ARMTemplateFiles @('ARM Template - App Server.json','ARM Template - Docker Linux.json','ARM Template - Enable Encryption.json') -Context $stackresources -ResetStorage:$ResetStorage
+    Upload-ToFileShare -FileShareName octopusdeploy -Source (Join-Path -Resolve $ExportsPath 'OctopusDeploy') -TokeniseFiles @('metadata.json','server.json','Automation Stack Parameters-VariableSet.json','Microsoft Azure Service Principal.json','Tentacle Auth.json','#{AzureRegion}.json','#{ApiKeyId}.json','#{Username}.json') -ARMTemplateFiles @('ARM Template - App Server.json','ARM Template - Docker Linux.json','ARM Template - Enable Encryption.json') -Context $stackresources -ResetStorage:$ResetStorage
 
     Write-Host
     Write-Host -ForegroundColor Green "`tUploading TeamCity Data Import..."
-    Upload-ToFileShare -FileShareName teamcity -Source (Join-Path -Resolve $ResourcesPath 'TeamCity Export') -TokeniseFiles @('vcs_username','users','database.properties') -ARMTemplateFiles @() -Context $stackresources -ResetStorage:$ResetStorage
+    Upload-ToFileShare -FileShareName teamcity -Source (Join-Path -Resolve $ExportsPath 'TeamCity') -TokeniseFiles @('vcs_username','users','database.properties') -ARMTemplateFiles @() -Context $stackresources -ResetStorage:$ResetStorage
 
     Write-Host
 }

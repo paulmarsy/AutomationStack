@@ -27,4 +27,5 @@ function Write-DeploymentUpdate {
         ([string][char]0x2550)*([System.Console]::BufferWidth-2)
         ([string][char]0x255D)) -join '')
     Write-Host
+    Write-Host 
 }
