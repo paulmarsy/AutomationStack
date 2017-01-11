@@ -1,9 +1,8 @@
 function New-AutomationStack {
-    [CmdletBinding()]
-    param(
+        param(
         [Parameter()][switch]$WhatIf,
-        [Parameter(DontShow)]$TotalStages = 10,
-        [Parameter(DontShow)]$Stages = (1..$TotalStages)
+        [Parameter(DontShow)][int]$TotalStages = 10,
+        [Parameter(DontShow)][int[]]$Stages = (1..$TotalStages)
     )
     DynamicParam {
         $Dictionary = New-Object System.Management.Automation.RuntimeDefinedParameterDictionary
@@ -15,7 +14,7 @@ function New-AutomationStack {
     begin{
         $AzureRegion = $PSBoundParameters.AzureRegion
         if (!$AzureRegion) {
-            $AzureRegion = 'West Europe' # SQL Server isn't able to be provisioned in EUN currently
+            $AzureRegion = 'West Europe'
         }
         Install-AzurePowerShellModule
         Connect-AzureRm
