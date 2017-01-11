@@ -120,18 +120,6 @@
             }
         },
         "resources": [{
-            "name": "[concat(variables('automationName'), '/', 'OctopusDSC')]",
-            "type": "microsoft.automation/automationAccounts/Modules",
-            "apiVersion": "2015-10-31",
-            "dependsOn": [
-                "[concat('Microsoft.Automation/automationAccounts/', variables('automationName'))]"
-            ],
-            "properties": {
-                "contentLink": {
-                    "uri": "https://www.powershellgallery.com/api/v2/package/OctopusDSC/2.0.26"
-                }
-            }
-        }, {
             "name": "[concat(variables('automationName'), '/', 'xNetworking')]",
             "type": "microsoft.automation/automationAccounts/Modules",
             "apiVersion": "2015-10-31",

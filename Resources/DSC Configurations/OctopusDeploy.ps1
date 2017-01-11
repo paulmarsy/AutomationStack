@@ -5,63 +5,15 @@ Configuration OctopusDeploy
         $OctopusAdminUsername,
         $OctopusAdminPassword,
         $ConnectionString,
-        $HostHeader
+        $HostHeader,
+        $OctopusVersionToInstall = 'latest'
     )
     Import-DscResource -ModuleName PSDesiredStateConfiguration
-    Import-DscResource -ModuleName OctopusDSC
     Import-DscResource -ModuleName xNetworking
 
     Node "Server"
     {
-        cOctopusServer OctopusServer
-        {
-            Ensure = "Present"
-            State = "Started"
-            Name = "OctopusServer"
-            WebListenPrefix = $HostHeader
-            SqlDbConnectionString = $ConnectionString
-            OctopusAdminUsername = $OctopusAdminUsername
-            OctopusAdminPassword = $OctopusAdminPassword
-            AllowUpgradeCheck = $true
-            AllowCollectionOfAnonymousUsageStatistics = $false
-            ForceSSL = $false
-            ListenPort = 10943
-        }
-        cOctopusServerUsernamePasswordAuthentication "Enable Username/Password Auth"
-        {
-            InstanceName = "OctopusServer"
-            Enabled = $true
-            DependsOn = '[cOctopusServer]OctopusServer'
-        }
-        Script 'Octopus License'
-        {
-            SetScript = {
-              $postParams = @{ 
-                  FullName=$env:USERNAME
-                  Organization=$env:USERDOMAIN
-                  EmailAddress="${env:USERNAME}@${env:USERDOMAIN}.com"
-                  Source="azure"
-                 }
-                $response = Invoke-WebRequest -UseBasicParsing -Uri "https://octopusdeploy.com/api/licenses/trial" -Method POST -Body $postParams
-                $utf8NoBOM = New-Object System.Text.UTF8Encoding($false)
-                $bytes  = $utf8NoBOM.GetBytes($response.Content)
-                $licenseBase64 = [System.Convert]::ToBase64String($bytes)
-                $args = @(
-                    'license', 
-                    '--console',
-                    '--instance', 'OctopusServer', 
-                    '--licenseBase64', $licenseBase64
-                )
-                & 'C:\Program Files\Octopus Deploy\Octopus\Octopus.Server.exe' $args
-                [System.IO.FIle]::WriteAllText("$($env:SystemDrive)\Octopus\Octopus.Server.DSC.licensestate", $LASTEXITCODE,[System.Text.Encoding]::ASCII)
-            }
-            TestScript = {
-                ((Test-Path "$($env:SystemDrive)\Octopus\Octopus.Server.DSC.licensestate") -and ([System.IO.FIle]::ReadAllText("$($env:SystemDrive)\Octopus\Octopus.Server.DSC.licensestate").Trim()) -eq '0')
-            }
-            GetScript = { @{} }
-            DependsOn = '[cOctopusServer]OctopusServer'
-        }
-        xFirewall Firewall
+        xFirewall OctopusDeployServer
         {
             Name                  = "OctopusServer"
             DisplayName           = "Octopus Server"
@@ -72,6 +24,110 @@ Configuration OctopusDeploy
             Direction             = "InBound"
             LocalPort             = ("80", "444", "10943")
             Protocol              = "TCP"
+        }
+
+        $octopusDeployRoot =  "$($env:SystemDrive)\Octopus\DSC"     
+        File OctopusDeployFolder {
+            Type = 'Directory'
+            DestinationPath = $octopusDeployRoot
+            Ensure = "Present"
+        }
+
+        if ($OctopusVersionToInstall -eq 'latest') {
+            $octopusDownloadUri = "https://octopus.com/downloads/latest/WindowsX64/OctopusServer"
+        } else {
+            $octopusDownloadUri = "https://download.octopusdeploy.com/octopus/Octopus.${OctopusVersionToInstall}-x64.msi"
+        }
+        $octopusInstallFile = Join-Path $octopusDeployRoot "OctopusServer.$OctopusVersionToInstall.msi"
+        xRemoteFile OctopusServer
+        {
+            Uri = $octopusDownloadUri
+            DestinationPath = $octopusInstallFile
+            DependsOn = '[File]OctopusDeployFolder'
+        }
+        $octopusInstallLogFile = Join-Path $octopusDeployRoot "OctopusServer.$OctopusVersionToInstall.install.log"
+        $octopusInstallStateFile = Join-Path $octopusDeployRoot 'OctopusDeploy.version'
+        Script OctopusDeployInstall
+        {
+            SetScript = {
+                Get-Service OctopusDeploy -ErrorAction Ignore | Stop-Service -Force
+                if (Test-Path $using:octopusInstallStateFile) {
+                    $currentVersion = [System.IO.FIle]::ReadAllText($using:octopusInstallStateFile).Trim()
+                    $currentOctopusInstallFile = Join-Path $using:octopusDeployRoot "OctopusServer.$currentVersion.msi"
+                     if (!(Test-Path $currentOctopusInstallFile)) {
+                         throw "Unable to install different Octopus Deploy versiom, previously installed msi file not found: $currentOctopusInstallFile"
+                     }
+
+                     $octopusUninstallLogFile = Join-Path $octopusDeployRoot "OctopusServer.$currentVersion.uninstall.log"
+                    $msiExitCode = (Start-Process -FilePath "msiexec.exe" -ArgumentList "/x `"$currentOctopusInstallFile`" /quiet /l*v `"$octopusUninstallLogFile`"" -Wait -Passthru).ExitCode
+                    if ($msiExitCode -ne 0)
+                    {
+                        throw "Uninstallation of Octopus Deploy failed; MSIEXEC exited with code: $msiExitCode"
+                    }
+                    Remove-Item -Path $using:octopusInstallStateFile -Force
+                }
+                $msiExitCode = (Start-Process -FilePath "msiexec.exe" -ArgumentList "/i `"$($using:octopusInstallFile)`"  /quiet /l*v `"$($using:octopusInstallLogFile)`"" -Wait -Passthru).ExitCode
+                if ($msiExitCode -ne 0)
+                {
+                    throw "Installation of Octopus Deploy failed; MSIEXEC exited with code: $msiExitCode"
+                }
+                [System.IO.FIle]::WriteAllText($using:octopusInstallStateFile, $using:OctopusVersionToInstall,[System.Text.Encoding]::ASCII)
+            }
+            TestScript = {
+                ((Test-Path $using:octopusInstallStateFile) -and ([System.IO.FIle]::ReadAllText($using:octopusInstallStateFile).Trim()) -eq $using:OctopusVersionToInstall)
+            }
+            GetScript = { @{} }
+            DependsOn = '[xRemoteFile]OctopusServer'
+        }
+        $octopusConfigStateFile = Join-Path $octopusDeployRoot 'OctopusDeploy.version'
+        Script OctopusDeployConfiguration
+        {
+            SetScript = {
+                $octopusServerExe = Join-Path $env:ProgramFiles 'Octopus Deploy\Octopus\Octopus.Server.exe'
+                $addativeExitCode = 0
+
+                & $octopusServerExe create-instance --console --instance OctopusServer --config "C:\Octopus\OctopusServer.config"
+                $addativeExitCode += $LASTEXITCODE; if ($LASTEXITCODE -gt 0) { throw "Exit code $LASTEXITCODE from Octopus Server: create-instance" }
+                & $octopusServerExe configure --console --instance OctopusServer --home "C:\Octopus\\" --storageConnectionString $using:ConnectionString --upgradeCheck "True" --upgradeCheckWithStatistics "True" --webAuthenticationMode "UsernamePassword" --webForceSSL "False" --webListenPrefixes $using:HostHeader --commsListenPort "10943" --serverNodeName $NodeName
+                $addativeExitCode += $LASTEXITCODE; if ($LASTEXITCODE -gt 0) { throw "Exit code $LASTEXITCODE from Octopus Server: configure" }
+                & $octopusServerExe database --console --instance OctopusServer --create
+                $addativeExitCode += $LASTEXITCODE; if ($LASTEXITCODE -gt 0) { throw "Exit code $LASTEXITCODE from Octopus Server: database" }
+                & $octopusServerExe license --console --instance OctopusServer --free
+                $addativeExitCode += $LASTEXITCODE; if ($LASTEXITCODE -gt 0) { throw "Exit code $LASTEXITCODE from Octopus Server: license" }
+                & $octopusServerExe service --console --instance OctopusServer --install --reconfigure --start
+                $addativeExitCode += $LASTEXITCODE; if ($LASTEXITCODE -gt 0) { throw "Exit code $LASTEXITCODE from Octopus Server: service" }
+                [System.IO.FIle]::WriteAllText($using:octopusConfigStateFile, $addativeExitCode,[System.Text.Encoding]::ASCII)
+            }
+            TestScript = {
+                ((Test-Path $using:octopusConfigStateFile) -and ([System.IO.FIle]::ReadAllText($using:octopusConfigStateFile,).Trim()) -eq '0')
+            }
+            GetScript = { @{} }
+            DependsOn = @('[xFirewall]OctopusDeployServer','[Script]OctopusDeployInstall')
+        }                     
+        $octopusLicenseStateFile = Join-Path $octopusDeployRoot 'OctopusDeploy.licensestate'
+        Script OctopusDeployLicense
+        {
+            SetScript = {
+                $octopusServerExe = Join-Path $env:ProgramFiles 'Octopus Deploy\Octopus\Octopus.Server.exe'
+                $postParams = @{ 
+                    FullName=$env:USERNAME
+                    Organization=$env:USERDOMAIN
+                    EmailAddress="${env:USERNAME}@${env:USERDOMAIN}.com"
+                    Source="azure"
+                    }
+                $response = Invoke-WebRequest -UseBasicParsing -Uri "https://octopusdeploy.com/api/licenses/trial" -Method POST -Body $postParams
+                $utf8NoBOM = New-Object System.Text.UTF8Encoding($false)
+                $bytes  = $utf8NoBOM.GetBytes($response.Content)
+                $licenseBase64 = [System.Convert]::ToBase64String($bytes)
+                & & $octopusServerExe license --console --instance OctopusServer --licenseBase64 $licenseBase64
+                if ($LASTEXITCODE -gt 0) { throw "Exit code $LASTEXITCODE from Octopus Server: license" }
+                [System.IO.FIle]::WriteAllText($using:octopusLicenseStateFile, $LASTEXITCODE,[System.Text.Encoding]::ASCII)
+            }
+            TestScript = {
+                ((Test-Path $using:octopusLicenseStateFile) -and ([System.IO.FIle]::ReadAllText($using:octopusLicenseStateFile).Trim()) -eq '0')
+            }
+            GetScript = { @{} }
+            DependsOn = '[Script]OctopusDeployConfiguration'
         }
     }
 }

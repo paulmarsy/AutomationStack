@@ -26,7 +26,7 @@ CompanyName = 'Paul Marston'
 Copyright = '(c) 2017 Paul Marston. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = 'Showcasing the power of DevOps automation. A reliable and repeatable build and deployment infrastructure, in one command.'
+Description = 'DevOps automation. A reliable and repeatable build and deployment infrastructure, in one command.'
 
 # Minimum version of the Windows PowerShell engine required by this module
 PowerShellVersion = '5.0'
@@ -68,13 +68,13 @@ PowerShellVersion = '5.0'
 FunctionsToExport = 'New-AutomationStack',
                     'Remove-AutomationStack',
 
-                    'New-TeamCityStack',
                     'Start-AutomationStackFeature',
 
                     'Publish-AutomationStackResources',
                     'Connect-RDPStack',
                     'Update-AutomationStackModule',
                     'Measure-AutomationStackDeployment'
+
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = ''
 
@@ -99,8 +99,7 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = 'devops', 'automation', 'provisioning', 'build', 'deploy', 'azure', 
-               'octopus-deploy', 'teamcity', 'proget', 'arm', 'dsc'
+        Tags = 'devops', 'automation', 'provisioning', 'build', 'deploy', 'azure', 'octopus-deploy', 'teamcity', 'proget', 'arm', 'dsc'
 
         # A URL to the license for this module.
         # LicenseUri = ''
