@@ -5,7 +5,7 @@ function Connect-AzureRmServicePrincipal {
         if ($existingContext -and $existingContext.Account.AccountType -eq 'User') {
             Write-Host -NoNewline 'Saving current AzureRm context... '
             $azureProfilePath =  Join-Path $TempPath 'AzureRmProfile.json'
-            Save-AzureRmProfile -Path $azureProfilePath
+            Save-AzureRmProfile -Path $azureProfilePath -Force
             Write-Host 'done'
         }
     } catch {}

@@ -21,7 +21,7 @@ $script:ModuleRootPath = $PSScriptRoot
 
 . (Join-Path $PSScriptRoot 'Classes\Loader.ps1')
 Get-ChildItem -File -Filter *.ps1 -Path (Join-Path $PSScriptRoot 'Internal') -Recurse | % { . "$($_.FullName)" }
-Get-ChildItem -File -Filter *.ps1 -Path (Join-Path $PSScriptRoot 'Public') -Recurse | % { . "$($_.FullName)" }
+Get-ChildItem -File -Filter *.ps1 -Path (Join-Path $PSScriptRoot 'Public') -Recurse | % { . "$($_.FullName)"; Export-ModuleMember -Function $_.BaseName }
 
 if ($UDP) {
     $script:CurrentContext = New-Object Octosprache $UDP

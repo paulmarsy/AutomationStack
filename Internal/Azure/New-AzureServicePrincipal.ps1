@@ -13,6 +13,6 @@ function New-AzureServicePrincipal {
 
     Start-Sleep -Seconds 20
     
-    New-AzureRmRoleAssignment -RoleDefinitionName Contributor -ObjectId  $servicePrincipal.Id.Guid
+    New-AzureRmRoleAssignment -RoleDefinitionName Contributor -ServicePrincipalName  $app.ApplicationId
     $CurrentContext.Set('ServicePrincipalCreated', $true)
 }

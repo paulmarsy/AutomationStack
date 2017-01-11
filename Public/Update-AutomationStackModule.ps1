@@ -17,10 +17,9 @@ function Update-AutomationStackModule {
 
     Expand-Archive -Path $tempFile -DestinationPath $Path -Force
 
-    Remove-Item -Path (Join-Path $Path 'Internal') -Recurse -Force
-    Remove-Item -Path (Join-Path $Path 'Public') -Recurse -Force
-    Remove-Item -Path (Join-Path $Path 'Resources') -Recurse -Force
+    Get-ChildItem -Path $Path -Exclude@('Deployments','Temp','AutomationStack-master') -Directory | Remove-Item -Recurse -Force
     Remove-Item -Path (Join-Path $Path 'AutomationStack.ps?1') -Force
+    
     Move-Item -Path (Join-Path $Path 'AutomationStack-master\*') -Destination $Path -Force
     Remove-Module AutomationStack -Force
     if ($null -ne $CurrentContext) {

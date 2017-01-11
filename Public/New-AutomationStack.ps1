@@ -1,8 +1,9 @@
 function New-AutomationStack {
     [CmdletBinding()]
     param(
+        [Parameter()][switch]$WhatIf,
         [Parameter(DontShow)]$TotalStages = 10,
-        $Stages = (1..$TotalStages)
+        [Parameter(DontShow)]$Stages = (1..$TotalStages)
     )
     DynamicParam {
         $Dictionary = New-Object System.Management.Automation.RuntimeDefinedParameterDictionary
@@ -102,14 +103,14 @@ function New-AutomationStack {
                             Write-Host
                             Write-Host -ForegroundColor Magenta "`tAdditional functionality can be deployed/enabled using Octopus Deploy"
                             Write-Host
-                            Write-Host -ForegroundColor Green '`tOctopus Deploy Running at:' $CurrentContext.Get('OctopusHostHeader')
+                            Write-Host -ForegroundColor Green "`tOctopus Deploy Running at: $($CurrentContext.Get('OctopusHostHeader'))"
                             Write-Host
                             Write-Host 'Timing & statistics of this deployment are available with the command: Measure-AutomationStackDeployment'
                             $CurrentContext.Set('DeploymentComplete', $true)
                         }
                     }
                 }
-                Start-DeploymentStage -SequenceNumber $SequenceNumber -TotalStages $TotalStages -ProgressText $ProgressText -Heading $Heading -ScriptBlock $ScriptBlock
+                Start-DeploymentStage -SequenceNumber $SequenceNumber -TotalStages $TotalStages -ProgressText $ProgressText -Heading $Heading -ScriptBlock $ScriptBlock -WhatIf:$WhatIf
             }
         }
         finally {   
