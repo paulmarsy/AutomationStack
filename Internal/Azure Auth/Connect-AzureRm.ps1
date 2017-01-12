@@ -26,4 +26,5 @@ function Connect-AzureRm {
      }
 
     Set-AzureSubscriptionSelection
+    Register-ResourceProviders
 }
