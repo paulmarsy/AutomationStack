@@ -17,6 +17,9 @@ function Invoke-SharedScript {
     process {
        $PSBoundParameters.Remove('Category') | Out-Null
        $PSBoundParameters.Remove('Script') | Out-Null
+       if ($DebugMode) {
+           $PSBoundParameters | Format-List | Out-Host
+       }
 
         & $ScriptFile @PSBoundParameters
     }

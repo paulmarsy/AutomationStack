@@ -5,7 +5,7 @@ function Write-DeploymentUpdate {
     Write-Progress -Activity ('AutomationStack Deployment - Stage #{0} of {1}' -f $SequenceNumber, $TotalStages) -Status $ProgressText -PercentComplete ($SequenceNumber/$TotalStages*100) 
     Write-Host 
     # Box corner, line for top of box, box corner
-    Write-Host -ForegroundColor White -BackgroundColor Black (@(
+    Write-Host (@(
         (' ')
         ([string][char]0x2554)
         ([string][char]0x2550)*([System.Console]::BufferWidth-4)
@@ -23,7 +23,7 @@ function Write-DeploymentUpdate {
     # Box edge
     Write-Host ([string][char]0x2551)
     # Box corner, line for bottom of box, box corner
-    Write-Host -ForegroundColor White -BackgroundColor Black (@(
+    Write-Host (@(
         (' ')
         ([string][char]0x255A)
         ([string][char]0x2550)*([System.Console]::BufferWidth-4)

@@ -4,5 +4,5 @@ function Register-OctopusDSCConfiguration {
     $CurrentContext.Set('OctopusHostName', 'octopusstack-#{UDP}.#{AzureRegionValue}.cloudapp.azure.com')
     $CurrentContext.Set('OctopusHostHeader', 'http://#{OctopusHostName}/')
 
-    Invoke-SharedScript Automation 'Import-OctopusConfig' -Path (Join-Path $ResourcesPath 'DSC Configurations\OctopusDeploy.ps1') -InfraRg  $CurrentContext.Get('InfraRg') -AutomationAccountName $CurrentContext.Get('AutomationAccountName')  -VMName $CurrentContext.Get('OctopusVMName') -ConnectionString $CurrentContext.Get('OctopusConnectionString') -HostHeader $CurrentContext.Get('OctopusHostHeader') -OctopusVersionToInstall 'latest'
+    Invoke-SharedScript Automation 'Import-OctopusConfig' -Path (Join-Path $ResourcesPath 'DSC Configurations\OctopusDeploy.ps1') -InfraRg  $CurrentContext.Get('InfraRg') -AutomationAccountName $CurrentContext.Get('AutomationAccountName') -VMName $CurrentContext.Get('OctopusVMName') -ConnectionString $CurrentContext.Get('OctopusConnectionString') -HostHeader $CurrentContext.Get('OctopusHostHeader') -OctopusVersionToInstall 'latest'
 }

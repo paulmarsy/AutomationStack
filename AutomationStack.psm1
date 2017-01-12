@@ -1,6 +1,12 @@
-param($UDP)
+param(
+    [string]$UDP,
+    [bool]$Debug = $false
+)
 
 $ErrorActionPreference = 'Stop'
+
+$script:DebugMode = $Debug
+if ($script:DebugMode) { Write-Warning 'Debug mode enabled' }
 
 $script:ExportsPath = Join-Path -Resolve $PSScriptRoot 'Exports' | Convert-Path
 $script:ResourcesPath = Join-Path -Resolve $PSScriptRoot 'Resources' | Convert-Path
