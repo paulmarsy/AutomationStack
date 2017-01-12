@@ -1,14 +1,13 @@
 Configuration OctopusDeploy
 {
     param(
-        $UDP,
-        $OctopusAdminUsername,
-        $OctopusAdminPassword,
+        $OctopusNodeName,
         $ConnectionString,
         $HostHeader,
         $OctopusVersionToInstall = 'latest'
     )
     Import-DscResource -ModuleName PSDesiredStateConfiguration
+    Import-DscResource -ModuleName xPSDesiredStateConfiguration
     Import-DscResource -ModuleName xNetworking
 
     Node "Server"
@@ -79,27 +78,27 @@ Configuration OctopusDeploy
             GetScript = { @{} }
             DependsOn = '[xRemoteFile]OctopusServer'
         }
-        $octopusConfigStateFile = Join-Path $octopusDeployRoot 'OctopusDeploy.version'
+        $octopusConfigStateFile = Join-Path $octopusDeployRoot 'OctopusDeploy.config'
+        $octopusConfigLogFile = Join-Path $octopusDeployRoot "OctopusServer.$OctopusVersionToInstall.config.log"
         Script OctopusDeployConfiguration
         {
             SetScript = {
                 $octopusServerExe = Join-Path $env:ProgramFiles 'Octopus Deploy\Octopus\Octopus.Server.exe'
                 $addativeExitCode = 0
-
-                & $octopusServerExe create-instance --console --instance OctopusServer --config "C:\Octopus\OctopusServer.config"
+                & $octopusServerExe create-instance --console --instance OctopusServer --config "C:\Octopus\OctopusServer.config" *>> $using:octopusConfigLogFile
                 $addativeExitCode += $LASTEXITCODE; if ($LASTEXITCODE -gt 0) { throw "Exit code $LASTEXITCODE from Octopus Server: create-instance" }
-                & $octopusServerExe configure --console --instance OctopusServer --home "C:\Octopus\\" --storageConnectionString $using:ConnectionString --upgradeCheck "True" --upgradeCheckWithStatistics "True" --webAuthenticationMode "UsernamePassword" --webForceSSL "False" --webListenPrefixes $using:HostHeader --commsListenPort "10943" --serverNodeName $NodeName
+                & $octopusServerExe configure --console --instance OctopusServer --home "C:\Octopus" --storageConnectionString $using:ConnectionString --upgradeCheck "True" --upgradeCheckWithStatistics "True" --webAuthenticationMode "UsernamePassword" --webForceSSL "False" --webListenPrefixes $using:HostHeader --commsListenPort "10943" --serverNodeName $using:OctopusNodeName *>> $using:octopusConfigLogFile
                 $addativeExitCode += $LASTEXITCODE; if ($LASTEXITCODE -gt 0) { throw "Exit code $LASTEXITCODE from Octopus Server: configure" }
-                & $octopusServerExe database --console --instance OctopusServer --create
+                & $octopusServerExe database --console --instance OctopusServer --create *>> $using:octopusConfigLogFile
                 $addativeExitCode += $LASTEXITCODE; if ($LASTEXITCODE -gt 0) { throw "Exit code $LASTEXITCODE from Octopus Server: database" }
-                & $octopusServerExe license --console --instance OctopusServer --free
+                & $octopusServerExe license --console --instance OctopusServer --free *>> $using:octopusConfigLogFile
                 $addativeExitCode += $LASTEXITCODE; if ($LASTEXITCODE -gt 0) { throw "Exit code $LASTEXITCODE from Octopus Server: license" }
-                & $octopusServerExe service --console --instance OctopusServer --install --reconfigure --start
+                & $octopusServerExe service --console --instance OctopusServer --install --reconfigure --start *>> $using:octopusConfigLogFile
                 $addativeExitCode += $LASTEXITCODE; if ($LASTEXITCODE -gt 0) { throw "Exit code $LASTEXITCODE from Octopus Server: service" }
                 [System.IO.FIle]::WriteAllText($using:octopusConfigStateFile, $addativeExitCode,[System.Text.Encoding]::ASCII)
             }
             TestScript = {
-                ((Test-Path $using:octopusConfigStateFile) -and ([System.IO.FIle]::ReadAllText($using:octopusConfigStateFile,).Trim()) -eq '0')
+                ((Test-Path $using:octopusConfigStateFile) -and ([System.IO.FIle]::ReadAllText($using:octopusConfigStateFile).Trim()) -eq '0')
             }
             GetScript = { @{} }
             DependsOn = @('[xFirewall]OctopusDeployServer','[Script]OctopusDeployInstall')
@@ -119,7 +118,7 @@ Configuration OctopusDeploy
                 $utf8NoBOM = New-Object System.Text.UTF8Encoding($false)
                 $bytes  = $utf8NoBOM.GetBytes($response.Content)
                 $licenseBase64 = [System.Convert]::ToBase64String($bytes)
-                & & $octopusServerExe license --console --instance OctopusServer --licenseBase64 $licenseBase64
+                & $octopusServerExe license --console --instance OctopusServer --licenseBase64 $licenseBase64
                 if ($LASTEXITCODE -gt 0) { throw "Exit code $LASTEXITCODE from Octopus Server: license" }
                 [System.IO.FIle]::WriteAllText($using:octopusLicenseStateFile, $LASTEXITCODE,[System.Text.Encoding]::ASCII)
             }

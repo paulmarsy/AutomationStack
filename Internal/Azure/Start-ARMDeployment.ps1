@@ -7,7 +7,7 @@ function Start-ARMDeployment {
     )
 
     Write-Host 
-    Write-Host -ForegroundColor Cyan "`tStarting Resource Group Deployment"
+    Write-Host -ForegroundColor Cyan "`tStarting $ResourceGroupName Resource Group Deployment"
 
     Invoke-SharedScript Resources 'New-ResourceGroup' -ResourceGroupName $ResourceGroupName -Location ($CurrentContext.Get('AzureRegion'))
 
@@ -30,10 +30,11 @@ function Start-ARMDeployment {
 
     Write-Host
 
-    Write-Host "Testing ARM deployment..."
+    Write-Host -NoNewLine "Testing ARM deployment of '$Template'... "
     Test-AzureRmResourceGroupDeployment @args
+    Write-Host 'valid'
 
-    Write-Host -NoNewLine "Starting ARM deployment... "
+    Write-Host -NoNewLine "Starting ARM deployment of '$Template' to $ResourceGroupName... "
     $deployment = New-AzureRmResourceGroupDeployment -Name ('{0}-{1}' -f $Template, [datetime]::UtcNow.tostring('o').Replace(':','.').Substring(0,19)) -Force @args
     Write-Host -ForegroundColor Green 'successfull!'
     Write-Host

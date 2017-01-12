@@ -1,13 +1,12 @@
-param($Path, $InfraRg, $AutomationAccountName, $UDP, $OctopusAdminUsername, $OctopusAdminPassword, $ConnectionString, $HostHeader)
+param($Path, $InfraRg, $AutomationAccountName, $VMName, $ConnectionString, $HostHeader, $OctopusVersionToInstall)
 
 Import-AzureRmAutomationDscConfiguration -ResourceGroupName $InfraRg -AutomationAccountName $AutomationAccountName -SourcePath $Path -Force -Published
 
 $compilationJob = Start-AzureRmAutomationDscCompilationJob -ResourceGroupName $InfraRg -AutomationAccountName $AutomationAccountName -ConfigurationName 'OctopusDeploy' -Parameters @{
-    UDP = $UDP
-    OctopusAdminUsername = $OctopusAdminUsername
-    OctopusAdminPassword = $OctopusAdminPassword
+    OctopusNodeName = $VMName
     ConnectionString = $ConnectionString
     HostHeader = $HostHeader
+    OctopusVersionToInstall = $OctopusVersionToInstall
 }
 while ($null -eq $compilationJob.EndTime -and $null -eq $CompilationJob.Exception)
 {
