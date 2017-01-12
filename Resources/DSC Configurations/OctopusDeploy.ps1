@@ -50,7 +50,9 @@ Configuration OctopusDeploy
         {
             SetScript = {
                 Get-Service OctopusDeploy -ErrorAction Ignore | Stop-Service -Force
+                $isUpgrade = $false
                 if (Test-Path $using:octopusInstallStateFile) {
+                    $isUpgrade = $true
                     $currentVersion = [System.IO.FIle]::ReadAllText($using:octopusInstallStateFile).Trim()
                     $currentOctopusInstallFile = Join-Path $using:octopusDeployRoot "OctopusServer.$currentVersion.msi"
                      if (!(Test-Path $currentOctopusInstallFile)) {
@@ -69,6 +71,9 @@ Configuration OctopusDeploy
                 if ($msiExitCode -ne 0)
                 {
                     throw "Installation of Octopus Deploy failed; MSIEXEC exited with code: $msiExitCode"
+                }
+                if ($isUpgrade) {
+                    Start-Service OctopusDeploy
                 }
                 [System.IO.FIle]::WriteAllText($using:octopusInstallStateFile, $using:OctopusVersionToInstall,[System.Text.Encoding]::ASCII)
             }
@@ -95,6 +100,7 @@ Configuration OctopusDeploy
                 $addativeExitCode += $LASTEXITCODE; if ($LASTEXITCODE -gt 0) { throw "Exit code $LASTEXITCODE from Octopus Server: license" }
                 & $octopusServerExe service --console --instance OctopusServer --install --reconfigure --start *>> $using:octopusConfigLogFile
                 $addativeExitCode += $LASTEXITCODE; if ($LASTEXITCODE -gt 0) { throw "Exit code $LASTEXITCODE from Octopus Server: service" }
+                Start-Service OctopusDeploy
                 [System.IO.FIle]::WriteAllText($using:octopusConfigStateFile, $addativeExitCode,[System.Text.Encoding]::ASCII)
             }
             TestScript = {

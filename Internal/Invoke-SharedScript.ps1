@@ -1,7 +1,7 @@
 function Invoke-SharedScript {
     param(
         [Parameter(Position=1, Mandatory)][ValidateSet('Automation','AzureSQL','Resources')][string]$Category,
-        [Parameter(Position=2, Mandatory)][ValidateScript({Test-Path ([System.IO.Path]::Combine($ScriptsPath, $Category, ('{0}.ps1' -f $_)))})][string]$ScriptName
+        [Parameter(Position=2, Mandatory)][string]$ScriptName
     )
     DynamicParam {
         $ScriptFile = ([System.IO.Path]::Combine($ScriptsPath, $Category, ('{0}.ps1' -f $ScriptName))) 
@@ -13,6 +13,11 @@ function Invoke-SharedScript {
         }
         
         $Dictionary
+    }
+    begin {
+        if (!(Test-Path $ScriptFile)) {
+            throw "Unable to find shared script: $ScriptFile"
+        }
     }
     process {
        $PSBoundParameters.Remove('Category') | Out-Null

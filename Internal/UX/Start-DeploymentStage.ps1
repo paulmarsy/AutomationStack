@@ -10,7 +10,7 @@ function Start-DeploymentStage {
         Write-DeploymentUpdate -SequenceNumber $SequenceNumber -TotalStages $TotalStages -ProgressText $ProgressText -Heading $currentHeading
 
         try {
-            if ($null -ne $CurrentContext) { $CurrentContext.TimingStart($SequenceNumber) }
+            if ($null -ne $CurrentContext) { $CurrentContext.TimingStart($SequenceNumber, $Heading) }
             if ($WhatIf -and $SequenceNumber -notin @(1, 10)) {
                 Write-Host 'Skipping in WhatIf mode'
                 Start-Sleep -Seconds 1
