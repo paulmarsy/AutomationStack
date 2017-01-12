@@ -4,23 +4,22 @@ DevOps Automation Sandbox
 ## Build The Environment
 
 ```PowerShell
-(new-object Net.WebClient).DownloadString('https://raw.githubusercontent.com/paulmarsy/AutomationStack/master/bootstrap.ps1') | iex
+irm https://git.io/automationstack | iex
 ```
 
-_If you have downloaded the repository independently the process can be started with_
+_If you have downloaded the repository independently the environment can be built with_
 ```PowerShell
 Import-Module .\AutomationStack.psd1
-New-AutomationStack [-AzureRegion 'North Europe']
+New-AutomationStack
 ```
 
-### Creating a TeamCity Deployment
-Deploy the _Provision TeamCity (Windows)_ project in Octopus, or after the environment has been provisioned use the followup command
+### Provisioning TeamCity and enabling additional functionality
+Deploy the _Provision TeamCity (Windows)_ or _Provision TeamCity (Linux)_ project from Octopus
+Other functionality such as _Create TeamCity Agent Cloud Image_ 
+### Removal & Cleanup
+The following command will clean up all Azure resources created during the initial provisioning and any created by Octopus Deploy projects
 ```PowerShell
-New-TeamCityStack
-```
-### Cleanup an unwanted deployment
-```PowerShell
-Remove-AutomationStack <UDP>
+Remove-AutomationStack
 ```
 
 #### Example
@@ -37,7 +36,7 @@ Remove-AutomationStack <UDP>
 
 2. In this example to cleanup any Azure resources created you would issue
   ```PowerShell
-  Remove-AutomationStack 7d18
+  Remove-AutomationStack
   ```
   
 3. After this the only remnanents are
