@@ -1,4 +1,4 @@
-function Update-AutomationStackModule {
+function Update-AutomationStack {
     param(
         $GitHubAccount = 'paulmarsy',
         $Path = (Join-Path $PSScriptRoot '..\' | Get-Item | % FullName)

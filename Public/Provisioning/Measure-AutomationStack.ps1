@@ -1,4 +1,4 @@
-function Measure-AutomationStackDeployment {
+function Measure-AutomationStack {
     Write-Host @($CurrentContext.GetTimingDescription('Deployment'), ': ', $CurrentContext.GetTiming('Deployment'))
     Write-Host
     1..10 | % {

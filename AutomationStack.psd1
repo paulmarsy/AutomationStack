@@ -66,14 +66,17 @@ PowerShellVersion = '5.0'
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = 'New-AutomationStack',
+                    'Measure-AutomationStack',
+                    
+                    'Suspend-AutomationStack',
+                    'Resume-AutomationStack',
+
                     'Remove-AutomationStack',
 
-                    'Start-AutomationStackFeature',
-
                     'Publish-AutomationStackResources',
-                    'Connect-RDPStack',
-                    'Update-AutomationStackModule',
-                    'Measure-AutomationStackDeployment'
+                    'Connect-AutomationStack',
+                    'Update-AutomationStack'
+                    
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = ''

@@ -1,4 +1,4 @@
-function Connect-RDPStack {
+function Connect-AutomationStack {
     param(
         [ValidateSet('Octopus','TeamCity')]$VM
     )
