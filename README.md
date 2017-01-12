@@ -2,7 +2,7 @@
 A DevOps Automation Sandbox
 
 ## Build The Environment
-From *PowerShell*
+In a *PowerShell* console
 ```PowerShell
 irm https://git.io/automationstack | iex
 ```
