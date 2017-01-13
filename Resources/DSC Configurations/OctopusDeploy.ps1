@@ -98,8 +98,7 @@ Configuration OctopusDeploy
                 $addativeExitCode += $LASTEXITCODE; if ($LASTEXITCODE -gt 0) { throw "Exit code $LASTEXITCODE from Octopus Server: database" }
                 
                 $response = Invoke-WebRequest -UseBasicParsing -Uri "https://octopusdeploy.com/api/licenses/trial" -Method POST -Body @{ FullName=$env:USERNAME; Organization=$env:USERDOMAIN; EmailAddress="${env:USERNAME}@${env:USERDOMAIN}.com"; Source="azure" }
-                $utf8NoBOM = (New-Object System.Text.UTF8Encoding($false)).GetBytes($response.Content)
-                $licenseBase64 = [System.Convert]::ToBase64String($bytes)
+                $licenseBase64 = [System.Convert]::ToBase64String(((New-Object System.Text.UTF8Encoding($false)).GetBytes($response.Content)))
                 & $octopusServerExe license --console --instance OctopusServer --licenseBase64 $licenseBase64 *>> $using:octopusConfigLogFile
                 $addativeExitCode += $LASTEXITCODE; if ($LASTEXITCODE -gt 0) { throw "Exit code $LASTEXITCODE from Octopus Server: license" }
 
