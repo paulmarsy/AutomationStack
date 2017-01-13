@@ -36,30 +36,6 @@ class Octosprache {
         $tokenised = $this.Eval($content)
         Set-Content -Path $To -Value $tokenised -Encoding ASCII
     }
-    TimingStart([string]$Key, [string]$Description) {
-        $this.Set(('Timing[{0}].Start' -f $Key), (Get-Date))
-        $this.Set(('Timing[{0}].Description' -f $Key), $Description)
-    }
-    TimingEnd([string]$Key) {
-        $this.Set(('Timing[{0}].End' -f $Key), (Get-Date))
-    }
-    [string] GetTiming([string]$Key) {
-        $startdatetime = $this.Get(('Timing[{0}].Start' -f $Key))
-        if (!$startdatetime) {
-            return "-"
-        }
-        $enddatetime = $this.Get(('Timing[{0}].End' -f $Key))
-        if (!$enddatetime) {
-            return "Not completed"
-        }
-        $timespan = ([datetime]$enddatetime) - ([datetime]$startdatetime)
-        return [Humanizer.TimeSpanHumanizeExtensions]::Humanize($timespan, 2)
-    }
-    [string] GetTimingDescription([string]$Key) {
-         $description = $this.Get(('Timing[{0}].Description' -f $Key))
-         if (!$description) { return 'Not yet started' }
-         else {return  $description }
-    }
     [string] ToString() {
         return ('Octosprache[{0}]' -f $this.Get('UDP'))
     }

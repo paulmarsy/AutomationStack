@@ -9,7 +9,7 @@ function Connect-AzureRm {
         $existingContext | % Account | Format-List | Out-String | % Trim |  Out-Host
      } catch {
         $AzureUsername = Read-Host -Prompt "Azure Username" | % Trim
-        $securePassword = Read-Host -Prompt "$AzureUsername Ptassword" -AsSecureString
+        $securePassword = Read-Host -Prompt "$AzureUsername password" -AsSecureString
         $credential = New-Object PSCredential($AzureUsername, $securePassword)
 
         try {

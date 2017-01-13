@@ -8,6 +8,7 @@ function Update-AutomationStack {
         Write-Warning 'Git repository found, update using Git functionality'
         return
     }
+    
     Write-Output 'Downloading AutomationStack archive from GitHub...'
     $download = Invoke-WebRequest -Verbose -UseBasicParsing -Uri "https://github.com/$GitHubAccount/AutomationStack/archive/master.zip"
     $tempFile = [System.IO.Path]::ChangeExtension((New-TemporaryFile).FullName, 'zip')
@@ -17,7 +18,7 @@ function Update-AutomationStack {
 
     Expand-Archive -Path $tempFile -DestinationPath $Path -Force
 
-    Get-ChildItem -Path $Path -Exclude@('Deployments','Temp','AutomationStack-master') -Directory | Remove-Item -Recurse -Force
+    Get-ChildItem -Path $Path -Exclude @('Deployments','Temp','AutomationStack-master') -Directory | Remove-Item -Recurse -Force
     Remove-Item -Path (Join-Path $Path 'AutomationStack.ps?1') -Force
     
     Move-Item -Path (Join-Path $Path 'AutomationStack-master\*') -Destination $Path -Force

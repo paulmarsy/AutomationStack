@@ -96,11 +96,16 @@ Configuration OctopusDeploy
                 $addativeExitCode += $LASTEXITCODE; if ($LASTEXITCODE -gt 0) { throw "Exit code $LASTEXITCODE from Octopus Server: configure" }
                 & $octopusServerExe database --console --instance OctopusServer --create *>> $using:octopusConfigLogFile
                 $addativeExitCode += $LASTEXITCODE; if ($LASTEXITCODE -gt 0) { throw "Exit code $LASTEXITCODE from Octopus Server: database" }
-                & $octopusServerExe license --console --instance OctopusServer --free *>> $using:octopusConfigLogFile
+                
+                $response = Invoke-WebRequest -UseBasicParsing -Uri "https://octopusdeploy.com/api/licenses/trial" -Method POST -Body @{ FullName=$env:USERNAME; Organization=$env:USERDOMAIN; EmailAddress="${env:USERNAME}@${env:USERDOMAIN}.com"; Source="azure" }
+                $utf8NoBOM = (New-Object System.Text.UTF8Encoding($false)).GetBytes($response.Content)
+                $licenseBase64 = [System.Convert]::ToBase64String($bytes)
+                & $octopusServerExe license --console --instance OctopusServer --licenseBase64 $licenseBase64 *>> $using:octopusConfigLogFile
                 $addativeExitCode += $LASTEXITCODE; if ($LASTEXITCODE -gt 0) { throw "Exit code $LASTEXITCODE from Octopus Server: license" }
+
                 & $octopusServerExe service --console --instance OctopusServer --install --reconfigure --start *>> $using:octopusConfigLogFile
                 $addativeExitCode += $LASTEXITCODE; if ($LASTEXITCODE -gt 0) { throw "Exit code $LASTEXITCODE from Octopus Server: service" }
-                Start-Service OctopusDeploy
+                Start-Service OctopusDeploy *>> $using:octopusConfigLogFile
                 [System.IO.FIle]::WriteAllText($using:octopusConfigStateFile, $addativeExitCode,[System.Text.Encoding]::ASCII)
             }
             TestScript = {
@@ -108,31 +113,6 @@ Configuration OctopusDeploy
             }
             GetScript = { @{} }
             DependsOn = @('[xFirewall]OctopusDeployServer','[Script]OctopusDeployInstall')
-        }                     
-        $octopusLicenseStateFile = Join-Path $octopusDeployRoot 'OctopusDeploy.licensestate'
-        Script OctopusDeployLicense
-        {
-            SetScript = {
-                $octopusServerExe = Join-Path $env:ProgramFiles 'Octopus Deploy\Octopus\Octopus.Server.exe'
-                $postParams = @{ 
-                    FullName=$env:USERNAME
-                    Organization=$env:USERDOMAIN
-                    EmailAddress="${env:USERNAME}@${env:USERDOMAIN}.com"
-                    Source="azure"
-                    }
-                $response = Invoke-WebRequest -UseBasicParsing -Uri "https://octopusdeploy.com/api/licenses/trial" -Method POST -Body $postParams
-                $utf8NoBOM = New-Object System.Text.UTF8Encoding($false)
-                $bytes  = $utf8NoBOM.GetBytes($response.Content)
-                $licenseBase64 = [System.Convert]::ToBase64String($bytes)
-                & $octopusServerExe license --console --instance OctopusServer --licenseBase64 $licenseBase64
-                if ($LASTEXITCODE -gt 0) { throw "Exit code $LASTEXITCODE from Octopus Server: license" }
-                [System.IO.FIle]::WriteAllText($using:octopusLicenseStateFile, $LASTEXITCODE,[System.Text.Encoding]::ASCII)
-            }
-            TestScript = {
-                ((Test-Path $using:octopusLicenseStateFile) -and ([System.IO.FIle]::ReadAllText($using:octopusLicenseStateFile).Trim()) -eq '0')
-            }
-            GetScript = { @{} }
-            DependsOn = '[Script]OctopusDeployConfiguration'
         }
     }
 }

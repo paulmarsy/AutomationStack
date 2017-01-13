@@ -7,8 +7,9 @@ function New-DeploymentContext {
 
     Write-Host 'Creating Octostache Config Store...'
     $script:CurrentContext = New-Object Octosprache $deploymentGuid.Substring(9,4)
-    $CurrentContext.TimingStart('Deployment', 'Total deployment time')
-    $CurrentContext.TimingStart(1, 'Creating AutomationStack Deployment Details')
+    $metrics = New-Object AutoMetrics $CurrentContext
+    $metrics.Start('Deployment', 'Total deployment time')
+    $metrics.Start(1, 'Creating AutomationStack Deployment Details')
     $CurrentContext.Set('Name', 'AutomationStack#{UDP}')
     
     $azureRmContext = Get-AzureRmContext

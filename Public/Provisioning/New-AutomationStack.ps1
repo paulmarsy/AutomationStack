@@ -97,7 +97,8 @@ function New-AutomationStack {
                         $ProgressText = 'Complete' 
                         $Heading = 'AutomationStack Provisioning Complete'
                         {
-                            $CurrentContext.TimingEnd('Deployment')
+                            $metrics = New-Object AutoMetrics $CurrentContext
+                            $metrics.Finish('Deployment')
                             Show-AutomationStackDetail
                             Write-Host
                             Write-Host -ForegroundColor Magenta "`tAdditional functionality can be deployed/enabled using Octopus Deploy"

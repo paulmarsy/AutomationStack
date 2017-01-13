@@ -11,7 +11,7 @@ function Register-ResourceProviders {
            'Microsoft.Compute'
        ) | % {
             Write-Host "`t$_"
-            Register-AzureRmResourceProvider -ProviderNamespace $_
+            Register-AzureRmResourceProvider -ProviderNamespace $_ | Out-Null
        }
        Write-Host
 }
