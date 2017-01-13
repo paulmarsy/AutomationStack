@@ -105,7 +105,7 @@ function New-AutomationStack {
                             Write-Host
                             Write-Host -ForegroundColor Green "`tOctopus Deploy Running at: $($CurrentContext.Get('OctopusHostHeader'))"
                             Write-Host
-                            Write-Host 'Timing & statistics of this deployment are available with the command: Measure-AutomationStackDeployment'
+                            Write-Host 'Timing & statistics of this deployment are available with the command: Measure-AutomationStack'
                             $CurrentContext.Set('DeploymentComplete', $true)
                         }
                     }

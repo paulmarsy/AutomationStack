@@ -1,4 +1,5 @@
 function Restore-AzureRmAuthContext { 
+    Write-Host
     $azureRmProfilePath = Join-Path $TempPath 'AzureRmProfile.json'
     if (Test-Path $azureRmProfilePath) {
         Write-Host -NoNewLine 'Restoring original Azure context...'
