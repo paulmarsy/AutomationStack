@@ -13,7 +13,7 @@ function Register-NuGetAssembly {
         Expand-Archive -Path $tempFile -DestinationPath $tempFolder -Force
     }
     Write-Host "Loading $Assembly..."
-    [System.Reflection.Assembly]::Load([System.IO.File]::ReadAllBytes($assemblyPath))
+    Add-Type -Path $assemblyPath
 }
 
 $tempFolder = Join-Path $script:TempPath 'Octosprache'

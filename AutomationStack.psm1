@@ -20,9 +20,9 @@ $TempPath = Join-Path $PSScriptRoot 'Temp'
 if (!(Test-Path $TempPath)) { New-Item -ItemType Directory -Path $TempPath | Out-Null }
 $script:TempPath = Get-Item -Path $TempPath | % FullName
 
-$MyInvocation.MyCommand.ScriptBlock.Module.OnRemove = {
-    Remove-Item -Path $TempPath -Recurse -Force
-}
+#$MyInvocation.MyCommand.ScriptBlock.Module.OnRemove = {
+#    Remove-Item -Path $TempPath -Recurse -Force
+#}
 
 $script:ConcurrentTaskCount = 8
 $script:ModuleRootPath = $PSScriptRoot
