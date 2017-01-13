@@ -22,7 +22,7 @@
     },
     "vmSize": {
       "type": "string",
-      "defaultValue": "Standard_F4s",
+      "defaultValue": "Standard_DS4_v2",
       "metadata": {
         "description": "Size of the VM"
       }

@@ -60,7 +60,7 @@
       "Name": "VMSize",
       "Label": "",
       "HelpText": null,
-      "DefaultValue": "Standard_F4s",
+      "DefaultValue": "Standard_DS4_v2",
       "DisplaySettings": {
         "Octopus.ControlType": "SingleLineText"
       }
