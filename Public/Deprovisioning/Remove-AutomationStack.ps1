@@ -24,5 +24,5 @@ function Remove-AutomationStack {
     }
 
     if ($PassThru) { return $jobs }
-    else { $jobs | Wait-Job | Receive-Job }
+    else { $jobs | Wait-Job | Receive-Job -AutoRemoveJob }
 }
