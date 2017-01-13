@@ -32,13 +32,26 @@ function Start-ARMDeployment {
 
     Write-Host -NoNewLine "Testing ARM deployment of '$Template'... "
     Test-AzureRmResourceGroupDeployment @args
-    Write-Host 'valid'
+    Write-Host 'valid' 
 
     Write-Host -NoNewLine "Starting ARM deployment of '$Template' to $ResourceGroupName... "
     $deployment = New-AzureRmResourceGroupDeployment -Name ('{0}-{1}' -f $Template, [datetime]::UtcNow.tostring('o').Replace(':','.').Substring(0,19)) -Force @args
     Write-Host -ForegroundColor Green 'successfull!'
     Write-Host
-    $deployment | Format-List -Property @('DeploymentName','ResourceGroupName','Mode','ProvisioningState','Timestamp','ParametersString', 'OutputsString') | Out-String | % Trim |  Out-Host
+    $deployment | Format-List -Property @('DeploymentName','ResourceGroupName','Mode','ProvisioningState','Timestamp','ParametersString', 'OutputsString') | Out-String | % Trim | Out-Host
     Write-Host
+
+    Get-AzureRmResourceGroupDeploymentOperation -ResourceGroupName $ResourceGroupName -DeploymentName $deployment.DeploymentName | % Properties | % {
+        New-Object psobject -Property @{
+            Time = [System.Xml.XmlConvert]::ToDateTime($_.timestamp).ToString('T')
+            Operation = $_.provisioningOperation
+            Result = $_.statusCode
+            Message = $_.statusMessage
+            Duration = [Humanizer.TimeSpanHumanizeExtensions]::Humanize([System.Xml.XmlConvert]::ToTimeSpan($_.duration), 2)
+            ResourceName = $_.targetResource.resourceName
+        }
+    } | Sort-Object -Property Time | Format-Table -AutoSize -Property @('Time','Duration','Operation','Result','ResourceName','Message') | Out-Host
+    Write-Host
+
     $deployment.Outputs
-} 
+}   
