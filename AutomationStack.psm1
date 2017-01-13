@@ -21,7 +21,7 @@ if (!(Test-Path $TempPath)) { New-Item -ItemType Directory -Path $TempPath | Out
 $script:TempPath = Get-Item -Path $TempPath | % FullName
 
 $MyInvocation.MyCommand.ScriptBlock.Module.OnRemove = {
-    Remove-Item -Path $using:TempPath -Recurse -Force
+    Remove-Item -Path $TempPath -Recurse -Force
 }
 
 $script:ConcurrentTaskCount = 8
