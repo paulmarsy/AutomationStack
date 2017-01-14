@@ -2,7 +2,7 @@
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
   "Id": "deploymentprocess-Projects-4",
   "OwnerId": "Projects-4",
-  "Version": 38,
+  "Version": 39,
   "Steps": [
     {
       "Id": "825c74ca-8910-4f23-ac7a-be7564d2a6c5",
@@ -30,7 +30,7 @@
             "ResourceGroupName": "#{ResourceGroup}",
             "Location": "#{AzureRegion}",
             "Octopus.Action.Template.Id": "ActionTemplates-5",
-            "Octopus.Action.Template.Version": "4"
+            "Octopus.Action.Template.Version": "5"
           }
         }
       ],

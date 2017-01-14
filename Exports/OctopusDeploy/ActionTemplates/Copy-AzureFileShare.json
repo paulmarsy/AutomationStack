@@ -1,0 +1,59 @@
+{
+  "$type": "Octopus.Core.Model.Projects.ActionTemplate, Octopus.Core",
+  "Id": "ActionTemplates-24",
+  "Name": "Copy-AzureFileShare",
+  "Description": null,
+  "Version": 1,
+  "ActionType": "Octopus.Script",
+  "CommunityActionTemplateId": null,
+  "Properties": {
+    "Octopus.Action.Script.ScriptSource": "Package",
+    "Octopus.Action.RunOnServer": "false",
+    "Octopus.Action.Script.ScriptFileName": "Copy-AzureFileShare.ps1",
+    "Octopus.Action.Package.FeedId": "feeds-builtin",
+    "Octopus.Action.Package.PackageId": "AutomationStackScripts.Storage",
+    "Octopus.Action.Script.ScriptParameters": "-StorageAccountName #{StorageAccountName} -StorageAccountKey #{StorageAccountKey} -FileShareName #{FileShareName} -LocalPath #{LocalPath}"
+  },
+  "Parameters": [
+    {
+      "Id": "53eb962b-b97a-4b5a-83c4-080a8e0432ff",
+      "Name": "LocalPath",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": null,
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "65eac6ef-2d2e-4d0e-bc8b-54967d0db76b",
+      "Name": "StorageAccountName",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": "#{StackResourcesName}",
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "e120c559-409f-418d-830a-775d88d1a4b3",
+      "Name": "StorageAccountKey",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": "#{StackResourcesKey}",
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "fd674d3d-5010-46b6-8ecd-c7bca548b983",
+      "Name": "FileShareName",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": null,
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    }
+  ]
+}

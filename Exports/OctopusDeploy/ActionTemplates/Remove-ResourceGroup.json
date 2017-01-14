@@ -1,0 +1,39 @@
+{
+  "$type": "Octopus.Core.Model.Projects.ActionTemplate, Octopus.Core",
+  "Id": "ActionTemplates-21",
+  "Name": "Remove-ResourceGroup",
+  "Description": null,
+  "Version": 0,
+  "ActionType": "Octopus.AzurePowerShell",
+  "CommunityActionTemplateId": null,
+  "Properties": {
+    "Octopus.Action.Package.FeedId": "feeds-builtin",
+    "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
+    "Octopus.Action.Script.ScriptSource": "Package",
+    "Octopus.Action.Script.ScriptFileName": "Remove-ResourceGroup.ps1",
+    "Octopus.Action.Package.PackageId": "AutomationStackScripts.Resources",
+    "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName #{ResourceGroupName} -PassThru #{PassThru}"
+  },
+  "Parameters": [
+    {
+      "Id": "2ccf2bef-661b-43af-b0ae-5b250a3607b7",
+      "Name": "ResourceGroupName",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": null,
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "9f8565df-af7d-4bcd-ba2d-e4a2c0439bd1",
+      "Name": "PassThru",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": null,
+      "DisplaySettings": {
+        "Octopus.ControlType": "Checkbox"
+      }
+    }
+  ]
+}

@@ -8,13 +8,11 @@
   "VariableSetId": "variableset-Projects-1",
   "DeploymentProcessId": "deploymentprocess-Projects-1",
   "ProjectGroupId": "ProjectGroups-21",
-  "LifecycleId": "Lifecycles-23",
+  "LifecycleId": "Lifecycles-24",
   "AutoCreateRelease": false,
   "IncludedLibraryVariableSetIds": [
-    "LibraryVariableSets-2",
     "LibraryVariableSets-1",
-    "LibraryVariableSets-5",
-    "LibraryVariableSets-6"
+    "LibraryVariableSets-3"
   ],
   "UsedPackages": [],
   "DefaultToSkipIfAlreadyInstalled": false,

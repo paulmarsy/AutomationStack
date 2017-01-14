@@ -2,7 +2,7 @@
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
   "Id": "deploymentprocess-Projects-2",
   "OwnerId": "Projects-2",
-  "Version": 45,
+  "Version": 50,
   "Steps": [
     {
       "Id": "1f7eaedc-d772-4fde-8a11-c298cb6e6880",
@@ -22,8 +22,11 @@
           "TenantTags": [],
           "Properties": {
             "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
-            "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "$nsg = Get-AzureRmNetworkSecurityGroup -Name $OctopusNSGName -ResourceGroupName $InfraRg\n\n$rdpRule = $nsg | % SecurityRules | ? { $_.Name -eq 'RDP' -and $_.Priority -eq 999 }\n$rdpRule.Access = 'Allow'\n\n$nsg | Set-AzureRmNetworkSecurityGroup\n"
+            "Octopus.Action.Script.ScriptSource": "Package",
+            "Octopus.Action.Package.FeedId": "feeds-builtin",
+            "Octopus.Action.Script.ScriptFileName": "Enable-RDPNSGRule.ps1",
+            "Octopus.Action.Package.PackageId": "AutomationStackScripts.Network",
+            "Octopus.Action.Script.ScriptParameters": "-InfraRg #{InfraRg} -NSGName #{OctopusNSGName}"
           }
         }
       ],
@@ -49,62 +52,11 @@
           "TenantTags": [],
           "Properties": {
             "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
-            "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "$nsg = Get-AzureRmNetworkSecurityGroup -Name $TeamCityNSGName -ResourceGroupName $InfraRg\n\n$rdpRule = $nsg | % SecurityRules | ? { $_.Name -eq 'RDP' -and $_.Priority -eq 999 }\n$rdpRule.Access = 'Allow'\n\n$nsg | Set-AzureRmNetworkSecurityGroup\n"
-          }
-        }
-      ],
-      "Properties": {
-        "Octopus.Action.TargetRoles": "TeamCity Server (Windows)"
-      }
-    },
-    {
-      "Id": "5ebf899b-5e7a-4878-a19f-f1504707d4c8",
-      "Name": "Get Octopus RDP Details",
-      "Condition": "Success",
-      "StartTrigger": "StartAfterPrevious",
-      "RequiresPackagesToBeAcquired": false,
-      "Actions": [
-        {
-          "Id": "b7931f09-6166-4d5d-98f9-4fdf3bd693ee",
-          "Name": "Get Octopus RDP Details",
-          "ActionType": "Octopus.AzurePowerShell",
-          "IsDisabled": false,
-          "Environments": [],
-          "ExcludedEnvironments": [],
-          "Channels": [],
-          "TenantTags": [],
-          "Properties": {
-            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
-            "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "$ip = (Get-AzureRmPublicIpAddress -Name OctopusPublicIP -ResourceGroupName $OctopusRg).IpAddress\n\"IP: $ip\"\n\"Password: $StackAdminPassword\"\n\"Username: $StackAdminUsername\""
-          }
-        }
-      ],
-      "Properties": {
-        "Octopus.Action.TargetRoles": "Octopus Deploy Server"
-      }
-    },
-    {
-      "Id": "1d47a5fa-fa51-4d81-98ff-b380b3f3348a",
-      "Name": "Get TeamCity RDP Details",
-      "Condition": "Success",
-      "StartTrigger": "StartWithPrevious",
-      "RequiresPackagesToBeAcquired": false,
-      "Actions": [
-        {
-          "Id": "b82a6e2b-0174-427f-8842-b7c3fe243f6d",
-          "Name": "Get TeamCity RDP Details",
-          "ActionType": "Octopus.AzurePowerShell",
-          "IsDisabled": false,
-          "Environments": [],
-          "ExcludedEnvironments": [],
-          "Channels": [],
-          "TenantTags": [],
-          "Properties": {
-            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
-            "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "$ip = (Get-AzureRmPublicIpAddress -Name TeamCityPublicIP -ResourceGroupName $TeamCityRg).IpAddress\n\"IP: $ip\""
+            "Octopus.Action.Script.ScriptSource": "Package",
+            "Octopus.Action.Package.FeedId": "feeds-builtin",
+            "Octopus.Action.Script.ScriptFileName": "Enable-RDPNSGRule.ps1",
+            "Octopus.Action.Package.PackageId": "AutomationStackScripts.Network",
+            "Octopus.Action.Script.ScriptParameters": "-InfraRg #{InfraRg} -NSGName #{TeamCityNSGName}"
           }
         }
       ],

@@ -1,9 +1,9 @@
 {
   "$type": "Octopus.Core.Model.Projects.ActionTemplate, Octopus.Core",
   "Id": "ActionTemplates-5",
-  "Name": "Create Resource Group",
-  "Description": "Creates an Azure resource group",
-  "Version": 4,
+  "Name": "New-ResourceGroup",
+  "Description": "",
+  "Version": 5,
   "ActionType": "Octopus.AzurePowerShell",
   "CommunityActionTemplateId": null,
   "Properties": {

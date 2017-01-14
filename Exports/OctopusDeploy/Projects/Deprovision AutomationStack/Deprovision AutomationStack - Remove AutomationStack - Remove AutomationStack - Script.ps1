@@ -1,1 +1,0 @@
-Remove-AzureRmResourceGroup -Name $InfraRg -Force

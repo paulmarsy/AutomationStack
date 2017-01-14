@@ -1,7 +1,7 @@
 {
   "$type": "Octopus.Core.Model.Projects.ActionTemplate, Octopus.Core",
-  "Id": "ActionTemplates-6",
-  "Name": "New AzureSQLDatabase",
+  "Id": "ActionTemplates-23",
+  "Name": "Wait-NodeCompliance",
   "Description": null,
   "Version": 1,
   "ActionType": "Octopus.AzurePowerShell",
@@ -10,34 +10,34 @@
     "Octopus.Action.Package.FeedId": "feeds-builtin",
     "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
     "Octopus.Action.Script.ScriptSource": "Package",
-    "Octopus.Action.Script.ScriptFileName": "New-AzureSQLDatabase.ps1",
-    "Octopus.Action.Package.PackageId": "AutomationStackScripts.AzureSQL",
-    "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName #{ResourceGroupName} -ServerName #{ServerName} -DatabaseName #{DatabaseName}"
+    "Octopus.Action.Script.ScriptFileName": "Wait-NodeCompliance.ps1",
+    "Octopus.Action.Package.PackageId": "AutomationStackScripts.Automation",
+    "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName #{ResourceGroupName} -AutomationAccountName #{AutomationAccountName} -NodeName #{NodeName}"
   },
   "Parameters": [
     {
-      "Id": "ddfcf72d-2faf-4119-a11e-565761356ac6",
+      "Id": "3a36bd6e-2bdd-4af2-bb5b-c1efac4583dc",
       "Name": "ResourceGroupName",
       "Label": "",
       "HelpText": null,
-      "DefaultValue": null,
+      "DefaultValue": "#{InfraRg}",
       "DisplaySettings": {
         "Octopus.ControlType": "SingleLineText"
       }
     },
     {
-      "Id": "bb5a2c57-2538-4fbe-9d69-9b7c8a241da8",
-      "Name": "ServerName",
+      "Id": "58e42f0c-d3a3-4ff9-ae2f-e04a1099b893",
+      "Name": "AutomationAccountName",
       "Label": "",
       "HelpText": null,
-      "DefaultValue": null,
+      "DefaultValue": "#{AutomationAccountName}",
       "DisplaySettings": {
         "Octopus.ControlType": "SingleLineText"
       }
     },
     {
-      "Id": "37894bcc-7717-4884-bbfa-d5c72b9cbc98",
-      "Name": "DatabaseName",
+      "Id": "d14d65ab-a137-4487-8344-4c2f442bf461",
+      "Name": "NodeName",
       "Label": "",
       "HelpText": null,
       "DefaultValue": null,

@@ -2,8 +2,44 @@
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
   "Id": "deploymentprocess-Projects-6",
   "OwnerId": "Projects-6",
-  "Version": 24,
+  "Version": 32,
   "Steps": [
+    {
+      "Id": "17f4df42-d6af-4d72-8b14-d0a6f9f89cb6",
+      "Name": "Copy DSC Configurations",
+      "Condition": "Success",
+      "StartTrigger": "StartAfterPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "57f3e4df-e29b-4f68-bff6-2e1750f96c4a",
+          "Name": "Copy DSC Configurations",
+          "ActionType": "Octopus.Script",
+          "IsDisabled": false,
+          "Environments": [],
+          "ExcludedEnvironments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.Script.ScriptSource": "Package",
+            "Octopus.Action.RunOnServer": "true",
+            "Octopus.Action.Script.ScriptFileName": "Copy-AzureFileShare.ps1",
+            "Octopus.Action.Package.FeedId": "feeds-builtin",
+            "Octopus.Action.Package.PackageId": "AutomationStackScripts.Storage",
+            "Octopus.Action.Script.ScriptParameters": "-StorageAccountName #{StorageAccountName} -StorageAccountKey #{StorageAccountKey} -FileShareName #{FileShareName} -LocalPath #{LocalPath}",
+            "Octopus.Action.Template.Id": "ActionTemplates-24",
+            "Octopus.Action.Template.Version": "1",
+            "StorageAccountName": "#{StackResourcesName}",
+            "StorageAccountKey": "#{StackResourcesKey}",
+            "LocalPath": "dsc",
+            "FileShareName": "dsc"
+          }
+        }
+      ],
+      "Properties": {
+        "Octopus.Action.TargetRoles": "Azure Automation"
+      }
+    },
     {
       "Id": "b58e3359-917a-4fbe-8e3c-8e80aca4cba2",
       "Name": "Import DSC Configuration",
@@ -22,8 +58,11 @@
           "TenantTags": [],
           "Properties": {
             "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
-            "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "& net use T: \\\\$StackResourcesName.file.core.windows.net\\dsc /u:$StackResourcesName $StackResourcesKey\nImport-AzureRmAutomationDscConfiguration -ResourceGroupName $InfraRg -AutomationAccountName $AutomationAccountName -SourcePath $DSCConfigPath -Force -Published\n& net use T: /DELETE\n\n$CompilationJob = Start-AzureRmAutomationDscCompilationJob -ResourceGroupName $InfraRg -AutomationAccountName $AutomationAccountName -ConfigurationName $DSCConfigurationName -Parameters @{\n    ApiKey = $APIKey\n    OctopusServerUrl = $OctopusHostHeader\n}\n\nwhile ($CompilationJob.EndTime -eq $null -and $CompilationJob.Exception -eq $null)\n{\n        Write-Host 'Waiting for compilation...'\n        Start-Sleep -Seconds 10\n        $CompilationJob = $CompilationJob | Get-AzureRmAutomationDscCompilationJob\n}\n\n$CompilationJob | Get-AzureRmAutomationDscCompilationJobOutput -Stream Any"
+            "Octopus.Action.Script.ScriptSource": "Package",
+            "Octopus.Action.Package.FeedId": "feeds-builtin",
+            "Octopus.Action.Script.ScriptFileName": "Import-TeamCityConfig.ps1",
+            "Octopus.Action.Package.PackageId": "AutomationStackScripts.Automation",
+            "Octopus.Action.Script.ScriptParameters": "-Path dsc -InfraRg #{InfraRg} -AutomationAccountName #{AutomationAccountName} -OctopusServerUrl #{OctopusHostHeader} -OctopusApiKey #{APIKey} -OctopusEnvironment #{TeamCityRg} -OctopusRole 'TeamCity Server (Windows)' -OctopusDisplayName 'TeamCity Server'"
           }
         }
       ],
@@ -49,12 +88,15 @@
           "TenantTags": [],
           "Properties": {
             "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
-            "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "$resourceGroup = Get-AzureRmResourceGroup -Name $ResourceGroupName -ErrorAction SilentlyContinue\r\nif(!$resourceGroup) {\r\n    Write-Output \"Creating resource group '$ResourceGroupName' in location '$Location'\"\r\n    New-AzureRmResourceGroup -Name $ResourceGroupName -Location $Location | Out-Default\r\n}\r\nelse {\r\n    Write-Output \"Using existing resource group '$ResourceGroupName'\"\r\n    $resourceGroup | Out-Default\r\n}",
+            "Octopus.Action.Script.ScriptSource": "Package",
+            "Octopus.Action.Package.FeedId": "feeds-builtin",
+            "Octopus.Action.Script.ScriptFileName": "New-ResourceGroup.ps1",
+            "Octopus.Action.Package.PackageId": "AutomationStackScripts.Resources",
+            "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName #{ResourceGroupName} -Location #{Location}",
             "ResourceGroupName": "#{ResourceGroup}",
             "Location": "#{AzureRegion}",
             "Octopus.Action.Template.Id": "ActionTemplates-5",
-            "Octopus.Action.Template.Version": "2"
+            "Octopus.Action.Template.Version": "5"
           }
         }
       ],
@@ -105,14 +147,14 @@
       }
     },
     {
-      "Id": "bd712152-380d-4c34-8da7-bdf041c4285d",
+      "Id": "5e0a3ac7-7ec8-41ce-93ba-34a60c3d7782",
       "Name": "Wait for DSC Node Compliance",
       "Condition": "Success",
       "StartTrigger": "StartAfterPrevious",
       "RequiresPackagesToBeAcquired": false,
       "Actions": [
         {
-          "Id": "6040cb58-5e12-45a6-ae88-01b6fb852b24",
+          "Id": "122750af-9377-4cba-a07b-9b654e99dd92",
           "Name": "Wait for DSC Node Compliance",
           "ActionType": "Octopus.AzurePowerShell",
           "IsDisabled": false,
@@ -121,9 +163,17 @@
           "Channels": [],
           "TenantTags": [],
           "Properties": {
+            "Octopus.Action.Package.FeedId": "feeds-builtin",
             "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
-            "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "while ($continueToPoll)\n{\n    Start-Sleep -Seconds 30\n    $node = Get-AzureRmAutomationDscNode -ResourceGroupName $InfraRg -AutomationAccountName $AutomationAccountName -Name $VMName\n    if ($node.Status -eq 'Compliant') {\n        Write-Host \"Node is compliant\"\n        $continueToPoll = $false\n    }\n    else {\n        Write-Host \"Node status is $($node.Status), waiting for compliance...\"\n    }\n}"
+            "Octopus.Action.Script.ScriptSource": "Package",
+            "Octopus.Action.Script.ScriptFileName": "Wait-NodeCompliance.ps1",
+            "Octopus.Action.Package.PackageId": "AutomationStackScripts.Automation",
+            "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName #{ResourceGroupName} -AutomationAccountName #{AutomationAccountName} -NodeName #{NodeName}",
+            "Octopus.Action.Template.Id": "ActionTemplates-23",
+            "Octopus.Action.Template.Version": "1",
+            "ResourceGroupName": "#{InfraRg}",
+            "AutomationAccountName": "#{AutomationAccountName}",
+            "NodeName": "#{VMName}"
           }
         }
       ],
