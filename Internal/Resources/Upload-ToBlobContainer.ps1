@@ -17,15 +17,16 @@ function Upload-ToBlobContainer {
         $storageContainer = New-AzureStorageContainer -Name $ContainerName -Context $Context -Permission Off
     }
     $sourcePath = Get-Item -Path $Source | % FullName
+    [Console]::WriteLine("  Runspace ID`tAction`t`t`tFile`n$('-'*120)")
     Get-ChildItem -Path $sourcePath -Recurse -File | % {
         if ($_.Name -in $TokeniseFiles) {
-            [Console]::WriteLine("Tokenising $($_.Name)")
             $sourceFile = Join-Path $TempPath $_.Name
             $CurrentContext.ParseFile($_.FullName, $sourceFile)
+            [Console]::WriteLine("  -`t`tTokenise & Upload`t$($_.Name)")
         } else {
             $sourceFile = $_.FullName
+            [Console]::WriteLine("  -`t`tUpload`t`t`t$($_.Name)")
         }
-        [Console]::WriteLine("Uploading $($_.Name)")
         $storageContainer | Set-AzureStorageBlobContent -File $sourceFile -Blob $_.Name -Force -ConcurrentTaskCount $ConcurrentTaskCount | Out-Null
     }
 }

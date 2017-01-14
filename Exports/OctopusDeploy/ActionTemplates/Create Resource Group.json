@@ -1,15 +1,18 @@
 {
   "$type": "Octopus.Core.Model.Projects.ActionTemplate, Octopus.Core",
-  "Id": "ActionTemplates-4",
+  "Id": "ActionTemplates-5",
   "Name": "Create Resource Group",
   "Description": "Creates an Azure resource group",
-  "Version": 2,
+  "Version": 4,
   "ActionType": "Octopus.AzurePowerShell",
   "CommunityActionTemplateId": null,
   "Properties": {
     "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
-    "Octopus.Action.Script.ScriptSource": "Inline",
-    "Octopus.Action.Script.ScriptBody": "$resourceGroup = Get-AzureRmResourceGroup -Name $ResourceGroupName -ErrorAction SilentlyContinue\r\nif(!$resourceGroup) {\r\n    Write-Output \"Creating resource group '$ResourceGroupName' in location '$Location'\"\r\n    New-AzureRmResourceGroup -Name $ResourceGroupName -Location $Location | Out-Default\r\n}\r\nelse {\r\n    Write-Output \"Using existing resource group '$ResourceGroupName'\"\r\n    $resourceGroup | Out-Default\r\n}"
+    "Octopus.Action.Script.ScriptSource": "Package",
+    "Octopus.Action.Package.FeedId": "feeds-builtin",
+    "Octopus.Action.Script.ScriptFileName": "New-ResourceGroup.ps1",
+    "Octopus.Action.Package.PackageId": "AutomationStackScripts.Resources",
+    "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName #{ResourceGroupName} -Location #{Location}"
   },
   "Parameters": [
     {

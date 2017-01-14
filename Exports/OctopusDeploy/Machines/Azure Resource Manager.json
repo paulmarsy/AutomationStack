@@ -1,6 +1,6 @@
 {
   "$type": "Octopus.Core.Model.Environments.Machine, Octopus.Core",
-  "Id": "Machines-22",
+  "Id": "Machines-1",
   "Name": "Azure Resource Manager",
   "Endpoint": {
     "$type": "Octopus.Core.Model.Environments.Endpoints.CloudRegionEndpoint, Octopus.Core"
@@ -11,10 +11,10 @@
     "Azure Automation"
   ],
   "EnvironmentIds": [
-    "Environments-1",
-    "Environments-21",
-    "Environments-22",
-    "Environments-23"
+    "Environments-2",
+    "Environments-3",
+    "Environments-4",
+    "Environments-1"
   ],
   "TenantIds": [],
   "TenantTags": [],

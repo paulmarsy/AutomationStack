@@ -12,9 +12,9 @@ function Remove-AutomationStack {
     Get-AzureRmADApplication -DisplayNameStartWith ('AutomationStack{0}' -f $UDP) | Remove-AzureRmADApplication -Force
 
     $jobs = @(
-        (Remove-AzureResourceGroupAsync 'TeamCity' ('TeamCityStack{0}' -f $UDP))
-        (Remove-AzureResourceGroupAsync 'Octopus Deploy' ('OctopusStack{0}' -f $UDP))
-        (Remove-AzureResourceGroupAsync 'Infrastructure' ('AutomationStack{0}' -f $UDP))
+        (Invoke-SharedScript Resources 'Remove-ResourceGroup' -ResourceGroupName ('TeamCityStack{0}' -f $UDP) -PassThru $true)
+        (Invoke-SharedScript Resources 'Remove-ResourceGroup' -ResourceGroupName ('OctopusStack{0}' -f $UDP) -PassThru $true)
+        (Invoke-SharedScript Resources 'Remove-ResourceGroup' -ResourceGroupName ('AutomationStack{0}' -f $UDP) -PassThru $true)
     )
 
     $configFile = Join-Path $script:DeploymentsPath ('{0}.json' -f $UDP)

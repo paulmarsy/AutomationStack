@@ -17,6 +17,7 @@
           "ActionType": "Octopus.AzurePowerShell",
           "IsDisabled": false,
           "Environments": [],
+          "ExcludedEnvironments": [],
           "Channels": [],
           "TenantTags": [],
           "Properties": {
@@ -43,6 +44,7 @@
           "ActionType": "Octopus.Script",
           "IsDisabled": false,
           "Environments": [],
+          "ExcludedEnvironments": [],
           "Channels": [],
           "TenantTags": [],
           "Properties": {
@@ -70,6 +72,7 @@
           "ActionType": "Octopus.TentaclePackage",
           "IsDisabled": false,
           "Environments": [],
+          "ExcludedEnvironments": [],
           "Channels": [],
           "TenantTags": [],
           "Properties": {

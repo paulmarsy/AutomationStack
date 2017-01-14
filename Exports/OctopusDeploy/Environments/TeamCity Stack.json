@@ -1,6 +1,6 @@
 {
   "$type": "Octopus.Core.Model.Environments.DeploymentEnvironment, Octopus.Core",
-  "Id": "Environments-22",
+  "Id": "Environments-4",
   "Name": "TeamCity Stack",
   "Description": "",
   "SortOrder": 3,

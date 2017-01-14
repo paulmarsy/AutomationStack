@@ -7,14 +7,14 @@
   "IsDisabled": false,
   "VariableSetId": "variableset-Projects-2",
   "DeploymentProcessId": "deploymentprocess-Projects-2",
-  "ProjectGroupId": "ProjectGroups-2",
-  "LifecycleId": "Lifecycles-2",
+  "ProjectGroupId": "ProjectGroups-21",
+  "LifecycleId": "Lifecycles-22",
   "AutoCreateRelease": false,
   "IncludedLibraryVariableSetIds": [
     "LibraryVariableSets-2",
     "LibraryVariableSets-1",
-    "LibraryVariableSets-4",
-    "LibraryVariableSets-5"
+    "LibraryVariableSets-5",
+    "LibraryVariableSets-6"
   ],
   "UsedPackages": [],
   "DefaultToSkipIfAlreadyInstalled": false,

@@ -1,6 +1,6 @@
 {
   "$type": "Octopus.Core.Model.Projects.ActionTemplate, Octopus.Core",
-  "Id": "ActionTemplates-1",
+  "Id": "ActionTemplates-2",
   "Name": "ARM Template - App Server",
   "Description": null,
   "Version": 5,

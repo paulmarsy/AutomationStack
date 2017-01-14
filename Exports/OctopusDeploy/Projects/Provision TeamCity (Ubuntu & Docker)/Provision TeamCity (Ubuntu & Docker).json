@@ -7,16 +7,18 @@
   "IsDisabled": false,
   "VariableSetId": "variableset-Projects-4",
   "DeploymentProcessId": "deploymentprocess-Projects-4",
-  "ProjectGroupId": "ProjectGroups-4",
-  "LifecycleId": "Lifecycles-22",
+  "ProjectGroupId": "ProjectGroups-23",
+  "LifecycleId": "Lifecycles-26",
   "AutoCreateRelease": false,
   "IncludedLibraryVariableSetIds": [
     "LibraryVariableSets-2",
     "LibraryVariableSets-1",
-    "LibraryVariableSets-5"
+    "LibraryVariableSets-3"
   ],
   "UsedPackages": [
-    "jetbrains/teamcity-server"
+    "jetbrains/teamcity-server",
+    "ARMTemplates",
+    "AutomationStackScripts.Resources"
   ],
   "DefaultToSkipIfAlreadyInstalled": false,
   "TenantedDeploymentMode": "Untenanted",

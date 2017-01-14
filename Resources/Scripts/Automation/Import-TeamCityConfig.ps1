@@ -1,10 +1,13 @@
-param($Path, $InfraRg, $AutomationAccountName, $ApiKey, $OctopusServerUrl)
+param($Path, $InfraRg, $AutomationAccountName, $OctopusServerUrl, $OctopusApiKey, $OctopusEnvironment, $OctopusRole, $OctopusDisplayName)
 
 Import-AzureRmAutomationDscConfiguration -ResourceGroupName $InfraRg -AutomationAccountName $AutomationAccountName -SourcePath $Path -Force -Published
 
 $compilationJob = Start-AzureRmAutomationDscCompilationJob -ResourceGroupName $InfraRg -AutomationAccountName $AutomationAccountName -ConfigurationName 'TeamCity' -Parameters @{
-    ApiKey = $ApiKey
     OctopusServerUrl = $OctopusServerUrl
+    OctopusApiKey = $OctopusApiKey
+    OctopusEnvironment = $OctopusEnvironment
+    OctopusRole = $OctopusRole
+    OctopusDisplayName = $OctopusDisplayName
 }
 while ($null -eq $compilationJob.EndTime -and $null -eq $CompilationJob.Exception)
 {

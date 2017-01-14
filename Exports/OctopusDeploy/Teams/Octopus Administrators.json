@@ -3,8 +3,8 @@
   "Id": "teams-administrators",
   "Name": "Octopus Administrators",
   "MemberUserIds": [
-    "Users-2",
-    "Users-1"
+    "Users-1",
+    "Users-2"
   ],
   "ExternalSecurityGroups": [],
   "UserRoleIds": [

@@ -17,6 +17,7 @@
           "ActionType": "Octopus.AzurePowerShell",
           "IsDisabled": false,
           "Environments": [],
+          "ExcludedEnvironments": [],
           "Channels": [],
           "TenantTags": [],
           "Properties": {
@@ -43,6 +44,7 @@
           "ActionType": "Octopus.AzurePowerShell",
           "IsDisabled": false,
           "Environments": [],
+          "ExcludedEnvironments": [],
           "Channels": [],
           "TenantTags": [],
           "Properties": {
@@ -69,13 +71,14 @@
           "ActionType": "Octopus.AzurePowerShell",
           "IsDisabled": false,
           "Environments": [],
+          "ExcludedEnvironments": [],
           "Channels": [],
           "TenantTags": [],
           "Properties": {
             "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
             "Octopus.Action.Script.ScriptSource": "Inline",
             "Octopus.Action.Script.ScriptBody": "$resourceGroup = Get-AzureRmResourceGroup -Name $ResourceGroupName -ErrorAction SilentlyContinue\r\nif(!$resourceGroup) {\r\n    Write-Output \"Creating resource group '$ResourceGroupName' in location '$Location'\"\r\n    New-AzureRmResourceGroup -Name $ResourceGroupName -Location $Location | Out-Default\r\n}\r\nelse {\r\n    Write-Output \"Using existing resource group '$ResourceGroupName'\"\r\n    $resourceGroup | Out-Default\r\n}",
-            "Octopus.Action.Template.Id": "ActionTemplates-4",
+            "Octopus.Action.Template.Id": "ActionTemplates-5",
             "Octopus.Action.Template.Version": "2",
             "ResourceGroupName": "#{ResourceGroup}",
             "Location": "#{AzureRegion}"
@@ -99,6 +102,7 @@
           "ActionType": "Octopus.AzureResourceGroup",
           "IsDisabled": false,
           "Environments": [],
+          "ExcludedEnvironments": [],
           "Channels": [],
           "TenantTags": [],
           "Properties": {
@@ -120,7 +124,7 @@
             "VMAdminPasswordSecretName": "VMAdminPassword",
             "AutomationRegistrationKey": "AutomationRegistrationKey",
             "registrationUrl": "#{AutomationRegistrationUrl}",
-            "Octopus.Action.Template.Id": "ActionTemplates-1",
+            "Octopus.Action.Template.Id": "ActionTemplates-2",
             "Octopus.Action.Template.Version": "5",
             "nodeConfigurationName": "#{DSCConfigurationName}.#{DSCNodeName}"
           }
@@ -143,6 +147,7 @@
           "ActionType": "Octopus.AzurePowerShell",
           "IsDisabled": false,
           "Environments": [],
+          "ExcludedEnvironments": [],
           "Channels": [],
           "TenantTags": [],
           "Properties": {
@@ -169,6 +174,7 @@
           "ActionType": "Octopus.AzureResourceGroup",
           "IsDisabled": false,
           "Environments": [],
+          "ExcludedEnvironments": [],
           "Channels": [],
           "TenantTags": [],
           "Properties": {
@@ -182,7 +188,7 @@
             "ProductName": "#{ProductName}",
             "KeyVaultResourceId": "#{KeyVaultResourceId}",
             "KeyVaultSecretUrl": "#{Octopus.Action[Provision Windows Server 2016 VM].Output.AzureRMOutputs[keyVaultSecretUrl]}",
-            "Octopus.Action.Template.Id": "ActionTemplates-3",
+            "Octopus.Action.Template.Id": "ActionTemplates-4",
             "Octopus.Action.Template.Version": "1"
           }
         }
@@ -204,6 +210,7 @@
           "ActionType": "Octopus.Script",
           "IsDisabled": false,
           "Environments": [],
+          "ExcludedEnvironments": [],
           "Channels": [],
           "TenantTags": [],
           "Properties": {
@@ -219,6 +226,7 @@
           "ActionType": "Octopus.Script",
           "IsDisabled": false,
           "Environments": [],
+          "ExcludedEnvironments": [],
           "Channels": [],
           "TenantTags": [],
           "Properties": {
@@ -234,6 +242,7 @@
           "ActionType": "Octopus.Script",
           "IsDisabled": false,
           "Environments": [],
+          "ExcludedEnvironments": [],
           "Channels": [],
           "TenantTags": [],
           "Properties": {
@@ -249,6 +258,7 @@
           "ActionType": "Octopus.Script",
           "IsDisabled": false,
           "Environments": [],
+          "ExcludedEnvironments": [],
           "Channels": [],
           "TenantTags": [],
           "Properties": {
@@ -264,6 +274,7 @@
           "ActionType": "Octopus.Script",
           "IsDisabled": false,
           "Environments": [],
+          "ExcludedEnvironments": [],
           "Channels": [],
           "TenantTags": [],
           "Properties": {
@@ -279,6 +290,7 @@
           "ActionType": "Octopus.Script",
           "IsDisabled": false,
           "Environments": [],
+          "ExcludedEnvironments": [],
           "Channels": [],
           "TenantTags": [],
           "Properties": {

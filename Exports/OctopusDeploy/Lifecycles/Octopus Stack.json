@@ -1,6 +1,6 @@
 {
   "$type": "Octopus.Core.Model.Lifecycles.Lifecycle, Octopus.Core",
-  "Id": "Lifecycles-21",
+  "Id": "Lifecycles-25",
   "Name": "Octopus Stack",
   "Description": null,
   "Phases": [
@@ -9,7 +9,7 @@
       "Name": "Octopus Stack",
       "AutomaticDeploymentTargets": [],
       "OptionalDeploymentTargets": [
-        "Environments-21"
+        "Environments-3"
       ],
       "MinimumEnvironmentsBeforePromotion": 0,
       "ReleaseRetentionPolicy": null,

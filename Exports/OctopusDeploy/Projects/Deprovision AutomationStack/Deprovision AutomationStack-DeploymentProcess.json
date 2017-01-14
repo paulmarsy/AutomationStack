@@ -17,6 +17,7 @@
           "ActionType": "Octopus.AzurePowerShell",
           "IsDisabled": false,
           "Environments": [],
+          "ExcludedEnvironments": [],
           "Channels": [],
           "TenantTags": [],
           "Properties": {
@@ -43,6 +44,7 @@
           "ActionType": "Octopus.AzurePowerShell",
           "IsDisabled": false,
           "Environments": [],
+          "ExcludedEnvironments": [],
           "Channels": [],
           "TenantTags": [],
           "Properties": {
@@ -67,6 +69,7 @@
           "ActionType": "Octopus.AzurePowerShell",
           "IsDisabled": false,
           "Environments": [],
+          "ExcludedEnvironments": [],
           "Channels": [],
           "TenantTags": [],
           "Properties": {
@@ -91,6 +94,7 @@
           "ActionType": "Octopus.AzurePowerShell",
           "IsDisabled": true,
           "Environments": [],
+          "ExcludedEnvironments": [],
           "Channels": [],
           "TenantTags": [],
           "Properties": {

@@ -1,7 +1,7 @@
 {
   "$type": "Octopus.Core.Model.Variables.VariableSet, Octopus.Core",
-  "Id": "variableset-LibraryVariableSets-21",
-  "OwnerId": "LibraryVariableSets-21",
+  "Id": "variableset-LibraryVariableSets-3",
+  "OwnerId": "LibraryVariableSets-3",
   "Version": 3,
   "Variables": [
     {
@@ -10,7 +10,7 @@
       "Value": "TeamCityNSG",
       "Scope": {
         "Environment": [
-          "Environments-22"
+          "Environments-4"
         ]
       }
     },
@@ -20,7 +20,7 @@
       "Value": "OctopusNSG",
       "Scope": {
         "Environment": [
-          "Environments-21"
+          "Environments-3"
         ]
       }
     },
@@ -30,7 +30,7 @@
       "Value": "TeamCityStack#{UDP}",
       "Scope": {
         "Environment": [
-          "Environments-22"
+          "Environments-4"
         ]
       }
     },
@@ -40,7 +40,7 @@
       "Value": "OctopusStack#{UDP}",
       "Scope": {
         "Environment": [
-          "Environments-21"
+          "Environments-3"
         ]
       }
     },
@@ -50,7 +50,7 @@
       "Value": "TeamCityVM",
       "Scope": {
         "Environment": [
-          "Environments-22"
+          "Environments-4"
         ]
       }
     },
@@ -60,7 +60,7 @@
       "Value": "TCAgentVM",
       "Scope": {
         "Environment": [
-          "Environments-23"
+          "Environments-1"
         ]
       }
     },
@@ -70,7 +70,7 @@
       "Value": "Octopus",
       "Scope": {
         "Environment": [
-          "Environments-21"
+          "Environments-3"
         ]
       }
     },
@@ -80,7 +80,7 @@
       "Value": "TeamCity",
       "Scope": {
         "Environment": [
-          "Environments-22"
+          "Environments-4"
         ]
       }
     },
@@ -90,7 +90,7 @@
       "Value": "TeamCityAgents#{UDP}",
       "Scope": {
         "Environment": [
-          "Environments-23"
+          "Environments-1"
         ]
       }
     },
@@ -100,7 +100,7 @@
       "Value": "OctopusVM",
       "Scope": {
         "Environment": [
-          "Environments-21"
+          "Environments-3"
         ]
       }
     },
@@ -110,14 +110,14 @@
       "Value": "TCAgent",
       "Scope": {
         "Environment": [
-          "Environments-23"
+          "Environments-1"
         ]
       }
     }
   ],
   "RelatedDocumentIds": [
-    "Environments-22",
-    "Environments-21",
-    "Environments-23"
+    "Environments-4",
+    "Environments-3",
+    "Environments-1"
   ]
 }

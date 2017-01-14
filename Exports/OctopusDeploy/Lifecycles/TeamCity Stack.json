@@ -1,6 +1,6 @@
 {
   "$type": "Octopus.Core.Model.Lifecycles.Lifecycle, Octopus.Core",
-  "Id": "Lifecycles-22",
+  "Id": "Lifecycles-26",
   "Name": "TeamCity Stack",
   "Description": null,
   "Phases": [
@@ -9,7 +9,7 @@
       "Name": "TeamCity Stack",
       "AutomaticDeploymentTargets": [],
       "OptionalDeploymentTargets": [
-        "Environments-22"
+        "Environments-4"
       ],
       "MinimumEnvironmentsBeforePromotion": 0,
       "ReleaseRetentionPolicy": null,

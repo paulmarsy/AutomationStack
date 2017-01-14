@@ -1,9 +1,0 @@
-resize octo + tc vm's project
-remove + resize + shutdown projects should start job so the deploy can finish before the server dies
-
-tokenise arm templates in octo import - use spache's json encode function
-
-tc agent cloud
-new project group
-new env 'Agent Cloud'
-project to create + capture genersalised image

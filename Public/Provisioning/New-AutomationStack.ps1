@@ -1,7 +1,7 @@
 function New-AutomationStack {
         param(
         [Parameter()][switch]$WhatIf,
-        [Parameter(DontShow)][int]$TotalStages = 10,
+        [Parameter(DontShow)][int]$TotalStages = 9,
         [Parameter(DontShow)][int[]]$Stages = (1..$TotalStages)
     )
     DynamicParam {
@@ -28,6 +28,9 @@ function New-AutomationStack {
                         $ProgressText = 'Deployment Context' 
                         $Heading = 'Creating AutomationStack Deployment Details'
                         {
+                            if ($null -ne $CurrentContext -and $CurrentContext.Get('DeploymentComplete') -eq 'True') {
+
+                            }
                             New-DeploymentContext -AzureRegion $AzureRegion
                             Show-AutomationStackDetail
                         }
@@ -78,34 +81,32 @@ function New-AutomationStack {
                     }
                     8 {
                         $ProgressText = 'Octopus Deploy - AutomationStack Packages' 
-                        $Heading = 'Publishing AutomationStack to Octopus Deploy Package Feed'
+                        $Heading = 'Publishing AutomationStack Scripts & Templates to Octopus Deploy'
                         {
                             Send-ToOctopusPackageFeed (Join-Path -Resolve $ResourcesPath 'ARM Templates') 'ARMTemplates'
-                            Send-ToOctopusPackageFeed $ScriptsPath 'AutomationStackScripts'
+                            Get-ChildItem -Path $ScriptsPath -Directory | % {
+                                Send-ToOctopusPackageFeed ($_.FullName | Convert-Path) ('AutomationStackScripts.{0}' -f $_.BaseName)
+                            }
                         }
                     }
                     9 {
-                        $ProgressText = 'Octopus Deploy - Resize VM' 
-                        $Heading = 'Resizing Octopus Deploy VM'
-                        {
-                            $vm = Get-AzureRmVM  -ResourceGroupName $CurrentContext.Get('OctopusRg') -Name $CurrentContext.Get('OctopusVMName')
-                            $vm.HardwareProfile.VmSize = 'Standard_DS1_v2'
-                            $vm | Update-AzureRmVM
-                        }
-                    }
-                    10 {
                         $ProgressText = 'Complete' 
                         $Heading = 'AutomationStack Provisioning Complete'
                         {
                             $metrics = New-Object AutoMetrics $CurrentContext
                             $metrics.Finish('Deployment')
                             Show-AutomationStackDetail
+                            Write-Host -ForegroundColor Cyan "`t  Additional functionality can be deployed/enabled using Octopus Deploy"
                             Write-Host
-                            Write-Host -ForegroundColor Magenta "`tAdditional functionality can be deployed/enabled using Octopus Deploy"
+                            Write-Host -ForegroundColor Green "`t   Octopus Deploy URL (& copied to clipboard): $($CurrentContext.Get('OctopusHostHeader'))"
+                            Set-Clipboard -Value $CurrentContext.Get('OctopusHostHeader')
                             Write-Host
-                            Write-Host -ForegroundColor Green "`tOctopus Deploy Running at: $($CurrentContext.Get('OctopusHostHeader'))"
-                            Write-Host
-                            Write-Host 'Timing & statistics of this deployment are available with the command: Measure-AutomationStack'
+                            Write-Host -ForegroundColor Gray "`t  Available PowerShell Module commands:"
+                            Write-Host -ForegroundColor Gray "`t`t- Measure-AutomationStack - Shows timing & deployment stats"
+                            Write-Host -ForegroundColor Gray "`t`t- Connect-AutomationStack <Octopus|TeamCity> - Opens RDP session with the Azure VM (NSG RDP Rule must be enabled"
+                            Write-Host -ForegroundColor Gray "`t`t- Remove-AutomationStack - Removes Azure resources created by the project including the Service Principal"
+                            Write-Host -ForegroundColor Gray "`t`t- New-AutomationStack - Creates another isolated & seperate instance of AutomationStack"
+                            Write-Host -ForegroundColor Gray "`t`t- Import-Module AutomationStack -ArgumentList <UDP> - Imports the module with the context of a previous deployment"
                             $CurrentContext.Set('DeploymentComplete', $true)
                         }
                     }

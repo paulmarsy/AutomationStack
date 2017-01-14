@@ -5,13 +5,13 @@ function Write-DeploymentUpdate {
     Write-Progress -Activity ('AutomationStack Deployment - Stage #{0} of {1}' -f $SequenceNumber, $TotalStages) -Status $ProgressText -PercentComplete ($SequenceNumber/$TotalStages*100) 
     Write-Host 
     # Box corner, line for top of box, box corner
-    Write-Host (@(
+    Write-Host -ForegroundColor White (@(
         (' ')
         ([string][char]0x2554)
         ([string][char]0x2550)*([System.Console]::BufferWidth-4)
         ([string][char]0x2557)) -join '')
     # Box edge
-    Write-Host -NoNewLine (@(' ',([string][char]0x2551)) -join '')
+    Write-Host -ForegroundColor White -NoNewLine (@(' ',([string][char]0x2551)) -join '')
     # Left spacing so the center of the text is the center of the console
     $padding = [System.Math]::Floor((([System.Console]::BufferWidth-4) - $text.Length) / 2)
     Write-Host -NoNewLine (" "*$padding)
@@ -21,9 +21,9 @@ function Write-DeploymentUpdate {
     # Right spacing to place the far right box edge
     Write-Host -NoNewLine (" "*$padding)
     # Box edge
-    Write-Host ([string][char]0x2551)
+    Write-Host -ForegroundColor White ([string][char]0x2551)
     # Box corner, line for bottom of box, box corner
-    Write-Host (@(
+    Write-Host -ForegroundColor White (@(
         (' ')
         ([string][char]0x255A)
         ([string][char]0x2550)*([System.Console]::BufferWidth-4)

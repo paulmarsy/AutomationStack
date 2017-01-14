@@ -1,0 +1,49 @@
+{
+  "$type": "Octopus.Core.Model.Projects.ActionTemplate, Octopus.Core",
+  "Id": "ActionTemplates-21",
+  "Name": "New AzureSQLDatabase",
+  "Description": null,
+  "Version": 1,
+  "ActionType": "Octopus.AzurePowerShell",
+  "CommunityActionTemplateId": null,
+  "Properties": {
+    "Octopus.Action.Package.FeedId": "feeds-builtin",
+    "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
+    "Octopus.Action.Script.ScriptSource": "Package",
+    "Octopus.Action.Script.ScriptFileName": "New-AzureSQLDatabase.ps1",
+    "Octopus.Action.Package.PackageId": "AutomationStackScripts.AzureSQL",
+    "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName #{ResourceGroupName} -ServerName #{ServerName} -DatabaseName #{DatabaseName}"
+  },
+  "Parameters": [
+    {
+      "Id": "ddfcf72d-2faf-4119-a11e-565761356ac6",
+      "Name": "ResourceGroupName",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": null,
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "bb5a2c57-2538-4fbe-9d69-9b7c8a241da8",
+      "Name": "ServerName",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": null,
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "37894bcc-7717-4884-bbfa-d5c72b9cbc98",
+      "Name": "DatabaseName",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": null,
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    }
+  ]
+}

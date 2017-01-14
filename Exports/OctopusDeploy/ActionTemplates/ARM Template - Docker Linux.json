@@ -1,6 +1,6 @@
 {
   "$type": "Octopus.Core.Model.Projects.ActionTemplate, Octopus.Core",
-  "Id": "ActionTemplates-2",
+  "Id": "ActionTemplates-3",
   "Name": "ARM Template - Docker Linux",
   "Description": null,
   "Version": 1,

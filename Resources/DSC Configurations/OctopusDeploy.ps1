@@ -15,7 +15,7 @@ Configuration OctopusDeploy
         xFirewall OctopusDeployServer
         {
             Name                  = "OctopusServer"
-            DisplayName           = "Octopus Server"
+            DisplayName           = "Octopus Deploy Server"
             Ensure                = "Present"
             Enabled               = "True"
             Action                = "Allow"
@@ -89,23 +89,22 @@ Configuration OctopusDeploy
         {
             SetScript = {
                 $octopusServerExe = Join-Path $env:ProgramFiles 'Octopus Deploy\Octopus\Octopus.Server.exe'
-                $addativeExitCode = 0
                 & $octopusServerExe create-instance --console --instance OctopusServer --config "C:\Octopus\OctopusServer.config" *>> $using:octopusConfigLogFile
-                $addativeExitCode += $LASTEXITCODE; if ($LASTEXITCODE -gt 0) { throw "Exit code $LASTEXITCODE from Octopus Server: create-instance" }
+                if ($LASTEXITCODE -gt 0) { throw "Exit code $LASTEXITCODE from Octopus Server: create-instance" }
                 & $octopusServerExe configure --console --instance OctopusServer --home "C:\Octopus" --storageConnectionString $using:ConnectionString --upgradeCheck "True" --upgradeCheckWithStatistics "True" --webAuthenticationMode "UsernamePassword" --webForceSSL "False" --webListenPrefixes $using:HostHeader --commsListenPort "10943" --serverNodeName $using:OctopusNodeName *>> $using:octopusConfigLogFile
-                $addativeExitCode += $LASTEXITCODE; if ($LASTEXITCODE -gt 0) { throw "Exit code $LASTEXITCODE from Octopus Server: configure" }
+                if ($LASTEXITCODE -gt 0) { throw "Exit code $LASTEXITCODE from Octopus Server: configure" }
                 & $octopusServerExe database --console --instance OctopusServer --create *>> $using:octopusConfigLogFile
-                $addativeExitCode += $LASTEXITCODE; if ($LASTEXITCODE -gt 0) { throw "Exit code $LASTEXITCODE from Octopus Server: database" }
+                if ($LASTEXITCODE -gt 0) { throw "Exit code $LASTEXITCODE from Octopus Server: database" }
                 
                 $response = Invoke-WebRequest -UseBasicParsing -Uri "https://octopusdeploy.com/api/licenses/trial" -Method POST -Body @{ FullName=$env:USERNAME; Organization=$env:USERDOMAIN; EmailAddress="${env:USERNAME}@${env:USERDOMAIN}.com"; Source="azure" }
                 $licenseBase64 = [System.Convert]::ToBase64String(((New-Object System.Text.UTF8Encoding($false)).GetBytes($response.Content)))
                 & $octopusServerExe license --console --instance OctopusServer --licenseBase64 $licenseBase64 *>> $using:octopusConfigLogFile
-                $addativeExitCode += $LASTEXITCODE; if ($LASTEXITCODE -gt 0) { throw "Exit code $LASTEXITCODE from Octopus Server: license" }
+                if ($LASTEXITCODE -gt 0) { throw "Exit code $LASTEXITCODE from Octopus Server: license" }
 
                 & $octopusServerExe service --console --instance OctopusServer --install --reconfigure --start *>> $using:octopusConfigLogFile
-                $addativeExitCode += $LASTEXITCODE; if ($LASTEXITCODE -gt 0) { throw "Exit code $LASTEXITCODE from Octopus Server: service" }
+                if ($LASTEXITCODE -gt 0) { throw "Exit code $LASTEXITCODE from Octopus Server: service" }
                 Start-Service OctopusDeploy *>> $using:octopusConfigLogFile
-                [System.IO.FIle]::WriteAllText($using:octopusConfigStateFile, $addativeExitCode,[System.Text.Encoding]::ASCII)
+                [System.IO.FIle]::WriteAllText($using:octopusConfigStateFile, $LASTEXITCODE,[System.Text.Encoding]::ASCII)
             }
             TestScript = {
                 ((Test-Path $using:octopusConfigStateFile) -and ([System.IO.FIle]::ReadAllText($using:octopusConfigStateFile).Trim()) -eq '0')

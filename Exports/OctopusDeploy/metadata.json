@@ -3,7 +3,7 @@
   "Id": "#{OctopusVMName}",
   "Name": "#{OctopusVMName}",
   "Created": "2017-01-09T01:55:45.0771938+00:00",
-  "DatabaseVersion": "3.7.11",
+  "DatabaseVersion": "3.7.16",
 
   "Hello": "#{ProtectedImportHello}"
 }

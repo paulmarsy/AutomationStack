@@ -1,6 +1,6 @@
 {
   "$type": "Octopus.Core.Model.Projects.ActionTemplate, Octopus.Core",
-  "Id": "ActionTemplates-3",
+  "Id": "ActionTemplates-4",
   "Name": "ARM Template - Enable Encryption",
   "Description": null,
   "Version": 1,
@@ -12,7 +12,7 @@
     "Octopus.Action.Azure.TemplateSource": "Inline",
     "Octopus.Action.Azure.ResourceGroupTemplateParameters": "{\"productName\":{\"value\":\"#{ProductName}\"},\"keyVaultResourceID\":{\"value\":\"#{KeyVaultResourceId}\"},\"keyVaultSecretUrl\":{\"value\":\"#{KeyVaultSecretUrl}\"}}",
     "Octopus.Action.Azure.ResourceGroupDeploymentMode": "Incremental",
-    "Octopus.Action.Azure.ResourceGroupTemplate": "#{AzureResourceManager[appserver.enableencryption].Template | JsonEscape}",
+    "Octopus.Action.Azure.ResourceGroupTemplate": "#{AzureResourceManager[appserver.enableencryption].Template | JsonEscape}"
   },
   "Parameters": [
     {

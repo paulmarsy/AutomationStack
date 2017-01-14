@@ -16,10 +16,11 @@ function Upload-ToFileShare {
     if(!$fileShare) {
         $fileShare = New-AzureStorageShare -Name $FileShareName -Context $Context
     }
+        [Console]::WriteLine("  Runspace ID`tAction`t`t`tFile`n$('-'*120)")
     $sourcePath = Get-Item -Path $Source | % FullName
     Get-ChildItem -Path $sourcePath -Recurse -Directory | % {
         $dest = $CurrentContext.Eval($_.FullName.Substring($sourcePath.Length+1).Replace('\','/'))
-        [Console]::WriteLine("Creating directory $dest")
+        [Console]::WriteLine("  -`t`tCreate Directory`t$dest")
         New-AzureStorageDirectory -Share $fileShare -Path $dest -ErrorAction Ignore | Out-Null
     }
     $items = Get-ChildItem -Path $sourcePath -Recurse -File
@@ -33,6 +34,7 @@ function Upload-ToFileShare {
             if ($item.Name -in $TokeniseFiles) {
                     $sourceFile = (Join-Path $TempPath $item.Name)
                     $CurrentContext.ParseFile($item.FullName, $sourceFile)
+                    $tokenised = $true
             } else {
                     $sourceFile = $item.FullName
                     $tokenised = $false
@@ -47,9 +49,9 @@ function Upload-ToFileShare {
             param($batch, $fileShare, $runspaceId, $ConcurrentTaskCount)   
             $batch | % {
                 if ($_.Tokenised) {
-                    [Console]::WriteLine("[$runspaceId] Uploading Tokenised $(Split-Path -Leaf $_.Dest)")
+                    [Console]::WriteLine("  $runspaceId`t`tTokenise & Upload`t$(Split-Path -Leaf $_.Dest)")
                 } else {
-                    [Console]::WriteLine("[$runspaceId] Uploading $(Split-Path -Leaf $_.Dest)")
+                    [Console]::WriteLine("  $runspaceId`t`tUpload`t`t`t$(Split-Path -Leaf $_.Dest)")
                 }
                 Set-AzureStorageFileContent -Share $fileShare -Source $_.Source -Path $_.Dest -Force -ConcurrentTaskCount $ConcurrentTaskCount -ErrorAction Stop
             }

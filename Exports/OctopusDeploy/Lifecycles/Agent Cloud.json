@@ -1,6 +1,6 @@
 {
   "$type": "Octopus.Core.Model.Lifecycles.Lifecycle, Octopus.Core",
-  "Id": "Lifecycles-24",
+  "Id": "Lifecycles-21",
   "Name": "Agent Cloud",
   "Description": null,
   "Phases": [
@@ -9,7 +9,7 @@
       "Name": "Agent Cloud",
       "AutomaticDeploymentTargets": [],
       "OptionalDeploymentTargets": [
-        "Environments-23"
+        "Environments-1"
       ],
       "MinimumEnvironmentsBeforePromotion": 0,
       "ReleaseRetentionPolicy": null,
