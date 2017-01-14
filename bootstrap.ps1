@@ -9,8 +9,8 @@ if ($PSVersionTable.PSVersion.Major -lt 5) {
 }
 
 if (Test-Path $Path) {
-    Write-Warning 'Previous AutomationStack directory exists, removing it...'
-    Remove-Item $Path -Recurse -Force
+    Write-Warning 'Previous AutomationStack directory exists...'
+    Remove-Item $Path -Recurse -Force -ErrorAction Ignore
 }
 
 $tempFile = [System.IO.Path]::ChangeExtension((New-TemporaryFile).FullName, 'zip')
