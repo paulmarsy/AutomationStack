@@ -8,11 +8,6 @@ function Initialize-KeyVault {
     $CurrentContext.Set('KeyVaultResourceId', $keyvaultdeploy.keyVaultId.Value)
     $CurrentContext.Set('KeyVaultUri', $keyvaultdeploy.vaultUri.Value)
 
-    New-KeyVaultSecret -Name StackAdminPassword -Value $CurrentContext.Get('StackAdminPassword')
-    New-KeyVaultSecret -Name SqlAdminPassword -Value $CurrentContext.Get('SqlServerPassword')
-    New-KeyVaultSecret -Name VMAdminPassword -Value $CurrentContext.Get('StackAdminPassword')
-    New-KeyVaultSecret -Name ServicePrincipalClientSecret -Value $CurrentContext.Get('ServicePrincipalClientSecret')
-
     $account = Get-AzureRmContext | % Account
     if ($account.AccountType -eq 'User') {
         Write-Host 'Granting current authenticated user full permissions to KeyVault'
@@ -21,4 +16,10 @@ function Initialize-KeyVault {
     }
 
     Set-AzureRmKeyVaultAccessPolicy -VaultName $CurrentContext.Get('KeyVaultName') -ResourceGroupName $CurrentContext.Get('InfraRg') -EnabledForTemplateDeployment -EnabledForDiskEncryption 
+           
+    New-KeyVaultSecret -Name StackAdminPassword -Value $CurrentContext.Get('StackAdminPassword')
+    New-KeyVaultSecret -Name SqlAdminPassword -Value $CurrentContext.Get('SqlServerPassword')
+    New-KeyVaultSecret -Name VMAdminPassword -Value $CurrentContext.Get('StackAdminPassword')
+    New-KeyVaultSecret -Name ServicePrincipalClientSecret -Value $CurrentContext.Get('ServicePrincipalClientSecret')
+
 }
