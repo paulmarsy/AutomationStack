@@ -28,10 +28,12 @@ function New-AutomationStack {
                         $ProgressText = 'Deployment Context' 
                         $Heading = 'Creating AutomationStack Deployment Details'
                         {
-                            if ($null -ne $CurrentContext -and $CurrentContext.Get('DeploymentComplete') -eq 'True') {
-
+                            if ($null -eq $CurrentContext) {
+                                New-DeploymentContext -AzureRegion $AzureRegion
+                            } else {
+                                Write-Warning 'AutomationStack deployment details already created, skipping'
                             }
-                            New-DeploymentContext -AzureRegion $AzureRegion
+                            
                             Show-AutomationStackDetail
                         }
                     }
