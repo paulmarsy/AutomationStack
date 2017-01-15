@@ -13,6 +13,5 @@ function Initialize-CoreInfrastructure {
 
     New-KeyVaultSecret -Name AutomationRegistrationKey -Value $automationRegInfo.PrimaryKey
 
-    Write-Host 'Provisioning Network Security Groups...'
     Start-ARMDeployment -ResourceGroupName $CurrentContext.Get('InfraRg') -Template 'nsgrules' -Mode Incremental -TemplateParameters @{} | Out-Null
 }
