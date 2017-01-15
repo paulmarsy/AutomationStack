@@ -2,17 +2,53 @@
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
   "Id": "deploymentprocess-Projects-8",
   "OwnerId": "Projects-8",
-  "Version": 11,
+  "Version": 17,
   "Steps": [
     {
-      "Id": "3fc39e82-4b71-4403-beb2-34a921d10219",
+      "Id": "e14ac594-ec1f-47fe-a1f8-9da5c59cbee5",
+      "Name": "Copy DSC Configurations",
+      "Condition": "Success",
+      "StartTrigger": "StartAfterPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "7718b364-0244-4fbf-bd4b-3dbb2dee860c",
+          "Name": "Copy DSC Configurations",
+          "ActionType": "Octopus.Script",
+          "IsDisabled": false,
+          "Environments": [],
+          "ExcludedEnvironments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.Script.ScriptSource": "Package",
+            "Octopus.Action.RunOnServer": "false",
+            "Octopus.Action.Script.ScriptFileName": "Copy-AzureFileShare.ps1",
+            "Octopus.Action.Package.FeedId": "feeds-builtin",
+            "Octopus.Action.Package.PackageId": "AutomationStackScripts.Storage",
+            "Octopus.Action.Script.ScriptParameters": "-StorageAccountName '#{StorageAccountName}' -StorageAccountKey '#{StorageAccountKey}' -FileShareName '#{FileShareName}' -LocalPath '#{LocalPath}'",
+            "Octopus.Action.Template.Id": "ActionTemplates-5",
+            "Octopus.Action.Template.Version": "2",
+            "StorageAccountName": "#{StackResourcesName}",
+            "StorageAccountKey": "#{StackResourcesKey}",
+            "LocalPath": "dsc",
+            "FileShareName": "dsc"
+          }
+        }
+      ],
+      "Properties": {
+        "Octopus.Action.TargetRoles": "Azure Automation"
+      }
+    },
+    {
+      "Id": "cb44f464-79fe-442b-a9ec-ee671cf8be57",
       "Name": "Update DSC Configuration",
       "Condition": "Success",
       "StartTrigger": "StartAfterPrevious",
       "RequiresPackagesToBeAcquired": false,
       "Actions": [
         {
-          "Id": "08f51293-c749-4331-afff-c51bfad3893c",
+          "Id": "393752ff-69d6-460d-94ff-9b0e49567070",
           "Name": "Update DSC Configuration",
           "ActionType": "Octopus.AzurePowerShell",
           "IsDisabled": false,
@@ -21,9 +57,19 @@
           "Channels": [],
           "TenantTags": [],
           "Properties": {
+            "Octopus.Action.Package.FeedId": "feeds-builtin",
             "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
-            "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "$CompilationJob = Start-AzureRmAutomationDscCompilationJob -ResourceGroupName $InfraRg -AutomationAccountName $AutomationAccountName -ConfigurationName $DSCConfigurationName -Parameters @{\n    UDP = $UDP\n    OctopusAdminUsername = $StackAdminUsername\n    OctopusAdminPassword = $StackAdminPassword\n    ConnectionString = $OctopusConnectionString\n    HostHeader = $OctopusHostHeader\n    OctopusVersion = $OctopusParameters['Octopus.Release.Number']\n}\n\nwhile ($CompilationJob.EndTime -eq $null -and $CompilationJob.Exception -eq $null)\n{\n        Write-Host 'Waiting for compilation...'\n        Start-Sleep -Seconds 10\n        $CompilationJob = $CompilationJob | Get-AzureRmAutomationDscCompilationJob\n}\n\n$CompilationJob | Get-AzureRmAutomationDscCompilationJobOutput -Stream Any"
+            "Octopus.Action.Script.ScriptSource": "Package",
+            "Octopus.Action.Script.ScriptFileName": "Import-OctopusConfig.ps1",
+            "Octopus.Action.Package.PackageId": "AutomationStackScripts.Automation",
+            "Octopus.Action.Script.ScriptParameters": "-Path '#{Path}' -InfraRg '#{InfraRg}' -AutomationAccountName '#{AutomationAccountName}' -VMName '#{VMName}' -ConnectionString '#{ConnectionString}' -HostHeader '#{HostHeader}' -OctopusVersionToInstall '#{OctopusVersionToInstall}'",
+            "Octopus.Action.Template.Id": "ActionTemplates-22",
+            "Octopus.Action.Template.Version": "0",
+            "Path": "dsc",
+            "VMName": "#{OctopusVMName}",
+            "ConnectionString": "#{OctopusConnectionString}",
+            "HostHeader": "#{OctopusHostHeader}",
+            "OctopusVersionToInstall": "#{Octopus.Release.Number}"
           }
         }
       ],
@@ -51,7 +97,7 @@
             "Octopus.Action.RunOnServer": "true",
             "Octopus.Action.Script.Syntax": "PowerShell",
             "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "Update-DscConfiguration"
+            "Octopus.Action.Script.ScriptBody": "Update-DscConfiguration -Verbose -Wait\nStart-DscConfiguration -UseExisting -Wait -Verbose"
           }
         }
       ],

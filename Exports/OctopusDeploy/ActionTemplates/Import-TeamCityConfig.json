@@ -1,0 +1,59 @@
+{
+  "$type": "Octopus.Core.Model.Projects.ActionTemplate, Octopus.Core",
+  "Id": "ActionTemplates-21",
+  "Name": "Import-TeamCityConfig",
+  "Description": null,
+  "Version": 0,
+  "ActionType": "Octopus.AzurePowerShell",
+  "CommunityActionTemplateId": null,
+  "Properties": {
+    "Octopus.Action.Package.FeedId": "feeds-builtin",
+    "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
+    "Octopus.Action.Script.ScriptSource": "Package",
+    "Octopus.Action.Script.ScriptFileName": "Import-TeamCityConfig.ps1",
+    "Octopus.Action.Package.PackageId": "AutomationStackScripts.Automation",
+    "Octopus.Action.Script.ScriptParameters": "-Path '#{Path}' -InfraRg '#{InfraRg}' -AutomationAccountName '#{AutomationAccountName}' -OctopusServerUrl '#{OctopusHostHeader}' -OctopusApiKey '#{APIKey}' -OctopusEnvironment '#{OctopusEnvironment}' -OctopusRole '#{OctopusRole}' -OctopusDisplayName '#{OctopusDisplayName}'"
+  },
+  "Parameters": [
+    {
+      "Id": "55d47738-f54d-489b-be5f-e1d8f26a32b6",
+      "Name": "Path",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": null,
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "66be5ed4-1e2e-4f0b-88f3-f36c57bcad45",
+      "Name": "OctopusEnvironment",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": null,
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "e99e61f6-1b42-497f-875a-55cb4b2077eb",
+      "Name": "OctopusRole",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": null,
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "a77f88c3-4bd3-459f-9f6f-f4390b0ff1ff",
+      "Name": "OctopusDisplayName",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": null,
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    }
+  ]
+}

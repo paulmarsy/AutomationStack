@@ -1,0 +1,69 @@
+{
+  "$type": "Octopus.Core.Model.Projects.ActionTemplate, Octopus.Core",
+  "Id": "ActionTemplates-22",
+  "Name": "Import-OctopusConfig",
+  "Description": null,
+  "Version": 0,
+  "ActionType": "Octopus.AzurePowerShell",
+  "CommunityActionTemplateId": null,
+  "Properties": {
+    "Octopus.Action.Package.FeedId": "feeds-builtin",
+    "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
+    "Octopus.Action.Script.ScriptSource": "Package",
+    "Octopus.Action.Script.ScriptFileName": "Import-OctopusConfig.ps1",
+    "Octopus.Action.Package.PackageId": "AutomationStackScripts.Automation",
+    "Octopus.Action.Script.ScriptParameters": "-Path '#{Path}' -InfraRg '#{InfraRg}' -AutomationAccountName '#{AutomationAccountName}' -VMName '#{VMName}' -ConnectionString '#{ConnectionString}' -HostHeader '#{HostHeader}' -OctopusVersionToInstall '#{OctopusVersionToInstall}'"
+  },
+  "Parameters": [
+    {
+      "Id": "07fd6cf3-c249-4965-ae8a-9efd67797351",
+      "Name": "Path",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": null,
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "3b5e1553-cf0f-4025-9329-f1adad59e749",
+      "Name": "VMName",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": null,
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "5b276de3-2274-40b9-9a7d-a3679f2cc665",
+      "Name": "ConnectionString",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": null,
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "fdc6d7d2-fcc3-4c19-a150-f5a38a2952f9",
+      "Name": "HostHeader",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": null,
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "9bad5657-841b-4976-8847-56ce7b4ce6e7",
+      "Name": "OctopusVersionToInstall",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": null,
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    }
+  ]
+}

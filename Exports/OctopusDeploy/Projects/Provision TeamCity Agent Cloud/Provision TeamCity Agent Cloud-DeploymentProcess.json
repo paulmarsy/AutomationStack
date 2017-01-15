@@ -2,7 +2,7 @@
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
   "Id": "deploymentprocess-Projects-6",
   "OwnerId": "Projects-6",
-  "Version": 32,
+  "Version": 48,
   "Steps": [
     {
       "Id": "17f4df42-d6af-4d72-8b14-d0a6f9f89cb6",
@@ -26,13 +26,13 @@
             "Octopus.Action.Script.ScriptFileName": "Copy-AzureFileShare.ps1",
             "Octopus.Action.Package.FeedId": "feeds-builtin",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Storage",
-            "Octopus.Action.Script.ScriptParameters": "-StorageAccountName #{StorageAccountName} -StorageAccountKey #{StorageAccountKey} -FileShareName #{FileShareName} -LocalPath #{LocalPath}",
-            "Octopus.Action.Template.Id": "ActionTemplates-5",
-            "Octopus.Action.Template.Version": "1",
+            "Octopus.Action.Script.ScriptParameters": "-StorageAccountName '#{StorageAccountName}' -StorageAccountKey '#{StorageAccountKey}' -FileShareName '#{FileShareName}' -LocalPath '#{LocalPath}'",
+            "LocalPath": "dsc",
             "StorageAccountName": "#{StackResourcesName}",
             "StorageAccountKey": "#{StackResourcesKey}",
-            "LocalPath": "dsc",
-            "FileShareName": "dsc"
+            "FileShareName": "dsc",
+            "Octopus.Action.Template.Id": "ActionTemplates-5",
+            "Octopus.Action.Template.Version": "2"
           }
         }
       ],
@@ -41,14 +41,14 @@
       }
     },
     {
-      "Id": "b58e3359-917a-4fbe-8e3c-8e80aca4cba2",
+      "Id": "3e1421c8-0f2a-49d8-8f7a-eabc705031c5",
       "Name": "Import DSC Configuration",
       "Condition": "Success",
       "StartTrigger": "StartAfterPrevious",
       "RequiresPackagesToBeAcquired": false,
       "Actions": [
         {
-          "Id": "8f8cda61-d1e9-48d0-86a4-3a7859180ae3",
+          "Id": "cde16212-2b16-4f80-80e9-867ddc5fdc86",
           "Name": "Import DSC Configuration",
           "ActionType": "Octopus.AzurePowerShell",
           "IsDisabled": false,
@@ -57,12 +57,18 @@
           "Channels": [],
           "TenantTags": [],
           "Properties": {
+            "Octopus.Action.Package.FeedId": "feeds-builtin",
             "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
             "Octopus.Action.Script.ScriptSource": "Package",
-            "Octopus.Action.Package.FeedId": "feeds-builtin",
             "Octopus.Action.Script.ScriptFileName": "Import-TeamCityConfig.ps1",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Automation",
-            "Octopus.Action.Script.ScriptParameters": "-Path dsc -InfraRg #{InfraRg} -AutomationAccountName #{AutomationAccountName} -OctopusServerUrl #{OctopusHostHeader} -OctopusApiKey #{APIKey} -OctopusEnvironment #{TeamCityRg} -OctopusRole 'TeamCity Server (Windows)' -OctopusDisplayName 'TeamCity Server'"
+            "Octopus.Action.Script.ScriptParameters": "-Path '#{Path}' -InfraRg '#{InfraRg}' -AutomationAccountName '#{AutomationAccountName}' -OctopusServerUrl '#{OctopusHostHeader}' -OctopusApiKey '#{APIKey}' -OctopusEnvironment '#{OctopusEnvironment}' -OctopusRole '#{OctopusRole}' -OctopusDisplayName '#{OctopusDisplayName}'",
+            "Octopus.Action.Template.Id": "ActionTemplates-21",
+            "Octopus.Action.Template.Version": "0",
+            "Path": "dsc",
+            "OctopusDisplayName": "TeamCity Server",
+            "OctopusRole": "TeamCity Server (Windows)",
+            "OctopusEnvironment": "#{TeamCityRg}"
           }
         }
       ],
@@ -92,11 +98,11 @@
             "Octopus.Action.Package.FeedId": "feeds-builtin",
             "Octopus.Action.Script.ScriptFileName": "New-ResourceGroup.ps1",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Resources",
-            "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName #{ResourceGroupName} -Location #{Location}",
+            "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName '#{ResourceGroupName}' -Location '#{Location}'",
             "ResourceGroupName": "#{ResourceGroup}",
             "Location": "#{AzureRegion}",
             "Octopus.Action.Template.Id": "ActionTemplates-7",
-            "Octopus.Action.Template.Version": "5"
+            "Octopus.Action.Template.Version": "6"
           }
         }
       ],
@@ -123,22 +129,17 @@
           "Properties": {
             "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
             "Octopus.Action.Azure.ResourceGroupName": "#{ResourceGroupName}",
-            "Octopus.Action.Azure.TemplateSource": "Inline",
-            "Octopus.Action.Azure.ResourceGroupTemplateParameters": "{\"infraResourceGroup\":{\"value\":\"#{InfraResourceGroup}\"},\"udp\":{\"value\":\"#{UDP}\"},\"productName\":{\"value\":\"#{ProductName}\"},\"vmSize\":{\"value\":\"Standard_F4s\"},\"vmAdminUsername\":{\"value\":\"#{VMSize}\"},\"vmAdminPassword\":{\"reference\":{\"keyVault\":{\"id\":\"#{KeyVaultResourceId}\"},\"secretName\":\"#{VMAdminPasswordSecretName}\"}},\"registrationKey\":{\"reference\":{\"keyVault\":{\"id\":\"#{KeyVaultResourceId}\"},\"secretName\":\"#{AutomationRegistrationKey}\"}},\"registrationUrl\":{\"value\":\"#{registrationUrl}\"},\"nodeConfigurationName\":{\"value\":\"#{nodeConfigurationName}\"},\"timestamp\":{\"value\":\"#{Octopus.Deployment.CreatedUtc}\"}}",
+            "Octopus.Action.Azure.TemplateSource": "Package",
+            "Octopus.Action.Azure.ResourceGroupTemplateParameters": "OctopusDeploy\\agentserver.parameters.json",
             "Octopus.Action.Azure.ResourceGroupDeploymentMode": "Complete",
-            "Octopus.Action.Azure.ResourceGroupTemplate": "{\r\n  \"$schema\": \"https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#\",\r\n  \"contentVersion\": \"1.0.0.0\",\r\n  \"parameters\": {\r\n    \"infraResourceGroup\": {\r\n      \"type\": \"string\",\r\n      \"metadata\": {\r\n        \"description\": \"Name of the resource group containing the core automationstack infrastructure\"\r\n      }\r\n    },\r\n    \"udp\": {\r\n      \"type\": \"string\",\r\n      \"metadata\": {\r\n        \"description\": \"Unique Deployment Prefix to avoid name collisions\"\r\n      }\r\n    },\r\n    \"productName\": {\r\n      \"type\": \"string\",\r\n      \"metadata\": {\r\n        \"description\": \"Name of the product that is running on this VM\"\r\n      }\r\n    },\r\n    \"vmSize\": {\r\n      \"type\": \"string\",\r\n      \"defaultValue\": \"Standard_F4s\",\r\n      \"metadata\": {\r\n        \"description\": \"Size of the VM\"\r\n      }\r\n    },\r\n    \"vmAdminUsername\": {\r\n      \"type\": \"string\",\r\n      \"metadata\": {\r\n        \"description\": \"Username for the Virtual Machine.\"\r\n      }\r\n    },\r\n    \"vmAdminPassword\": {\r\n      \"type\": \"securestring\",\r\n      \"metadata\": {\r\n        \"description\": \"Password for the Virtual Machine.\"\r\n      }\r\n    },\r\n    \"registrationKey\": {\r\n      \"type\": \"securestring\",\r\n      \"metadata\": {\r\n        \"Description\": \"Registration key to use to onboard to the Azure Automation DSC pull/reporting server\"\r\n      }\r\n    },\r\n    \"registrationUrl\": {\r\n      \"type\": \"string\",\r\n      \"metadata\": {\r\n        \"Description\": \"Registration url of the Azure Automation DSC pull/reporting server\"\r\n      }\r\n    },\r\n    \"nodeConfigurationName\": {\r\n      \"type\": \"string\",\r\n      \"metadata\": {\r\n        \"Description\": \"The name of the node configuration, on the Azure Automation DSC pull server, that this node to pick up\"\r\n      }\r\n    },\r\n    \"timestamp\": {\r\n      \"type\": \"string\",\r\n      \"defaultValue\": \"MM/dd/yyyy H:mm:ss tt\",\r\n      \"metadata\": {\r\n        \"description\": \"The current datetime, as a string, to force the request to go through ARM even if all fields are the same as last ARM deployment of this template; example in parameters file is in MM/dd/yyyy H:mm:ss tt format\"\r\n      }\r\n    }\r\n  },\r\n  \"variables\": {\r\n    \"vmName\": \"[concat(parameters('productName'),'VM')]\",\r\n    \"vmStorageName\": \"[concat('vmvhds', parameters('udp'), uniquestring(resourceGroup().id))]\",\r\n    \"nicName\": \"[concat(parameters('productName'),'NIC')]\",\r\n    \"virtualNetworkId\": \"[resourceId(parameters('infraResourceGroup'), 'Microsoft.Network/virtualNetworks', 'VirtualNetwork')]\",\r\n    \"subnetId\": \"[concat(variables('virtualNetworkId'),'/subnets/', 'Default')]\"\r\n  },\r\n  \"resources\": [{\r\n    \"apiVersion\": \"2016-01-01\",\r\n    \"type\": \"Microsoft.Storage/storageAccounts\",\r\n    \"name\": \"[variables('vmStorageName')]\",\r\n    \"location\": \"[resourceGroup().location]\",\r\n    \"sku\": {\r\n      \"name\": \"Premium_LRS\",\r\n      \"tier\": \"Premium\"\r\n    },\r\n    \"kind\": \"Storage\",\r\n    \"properties\": {\r\n    }\r\n  }, {\r\n    \"apiVersion\": \"2015-06-15\",\r\n    \"type\": \"Microsoft.Network/networkInterfaces\",\r\n    \"name\": \"[variables('nicName')]\",\r\n    \"location\": \"[resourceGroup().location]\",\r\n    \"properties\": {\r\n      \"ipConfigurations\": [{\r\n        \"name\": \"[concat(parameters('productName'),'-IPConfig')]\",\r\n        \"properties\": {\r\n          \"privateIPAllocationMethod\": \"Dynamic\",\r\n          \"subnet\": {\r\n            \"id\": \"[variables('subnetId')]\"\r\n          }\r\n        }\r\n      }]\r\n    }\r\n  },{\r\n    \"apiVersion\": \"2015-06-15\",\r\n    \"type\": \"Microsoft.Compute/virtualMachines\",\r\n    \"name\": \"[variables('vmName')]\",\r\n    \"location\": \"[resourceGroup().location]\",\r\n    \"dependsOn\": [\r\n      \"[concat('Microsoft.Storage/storageAccounts/', variables('vmStorageName'))]\",\r\n      \"[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]\"\r\n    ],\r\n    \"properties\": {\r\n      \"hardwareProfile\": {\r\n        \"vmSize\": \"[parameters('vmSize')]\"\r\n      },\r\n      \"osProfile\": {\r\n        \"computerName\": \"[variables('vmName')]\",\r\n        \"adminUsername\": \"[parameters('vmAdminUsername')]\",\r\n        \"adminPassword\": \"[parameters('vmAdminPassword')]\",\r\n        \"windowsConfiguration\": {\r\n          \"provisionVMAgent\": true,\r\n          \"enableAutomaticUpdates\": true\r\n        }\r\n      },\r\n      \"storageProfile\": {\r\n        \"imageReference\": {\r\n          \"publisher\": \"MicrosoftWindowsServer\",\r\n          \"offer\": \"WindowsServer\",\r\n          \"sku\": \"2016-Datacenter\",\r\n          \"version\": \"latest\"\r\n        },\r\n        \"osDisk\": {\r\n          \"name\": \"[concat(variables('vmName'),'-OS')]\",\r\n          \"vhd\": {\r\n            \"uri\": \"[concat('http://',variables('vmStorageName'),'.blob.core.windows.net/vhds/',variables('vmName'),'-OS.vhd')]\"\r\n          },\r\n          \"caching\": \"ReadWrite\",\r\n          \"createOption\": \"FromImage\"\r\n        }\r\n      },\r\n      \"networkProfile\": {\r\n        \"networkInterfaces\": [{\r\n          \"id\": \"[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]\"\r\n        }]\r\n      }\r\n    },\r\n    \"resources\": [{\r\n      \"type\": \"extensions\",\r\n      \"name\": \"Microsoft.Powershell.DSC\",\r\n      \"apiVersion\": \"2015-06-15\",\r\n      \"location\": \"[resourceGroup().location]\",\r\n      \"properties\": {\r\n        \"publisher\": \"Microsoft.Powershell\",\r\n        \"type\": \"DSC\",\r\n        \"typeHandlerVersion\": \"2.19\",\r\n        \"autoUpgradeMinorVersion\": true,\r\n        \"protectedSettings\": {\r\n          \"Items\": {\r\n            \"registrationKeyPrivate\": \"[parameters('registrationKey')]\"\r\n          }\r\n        },\r\n        \"settings\": {\r\n          \"ModulesUrl\": \"https://eus2oaasibizamarketprod1.blob.core.windows.net/automationdscpreview/RegistrationMetaConfigV2.zip\",\r\n          \"SasToken\": \"\",\r\n          \"ConfigurationFunction\": \"RegistrationMetaConfigV2.ps1\\\\RegistrationMetaConfigV2\",\r\n          \"Properties\": [{\r\n            \"Name\": \"RegistrationKey\",\r\n            \"Value\": {\r\n              \"UserName\": \"PLACEHOLDER_DONOTUSE\",\r\n              \"Password\": \"PrivateSettingsRef:registrationKeyPrivate\"\r\n            },\r\n            \"TypeName\": \"System.Management.Automation.PSCredential\"\r\n          }, {\r\n            \"Name\": \"RegistrationUrl\",\r\n            \"Value\": \"[parameters('registrationUrl')]\",\r\n            \"TypeName\": \"System.String\"\r\n          }, {\r\n            \"Name\": \"NodeConfigurationName\",\r\n            \"Value\": \"[parameters('nodeConfigurationName')]\",\r\n            \"TypeName\": \"System.String\"\r\n          }, {\r\n            \"Name\": \"ConfigurationMode\",\r\n            \"Value\": \"ApplyAndAutocorrect\",\r\n            \"TypeName\": \"System.String\"\r\n          }, {\r\n            \"Name\": \"ConfigurationModeFrequencyMins\",\r\n            \"Value\": 15,\r\n            \"TypeName\": \"System.Int32\"\r\n          }, {\r\n            \"Name\": \"RefreshFrequencyMins\",\r\n            \"Value\": 30,\r\n            \"TypeName\": \"System.Int32\"\r\n          }, {\r\n            \"Name\": \"RebootNodeIfNeeded\",\r\n            \"Value\": true,\r\n            \"TypeName\": \"System.Boolean\"\r\n          }, {\r\n            \"Name\": \"ActionAfterReboot\",\r\n            \"Value\": \"ContinueConfiguration\",\r\n            \"TypeName\": \"System.String\"\r\n          }, {\r\n            \"Name\": \"AllowModuleOverwrite\",\r\n            \"Value\": true,\r\n            \"TypeName\": \"System.Boolean\"\r\n          }, {\r\n            \"Name\": \"Timestamp\",\r\n            \"Value\": \"[parameters('timestamp')]\",\r\n            \"TypeName\": \"System.String\"\r\n          }]\r\n        }\r\n      },\r\n        \"dependsOn\": [\r\n          \"[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]\"\r\n        ]\r\n    }]\r\n  }]\r\n}",
-            "Octopus.Action.Template.Id": "ActionTemplates-1",
-            "Octopus.Action.Template.Version": "1",
-            "InfraResourceGroup": "#{InfraRg}",
-            "UDP": "#{UDP}",
-            "VMSize": "Standard_F4s",
-            "KeyVaultResourceId": "#{KeyVaultResourceId}",
-            "VMAdminPasswordSecretName": "VMAdminPassword",
-            "AutomationRegistrationKey": "AutomationRegistrationKey",
-            "registrationUrl": "#{AutomationRegistrationUrl}",
-            "ResourceGroupName": "#{ResourceGroup}",
+            "Octopus.Action.Azure.ResourceGroupTemplate": "agentserver.json",
+            "Octopus.Action.Package.FeedId": "feeds-builtin",
+            "Octopus.Action.Package.PackageId": "ARMTemplates",
             "ProductName": "#{ProductName}",
-            "nodeConfigurationName": "TeamCity.CloudAgent"
+            "ResourceGroupName": "#{ResourceGroup}",
+            "Octopus.Action.Template.Id": "ActionTemplates-1",
+            "Octopus.Action.Template.Version": "2",
+            "NodeConfigurationName": "#{DSCConfigurationName}.#{DSCNodeName}"
           }
         }
       ],
@@ -168,12 +169,12 @@
             "Octopus.Action.Script.ScriptSource": "Package",
             "Octopus.Action.Script.ScriptFileName": "Wait-NodeCompliance.ps1",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Automation",
-            "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName #{ResourceGroupName} -AutomationAccountName #{AutomationAccountName} -NodeName #{NodeName}",
-            "Octopus.Action.Template.Id": "ActionTemplates-9",
-            "Octopus.Action.Template.Version": "1",
+            "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName '#{ResourceGroupName}' -AutomationAccountName '#{AutomationAccountName}' -NodeName '#{NodeName}'",
             "ResourceGroupName": "#{InfraRg}",
             "AutomationAccountName": "#{AutomationAccountName}",
-            "NodeName": "#{VMName}"
+            "NodeName": "#{VMName}",
+            "Octopus.Action.Template.Id": "ActionTemplates-9",
+            "Octopus.Action.Template.Version": "2"
           }
         }
       ],
@@ -206,7 +207,7 @@
     },
     {
       "Id": "15750c37-d131-4a53-a8d3-eb05dff1be67",
-      "Name": "Capture Agent VM Image",
+      "Name": "Run Sysprep",
       "Condition": "Success",
       "StartTrigger": "StartAfterPrevious",
       "RequiresPackagesToBeAcquired": false,
@@ -226,55 +227,103 @@
             "Octopus.Action.Script.ScriptSource": "Inline",
             "Octopus.Action.Script.ScriptBody": "Set-Location (Join-Path $env:windir 'system32\\sysprep')\n& sysprep.exe /oobe /generalize /quiet /shutdown"
           }
-        },
-        {
-          "Id": "8025cd3c-b72f-4321-8f90-431ee1d89b79",
-          "Name": "Deallocate Agent VM",
-          "ActionType": "Octopus.AzurePowerShell",
-          "IsDisabled": false,
-          "Environments": [],
-          "ExcludedEnvironments": [],
-          "Channels": [],
-          "TenantTags": [],
-          "Properties": {
-            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
-            "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "Stop-AzureRmVM -ResourceGroupName $ResourceGroup -Name $VMName"
-          }
-        },
-        {
-          "Id": "2a6b3a11-b10b-4856-8898-02e61dfa8b8e",
-          "Name": "Set Agent VM to Generalized",
-          "ActionType": "Octopus.AzurePowerShell",
-          "IsDisabled": false,
-          "Environments": [],
-          "ExcludedEnvironments": [],
-          "Channels": [],
-          "TenantTags": [],
-          "Properties": {
-            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
-            "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": " Set-AzureRmVm -ResourceGroupName $ResourceGroup -Name $VMName -Generalized"
-          }
-        },
-        {
-          "Id": "ebf01d5e-4c9e-4010-b375-0fc7fa335763",
-          "Name": "Create Cloud Agent VHD Image",
-          "ActionType": "Octopus.AzurePowerShell",
-          "IsDisabled": false,
-          "Environments": [],
-          "ExcludedEnvironments": [],
-          "Channels": [],
-          "TenantTags": [],
-          "Properties": {
-            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
-            "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": " Save-AzureRmVMImage -ResourceGroupName $ResourceGroup -Name $VMName -DestinationContainerName images -VHDNamePrefix AgentCloud -Path ('D:\\TCAgent-{0}.json' -f $OctopusParameters['Octopus.Deployment.Id'])"
-          }
         }
       ],
       "Properties": {
         "Octopus.Action.TargetRoles": "TeamCity Agent Image"
+      }
+    },
+    {
+      "Id": "8a30c09b-a241-4bcf-8b0a-626fcdf2ba36",
+      "Name": "Convert VM to Image",
+      "Condition": "Success",
+      "StartTrigger": "StartAfterPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "c9d74a24-0ca9-48a0-9456-8b8df84f832d",
+          "Name": "Convert VM to Image",
+          "ActionType": "Octopus.AzurePowerShell",
+          "IsDisabled": false,
+          "Environments": [],
+          "ExcludedEnvironments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.Package.FeedId": "feeds-builtin",
+            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
+            "Octopus.Action.Script.ScriptSource": "Package",
+            "Octopus.Action.Script.ScriptFileName": "Convert-VMtoImage.ps1",
+            "Octopus.Action.Package.PackageId": "AutomationStackScripts.Compute",
+            "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName '#{ResourceGroup}'  -VMName '#{VMName}'"
+          }
+        }
+      ],
+      "Properties": {
+        "Octopus.Action.TargetRoles": "ARM Provisioning"
+      }
+    },
+    {
+      "Id": "1c18cb0a-4d77-40c8-ac9a-833039cc2541",
+      "Name": "Copy VM Images to Stack Resource Storage Account",
+      "Condition": "Success",
+      "StartTrigger": "StartAfterPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "cae7ebea-cec9-4602-878b-88d60f9f6aa9",
+          "Name": "Copy VM Images to Stack Resource Storage Account",
+          "ActionType": "Octopus.AzurePowerShell",
+          "IsDisabled": false,
+          "Environments": [],
+          "ExcludedEnvironments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.Package.FeedId": "feeds-builtin",
+            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
+            "Octopus.Action.Script.ScriptSource": "Package",
+            "Octopus.Action.Script.ScriptFileName": "Copy-VHDToStorageAccount.ps1",
+            "Octopus.Action.Package.PackageId": "AutomationStackScripts.Storage",
+            "Octopus.Action.Script.ScriptParameters": "-VHDUri '#{VHDUri}' -SrcResourceGroupName '#{ResourceGroup}' -DstResourceGroupName '#{InfraRg}' -DstStorageAccount '#{StackResourcesName}'  -DstBlob '#{VMName}.image.vhd'"
+          }
+        }
+      ],
+      "Properties": {
+        "Octopus.Action.TargetRoles": "ARM Provisioning"
+      }
+    },
+    {
+      "Id": "3df6937c-98d4-43fd-9e80-f03eb7455b9c",
+      "Name": "Remove Resource Group",
+      "Condition": "Success",
+      "StartTrigger": "StartAfterPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "120ea5a7-b0fc-499b-94d6-1da8dfade7c7",
+          "Name": "Remove Resource Group",
+          "ActionType": "Octopus.AzurePowerShell",
+          "IsDisabled": false,
+          "Environments": [],
+          "ExcludedEnvironments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.Package.FeedId": "feeds-builtin",
+            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
+            "Octopus.Action.Script.ScriptSource": "Package",
+            "Octopus.Action.Script.ScriptFileName": "Remove-ResourceGroup.ps1",
+            "Octopus.Action.Package.PackageId": "AutomationStackScripts.Resources",
+            "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName '#{ResourceGroupName}' -PassThru '#{PassThru}'",
+            "Octopus.Action.Template.Id": "ActionTemplates-8",
+            "Octopus.Action.Template.Version": "1",
+            "ResourceGroupName": "#{ResourceGroup}"
+          }
+        }
+      ],
+      "Properties": {
+        "Octopus.Action.TargetRoles": "ARM Provisioning"
       }
     }
   ],

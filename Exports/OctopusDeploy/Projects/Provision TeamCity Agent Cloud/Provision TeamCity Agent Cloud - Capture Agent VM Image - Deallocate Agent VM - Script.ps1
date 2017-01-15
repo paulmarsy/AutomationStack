@@ -1,1 +1,0 @@
-Stop-AzureRmVM -ResourceGroupName $ResourceGroup -Name $VMName
