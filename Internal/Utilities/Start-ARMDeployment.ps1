@@ -41,16 +41,23 @@ function Start-ARMDeployment {
     $deployment | Format-List -Property @('DeploymentName','ResourceGroupName','Mode','ProvisioningState','Timestamp','ParametersString', 'OutputsString') | Out-String | % Trim | Out-Host
     Write-Host
 
-    Get-AzureRmResourceGroupDeploymentOperation -ResourceGroupName $ResourceGroupName -DeploymentName $deployment.DeploymentName | % Properties | % {
-        New-Object psobject -Property @{
-            Time = [System.Xml.XmlConvert]::ToDateTime($_.timestamp).ToString('T')
-            Operation = $_.provisioningOperation
-            Result = $_.statusCode
-            Message = $_.statusMessage
-            Duration = [Humanizer.TimeSpanHumanizeExtensions]::Humanize([System.Xml.XmlConvert]::ToTimeSpan($_.duration), 2)
-            ResourceName = $_.targetResource.resourceName
-        }
-    } | Sort-Object -Property Time | Format-Table -AutoSize -Property @('Time','Duration','Operation','Result','ResourceName','Message') | Out-Host
+    Get-AzureRmResourceGroupDeploymentOperation -ResourceGroupName $ResourceGroupName -DeploymentName $deployment.DeploymentName |
+        % Properties |
+        Sort-Object -Property timestamp |
+        ? provisioningOperation -ne 'EvaluateDeploymentOutput' |        
+        % {
+            New-Object psobject -Property @{
+                Time = [System.Xml.XmlConvert]::ToDateTime($_.timestamp).ToString('T')
+                Operation = $_.provisioningOperation
+                Result = $_.statusCode
+                Message = $_.statusMessage
+                Duration = [Humanizer.TimeSpanHumanizeExtensions]::Humanize([System.Xml.XmlConvert]::ToTimeSpan($_.duration), 2, $null, [Humanizer.Localisation.TimeUnit]::Minute, [Humanizer.Localisation.TimeUnit]::Second)
+                Resource = ($_.targetResource.resourceType,$_.targetResource.resourceName -join '/')
+            }
+        } |
+        Format-Table -AutoSize -Property @('Time','Duration','Operation','Result','Resource','Message') |
+        Out-Host
+
     Write-Host
 
     $deployment.Outputs
