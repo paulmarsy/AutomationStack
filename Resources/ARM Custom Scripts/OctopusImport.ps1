@@ -5,7 +5,7 @@ $logFile = 'C:\CustomScriptLogs\{0}.log' -f ([datetime]::UtcNow.tostring('o').Re
 
 $lcm = Get-DscLocalConfigurationManager
 while ($lcm.LCMState -ne 'Idle') {
-    "DSC Local Configuration Manager state is $($lcm.LCMState); waiting..." | Tee-Object -FilePath $logFile -Append
+    "DSC Local Configuration Manager state is $($lcm.LCMState); waiting 10 seconds..." | Tee-Object -FilePath $logFile -Append
     Start-Sleep -Seconds 10
     $lcm = Get-DscLocalConfigurationManager
 }
