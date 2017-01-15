@@ -5,6 +5,7 @@ function Install-AzurePowerShellModule {
         Import-Module AzureRm -Force -Global
     } else {
         Write-Host 'Installing Azure PowerShell Module...'
+        Install-PackageProvider -Name NuGet -Force
         Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
         Install-Module AzureRM
     }

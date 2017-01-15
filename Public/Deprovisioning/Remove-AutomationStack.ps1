@@ -13,6 +13,7 @@ function Remove-AutomationStack {
 
     $jobs = @(
         (Invoke-SharedScript Resources 'Remove-ResourceGroup' -ResourceGroupName ('TeamCityStack{0}' -f $UDP) -PassThru $true)
+        (Invoke-SharedScript Resources 'Remove-ResourceGroup' -ResourceGroupName ('TeamCityAgents{0}' -f $UDP) -PassThru $true)
         (Invoke-SharedScript Resources 'Remove-ResourceGroup' -ResourceGroupName ('OctopusStack{0}' -f $UDP) -PassThru $true)
         (Invoke-SharedScript Resources 'Remove-ResourceGroup' -ResourceGroupName ('AutomationStack{0}' -f $UDP) -PassThru $true)
     )
