@@ -21,8 +21,10 @@ function New-DeploymentContext {
 
     Write-Host 'Generating deployment passwords...'
     $CurrentContext.Set('StackAdminUsername', 'Stack')
+    $CurrentContext.Set('Username', '#{StackAdminUsername}')
     $CurrentContext.Set('StackAdminPassword', ($deploymentGuid.Substring(0,8) + (($deploymentGuid.Substring(24,12).GetEnumerator() | ? { [char]::IsLetter($_) } | % { [char]::ToUpper($_) }) -join '')))  
-    
+    $CurrentContext.Set('Password', '#{StackAdminPassword}')
+
     $CurrentContext.Set('SqlServerPassword', (New-ContextSafePassword))
 
     Add-Type -AssemblyName System.Web

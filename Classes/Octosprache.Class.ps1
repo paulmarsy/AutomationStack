@@ -23,6 +23,9 @@ class Octosprache {
     [string] Get([string]$Key) {
         return $this.VariableDictionary.Get($Key)
     }
+    [string] GetRaw([string]$Key) {
+        return $this.VariableDictionary.GetRaw($Key)
+    }
     [string] Eval([string]$Expression) {
         return $this.VariableDictionary.Evaluate($Expression)
     }

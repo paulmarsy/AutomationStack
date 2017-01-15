@@ -10,15 +10,6 @@
         },
         "objectId": {
             "type": "string"
-        },
-        "sqlAdminPassword": {
-            "type": "string"
-        },
-        "vmAdminPassword": {
-            "type": "string"
-        },
-        "servicePrincipalClientSecret": {
-            "type": "string"
         }
     },
     "variables": {
@@ -46,38 +37,7 @@
                 "name": "Standard",
                 "family": "A"
             }
-        },
-        "resources": [{
-            "type": "secrets",
-            "name": "SqlAdminPassword",
-            "apiVersion": "2015-06-01",
-            "properties": {
-                "value": "[parameters('sqlAdminPassword')]"
-            },
-            "dependsOn": [
-                "[concat('Microsoft.KeyVault/vaults/', variables('keyVaultName'))]"
-            ]
-        }, {
-            "type": "secrets",
-            "name": "VMAdminPassword",
-            "apiVersion": "2015-06-01",
-            "properties": {
-                "value": "[parameters('vmAdminPassword')]"
-            },
-            "dependsOn": [
-                "[concat('Microsoft.KeyVault/vaults/', variables('keyVaultName'))]"
-            ]
-        }, {
-            "type": "secrets",
-            "name": "ServicePrincipalClientSecret",
-            "apiVersion": "2015-06-01",
-            "properties": {
-                "value": "[parameters('servicePrincipalClientSecret')]"
-            },
-            "dependsOn": [
-                "[concat('Microsoft.KeyVault/vaults/', variables('keyVaultName'))]"
-            ]
-        }]
+        }
     }],
     "outputs": {
         "KeyVaultId": {

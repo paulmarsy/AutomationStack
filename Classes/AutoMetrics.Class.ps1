@@ -5,10 +5,12 @@ class AutoMetrics {
     hidden $Octosprache
 
     Start([string]$Key, [string]$Description) {
+        if ($this.Octosprache.Get('DeploymentComplete') -eq 'True') { return }
         $this.Octosprache.Set(('Timing[{0}].Start' -f $Key), (Get-Date))
         $this.Octosprache.Set(('Timing[{0}].Description' -f $Key), $Description)
     }
     Finish([string]$Key) {
+        if ($this.Octosprache.Get('DeploymentComplete') -eq 'True') { return }
         $this.Octosprache.Set(('Timing[{0}].End' -f $Key), (Get-Date))
     }
     [string] GetDescription([string]$Key) {
