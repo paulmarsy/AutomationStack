@@ -10,7 +10,7 @@
             "securityRules": [{
                 "name": "HTTP",
                 "properties": {
-                    "protocol": "TCP",
+                    "protocol": "Tcp",
                     "sourcePortRange": "*",
                     "destinationPortRange": "80",
                     "sourceAddressPrefix": "Internet",
@@ -22,7 +22,7 @@
             }, {
                 "name": "HTTPS",
                 "properties": {
-                    "protocol": "TCP",
+                    "protocol": "Tcp",
                     "sourcePortRange": "*",
                     "destinationPortRange": "443",
                     "sourceAddressPrefix": "Internet",
@@ -34,7 +34,7 @@
             }, {
                 "name": "RDP",
                 "properties": {
-                    "protocol": "TCP",
+                    "protocol": "Tcp",
                     "sourcePortRange": "*",
                     "destinationPortRange": "3389",
                     "sourceAddressPrefix": "Internet",
@@ -54,7 +54,7 @@
             "securityRules": [{
                 "name": "HTTP",
                 "properties": {
-                    "protocol": "TCP",
+                    "protocol": "Tcp",
                     "sourcePortRange": "*",
                     "destinationPortRange": "80",
                     "sourceAddressPrefix": "Internet",
@@ -66,7 +66,7 @@
             }, {
                 "name": "HTTPS",
                 "properties": {
-                    "protocol": "TCP",
+                    "protocol": "Tcp",
                     "sourcePortRange": "*",
                     "destinationPortRange": "443",
                     "sourceAddressPrefix": "Internet",
@@ -78,7 +78,7 @@
             }, {
                 "name": "OctopusTentacle",
                 "properties": {
-                    "protocol": "TCP",
+                    "protocol": "Tcp",
                     "sourcePortRange": "*",
                     "destinationPortRange": "10933",
                     "sourceAddressPrefix": "Internet",
@@ -90,12 +90,56 @@
             }, {
                 "name": "RDP",
                 "properties": {
-                    "protocol": "TCP",
+                    "protocol": "Tcp",
                     "sourcePortRange": "*",
                     "destinationPortRange": "3389",
                     "sourceAddressPrefix": "Internet",
                     "destinationAddressPrefix": "*",
                     "access": "Deny",
+                    "priority": 999,
+                    "direction": "Inbound"
+                }
+            }]
+        }
+    }, {
+        "type": "Microsoft.Network/networkSecurityGroups",
+        "name": "LinuxNSG",
+        "apiVersion": "2016-03-30",
+        "location": "[resourceGroup().location]",
+        "properties": {
+            "securityRules": [{
+                "name": "HTTP",
+                "properties": {
+                    "protocol": "Tcp",
+                    "sourcePortRange": "*",
+                    "destinationPortRange": "80",
+                    "sourceAddressPrefix": "Internet",
+                    "destinationAddressPrefix": "*",
+                    "access": "Allow",
+                    "priority": 100,
+                    "direction": "Inbound"
+                }
+            }, {
+                "name": "HTTPS",
+                "properties": {
+                    "protocol": "Tcp",
+                    "sourcePortRange": "*",
+                    "destinationPortRange": "443",
+                    "sourceAddressPrefix": "Internet",
+                    "destinationAddressPrefix": "*",
+                    "access": "Allow",
+                    "priority": 200,
+                    "direction": "Inbound"
+                }
+            }, {
+                "name": "SSH",
+                "properties": {
+                    "protocol": "Tcp",
+                    "sourcePortRange": "*",
+                    "destinationPortRange": "22",
+                    "sourceAddressPrefix": "Internet",
+                    "destinationAddressPrefix": "*",
+                    "access": "Allow",
                     "priority": 999,
                     "direction": "Inbound"
                 }

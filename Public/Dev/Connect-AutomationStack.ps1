@@ -17,6 +17,7 @@ function Connect-AutomationStack {
     Write-Host "got $ip"
 
     Write-Host "Setting credentials & connecting..."
+    Start-Sleep -Seconds 10 # It takes some time for NSG rule change to propogate
     Start-Process -FilePath "cmdkey.exe" -ArgumentList @("/generic:`"TERMSRV/$ip`"", "/user:`"$($CurrentContext.Get('StackAdminUsername'))`"", "/pass:`"$($CurrentContext.Get('StackAdminPassword'))`"") -WindowStyle Hidden -Wait
 
     $arguments = @(
