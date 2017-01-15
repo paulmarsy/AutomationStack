@@ -7,6 +7,7 @@ $lcm = Get-DscLocalConfigurationManager
 while ($lcm.LCMState -ne 'Idle') {
     "DSC Local Configuration Manager state is $($lcm.LCMState); waiting..." | Tee-Object -FilePath $logFile -Append
     Start-Sleep -Seconds 10
+    $lcm = Get-DscLocalConfigurationManager
 }
 "{0}Starting DSC{0}" -f ("-"*40) | Tee-Object -FilePath $logFile -Append
 Update-DscConfiguration -Verbose -Wait *>&1 | Tee-Object -FilePath $logFile -Append
