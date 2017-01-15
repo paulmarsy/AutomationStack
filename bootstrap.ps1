@@ -5,7 +5,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
-$padding = ' '*(([System.Console]::BufferWidth - 90) / 2)
+$padding = ' '*(($Host.UI.RawUI.BufferSize.Width - 90) / 2)
 Write-Host
 Write-Host -N $padding; Write-Host -B White -F Black '     ___         __                        __  _                _____ __             __   '
 Write-Host -N $padding; Write-Host -B White -F Black '    /   | __  __/ /_____  ____ ___  ____ _/ /_(_)___  ____     / ___// /_____ ______/ /__ '

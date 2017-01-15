@@ -10,14 +10,13 @@ function Connect-AutomationStack {
     }
     Write-Host -NoNewLine "Updating $nsg network security group... "
     Invoke-SharedScript Network 'Enable-RDPNSGRule' -InfraRg $CurrentContext.Get('InfraRg') -NSGName $nsg | Out-Null
-    Write-Host 'RDP rule enabled'
+    Write-Host 'RDP rule enabled, it may take a few seconds to propogate'
 
     Write-Host -NoNewLine "Finding $ipName address... "
     $ip = (Get-AzureRmPublicIpAddress -Name $ipName -ResourceGroupName $rg).IpAddress
     Write-Host "got $ip"
 
     Write-Host "Setting credentials & connecting..."
-    Start-Sleep -Seconds 10 # It takes some time for NSG rule change to propogate
     Start-Process -FilePath "cmdkey.exe" -ArgumentList @("/generic:`"TERMSRV/$ip`"", "/user:`"$($CurrentContext.Get('StackAdminUsername'))`"", "/pass:`"$($CurrentContext.Get('StackAdminPassword'))`"") -WindowStyle Hidden -Wait
 
     $arguments = @(
