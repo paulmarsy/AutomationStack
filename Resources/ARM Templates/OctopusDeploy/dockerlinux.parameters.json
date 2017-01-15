@@ -1,0 +1,25 @@
+  { // Additional variables: ProductName, ScriptFileName
+    "infraResourceGroup": {
+        "value": "#{InfraRg}"
+    },
+    "udp": {
+        "value": "#{UDP}"
+    },
+    "productName": {
+        "value": "#{ProductName}"
+    },
+    "vmAdminUsername": {
+        "value": "#{StackAdminUsername}"
+    },
+    "vmAdminPassword": {
+        "reference": {
+            "keyVault": {
+                "id": "#{KeyVaultResourceId}"
+            },
+            "secretName": "VMAdminPassword"
+        }
+    },
+    "scriptFileName": {
+        "value": "#{ScriptFileName}"
+    }
+}

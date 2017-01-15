@@ -3,66 +3,35 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "infraResourceGroup": {
-      "type": "string",
-      "metadata": {
-        "description": "Name of the resource group containing the core automationstack infrastructure"
-      }
+      "type": "string"
     },
     "udp": {
-      "type": "string",
-      "metadata": {
-        "description": "Unique Deployment Prefix to avoid name collisions"
-      }
+      "type": "string"
     },
     "productName": {
-      "type": "string",
-      "metadata": {
-        "description": "Name of the product that is running on this VM"
-      }
+      "type": "string"
     },
     "vmSize": {
       "type": "string",
-      "defaultValue": "Standard_DS4_v2",
-      "metadata": {
-        "description": "Size of the VM"
-      }
+      "defaultValue": "Standard_DS3_v2"
     },
     "vmAdminUsername": {
-      "type": "string",
-      "metadata": {
-        "description": "Username for the Virtual Machine."
-      }
+      "type": "string"
     },
     "vmAdminPassword": {
-      "type": "securestring",
-      "metadata": {
-        "description": "Password for the Virtual Machine."
-      }
+      "type": "securestring"
     },
     "registrationKey": {
-      "type": "securestring",
-      "metadata": {
-        "Description": "Registration key to use to onboard to the Azure Automation DSC pull/reporting server"
-      }
+      "type": "securestring"
     },
     "registrationUrl": {
-      "type": "string",
-      "metadata": {
-        "Description": "Registration url of the Azure Automation DSC pull/reporting server"
-      }
+      "type": "string"
     },
     "nodeConfigurationName": {
-      "type": "string",
-      "metadata": {
-        "Description": "The name of the node configuration, on the Azure Automation DSC pull server, that this node to pick up"
-      }
+      "type": "string"
     },
     "timestamp": {
-      "type": "string",
-      "defaultValue": "MM/dd/yyyy H:mm:ss tt",
-      "metadata": {
-        "description": "The current datetime, as a string, to force the request to go through ARM even if all fields are the same as last ARM deployment of this template; example in parameters file is in MM/dd/yyyy H:mm:ss tt format"
-      }
+      "type": "string"
     }
   },
   "variables": {
@@ -83,6 +52,14 @@
     },
     "kind": "Storage",
     "properties": {
+      "encryption": {
+        "keySource": "Microsoft.Storage",
+        "services": {
+          "blob": {
+            "enabled": true
+          }
+        }
+      }
     }
   }, {
     "apiVersion": "2015-06-15",

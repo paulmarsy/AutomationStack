@@ -1,12 +1,12 @@
 {
   "$type": "Octopus.Core.Model.Projects.Project, Octopus.Core",
-  "Id": "Projects-8",
+  "Id": "Projects-7",
   "Name": "Shutdown VMs",
   "Description": "",
   "Slug": "shutdown-vms",
   "IsDisabled": false,
-  "VariableSetId": "variableset-Projects-8",
-  "DeploymentProcessId": "deploymentprocess-Projects-8",
+  "VariableSetId": "variableset-Projects-7",
+  "DeploymentProcessId": "deploymentprocess-Projects-7",
   "ProjectGroupId": "ProjectGroups-21",
   "LifecycleId": "Lifecycles-24",
   "AutoCreateRelease": false,
@@ -32,6 +32,6 @@
     "TargetRoles": []
   },
   "AutoDeployReleaseOverrides": [],
-  "LogoAttachmentKey": "Projects-8",
+  "LogoAttachmentKey": "Projects-7",
   "LogoAttachmentMimeType": "image/jpeg"
 }

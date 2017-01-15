@@ -1,18 +1,20 @@
 {
   "$type": "Octopus.Core.Model.Projects.ActionTemplate, Octopus.Core",
   "Id": "ActionTemplates-4",
-  "Name": "ARM Template - Enable Encryption",
+  "Name": "ARM Template - App Server - Enable Encryption",
   "Description": null,
-  "Version": 1,
+  "Version": 3,
   "ActionType": "Octopus.AzureResourceGroup",
   "CommunityActionTemplateId": null,
   "Properties": {
     "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
     "Octopus.Action.Azure.ResourceGroupName": "#{ResourceGroupName}",
-    "Octopus.Action.Azure.TemplateSource": "Inline",
-    "Octopus.Action.Azure.ResourceGroupTemplateParameters": "{\"productName\":{\"value\":\"#{ProductName}\"},\"keyVaultResourceID\":{\"value\":\"#{KeyVaultResourceId}\"},\"keyVaultSecretUrl\":{\"value\":\"#{KeyVaultSecretUrl}\"}}",
+    "Octopus.Action.Azure.TemplateSource": "Package",
+    "Octopus.Action.Azure.ResourceGroupTemplateParameters": "OctopusDeploy\\appserver.enableencryption.parameters.json",
     "Octopus.Action.Azure.ResourceGroupDeploymentMode": "Incremental",
-    "Octopus.Action.Azure.ResourceGroupTemplate": "#{AzureResourceManager[appserver.enableencryption].Template | JsonEscape}"
+    "Octopus.Action.Azure.ResourceGroupTemplate": "appserver.enableencryption.json",
+    "Octopus.Action.Package.FeedId": "feeds-builtin",
+    "Octopus.Action.Package.PackageId": "ARMTemplates"
   },
   "Parameters": [
     {
@@ -31,16 +33,6 @@
       "Label": "",
       "HelpText": null,
       "DefaultValue": null,
-      "DisplaySettings": {
-        "Octopus.ControlType": "SingleLineText"
-      }
-    },
-    {
-      "Id": "1b9f6d7e-59be-44a4-9e72-cdb887bce545",
-      "Name": "KeyVaultResourceId",
-      "Label": "",
-      "HelpText": null,
-      "DefaultValue": "#{KeyVaultResourceId}",
       "DisplaySettings": {
         "Octopus.ControlType": "SingleLineText"
       }

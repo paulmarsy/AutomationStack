@@ -1,0 +1,11 @@
+  { // Additional variables: ProductName, KeyVaultSecretUrl
+    "productName": {
+        "value": "#{ProductName}"
+    },
+    "keyVaultResourceID": {
+        "value": "#{KeyVaultResourceId}"
+    },
+    "keyVaultSecretUrl": {
+        "value": "#{KeyVaultSecretUrl}"
+    }
+}

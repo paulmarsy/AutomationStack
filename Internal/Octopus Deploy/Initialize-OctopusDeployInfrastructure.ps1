@@ -16,9 +16,6 @@ function Initialize-OctopusDeployInfrastructure {
         timestamp = ([DateTimeOffset]::UtcNow.ToString("o"))
     }
 
-    Write-Host "Waiting for DSC Node Compliance..."
-    Invoke-SharedScript Automation 'Wait-NodeCompliance' -ResourceGroupName $CurrentContext.Get('InfraRg') -AutomationAccountName $CurrentContext.Get('AutomationAccountName') -NodeName $CurrentContext.Get('OctopusVMName')
-
     Write-Host 'Enabling KeyVault Disk Encryption for Octopus Deploy VM...'
     Start-ARMDeployment -ResourceGroupName $CurrentContext.Get('OctopusRg') -Template 'appserver.enableencryption' -Mode Incremental -TemplateParameters @{
         productName = 'Octopus'

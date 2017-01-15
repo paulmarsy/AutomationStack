@@ -3,40 +3,22 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "udp": {
-            "type": "string",
-            "metadata": {
-                "description": "Unique Deployment Prefix to avoid name collisions"
-            }
+            "type": "string"
         },
         "tenantId": {
-            "type": "string",
-            "metadata": {
-                "description": "Tenant Id for the subscription and use assigned access to the vault. Available from the Get-AzureRMSubscription PowerShell cmdlet"
-            }
+            "type": "string"
         },
         "objectId": {
-            "type": "string",
-            "metadata": {
-                "description": "Object Id of the AAD user or service principal that will have access to the vault. Available from the Get-AzureRMADUser or the Get-AzureRMADServicePrincipal cmdlets"
-            }
+            "type": "string"
         },
         "sqlAdminPassword": {
-            "type": "string",
-            "metadata": {
-                "description": "Value of the secret to store in the vault"
-            }
+            "type": "string"
         },
         "vmAdminPassword": {
-            "type": "string",
-            "metadata": {
-                "description": "Value of the secret to store in the vault"
-            }
+            "type": "string"
         },
         "servicePrincipalClientSecret": {
-            "type": "string",
-            "metadata": {
-                "description": "Value of the secret to store in the vault"
-            }
+            "type": "string"
         }
     },
     "variables": {

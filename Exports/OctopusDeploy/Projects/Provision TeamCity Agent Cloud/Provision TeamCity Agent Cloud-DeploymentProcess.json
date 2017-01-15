@@ -27,7 +27,7 @@
             "Octopus.Action.Package.FeedId": "feeds-builtin",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Storage",
             "Octopus.Action.Script.ScriptParameters": "-StorageAccountName #{StorageAccountName} -StorageAccountKey #{StorageAccountKey} -FileShareName #{FileShareName} -LocalPath #{LocalPath}",
-            "Octopus.Action.Template.Id": "ActionTemplates-24",
+            "Octopus.Action.Template.Id": "ActionTemplates-5",
             "Octopus.Action.Template.Version": "1",
             "StorageAccountName": "#{StackResourcesName}",
             "StorageAccountKey": "#{StackResourcesKey}",
@@ -95,7 +95,7 @@
             "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName #{ResourceGroupName} -Location #{Location}",
             "ResourceGroupName": "#{ResourceGroup}",
             "Location": "#{AzureRegion}",
-            "Octopus.Action.Template.Id": "ActionTemplates-5",
+            "Octopus.Action.Template.Id": "ActionTemplates-7",
             "Octopus.Action.Template.Version": "5"
           }
         }
@@ -169,7 +169,7 @@
             "Octopus.Action.Script.ScriptFileName": "Wait-NodeCompliance.ps1",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Automation",
             "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName #{ResourceGroupName} -AutomationAccountName #{AutomationAccountName} -NodeName #{NodeName}",
-            "Octopus.Action.Template.Id": "ActionTemplates-23",
+            "Octopus.Action.Template.Id": "ActionTemplates-9",
             "Octopus.Action.Template.Version": "1",
             "ResourceGroupName": "#{InfraRg}",
             "AutomationAccountName": "#{AutomationAccountName}",

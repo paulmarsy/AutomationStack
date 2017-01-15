@@ -1,9 +1,9 @@
 {
   "$type": "Octopus.Core.Model.Projects.ActionTemplate, Octopus.Core",
-  "Id": "ActionTemplates-24",
+  "Id": "ActionTemplates-5",
   "Name": "Copy-AzureFileShare",
   "Description": null,
-  "Version": 1,
+  "Version": 2,
   "ActionType": "Octopus.Script",
   "CommunityActionTemplateId": null,
   "Properties": {
@@ -12,7 +12,7 @@
     "Octopus.Action.Script.ScriptFileName": "Copy-AzureFileShare.ps1",
     "Octopus.Action.Package.FeedId": "feeds-builtin",
     "Octopus.Action.Package.PackageId": "AutomationStackScripts.Storage",
-    "Octopus.Action.Script.ScriptParameters": "-StorageAccountName #{StorageAccountName} -StorageAccountKey #{StorageAccountKey} -FileShareName #{FileShareName} -LocalPath #{LocalPath}"
+    "Octopus.Action.Script.ScriptParameters": "-StorageAccountName '#{StorageAccountName}' -StorageAccountKey '#{StorageAccountKey}' -FileShareName '#{FileShareName}' -LocalPath '#{LocalPath}'"
   },
   "Parameters": [
     {

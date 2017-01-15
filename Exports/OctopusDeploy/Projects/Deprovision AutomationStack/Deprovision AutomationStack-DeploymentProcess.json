@@ -27,7 +27,7 @@
             "Octopus.Action.Script.ScriptFileName": "Remove-ResourceGroup.ps1",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Resources",
             "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName #{ResourceGroupName} -PassThru #{PassThru}",
-            "Octopus.Action.Template.Id": "ActionTemplates-21",
+            "Octopus.Action.Template.Id": "ActionTemplates-8",
             "Octopus.Action.Template.Version": "0",
             "ResourceGroupName": "#{ResourceGroup}",
             "PassThru": "True"

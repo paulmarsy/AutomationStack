@@ -3,22 +3,13 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "productName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name of the product that is running on this VM"
-            }
+            "type": "string"
         },
         "keyVaultResourceID": {
-            "type": "string",
-            "metadata": {
-                "description": "KeyVault resource id. Ex: /subscriptions/9135e259-1f76-4dbd-a5c8-bc4fcdf3cf1c/resourceGroups/DiskEncryptionTest/providers/Microsoft.KeyVault/vaults/DiskEncryptionTestAus"
-            }
+            "type": "string"
         },
         "keyVaultSecretUrl": {
-            "type": "string",
-            "metadata": {
-                "description": "KeyVault secret Url. Ex: https://diskencryptiontestaus.vault.azure.net/secrets/BitLockerEncryptionSecretWithKek/e088818e865e48488cf363af16dea596"
-            }
+            "type": "string"
         }
     },
     "variables": {

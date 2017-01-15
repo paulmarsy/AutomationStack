@@ -1,9 +1,9 @@
 {
   "$type": "Octopus.Core.Model.Projects.ActionTemplate, Octopus.Core",
   "Id": "ActionTemplates-6",
-  "Name": "New AzureSQLDatabase",
+  "Name": "New-AzureSQLDatabase",
   "Description": null,
-  "Version": 1,
+  "Version": 3,
   "ActionType": "Octopus.AzurePowerShell",
   "CommunityActionTemplateId": null,
   "Properties": {
@@ -12,7 +12,7 @@
     "Octopus.Action.Script.ScriptSource": "Package",
     "Octopus.Action.Script.ScriptFileName": "New-AzureSQLDatabase.ps1",
     "Octopus.Action.Package.PackageId": "AutomationStackScripts.AzureSQL",
-    "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName #{ResourceGroupName} -ServerName #{ServerName} -DatabaseName #{DatabaseName}"
+    "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName '#{ResourceGroupName}' -ServerName '#{ServerName}' -DatabaseName '#{DatabaseName}'"
   },
   "Parameters": [
     {

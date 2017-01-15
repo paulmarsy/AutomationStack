@@ -11,22 +11,13 @@
             "defaultValue": "10.20.30.0/24"
         },
         "udp": {
-            "type": "string",
-            "metadata": {
-                "description": "Unique Deployment Prefix to avoid name collisions"
-            }
+            "type": "string"
         },
         "sqlAdminUsername": {
-            "type": "string",
-            "metadata": {
-                "description": "Admin username for the SQL Server."
-            }
+            "type": "string"
         },
         "sqlAdminPassword": {
-            "type": "securestring",
-            "metadata": {
-                "description": "Admin password for the SQL Server."
-            }
+            "type": "securestring"
         }
     },
     "variables": {

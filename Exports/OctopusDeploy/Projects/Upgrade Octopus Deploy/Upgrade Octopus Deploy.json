@@ -1,12 +1,12 @@
 {
   "$type": "Octopus.Core.Model.Projects.Project, Octopus.Core",
-  "Id": "Projects-9",
+  "Id": "Projects-8",
   "Name": "Upgrade Octopus Deploy",
   "Description": "",
   "Slug": "upgrade-octopus-deploy",
   "IsDisabled": false,
-  "VariableSetId": "variableset-Projects-9",
-  "DeploymentProcessId": "deploymentprocess-Projects-9",
+  "VariableSetId": "variableset-Projects-8",
+  "DeploymentProcessId": "deploymentprocess-Projects-8",
   "ProjectGroupId": "ProjectGroups-22",
   "LifecycleId": "Lifecycles-23",
   "AutoCreateRelease": false,
@@ -32,6 +32,6 @@
     "TargetRoles": []
   },
   "AutoDeployReleaseOverrides": [],
-  "LogoAttachmentKey": "Projects-9",
+  "LogoAttachmentKey": "Projects-8",
   "LogoAttachmentMimeType": "image/png"
 }

@@ -1,9 +1,9 @@
 {
   "$type": "Octopus.Core.Model.Projects.ActionTemplate, Octopus.Core",
-  "Id": "ActionTemplates-23",
+  "Id": "ActionTemplates-9",
   "Name": "Wait-NodeCompliance",
   "Description": null,
-  "Version": 1,
+  "Version": 2,
   "ActionType": "Octopus.AzurePowerShell",
   "CommunityActionTemplateId": null,
   "Properties": {
@@ -12,7 +12,7 @@
     "Octopus.Action.Script.ScriptSource": "Package",
     "Octopus.Action.Script.ScriptFileName": "Wait-NodeCompliance.ps1",
     "Octopus.Action.Package.PackageId": "AutomationStackScripts.Automation",
-    "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName #{ResourceGroupName} -AutomationAccountName #{AutomationAccountName} -NodeName #{NodeName}"
+    "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName '#{ResourceGroupName}' -AutomationAccountName '#{AutomationAccountName}' -NodeName '#{NodeName}'"
   },
   "Parameters": [
     {

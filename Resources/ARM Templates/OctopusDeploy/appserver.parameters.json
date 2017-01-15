@@ -1,0 +1,50 @@
+  { // Additional variables: ProductName, NodeConfigurationName
+      "infraResourceGroup": {
+          "value": "#{InfraRg}"
+      },
+      "udp": {
+          "value": "#{UDP}"
+      },
+      "productName": {
+          "value": "#{ProductName}"
+      },
+      "vmAdminUsername": {
+          "value": "#{StackAdminUsername}"
+      },
+      "vmAdminPassword": {
+          "reference": {
+              "keyVault": {
+                  "id": "#{KeyVaultResourceId}"
+              },
+              "secretName": "VMAdminPassword"
+          }
+      },
+      "clientID": {
+          "value": "#{ServicePrincipalClientId}"
+      },
+      "clientSecret": {
+          "reference": {
+              "keyVault": {
+                  "id": "#{KeyVaultResourceId}"
+              },
+              "secretName": "ServicePrincipalClientSecret"
+          }
+      },
+      "registrationKey": {
+          "reference": {
+              "keyVault": {
+                  "id": "#{KeyVaultResourceId}"
+              },
+              "secretName": "AutomationRegistrationKey"
+          }
+      },
+      "registrationUrl": {
+          "value": "#{AutomationRegistrationUrl}"
+      },
+      "nodeConfigurationName": {
+          "value": "#{NodeConfigurationName}"
+      },
+      "timestamp": {
+          "value": "#{Octopus.Deployment.CreatedUtc}"
+      }
+  }

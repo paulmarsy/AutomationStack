@@ -1,9 +1,9 @@
 {
   "$type": "Octopus.Core.Model.Projects.ActionTemplate, Octopus.Core",
-  "Id": "ActionTemplates-21",
+  "Id": "ActionTemplates-8",
   "Name": "Remove-ResourceGroup",
   "Description": null,
-  "Version": 0,
+  "Version": 1,
   "ActionType": "Octopus.AzurePowerShell",
   "CommunityActionTemplateId": null,
   "Properties": {
@@ -12,7 +12,7 @@
     "Octopus.Action.Script.ScriptSource": "Package",
     "Octopus.Action.Script.ScriptFileName": "Remove-ResourceGroup.ps1",
     "Octopus.Action.Package.PackageId": "AutomationStackScripts.Resources",
-    "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName #{ResourceGroupName} -PassThru #{PassThru}"
+    "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName '#{ResourceGroupName}' -PassThru '#{PassThru}'"
   },
   "Parameters": [
     {

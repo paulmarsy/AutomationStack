@@ -3,47 +3,26 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "infraResourceGroup": {
-      "type": "string",
-      "metadata": {
-        "description": "Name of the resource group containing the core automationstack infrastructure"
-      }
+      "type": "string"
     },
     "udp": {
-      "type": "string",
-      "metadata": {
-        "description": "Unique Deployment Prefix to avoid name collisions"
-      }
+      "type": "string"
     },
     "productName": {
-      "type": "string",
-      "metadata": {
-        "description": "Name of the product that is running on this VM"
-      }
+      "type": "string"
     },
     "vmSize": {
       "type": "string",
-      "defaultValue": "Standard_DS2_v2",
-      "metadata": {
-        "description": "Size of the VM"
-      }
+      "defaultValue": "Standard_DS2_v2"
     },
     "vmAdminUsername": {
-      "type": "string",
-      "metadata": {
-        "description": "Username for the Virtual Machine."
-      }
+      "type": "string"
     },
     "vmAdminPassword": {
-      "type": "securestring",
-      "metadata": {
-        "description": "Password for the Virtual Machine."
-      }
+      "type": "securestring"
     },
     "scriptFileName": {
-      "type": "string",
-      "metadata": {
-        "description": "the file name of the script configuring the VM"
-      }
+      "type": "string"
     }
   },
   "variables": {
@@ -76,18 +55,6 @@
       }
     }
   }, {
-    "apiVersion": "2015-05-01-preview",
-    "type": "Microsoft.Network/publicIPAddresses",
-    "name": "[variables('publicIPAddressName')]",
-    "location": "[resourceGroup().location]",
-    "properties": {
-      "publicIPAllocationMethod": "Static",
-      "idleTimeoutInMinutes": 30,
-      "dnsSettings": {
-        "domainNameLabel": "[toLower(concat(parameters('productName'),'-stack',parameters('udp')))]"
-      }
-    }
-  }, {
     "apiVersion": "2015-06-15",
     "type": "Microsoft.Network/networkInterfaces",
     "name": "[variables('nicName')]",
@@ -111,6 +78,18 @@
     }
   }, {
     "apiVersion": "2015-05-01-preview",
+    "type": "Microsoft.Network/publicIPAddresses",
+    "name": "[variables('publicIPAddressName')]",
+    "location": "[resourceGroup().location]",
+    "properties": {
+      "publicIPAllocationMethod": "Static",
+      "idleTimeoutInMinutes": 30,
+      "dnsSettings": {
+        "domainNameLabel": "[toLower(concat(parameters('productName'),'stack-',parameters('udp')))]"
+      }
+    }
+  }, {
+    "apiVersion": "2015-06-15",
     "type": "Microsoft.Compute/virtualMachines",
     "name": "[variables('vmName')]",
     "location": "[resourceGroup().location]",

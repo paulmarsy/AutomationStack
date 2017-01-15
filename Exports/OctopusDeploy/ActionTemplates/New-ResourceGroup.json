@@ -1,9 +1,9 @@
 {
   "$type": "Octopus.Core.Model.Projects.ActionTemplate, Octopus.Core",
-  "Id": "ActionTemplates-5",
+  "Id": "ActionTemplates-7",
   "Name": "New-ResourceGroup",
   "Description": "",
-  "Version": 5,
+  "Version": 6,
   "ActionType": "Octopus.AzurePowerShell",
   "CommunityActionTemplateId": null,
   "Properties": {
@@ -12,7 +12,7 @@
     "Octopus.Action.Package.FeedId": "feeds-builtin",
     "Octopus.Action.Script.ScriptFileName": "New-ResourceGroup.ps1",
     "Octopus.Action.Package.PackageId": "AutomationStackScripts.Resources",
-    "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName #{ResourceGroupName} -Location #{Location}"
+    "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName '#{ResourceGroupName}' -Location '#{Location}'"
   },
   "Parameters": [
     {

@@ -3,16 +3,18 @@
   "Id": "ActionTemplates-2",
   "Name": "ARM Template - App Server",
   "Description": null,
-  "Version": 5,
+  "Version": 6,
   "ActionType": "Octopus.AzureResourceGroup",
   "CommunityActionTemplateId": null,
   "Properties": {
     "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
-    "Octopus.Action.Azure.TemplateSource": "Inline",
-    "Octopus.Action.Azure.ResourceGroupTemplateParameters": "{\"infraResourceGroup\":{\"value\":\"#{InfraResourceGroup}\"},\"udp\":{\"value\":\"#{UDP}\"},\"productName\":{\"value\":\"#{ProductName}\"},\"vmSize\":{\"value\":\"#{VMSize}\"},\"vmAdminUsername\":{\"value\":\"#{VMAdminUsername}\"},\"vmAdminPassword\":{\"reference\":{\"keyVault\":{\"id\":\"#{KeyVaultResourceId}\"},\"secretName\":\"#{VMAdminPasswordSecretName}\"}},\"clientID\":{\"value\":\"#{ClientID}\"},\"clientSecret\":{\"reference\":{\"keyVault\":{\"id\":\"#{KeyVaultResourceId}\"},\"secretName\":\"#{ClientSecretSecretName}\"}},\"registrationKey\":{\"reference\":{\"keyVault\":{\"id\":\"#{KeyVaultResourceId}\"},\"secretName\":\"#{AutomationRegistrationKey}\"}},\"registrationUrl\":{\"value\":\"#{registrationUrl}\"},\"nodeConfigurationName\":{\"value\":\"#{nodeConfigurationName}\"},\"timestamp\":{\"value\":\"#{Octopus.Deployment.CreatedUtc}\"}}",
+    "Octopus.Action.Azure.TemplateSource": "Package",
+    "Octopus.Action.Azure.ResourceGroupTemplateParameters": "OctopusDeploy\\appserver.parameters.json",
     "Octopus.Action.Azure.ResourceGroupDeploymentMode": "Complete",
-    "Octopus.Action.Azure.ResourceGroupTemplate": "#{AzureResourceManager[appserver].Template | JsonEscape}",
-    "Octopus.Action.Azure.ResourceGroupName": "#{ResourceGroupName}"
+    "Octopus.Action.Azure.ResourceGroupTemplate": "appserver.json",
+    "Octopus.Action.Azure.ResourceGroupName": "#{ResourceGroupName}",
+    "Octopus.Action.Package.FeedId": "feeds-builtin",
+    "Octopus.Action.Package.PackageId": "ARMTemplates"
   },
   "Parameters": [
     {
@@ -21,26 +23,6 @@
       "Label": "",
       "HelpText": null,
       "DefaultValue": null,
-      "DisplaySettings": {
-        "Octopus.ControlType": "SingleLineText"
-      }
-    },
-    {
-      "Id": "e9d19610-f18a-4dae-a76d-e1167806e0bc",
-      "Name": "InfraResourceGroup",
-      "Label": "",
-      "HelpText": null,
-      "DefaultValue": "#{InfraRg}",
-      "DisplaySettings": {
-        "Octopus.ControlType": "SingleLineText"
-      }
-    },
-    {
-      "Id": "6caf4f9e-3736-4cf5-a737-74c2f0fad571",
-      "Name": "UDP",
-      "Label": "",
-      "HelpText": null,
-      "DefaultValue": "#{UDP}",
       "DisplaySettings": {
         "Octopus.ControlType": "SingleLineText"
       }
@@ -56,91 +38,11 @@
       }
     },
     {
-      "Id": "84ff9ae1-a9ad-42e3-bf90-4d9043108078",
-      "Name": "VMSize",
-      "Label": "",
-      "HelpText": null,
-      "DefaultValue": "Standard_DS4_v2",
-      "DisplaySettings": {
-        "Octopus.ControlType": "SingleLineText"
-      }
-    },
-    {
-      "Id": "e528a8a2-18b1-4a25-9f66-57a442dbe461",
-      "Name": "VMAdminUsername",
-      "Label": "",
-      "HelpText": null,
-      "DefaultValue": "#{StackAdminUsername}",
-      "DisplaySettings": {
-        "Octopus.ControlType": "SingleLineText"
-      }
-    },
-    {
-      "Id": "17c97b92-7f5b-4602-bff9-fc35c46b6c58",
-      "Name": "KeyVaultResourceId",
-      "Label": "",
-      "HelpText": null,
-      "DefaultValue": "#{KeyVaultResourceId}",
-      "DisplaySettings": {
-        "Octopus.ControlType": "SingleLineText"
-      }
-    },
-    {
-      "Id": "f3f50734-0be1-4531-8e22-d5aec6bd01dc",
-      "Name": "ClientSecretSecretName",
-      "Label": "",
-      "HelpText": null,
-      "DefaultValue": "ServicePrincipalClientSecret",
-      "DisplaySettings": {
-        "Octopus.ControlType": "SingleLineText"
-      }
-    },
-    {
-      "Id": "5f492d8a-2af1-494d-8031-40730379ce84",
-      "Name": "ClientID",
-      "Label": "",
-      "HelpText": null,
-      "DefaultValue": "#{ServicePrincipalClientId}",
-      "DisplaySettings": {
-        "Octopus.ControlType": "SingleLineText"
-      }
-    },
-    {
-      "Id": "d5d82497-35e3-4637-b296-4cf6f9323744",
-      "Name": "VMAdminPasswordSecretName",
-      "Label": "",
-      "HelpText": null,
-      "DefaultValue": "VMAdminPassword",
-      "DisplaySettings": {
-        "Octopus.ControlType": "SingleLineText"
-      }
-    },
-    {
-      "Id": "cbdc3e30-7d56-47ed-a69a-31b9bec77a2f",
-      "Name": "AutomationRegistrationKey",
-      "Label": "",
-      "HelpText": null,
-      "DefaultValue": "AutomationRegistrationKey",
-      "DisplaySettings": {
-        "Octopus.ControlType": "SingleLineText"
-      }
-    },
-    {
-      "Id": "d54a2bc6-7556-46e1-8247-6f5c4fd83f64",
-      "Name": "nodeConfigurationName",
+      "Id": "6b76b07c-8a29-4d9d-9596-e98001de2ac2",
+      "Name": "NodeConfigurationName",
       "Label": "",
       "HelpText": null,
       "DefaultValue": null,
-      "DisplaySettings": {
-        "Octopus.ControlType": "SingleLineText"
-      }
-    },
-    {
-      "Id": "b7b67c1b-cde5-4af3-b9c0-a9cb00002065",
-      "Name": "registrationUrl",
-      "Label": "",
-      "HelpText": null,
-      "DefaultValue": "#{AutomationRegistrationUrl}",
       "DisplaySettings": {
         "Octopus.ControlType": "SingleLineText"
       }
