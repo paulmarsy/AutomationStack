@@ -7,7 +7,7 @@ function Install-AzurePowerShellModule {
         Write-Host 'Installing Azure PowerShell Module...'
         Install-PackageProvider -Name NuGet -Force
         Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
-        Install-Module AzureRM
+        Install-Module AzureRM -Force
     }
     Write-Host
 }
