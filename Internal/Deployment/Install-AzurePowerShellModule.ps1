@@ -1,6 +1,6 @@
 function Install-AzurePowerShellModule {
     Write-Host
-    if (Get-InstalledModule -Name AzureRM -ErrorAction Ignore) {
+    if (Get-Module -ListAvailable -Name AzureRM) {
         Write-Host 'Importing Azure PowerShell Module...'
         Import-Module AzureRm -Force -Global
     } else {

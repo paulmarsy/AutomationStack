@@ -26,7 +26,7 @@ CompanyName = 'Paul Marston'
 Copyright = '(c) 2017 Paul Marston. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = 'DevOps automation. A reliable and repeatable build and deployment infrastructure, in one command.'
+Description = 'DevOps automation sandbox. A reliable and repeatable build and deployment infrastructure, in one command.'
 
 # Minimum version of the Windows PowerShell engine required by this module
 PowerShellVersion = '5.0'
@@ -67,11 +67,10 @@ PowerShellVersion = '5.0'
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = 'New-AutomationStack',
                     'Measure-AutomationStack',
+                    'Remove-AutomationStack',
                     
                     'Suspend-AutomationStack',
                     'Resume-AutomationStack',
-
-                    'Remove-AutomationStack',
 
                     'Publish-AutomationStackResources',
                     'Get-AutomationStackConfig',

@@ -85,10 +85,7 @@ function New-AutomationStack {
                         $ProgressText = 'Octopus Deploy - AutomationStack Packages' 
                         $Heading = 'Publishing AutomationStack Scripts & Templates to Octopus Deploy'
                         {
-                            Send-ToOctopusPackageFeed (Join-Path -Resolve $ResourcesPath 'ARM Templates') 'ARMTemplates'
-                            Get-ChildItem -Path $ScriptsPath -Directory | % {
-                                Send-ToOctopusPackageFeed ($_.FullName | Convert-Path) ('AutomationStackScripts.{0}' -f $_.BaseName)
-                            }
+                            Publish-StackPackages
                         }
                     }
                     9 {
