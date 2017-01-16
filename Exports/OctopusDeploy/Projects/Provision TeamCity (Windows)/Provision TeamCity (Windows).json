@@ -16,7 +16,13 @@
     "LibraryVariableSets-3",
     "LibraryVariableSets-6"
   ],
-  "UsedPackages": [],
+  "UsedPackages": [
+    "ARMTemplates",
+    "AutomationStackScripts.Automation",
+    "AutomationStackScripts.AzureSQL",
+    "AutomationStackScripts.Resources",
+    "AutomationStackScripts.Storage"
+  ],
   "DefaultToSkipIfAlreadyInstalled": false,
   "TenantedDeploymentMode": "Untenanted",
   "VersioningStrategy": {

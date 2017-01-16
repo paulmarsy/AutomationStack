@@ -1,6 +1,12 @@
 param($Path, $InfraRg, $AutomationAccountName, $OctopusServerUrl, $OctopusApiKey, $OctopusEnvironment, $OctopusRole, $OctopusDisplayName)
 
-Import-AzureRmAutomationDscConfiguration -ResourceGroupName $InfraRg -AutomationAccountName $AutomationAccountName -SourcePath $Path -Force -Published
+$result = & (Join-Path $PSScriptRoot 'Invoke-DSCComposition.ps1') -Path $Path
+$tempFile = Join-Path $env:TEMP (Split-Path $Path -Leaf)
+Set-Content -Path $tempFile -Value $result
+
+Import-AzureRmAutomationDscConfiguration -ResourceGroupName $InfraRg -AutomationAccountName $AutomationAccountName -SourcePath $tempFile -Force -Published
+
+Remove-Item -Path $tempFile -Force
 
 $compilationJob = Start-AzureRmAutomationDscCompilationJob -ResourceGroupName $InfraRg -AutomationAccountName $AutomationAccountName -ConfigurationName 'TeamCity' -Parameters @{
     OctopusServerUrl = $OctopusServerUrl

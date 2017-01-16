@@ -1,0 +1,33 @@
+{
+  "$type": "Octopus.Core.Model.Projects.Project, Octopus.Core",
+  "Id": "Projects-22",
+  "Name": "Enable Guest Login",
+  "Description": "",
+  "Slug": "enable-guest-login",
+  "IsDisabled": false,
+  "VariableSetId": "variableset-Projects-22",
+  "DeploymentProcessId": "deploymentprocess-Projects-22",
+  "ProjectGroupId": "ProjectGroups-22",
+  "LifecycleId": "Lifecycles-25",
+  "AutoCreateRelease": false,
+  "IncludedLibraryVariableSetIds": [],
+  "UsedPackages": [],
+  "DefaultToSkipIfAlreadyInstalled": false,
+  "TenantedDeploymentMode": "Untenanted",
+  "VersioningStrategy": {
+    "DonorPackageStepId": null,
+    "Template": "#{Octopus.Date.Year}.#{Octopus.Date.Month}.#{Octopus.Date.Day}+#{Octopus.Time.Hour}-#{Octopus.Time.Minute}"
+  },
+  "Templates": [],
+  "ReleaseCreationStrategy": {
+    "ReleaseCreationPackageStepId": "",
+    "ChannelId": null
+  },
+  "ProjectConnectivityPolicy": {
+    "SkipMachineBehavior": "None",
+    "TargetRoles": []
+  },
+  "AutoDeployReleaseOverrides": [],
+  "LogoAttachmentKey": "Projects-22",
+  "LogoAttachmentMimeType": "image/png"
+}

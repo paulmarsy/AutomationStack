@@ -1,6 +1,6 @@
 {
   "$type": "Octopus.Core.Model.Projects.ActionTemplate, Octopus.Core",
-  "Id": "ActionTemplates-22",
+  "Id": "ActionTemplates-6",
   "Name": "Import-OctopusConfig",
   "Description": null,
   "Version": 0,

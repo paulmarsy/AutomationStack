@@ -1,0 +1,1 @@
+& "${TeamCityBin}teamcity-server.bat" service install /runAsSystem

@@ -29,7 +29,7 @@
             "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName '#{ResourceGroupName}' -Location '#{Location}'",
             "ResourceGroupName": "#{ResourceGroup}",
             "Location": "#{AzureRegion}",
-            "Octopus.Action.Template.Id": "ActionTemplates-7",
+            "Octopus.Action.Template.Id": "ActionTemplates-9",
             "Octopus.Action.Template.Version": "6"
           }
         }
@@ -63,7 +63,7 @@
             "Octopus.Action.Azure.ResourceGroupTemplate": "dockerlinux.json",
             "Octopus.Action.Package.FeedId": "feeds-builtin",
             "Octopus.Action.Package.PackageId": "ARMTemplates",
-            "Octopus.Action.Template.Id": "ActionTemplates-3",
+            "Octopus.Action.Template.Id": "ActionTemplates-4",
             "Octopus.Action.Template.Version": "2",
             "ResourceGroupName": "#{ResourceGroup}",
             "ProductName": "TeamCity",

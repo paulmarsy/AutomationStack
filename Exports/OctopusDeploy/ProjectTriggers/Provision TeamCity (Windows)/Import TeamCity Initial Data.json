@@ -1,16 +1,17 @@
 {
   "$type": "Octopus.Core.Model.Projects.ProjectTrigger.ProjectTrigger, Octopus.Core",
   "Id": "ProjectTriggers-2",
-  "Name": "Deploy TeamCity Data",
+  "Name": "Import TeamCity Initial Data",
   "ProjectId": "Projects-5",
   "Filter": {
     "$type": "Octopus.Core.Model.Projects.ProjectTrigger.MachineFilter, Octopus.Core",
-    "EventGroups": [],
-    "EventCategories": [
-      "MachineAdded"
+    "EventGroups": [
+      "MachineAvailableForDeployment"
     ],
+    "EventCategories": [],
     "EnvironmentIds": [
-      "Environments-22"
+      "Environments-22",
+      "Environments-4"
     ],
     "Roles": [
       "TeamCity Server (Windows)"

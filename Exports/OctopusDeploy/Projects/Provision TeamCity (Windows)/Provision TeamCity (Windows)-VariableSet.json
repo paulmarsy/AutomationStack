@@ -2,12 +2,12 @@
   "$type": "Octopus.Core.Model.Variables.VariableSet, Octopus.Core",
   "Id": "variableset-Projects-5",
   "OwnerId": "Projects-5",
-  "Version": 10,
+  "Version": 12,
   "Variables": [
     {
       "Id": "f8698758-6c72-efb6-6c4f-805a3d0a3196",
       "Name": "DSCConfigPath",
-      "Value": "T:\\TeamCity.ps1"
+      "Value": "D:\\DSC"
     },
     {
       "Id": "3b310e5b-6804-4861-d100-fe369e729804",
@@ -53,6 +53,11 @@
       "Id": "c18dafd6-0665-e5c4-66f0-8c0061efa125",
       "Name": "TeamCityBin",
       "Value": "C:\\TeamCity\\bin\\"
+    },
+    {
+      "Id": "24fd9d5e-e55f-b05b-e519-e996ab46e01f",
+      "Name": "DSCConfigFile",
+      "Value": "#{DSCConfigPath}\\TeamCity.ps1"
     }
   ],
   "RelatedDocumentIds": []

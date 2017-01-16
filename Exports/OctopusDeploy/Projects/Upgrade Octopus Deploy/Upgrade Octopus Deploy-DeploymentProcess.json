@@ -63,7 +63,7 @@
             "Octopus.Action.Script.ScriptFileName": "Import-OctopusConfig.ps1",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Automation",
             "Octopus.Action.Script.ScriptParameters": "-Path '#{Path}' -InfraRg '#{InfraRg}' -AutomationAccountName '#{AutomationAccountName}' -VMName '#{VMName}' -ConnectionString '#{ConnectionString}' -HostHeader '#{HostHeader}' -OctopusVersionToInstall '#{OctopusVersionToInstall}'",
-            "Octopus.Action.Template.Id": "ActionTemplates-22",
+            "Octopus.Action.Template.Id": "ActionTemplates-6",
             "Octopus.Action.Template.Version": "0",
             "Path": "dsc",
             "VMName": "#{OctopusVMName}",

@@ -2,12 +2,12 @@
   "$type": "Octopus.Core.Model.Variables.VariableSet, Octopus.Core",
   "Id": "variableset-LibraryVariableSets-4",
   "OwnerId": "LibraryVariableSets-4",
-  "Version": 1,
+  "Version": 2,
   "Variables": [
     {
       "Id": "041ea8fc-6266-4a24-a604-5f54c1832923",
       "Name": "Octopus.Script.Module[Octopus Deploy Helper Functions]",
-      "Value": "function Get-OctopusVariable {\r\n    param(\r\n\t\t[Parameter(Position=1,Mandatory=$true)]$Name,\r\n\t\t[switch]$AllowNull\r\n\t)\r\n  \r\n    $variableValue = $OctopusParameters.GetEnumerator() | ? Key -like \"Octopus.Action[[]*[]].Output.${Name}\" | % Value\r\n    if ($variableValue -or $AllowNull) { return $variableValue }\r\n    else { throw \"Unable to find Octopus Variable $Name\" }\r\n}"
+      "Value": "function Get-OctopusVariable {\r\n    param(\r\n\t\t[Parameter(Position=1,Mandatory=$true)]$Name,\r\n\t\t[switch]$AllowNull\r\n\t)\r\n  \r\n    $variableValue = $OctopusParameters.GetEnumerator() | ? Key -like \"Octopus.Action[[]*[]].Output.${Name}\" | % Value\r\n    if ($variableValue -or $AllowNull) { return $variableValue }\r\n    else { throw \"Unable to find Octopus Variable $Name\" }\r\n}\r\n\r\nfunction Export-DebugInfo {\r\n    $debugFolder = Join-Path 'D:\\' ($pwd | Split-Path -Leaf)\r\n    Copy-Item $PWD $debugFolder -Recurse -Force\r\n    ls variable: | Out-File (Join-Path $debugFolder 'variable.txt')\r\n    ls env: | Out-File (Join-Path $debugFolder 'env.txt')\r\n    Write-Warning \"Debug Folder: $debugFolder\"\r\n}"
     }
   ],
   "RelatedDocumentIds": []

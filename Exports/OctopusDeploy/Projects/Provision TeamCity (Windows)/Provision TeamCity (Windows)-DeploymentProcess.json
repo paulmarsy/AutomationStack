@@ -2,7 +2,7 @@
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
   "Id": "deploymentprocess-Projects-5",
   "OwnerId": "Projects-5",
-  "Version": 122,
+  "Version": 133,
   "Steps": [
     {
       "Id": "f915e03f-4a5b-4fa2-aa88-d572523b1b3b",
@@ -27,7 +27,7 @@
             "Octopus.Action.Package.FeedId": "feeds-builtin",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Storage",
             "Octopus.Action.Script.ScriptParameters": "-StorageAccountName '#{StorageAccountName}' -StorageAccountKey '#{StorageAccountKey}' -FileShareName '#{FileShareName}' -LocalPath '#{LocalPath}'",
-            "LocalPath": "dsc",
+            "LocalPath": "#{DSCConfigPath}",
             "StorageAccountName": "#{StackResourcesName}",
             "StorageAccountKey": "#{StackResourcesKey}",
             "FileShareName": "dsc",
@@ -63,12 +63,12 @@
             "Octopus.Action.Script.ScriptFileName": "Import-TeamCityConfig.ps1",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Automation",
             "Octopus.Action.Script.ScriptParameters": "-Path '#{Path}' -InfraRg '#{InfraRg}' -AutomationAccountName '#{AutomationAccountName}' -OctopusServerUrl '#{OctopusHostHeader}' -OctopusApiKey '#{APIKey}' -OctopusEnvironment '#{OctopusEnvironment}' -OctopusRole '#{OctopusRole}' -OctopusDisplayName '#{OctopusDisplayName}'",
-            "Octopus.Action.Template.Id": "ActionTemplates-21",
-            "Octopus.Action.Template.Version": "0",
-            "Path": "dsc",
-            "OctopusEnvironment": "#{TeamCityRg}",
+            "Path": "#{DSCConfigFile}",
+            "OctopusEnvironment": "#{Octopus.Environment.Name}",
+            "OctopusRole": "TeamCity Server (Windows)",
             "OctopusDisplayName": "TeamCity Server",
-            "OctopusRole": "TeamCity Server (Windows)"
+            "Octopus.Action.Template.Id": "ActionTemplates-7",
+            "Octopus.Action.Template.Version": "2"
           }
         }
       ],
@@ -102,7 +102,7 @@
             "ResourceGroupName": "#{InfraRg}",
             "ServerName": "#{SqlServerName}",
             "DatabaseName": "TeamCity",
-            "Octopus.Action.Template.Id": "ActionTemplates-6",
+            "Octopus.Action.Template.Id": "ActionTemplates-8",
             "Octopus.Action.Template.Version": "3"
           }
         }
@@ -136,7 +136,7 @@
             "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName '#{ResourceGroupName}' -Location '#{Location}'",
             "ResourceGroupName": "#{ResourceGroup}",
             "Location": "#{AzureRegion}",
-            "Octopus.Action.Template.Id": "ActionTemplates-7",
+            "Octopus.Action.Template.Id": "ActionTemplates-9",
             "Octopus.Action.Template.Version": "6"
           }
         }
@@ -172,7 +172,7 @@
             "Octopus.Action.Package.PackageId": "ARMTemplates",
             "ResourceGroupName": "#{ResourceGroup}",
             "ProductName": "#{ProductName}",
-            "Octopus.Action.Template.Id": "ActionTemplates-2",
+            "Octopus.Action.Template.Id": "ActionTemplates-3",
             "Octopus.Action.Template.Version": "6",
             "NodeConfigurationName": "#{DSCConfigurationName}.#{DSCNodeName}"
           }
@@ -208,7 +208,7 @@
             "ResourceGroupName": "#{InfraRg}",
             "AutomationAccountName": "#{AutomationAccountName}",
             "NodeName": "#{VMName}",
-            "Octopus.Action.Template.Id": "ActionTemplates-9",
+            "Octopus.Action.Template.Id": "ActionTemplates-11",
             "Octopus.Action.Template.Version": "2"
           }
         }
@@ -245,7 +245,7 @@
             "ResourceGroupName": "#{ResourceGroup}",
             "ProductName": "#{ProductName}",
             "KeyVaultSecretUrl": "#{Octopus.Action[Provision Windows Server 2016 VM].Output.AzureRMOutputs[keyVaultSecretUrl]}",
-            "Octopus.Action.Template.Id": "ActionTemplates-4",
+            "Octopus.Action.Template.Id": "ActionTemplates-2",
             "Octopus.Action.Template.Version": "3"
           }
         }
@@ -263,7 +263,7 @@
       "Actions": [
         {
           "Id": "c8022bc0-bcc1-4cb1-b2ee-01beeb54a415",
-          "Name": "Reset to known state",
+          "Name": "Reset state",
           "ActionType": "Octopus.Script",
           "IsDisabled": false,
           "Environments": [],
@@ -279,7 +279,7 @@
         },
         {
           "Id": "7f96fe71-7694-4b58-b379-c71d25d5c781",
-          "Name": "Retrieve TeamCity Export",
+          "Name": "Retrieve Export",
           "ActionType": "Octopus.Script",
           "IsDisabled": false,
           "Environments": [],
@@ -335,7 +335,7 @@
         },
         {
           "Id": "1136ddc9-bbf3-4660-94d5-441eaf5d8aad",
-          "Name": "Copy TeamCity Config",
+          "Name": "Restore Data Folder",
           "ActionType": "Octopus.Script",
           "IsDisabled": false,
           "Environments": [],
@@ -351,7 +351,7 @@
         },
         {
           "Id": "3c132e0f-539f-48db-8936-41fcdb56f6f6",
-          "Name": "Install & Start TeamCity Service",
+          "Name": "Install Service",
           "ActionType": "Octopus.Script",
           "IsDisabled": false,
           "Environments": [],
@@ -362,7 +362,23 @@
             "Octopus.Action.RunOnServer": "false",
             "Octopus.Action.Script.Syntax": "PowerShell",
             "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "& \"${TeamCityBin}teamcity-server.bat\" service install /runAsSystem\nStart-Service TeamCity"
+            "Octopus.Action.Script.ScriptBody": "& \"${TeamCityBin}teamcity-server.bat\" service install /runAsSystem"
+          }
+        },
+        {
+          "Id": "8c54309b-aa19-4636-9495-57419df1517c",
+          "Name": "Start TeamCity",
+          "ActionType": "Octopus.Script",
+          "IsDisabled": false,
+          "Environments": [],
+          "ExcludedEnvironments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.RunOnServer": "false",
+            "Octopus.Action.Script.Syntax": "PowerShell",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "Start-Service TeamCity"
           }
         }
       ],

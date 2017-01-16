@@ -63,7 +63,7 @@
             "Octopus.Action.Script.ScriptFileName": "Import-TeamCityConfig.ps1",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Automation",
             "Octopus.Action.Script.ScriptParameters": "-Path '#{Path}' -InfraRg '#{InfraRg}' -AutomationAccountName '#{AutomationAccountName}' -OctopusServerUrl '#{OctopusHostHeader}' -OctopusApiKey '#{APIKey}' -OctopusEnvironment '#{OctopusEnvironment}' -OctopusRole '#{OctopusRole}' -OctopusDisplayName '#{OctopusDisplayName}'",
-            "Octopus.Action.Template.Id": "ActionTemplates-21",
+            "Octopus.Action.Template.Id": "ActionTemplates-7",
             "Octopus.Action.Template.Version": "0",
             "Path": "dsc",
             "OctopusDisplayName": "TeamCity Server",
@@ -101,7 +101,7 @@
             "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName '#{ResourceGroupName}' -Location '#{Location}'",
             "ResourceGroupName": "#{ResourceGroup}",
             "Location": "#{AzureRegion}",
-            "Octopus.Action.Template.Id": "ActionTemplates-7",
+            "Octopus.Action.Template.Id": "ActionTemplates-9",
             "Octopus.Action.Template.Version": "6"
           }
         }
@@ -173,7 +173,7 @@
             "ResourceGroupName": "#{InfraRg}",
             "AutomationAccountName": "#{AutomationAccountName}",
             "NodeName": "#{VMName}",
-            "Octopus.Action.Template.Id": "ActionTemplates-9",
+            "Octopus.Action.Template.Id": "ActionTemplates-11",
             "Octopus.Action.Template.Version": "2"
           }
         }
@@ -316,7 +316,7 @@
             "Octopus.Action.Script.ScriptFileName": "Remove-ResourceGroup.ps1",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Resources",
             "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName '#{ResourceGroupName}' -PassThru '#{PassThru}'",
-            "Octopus.Action.Template.Id": "ActionTemplates-8",
+            "Octopus.Action.Template.Id": "ActionTemplates-10",
             "Octopus.Action.Template.Version": "1",
             "ResourceGroupName": "#{ResourceGroup}"
           }

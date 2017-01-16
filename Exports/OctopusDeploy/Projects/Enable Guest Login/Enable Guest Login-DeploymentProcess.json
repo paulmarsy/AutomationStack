@@ -1,0 +1,37 @@
+{
+  "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
+  "Id": "deploymentprocess-Projects-22",
+  "OwnerId": "Projects-22",
+  "Version": 2,
+  "Steps": [
+    {
+      "Id": "d24bd82c-a7ce-4b11-a5c6-975b7aaae2bc",
+      "Name": "Enable Guest Login Switch",
+      "Condition": "Success",
+      "StartTrigger": "StartAfterPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "0ed4dea0-666e-41dd-aa24-6d5c429e04f6",
+          "Name": "Enable Guest Login Switch",
+          "ActionType": "Octopus.Script",
+          "IsDisabled": false,
+          "Environments": [],
+          "ExcludedEnvironments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.RunOnServer": "true",
+            "Octopus.Action.Script.Syntax": "PowerShell",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "$octopusServerExe = Join-Path $env:ProgramFiles 'Octopus Deploy\\Octopus\\Octopus.Server.exe'\n& $octopusServerExe configure --console --guestloginenabled=True"
+          }
+        }
+      ],
+      "Properties": {
+        "Octopus.Action.TargetRoles": "Octopus Deploy Server"
+      }
+    }
+  ],
+  "RelatedDocumentIds": []
+}

@@ -1,9 +1,9 @@
 {
   "$type": "Octopus.Core.Model.Projects.ActionTemplate, Octopus.Core",
-  "Id": "ActionTemplates-21",
+  "Id": "ActionTemplates-7",
   "Name": "Import-TeamCityConfig",
   "Description": null,
-  "Version": 0,
+  "Version": 2,
   "ActionType": "Octopus.AzurePowerShell",
   "CommunityActionTemplateId": null,
   "Properties": {

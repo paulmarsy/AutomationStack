@@ -1,6 +1,6 @@
 {
   "$type": "Octopus.Core.Model.Projects.ActionTemplate, Octopus.Core",
-  "Id": "ActionTemplates-8",
+  "Id": "ActionTemplates-10",
   "Name": "Remove-ResourceGroup",
   "Description": null,
   "Version": 1,
