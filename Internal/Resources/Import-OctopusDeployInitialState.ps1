@@ -2,7 +2,9 @@ function Import-OctopusDeployInitialState {
     Write-Host 'Initialising Azure VM Custom Script Extension...'
 
     try {
-        Start-Process -NoNewWindow -Wait -FilePath 'net.exe' -ArgumentList @('use','O:',"\\$($CurrentContext.Get('StackResourcesName')).file.core.windows.net\octopusdeploy","$($CurrentContext.Get('StackResourcesKey'))","/USER:$($CurrentContext.Get('StackResourcesName'))") | Out-Host
+        $credential = New-Object System.Management.Automation.PSCredential ($CurrentContext.Get('StackResourcesName'), (ConvertTo-SecureString $CurrentContext.Get('StackResourcesKey') -AsPlainText -Force))
+        New-PSDrive -Name O -PSProvider FileSystem -Root "\\$($CurrentContext.Get('StackResourcesName')).file.core.windows.net\octopusdeploy"  -Credential $credential
+        
         $logFile = 'O:\CustomScript.log'        
         $logPosition = 0
         if (Test-Path $logFile) { Remove-Item $logFile -Force }
@@ -30,6 +32,6 @@ function Import-OctopusDeployInitialState {
         Remove-Item -Path $logFile -Force
     }
     finally {
-        & net use O: /DELETE /Y
+        Remove-PSDrive -Name O -Force
     }
 }

@@ -1,12 +1,14 @@
 param($StorageAccountName, $StorageAccountKey, $FileShareName, $LocalPath)
 
 try {
-    & net use F: \\$StorageAccountName.file.core.windows.net\$FileShareName /persistent:no /u:$StorageAccountName $StorageAccountKey
+    $credential = New-Object System.Management.Automation.PSCredential $StorageAccountName, (ConvertTo-SecureString $StorageAccountKey -AsPlainText -Force))
+    New-PSDrive -Name F -PSProvider FileSystem -Root "\\$($StorageAccountName).file.core.windows.net\$($FileShareName)"  -Credential $credential
+
     if (!(Test-Path $LocalPath)) {
          New-Item -ItemType Directory -Path $LocalPath | Out-Null
     }
     Copy-Item -Path 'F:\*' -Destination $LocalPath -Recurse -Force
 }
 finally {
-    & net use F: /DELETE /Y
+    Remove-PSDrive -Name F -Force
 }

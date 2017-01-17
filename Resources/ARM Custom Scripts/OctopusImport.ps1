@@ -9,7 +9,8 @@ filter Write-Log {
 }
 
 try {
-    & net use O: \\#{StackResourcesName}.file.core.windows.net\octopusdeploy /u:#{StackResourcesName} #{StackResourcesKey} *>&1 | Write-Log
+    $credential = New-Object System.Management.Automation.PSCredential '#{StackResourcesName}', (ConvertTo-SecureString '#{StackResourcesKey}' -AsPlainText -Force))
+    New-PSDrive -Name O -PSProvider FileSystem -Root "\\#{StackResourcesName}.file.core.windows.net\octopusdeploy"  -Credential $credential
 
     (Get-Date).ToString() | Write-Log
 
@@ -29,5 +30,5 @@ try {
     & "C:\Program Files\Octopus Deploy\Octopus\Octopus.Migrator.exe" import --console --directory="O:\" --password=#{StackAdminPassword} --overwrite *>&1 | Write-Log
 }
 finally {
-    & net use O: /DELETE *>&1 | Write-Log
+    Remove-PSDrive -Name O -Force
 }

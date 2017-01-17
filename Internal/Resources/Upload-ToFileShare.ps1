@@ -20,7 +20,7 @@ function Upload-ToFileShare {
     $sourcePath = Get-Item -Path $Source | % FullName
     Get-ChildItem -Path $sourcePath -Recurse -Directory | % {
         $dest = $CurrentContext.Eval($_.FullName.Substring($sourcePath.Length+1).Replace('\','/'))
-        [Console]::WriteLine("  -`t`tCreate Directory`t$dest")
+        [void][System.Console]::Out.WriteLineAsync("  -`t`tCreate Directory`t$dest")
         New-AzureStorageDirectory -Share $fileShare -Path $dest -ConcurrentTaskCount $ConcurrentNetTasks -ErrorAction Ignore | Out-Null
     }
     $items = Get-ChildItem -Path $sourcePath -Recurse -File
@@ -47,13 +47,13 @@ function Upload-ToFileShare {
         })
         $ps = [powershell]::Create().AddScript({
             param($batch, $fileShare, $runspaceId, $ConcurrentNetTasks)   
-            $batch | % {
-                if ($_.Tokenised) {
-                    [Console]::WriteLine("  $runspaceId`t`tTokenise & Upload`t$(Split-Path -Leaf $_.Dest)")
+            foreach ($file in $batch) {
+                if ($file.Tokenised) {
+                    [void][System.Console]::Out.WriteLineAsync("  $runspaceId`t`tTokenise & Upload`t$(Split-Path -Leaf $file.Dest)")
                 } else {
-                    [Console]::WriteLine("  $runspaceId`t`tUpload`t`t`t$(Split-Path -Leaf $_.Dest)")
+                    [void][System.Console]::Out.WriteLineAsync("  $runspaceId`t`tUpload`t`t`t$(Split-Path -Leaf $file.Dest)")
                 }
-                Set-AzureStorageFileContent -Share $fileShare -Source $_.Source -Path $_.Dest -Force -ConcurrentTaskCount $ConcurrentNetTasks -ErrorAction Stop
+                Set-AzureStorageFileContent -Share $fileShare -Source $file.Source -Path $file.Dest -Force -ConcurrentTaskCount $ConcurrentNetTasks -ErrorAction Stop
             }
         }).AddArgument($batch).AddArgument($fileShare).AddArgument($runspaceId).AddArgument($ConcurrentNetTasks)
         $jobs.Add(@{
