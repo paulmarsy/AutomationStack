@@ -1,13 +1,13 @@
 function Install-AzureReqs {
     param([switch]$Basic)
 
-    $firstInstall = $true
+    $script:firstInstall = $true
      function Assert-AzureModule {
         param($Module)
         if (Get-Module -ListAvailable -Name $Module) {
             return
         }
-        if ($firstInstall) {
+        if ($script:firstInstall) {
              Write-Host -NoNewLine 'Checking for Admin priviledges... '
              $currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
              if ($currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
@@ -22,12 +22,12 @@ function Install-AzureReqs {
              }
 
             Write-Host 'Configuring PowerShell 5 Package Management...'
-            Install-PackageProvider -Name NuGet -Force
-            Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
-            $firstInstall = $false
+            Install-PackageProvider -Name NuGet -Force | Out-Null
+            Set-PSRepository -Name PSGallery -InstallationPolicy Trusted | Out-Null
+            $script:firstInstall = $false
          }
         Write-Host -NoNewLine "Installing $Module Module... "
-        Install-Module $Module -Force
+        Install-Module $Module -Force  -WarningAction Ignore
         Write-Host -ForegroundColor Green 'imported'
      }
 
