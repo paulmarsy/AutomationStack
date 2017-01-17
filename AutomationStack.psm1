@@ -1,12 +1,8 @@
 param(
-    [string]$UDP,
-    [bool]$Debug = $false
+    [string]$UDP
 )
 
 $ErrorActionPreference = 'Stop'
-
-$script:DebugMode = $Debug
-if ($script:DebugMode) { Write-Warning 'Debug mode enabled' }
 
 $script:ExportsPath = Join-Path -Resolve $PSScriptRoot 'Exports' | Convert-Path
 $script:ResourcesPath = Join-Path -Resolve $PSScriptRoot 'Resources' | Convert-Path
@@ -20,12 +16,12 @@ $TempPath = Join-Path $PSScriptRoot 'Temp'
 if (!(Test-Path $TempPath)) { New-Item -ItemType Directory -Path $TempPath | Out-Null }
 $script:TempPath = Get-Item -Path $TempPath | % FullName
 
-$script:ConcurrentTaskCount = 8
-$script:ModuleRootPath = $PSScriptRoot
+$script:ConcurrentNetTasks = 20
 
 . (Join-Path $PSScriptRoot 'Classes\Loader.ps1')
 Get-ChildItem -File -Filter *.ps1 -Path (Join-Path $PSScriptRoot 'Internal') -Recurse | % { . "$($_.FullName)" }
 Get-ChildItem -File -Filter *.ps1 -Path (Join-Path $PSScriptRoot 'Public') -Recurse | % { . "$($_.FullName)"; Export-ModuleMember -Function $_.BaseName }
+Set-ServicePointManager
 
 if ($UDP) {
     $script:CurrentContext = New-Object Octosprache $UDP

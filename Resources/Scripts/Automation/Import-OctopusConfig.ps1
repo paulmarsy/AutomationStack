@@ -8,10 +8,10 @@ $compilationJob = Start-AzureRmAutomationDscCompilationJob -ResourceGroupName $I
     HostHeader = $HostHeader
     OctopusVersionToInstall = $OctopusVersionToInstall
 }
-while ($null -eq $compilationJob.EndTime -and $null -eq $CompilationJob.Exception)
-{
-    Write-Host 'Waiting for compilation...'
-    Start-Sleep -Seconds 30
-    $compilationJob = $compilationJob | Get-AzureRmAutomationDscCompilationJob
-}
-$compilationJob | Get-AzureRmAutomationDscCompilationJobOutput -Stream Any
+#while ($null -eq $compilationJob.EndTime -and $null -eq $CompilationJob.Exception)
+#{
+#    Write-Host 'Waiting for compilation...'
+#    Start-Sleep -Seconds 30
+#    $compilationJob = $compilationJob | Get-AzureRmAutomationDscCompilationJob
+#}
+#$compilationJob | Get-AzureRmAutomationDscCompilationJobOutput -Stream Any

@@ -27,6 +27,6 @@ function Upload-ToBlobContainer {
             $sourceFile = $_.FullName
             [Console]::WriteLine("  -`t`tUpload`t`t`t$($_.Name)")
         }
-        $storageContainer | Set-AzureStorageBlobContent -File $sourceFile -Blob $_.Name -Force -ConcurrentTaskCount $ConcurrentTaskCount | Out-Null
+        $storageContainer | Set-AzureStorageBlobContent -File $sourceFile -Blob $_.Name -Force -ConcurrentTaskCount $ConcurrentNetTasks | Out-Null
     }
 }

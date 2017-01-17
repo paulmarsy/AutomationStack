@@ -1,6 +1,7 @@
 function New-AutomationStack {
-        param(
+    param(
         [Parameter()][switch]$WhatIf,
+        [Parameter(DontShow)][switch]$SkipChecks,
         [Parameter(DontShow)][int]$TotalStages = 9,
         [Parameter(DontShow)][int[]]$Stages = (1..$TotalStages)
     )
@@ -16,8 +17,11 @@ function New-AutomationStack {
         if (!$AzureRegion) {
             $AzureRegion = 'West Europe'
         }
-        Install-AzurePowerShellModule
-        Connect-AzureRm
+        if (!$SkipChecks) {
+            Install-AzureReqs -Basic
+            Connect-AzureRm
+            Install-AzureReqs
+        }
     }
     process{
         try {

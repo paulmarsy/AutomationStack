@@ -3,9 +3,9 @@ if (!(Test-Path 'C:\CustomScriptLogs')) { New-Item -ItemType Directory -Path 'C:
 $localLogFile = 'C:\CustomScriptLogs\{0}.log' -f ([datetime]::UtcNow.tostring('o').Replace(':','.').Substring(0,19))
 $remoteLogFile = 'O:\CustomScript.log'
 filter Write-Log {
-    $entry = '[{0}]{1}: {2}' -f $env:COMPUTERNAME, (Get-Date).ToShortTimeString(), ($_ | Out-String)
-    Add-Content -Path $localLogFile -Value $entry
-    Add-Content -Path $remoteLogFile -Value $entry
+    $entry = '[{0}] {1}: {2}' -f $env:COMPUTERNAME, (Get-Date).ToShortTimeString(), ($_ | Out-String)
+    Add-Content -Path $localLogFile -Value $entry -NoNewline
+    Add-Content -Path $remoteLogFile -Value $entry -NoNewline
 }
 
 try {
@@ -13,7 +13,7 @@ try {
 
     (Get-Date).ToString() | Write-Log
 
-    "{0}Waiting for Local Configuration Manager{0}" -f ("-"*40) | Write-Log
+    "{0}[ Waiting for Local Configuration Manager ]{0}" -f ("-"*28) | Write-Log
     $lcm = Get-DscLocalConfigurationManager
     while ($lcm.LCMState -ne 'Idle') {
         "DSC Local Configuration Manager state is $($lcm.LCMState); waiting..." | Write-Log
@@ -21,11 +21,11 @@ try {
         $lcm = Get-DscLocalConfigurationManager
     }
 
-    "{0}Starting DSC{0}" -f ("-"*40) | Write-Log
+    "{0}[ Starting DSC ]{0}" -f ("-"*42) | Write-Log
     Update-DscConfiguration -Verbose -Wait *>&1 | Write-Log
     Start-DscConfiguration -UseExisting -Wait -Verbose *>&1 | Write-Log
 
-    "{0}Starting Octopus Import{0}" -f ("-"*40) | Write-Log
+    "{0}[ Starting Octopus Import ]{0}" -f ("-"*36) | Write-Log
     & "C:\Program Files\Octopus Deploy\Octopus\Octopus.Migrator.exe" import --console --directory="O:\" --password=#{StackAdminPassword} --overwrite *>&1 | Write-Log
 }
 finally {
