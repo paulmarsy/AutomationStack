@@ -69,6 +69,7 @@ FunctionsToExport = 'New-AutomationStack',
                     'Measure-AutomationStack',
                     'Remove-AutomationStack',
                     
+                    'Find-AutomationStackDeployment',
                     'Suspend-AutomationStack',
                     'Resume-AutomationStack',
 
