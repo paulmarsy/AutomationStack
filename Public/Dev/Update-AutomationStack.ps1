@@ -1,10 +1,10 @@
 function Update-AutomationStack {
     param(
         $GitHubAccount = 'paulmarsy',
-        $Path = (Join-Path $PSScriptRoot '..\' | Get-Item | % FullName)
+        $Path = (Join-Path $PSScriptRoot '..\..\' | Get-Item | % FullName)
     )
 
-    $gitRepoPath = Join-Path $PSScriptRoot '..\.git'
+    $gitRepoPath = Join-Path $Path '.git'
     if (Test-Path $gitRepoPath) {
         Write-Warning 'Git repository found, update using Git functionality'
     } else {
