@@ -11,3 +11,9 @@ $armTemplate = [System.IO.Path]::GetTempFileName()
 
 Save-AzureRmVMImage -ResourceGroupName $ResourceGroupName -Name $VMName -DestinationContainerName 'images' -VHDNamePrefix $VMName -Overwrite -Path $armTemplate | Out-Host
 $savedVmImage = (Get-Content -Path $armTemplate | ConvertFrom-Json).resources.properties.storageprofile.osdisk.image.uri
+
+Write-Output @{
+    VHDUri = $savedVmImage
+    TemplateFile = $armTemplate
+    Template = (Get-Content -Path $armTemplate -Raw)
+}

@@ -5,6 +5,7 @@ function Initialize-OctopusDeployInfrastructure {
     Write-Host
     Write-Host 'Deploying Octopus Deploy ARM Infrastructure...'
     $CurrentContext.Set('OctopusRg', 'OctopusStack#{UDP}')
+    $CurrentContext.Set('OctopusVMName', 'OctopusVM')
     $octopusDeploy = Start-ARMDeployment -ResourceGroupName $CurrentContext.Get('OctopusRg') -Template 'appserver' -Mode Complete -TemplateParameters @{
         udp = $CurrentContext.Get('UDP')
         infraResourceGroup = $CurrentContext.Get('InfraRg')
