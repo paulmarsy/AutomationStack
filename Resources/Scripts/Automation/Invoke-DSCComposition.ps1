@@ -12,4 +12,13 @@ function Format-DSCFile {
         else { $_ }
     }
 }
-Format-DSCFile -FilePath $Path
+
+$resolvedConfiguration = Format-DSCFile -FilePath $Path
+
+$tempFile = Join-Path $env:TEMP (Split-Path $Path -Leaf)
+if (Test-Path $tempFile) {
+    Remove-Item $tempFile -Force
+}
+Set-Content -Path $tempFile -Value $result
+
+return $tempFile

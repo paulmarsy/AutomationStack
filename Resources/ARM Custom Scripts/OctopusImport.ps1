@@ -1,7 +1,9 @@
+param($LogFile)
+
 if (!(Test-Path 'C:\CustomScriptLogs')) { New-Item -ItemType Directory -Path 'C:\CustomScriptLogs' | Out-Null }
 
-$localLogFile = 'C:\CustomScriptLogs\{0}.log' -f ([datetime]::UtcNow.tostring('o').Replace(':','.').Substring(0,19))
-$remoteLogFile = 'O:\CustomScript.log'
+$script:localLogFile = "C:\CustomScriptLogs\$LogFile"
+$script:remoteLogFile = "O:\$LogFile"
 filter Write-Log {
     $entry = '[{0}] {1}: {2}' -f $env:COMPUTERNAME, (Get-Date).ToShortTimeString(), ($_ | Out-String)
     Add-Content -Path $localLogFile -Value $entry -NoNewline

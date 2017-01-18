@@ -1,8 +1,6 @@
 param($Path, $InfraRg, $AutomationAccountName, $OctopusServerUrl, $OctopusApiKey, $OctopusEnvironment, $OctopusRole, $OctopusDisplayName)
 
-$result = & (Join-Path $PSScriptRoot 'Invoke-DSCComposition.ps1') -Path $Path
-$tempFile = Join-Path $env:TEMP (Split-Path $Path -Leaf)
-Set-Content -Path $tempFile -Value $result
+$tempFile = & (Join-Path $PSScriptRoot 'Invoke-DSCComposition.ps1') -Path $Path
 
 Import-AzureRmAutomationDscConfiguration -ResourceGroupName $InfraRg -AutomationAccountName $AutomationAccountName -SourcePath $tempFile -Force -Published
 
