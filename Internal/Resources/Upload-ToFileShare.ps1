@@ -47,7 +47,8 @@ function Upload-ToFileShare {
         })
         $ps = [powershell]::Create().AddScript({
             param($batch, $fileShare, $runspaceId, $ConcurrentNetTasks)   
-            foreach ($file in $batch) {
+            $batch | % {
+                $file = $_
                 if ($file.Tokenised) {
                     [void][System.Console]::Out.WriteLineAsync("  $runspaceId`t`tTokenise & Upload`t$(Split-Path -Leaf $file.Dest)")
                 } else {

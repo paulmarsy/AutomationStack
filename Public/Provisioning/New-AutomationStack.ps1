@@ -20,7 +20,6 @@ function New-AutomationStack {
         if (!$SkipChecks) {
             Install-AzureReqs -Basic
             Connect-AzureRm
-            Install-AzureReqs
         }
     }
     process{
@@ -32,6 +31,8 @@ function New-AutomationStack {
                         $ProgressText = 'Deployment Context' 
                         $Heading = 'Creating AutomationStack Deployment Details'
                         {
+                            Install-AzureReqs
+
                             if ($null -eq $CurrentContext) {
                                 New-DeploymentContext -AzureRegion $AzureRegion
                             } else {

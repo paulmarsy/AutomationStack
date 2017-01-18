@@ -9,10 +9,7 @@ filter Write-Log {
 }
 
 try {
-    $credential = New-Object System.Management.Automation.PSCredential '#{StackResourcesName}', (ConvertTo-SecureString '#{StackResourcesKey}' -AsPlainText -Force))
-    New-PSDrive -Name O -PSProvider FileSystem -Root "\\#{StackResourcesName}.file.core.windows.net\octopusdeploy"  -Credential $credential
-
-    (Get-Date).ToString() | Write-Log
+    & net use O: \\#{StackResourcesName}.file.core.windows.net\octopusdeploy /USER:#{StackResourcesName} #{StackResourcesKey} *>> $localLogFile 
 
     "{0}[ Waiting for Local Configuration Manager ]{0}" -f ("-"*28) | Write-Log
     $lcm = Get-DscLocalConfigurationManager
@@ -30,5 +27,5 @@ try {
     & "C:\Program Files\Octopus Deploy\Octopus\Octopus.Migrator.exe" import --console --directory="O:\" --password=#{StackAdminPassword} --overwrite *>&1 | Write-Log
 }
 finally {
-    Remove-PSDrive -Name O -Force
+    & net use O: /DELETE *>> $localLogFile 
 }

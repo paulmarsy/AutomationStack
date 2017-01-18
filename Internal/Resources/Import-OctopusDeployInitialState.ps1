@@ -3,7 +3,7 @@ function Import-OctopusDeployInitialState {
 
     try {
         $credential = New-Object System.Management.Automation.PSCredential ($CurrentContext.Get('StackResourcesName'), (ConvertTo-SecureString $CurrentContext.Get('StackResourcesKey') -AsPlainText -Force))
-        New-PSDrive -Name O -PSProvider FileSystem -Root "\\$($CurrentContext.Get('StackResourcesName')).file.core.windows.net\octopusdeploy"  -Credential $credential
+        New-PSDrive -Name O -PSProvider FileSystem -Root "\\$($CurrentContext.Get('StackResourcesName')).file.core.windows.net\octopusdeploy"  -Credential $credential | Out-Null
         
         $logFile = 'O:\CustomScript.log'        
         $logPosition = 0
@@ -18,7 +18,7 @@ function Import-OctopusDeployInitialState {
             Select-AzureRmProfile -Profile $AzureProfile
             Select-AzureRmSubscription  -SubscriptionId $SubscriptionId
 
-            Set-AzureRmVMCustomScriptExtension -ResourceGroupName $ResourceGroupName -Location $Location -VMName $VMName -Name $Name -StorageAccountName $StorageAccountName -StorageAccountKey $StorageAccountKey  -FileName $FileName -ContainerName $ContainerName -Run $Run
+            Set-AzureRmVMCustomScriptExtension -ResourceGroupName $ResourceGroupName -Location $Location -VMName $VMName -Name $Name -StorageAccountName $StorageAccountName -StorageAccountKey $StorageAccountKey  -FileName $FileName -ContainerName $ContainerName -Run $Run -ForceRerun (Get-Date).Ticks
             Remove-Item -Path $AzureProfile -Force | Out-Null
         } -ArgumentList @((Get-AzureRmContext).Subscription.SubscriptionId, $azureprofile, $CurrentContext.Get('OctopusRg'), $CurrentContext.Get('AzureRegion'), $CurrentContext.Get('OctopusVMName'), "OctopusImport", $CurrentContext.Get('StackResourcesName'), $CurrentContext.Get('StackResourcesKey'), "OctopusImport.ps1", "scripts", 'OctopusImport.ps1')
 

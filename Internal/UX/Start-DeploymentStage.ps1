@@ -10,7 +10,7 @@ function Start-DeploymentStage {
         Write-DeploymentUpdate -SequenceNumber $SequenceNumber -TotalStages $TotalStages -ProgressText $ProgressText -Heading $currentHeading
 
         try {
-            if ($null -ne $CurrentContext) { 
+            if ($null -ne $CurrentContext -and -not $WhatIf) { 
                 $metrics = New-Object AutoMetrics $CurrentContext
                 $metrics.Start($SequenceNumber, $Heading) }
             if ($WhatIf -and $SequenceNumber -notin @(1, 10)) {
