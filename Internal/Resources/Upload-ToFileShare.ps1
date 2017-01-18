@@ -24,12 +24,13 @@ function Upload-ToFileShare {
         New-AzureStorageDirectory -Share $fileShare -Path $dest -ConcurrentTaskCount $ConcurrentNetTasks -ErrorAction Ignore | Out-Null
     }
     $items = Get-ChildItem -Path $sourcePath -Recurse -File
-    $batchSize = [System.Math]::Max(([System.Math]::Ceiling(($items.Count / $ConcurrentNetTasks))), 5)
+    $batchSize =[System.Math]::Ceiling(($items.Count / $ConcurrentNetTasks))
     $jobs ={@()}.Invoke()
     $runspaceId = 0
-    for ($i = 0; $i -lt $items.Count; $i = $i + $batchSize) {
+    for ($i = 0; $i -lt $items.Count; $i += $batchSize) {
         $runspaceId++
-        $batch = @($i..($i+$batchSize) | ? { $null -ne $items[$_] } |  % {
+        $batch = @($i..($i+$batchSize-1) | ? { $null -ne $items[$_] } |  % {
+
             $item = $items[$_]
             if ($item.Name -in $TokeniseFiles) {
                     $sourceFile = (Join-Path $TempPath $item.Name)
@@ -54,6 +55,7 @@ function Upload-ToFileShare {
                 } else {
                     [void][System.Console]::Out.WriteLineAsync("  $runspaceId`t`tUpload`t`t`t$(Split-Path -Leaf $file.Dest)")
                 }
+                
                 Set-AzureStorageFileContent -Share $fileShare -Source $file.Source -Path $file.Dest -Force -ConcurrentTaskCount $ConcurrentNetTasks -ErrorAction Stop
             }
         }).AddArgument($batch).AddArgument($fileShare).AddArgument($runspaceId).AddArgument($ConcurrentNetTasks)
