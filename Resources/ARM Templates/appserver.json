@@ -108,7 +108,7 @@
       }
     }
   }, {
-    "apiVersion": "2015-06-15",
+    "apiVersion": "2016-03-30",
     "type": "Microsoft.Compute/virtualMachines",
     "name": "[variables('vmName')]",
     "location": "[resourceGroup().location]",
@@ -137,6 +137,7 @@
           "version": "latest"
         },
         "osDisk": {
+          "osType": "Windows",
           "name": "[concat(variables('vmName'),'-OS')]",
           "vhd": {
             "uri": "[concat('http://',variables('vmStorageName'),'.blob.core.windows.net/vhds/',variables('vmName'),'-OS.vhd')]"

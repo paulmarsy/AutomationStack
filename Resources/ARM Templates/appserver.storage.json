@@ -1,0 +1,40 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "udp": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "vmStorageName": "[concat('vmvhds', parameters('udp'), uniquestring(resourceGroup().id))]"
+  },
+  "resources": [{
+    "apiVersion": "2016-01-01",
+    "type": "Microsoft.Storage/storageAccounts",
+    "name": "[variables('vmStorageName')]",
+    "location": "[resourceGroup().location]",
+    "sku": {
+      "name": "Premium_LRS",
+      "tier": "Premium"
+    },
+    "kind": "Storage",
+    "properties": {
+      "encryption": {
+        "keySource": "Microsoft.Storage",
+        "services": {
+          "blob": {
+            "enabled": true
+          }
+        }
+      
+      }
+    }
+  }],
+  "outputs": {
+    "vmStorageName": {
+      "type": "string",
+      "value": "[variables('vmStorageName')]"
+    }
+  }
+}

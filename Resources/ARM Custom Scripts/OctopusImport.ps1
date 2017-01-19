@@ -15,7 +15,7 @@ try {
 
     "{0}[ Waiting for Local Configuration Manager ]{0}" -f ("-"*28) | Write-Log
     $lcm = Get-DscLocalConfigurationManager
-    while ($lcm.LCMState -ne 'Idle') {
+    while ($lcm.LCMState -notin @('Idle','PendingConfiguration')) {
         "DSC Local Configuration Manager state is $($lcm.LCMState); waiting..." | Write-Log
         Start-Sleep -Seconds 10
         $lcm = Get-DscLocalConfigurationManager

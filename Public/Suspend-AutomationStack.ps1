@@ -1,5 +1,4 @@
 function Suspend-AutomationStack {
-    param([switch]$RemoveResourceGroup)
     $rg = $CurrentContext.Get('OctopusRg')
     $vmName = $CurrentContext.Get('OctopusVMName')
 
@@ -14,29 +13,23 @@ function Suspend-AutomationStack {
     }
     Write-Host 'connected' -ForegroundColor Green
 
-    Write-Host "Stopping $vm... " -NoNewLine
+    Write-Host "Stopping $vmName... " -NoNewLine
     Stop-AzureRmVM -ResourceGroupName $rg -Name $vmName -Force | Out-Null
     Write-Host 'stopped' -ForegroundColor Green
 
-    Write-Host 'Exporting Resource Group Template... ' -NoNewLine
-    $templateFile = Join-Path $TempPath ('{0}.{1}.json' -f $rg, $vmName)
-    Export-AzureRmResourceGroup -ResourceGroupName $rg -Path $templateFile -IncludeParameterDefaultValue -Force -WarningVariable templateErrors -WarningAction SilentlyContinue | Out-Null
-    Write-Host 'exported' -ForegroundColor Green
-    $templateErrors | Write-Warning
-
-    Write-Host "Uploading Resource Group Template to $($dstContext.StorageAccountName)... " -NoNewLine
-    $dstContainer | Set-AzureStorageBlobContent -File $templateFile -Blob 'OctopusVM.json' -Force | Out-Null
-    Write-Host 'uploaded' -ForegroundColor Green
-
     $blobName = 'OctopusVM-OS.vhd'
-    Write-Host "Copying $blobName from $($srcContext.StorageAccountName) to $($dstContext.StorageAccountName)... " -NoNewLine
-    $copyBlob = Start-AzureStorageBlobCopy -Context $srcContext -SrcContainer vhds -SrcBlob $blobName -DestContext $dstContext -DestContainer images -DestBlob $blobName -Force
-    $copyBlob | Get-AzureStorageBlobCopyState -WaitForComplete | Out-Null
-    Write-Host 'copied' -ForegroundColor Green
-
-    if ($RemoveResourceGroup) {
-        Write-Host 'Removing Resource Group... ' -NoNewLine
-        Remove-AzureRmResourceGroup -ResourceGroupName $ResourceGroupName 
-        Write-Host 'removed' -ForegroundColor Green
+    Write-Host "Copying $blobName from $($srcContext.StorageAccountName) to $($dstContext.StorageAccountName)... "
+    $copyBlob = Start-AzureStorageBlobCopy -Context $srcContext -SrcContainer vhds -SrcBlob $blobName -DestContext $dstContext -DestContainer images -DestBlob $blobName -Force -Verbose
+    while ($copyState.Status -ne "Success")
+    {   
+        Start-Sleep -Seconds 5
+        $copyState = $copyBlob | Get-AzureStorageBlobCopyState
+        $percent = ($copyState.BytesCopied / $copyState.TotalBytes) * 100
+        Write-Host "Completed $('{0:N2}' -f $percent)%"
+        Write-Progress -Activity "Copying $blobName from $($srcContext.StorageAccountName) to $($dstContext.StorageAccountName)" -CurrentOperation "$($copyState.Status) $('{0:N2}' -f $percent)% $percent" -PercentComplete $percent
     }
-}
+
+    Write-Host 'Removing Resource Group... ' -NoNewLine
+    Remove-AzureRmResourceGroup -ResourceGroupName $rg -Force
+    Write-Host 'removed' -ForegroundColor Green
+]}

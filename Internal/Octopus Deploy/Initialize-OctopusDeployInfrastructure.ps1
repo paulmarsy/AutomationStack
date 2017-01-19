@@ -17,10 +17,12 @@ function Initialize-OctopusDeployInfrastructure {
         timestamp = ([DateTimeOffset]::UtcNow.ToString("o"))
     }
 
+    $CurrentContext.Set('OctopusDiskEncryptionKeyUrl', $octopusDeploy.keyVaultSecretUrl.Value)
+
     Write-Host 'Enabling KeyVault Disk Encryption for Octopus Deploy VM...'
     Start-ARMDeployment -ResourceGroupName $CurrentContext.Get('OctopusRg') -Template 'appserver.enableencryption' -Mode Incremental -TemplateParameters @{
         productName = 'Octopus'
         keyVaultResourceID = $CurrentContext.Get('KeyVaultResourceId')
-        keyVaultSecretUrl = $octopusDeploy.keyVaultSecretUrl.Value
+        keyVaultSecretUrl = $CurrentContext.Get('OctopusDiskEncryptionKeyUrl')
     } | Out-Null
 }
