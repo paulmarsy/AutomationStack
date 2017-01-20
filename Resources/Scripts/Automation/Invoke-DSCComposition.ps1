@@ -1,6 +1,10 @@
 param($Path)
 
+$Path = Get-Item -Path $Path | % FullName
 $includePath = Join-Path (Split-Path $Path) 'includes'
+if (!(Test-Path $includePath)) {
+    throw "Unable to find include location for DSC composition: $includePath"
+}
 
 function Format-DSCFile {
     param($FilePath)
@@ -19,6 +23,7 @@ $tempFile = Join-Path $env:TEMP (Split-Path $Path -Leaf)
 if (Test-Path $tempFile) {
     Remove-Item $tempFile -Force
 }
-Set-Content -Path $tempFile -Value $result
+Set-Content -Path $tempFile -Value $resolvedConfiguration
+Write-Host  "Complete DSC Configuration: $tempFile"
 
 return $tempFile

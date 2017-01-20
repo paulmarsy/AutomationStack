@@ -7,7 +7,7 @@ Configuration TeamCity
         $OctopusRole,
         $OctopusDisplayName,
         $HostHeader,
-        $TeamCityVersion = '10.0.4'
+        $TeamCityVersion
     )
         
     Import-DscResource -ModuleName PSDesiredStateConfiguration

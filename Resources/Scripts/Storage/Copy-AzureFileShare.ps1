@@ -1,7 +1,7 @@
 param($StorageAccountName, $StorageAccountKey, $FileShareName, $LocalPath)
 
 try {
-    $credential = New-Object System.Management.Automation.PSCredential $StorageAccountName, (ConvertTo-SecureString $StorageAccountKey -AsPlainText -Force))
+    $credential = New-Object System.Management.Automation.PSCredential $StorageAccountName, (ConvertTo-SecureString $StorageAccountKey -AsPlainText -Force)
     New-PSDrive -Name F -PSProvider FileSystem -Root "\\$($StorageAccountName).file.core.windows.net\$($FileShareName)"  -Credential $credential
 
     if (!(Test-Path $LocalPath)) {
