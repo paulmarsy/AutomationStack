@@ -21,11 +21,13 @@ function Import-OctopusDeployInitialState {
         Remove-Item -Path $AzureProfile -Force | Out-Null
     } -ArgumentList @((Get-AzureRmContext).Subscription.SubscriptionId, $azureprofile, $CurrentContext.Get('OctopusRg'), $CurrentContext.Get('AzureRegion'), $CurrentContext.Get('OctopusVMName'), "OctopusImport", $CurrentContext.Get('StackResourcesName'), $CurrentContext.Get('StackResourcesKey'), "OctopusImport.ps1", "scripts", 'OctopusImport.ps1', $logFile)
 
+    $ProgressPreference = 'SilentlyContinue'
     do {
         Start-Sleep 1
         Get-AzureStorageFileContent -ShareName octopusdeploy -Path $logFile -Context $stackresources -Destination $localLogFile -Force
         Get-Content -Path $localLogFile | Select-Object -Skip $logPosition | % { $logPosition++; $_ | Out-Host }
     } while ($job.State -eq 'Running')
+    $ProgressPreference = 'Continue'
     if ($job.State -ne 'Completed') {
         $job | Receive-Job | Out-Host
     }
