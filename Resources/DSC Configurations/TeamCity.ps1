@@ -6,11 +6,14 @@ Configuration TeamCity
         $OctopusEnvironment,
         $OctopusRole,
         $OctopusDisplayName,
+        $HostHeader,
         $TeamCityVersion = '10.0.4'
     )
+        
     Import-DscResource -ModuleName PSDesiredStateConfiguration
     Import-DscResource -ModuleName xPSDesiredStateConfiguration
     Import-DscResource -ModuleName xNetworking
+    Import-DscResource -ModuleName PackageManagementProviderResource
     
     Node Server
     {
@@ -29,22 +32,15 @@ Configuration TeamCity
             Protocol              = "TCP"
         }
 
-        xRemoteFile TeamCityDownload
+
+        File TeamCityServerInstall
         {
-            Uri = "https://download.jetbrains.com/teamcity/TeamCity-$($TeamCityVersion).tar.gz"
-            DestinationPath = "D:\TeamCity-$($TeamCityVersion).tar.gz"
-        }
-        Script TeamCityExtract
-        {
-            SetScript = {
-                & "${env:ProgramFiles}\7-Zip\7z.exe" e "D:\TeamCity-$($using:TeamCityVersion).tar.gz" -o"D:\"
-                & "${env:ProgramFiles}\7-Zip\7z.exe" x "D:\TeamCity-$($using:TeamCityVersion).tar" -o"C:\"
-            }
-            TestScript = {
-                (Test-Path "$($env:SystemDrive)\TeamCity\BUILD_42538")
-            }
-            GetScript = { @{} }
-            DependsOn = @('[xRemoteFile]TeamCityDownload','[Package]SevenZip')
+            DestinationPath = "$($env:SystemDrive)\TeamCity"
+            Recurse = $true
+            SourcePath = 'D:\TeamCity'
+            Type = 'Directory'
+            MatchSource = $false
+            DependsOn = '[Script]TeamCityExtract'
         }
         Script TeamCityServerConfig
         {
@@ -86,23 +82,16 @@ Configuration TeamCity
             Protocol              = "TCP"
         }
 
-        xRemoteFile TeamCityDownload
+        File TeamCityAgentInstall
         {
-            Uri = "https://download.jetbrains.com/teamcity/TeamCity-$($TeamCityVersion).tar.gz"
-            DestinationPath = "D:\TeamCity-$($TeamCityVersion).tar.gz"
+            DestinationPath = "$($env:SystemDrive)\buildAgent"
+            Recurse = $true
+            SourcePath = 'D:\TeamCity\buildAgent'
+            Type = 'Directory'
+            MatchSource = $false
+            DependsOn = '[Script]TeamCityExtract'
         }
-        Script TeamCityExtract
-        {
-            SetScript = {
-                & "${env:ProgramFiles}\7-Zip\7z.exe" e "D:\TeamCity-$($using:TeamCityVersion).tar.gz" -o"D:\"
-                & "${env:ProgramFiles}\7-Zip\7z.exe" x "D:\TeamCity-$($using:TeamCityVersion).tar" -o"D:\"
-                Copy-Item -Path 'D:\TeamCity\buildAgent' -Destination C:\ -Recurse
-            }
-            TestScript = {
-                (Test-Path "$($env:SystemDrive)\buildAgent\BUILD_42538")
-            }
-            GetScript = { @{} }
-            DependsOn = @('[xRemoteFile]TeamCityDownload','[Package]SevenZip')
-        }
+
+        #include <AgentConfig>
     }
 }

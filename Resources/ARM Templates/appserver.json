@@ -137,7 +137,6 @@
           "version": "latest"
         },
         "osDisk": {
-          "osType": "Windows",
           "name": "[concat(variables('vmName'),'-OS')]",
           "vhd": {
             "uri": "[concat('http://',variables('vmStorageName'),'.blob.core.windows.net/vhds/',variables('vmName'),'-OS.vhd')]"

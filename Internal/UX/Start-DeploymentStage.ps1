@@ -22,20 +22,12 @@ function Start-DeploymentStage {
             $attempt = $RetryAttemptsAllowed
         }
         catch {
-            $baseException = $_.Exception.GetBaseException()
-            if ($null -eq $baseException.ErrorRecord) {
-                $errorRecord = $_.Exception.ErrorRecord
-            } else {
-                $errorRecord = $baseException.ErrorRecord
-            }
-            Write-Warning "Deployment stage failed"
-            Write-Warning "$($errorRecord.Exception.GetType().FullName): $($errorRecord.Exception.Message)"
-            Write-Warning "`t$($errorRecord.Exception.GetType().FullName): $($errorRecord.Exception.InnerException.Message)"
-            Write-Warning "Failing command: $($errorRecord.InvocationInfo.MyCommand.Name)"
-            Write-Warning "Position of failing command:`n$($errorRecord.InvocationInfo.PositionMessage)"
-            Write-Warning "Category: $($errorRecord.CategoryInfo.ToString())"
-            Write-Warning "Script Stack Trace:`n$($errorRecord.ScriptStackTrace)"
-            
+           if (Test-ExceptionComplete $_.Exception.InnerException) { Write-Verbose "Inner Exception" }
+           elseif (Test-ExceptionComplete $_.Exception.GetBaseException()) { Write-Verbose "Base Exception" }
+           elseif (Test-ExceptionComplete $_.Exception) { Write-Verbose "Exception" }
+           else {
+               $_ | Format-List -Force | Out-Host
+           }
             
             if ($attempt -eq $RetryAttemptsAllowed) {
                 throw $baseException

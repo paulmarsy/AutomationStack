@@ -16,6 +16,7 @@ function Resume-AutomationStack {
             sourceVault = (New-Object PSCustomObject -Property @{ id = "[parameters('keyVaultResourceID')]" })
         })
     })
+  #        "osType": "Windows",
 
     # Reuse existing VHD rather than provision from existing image
     $vmResource.properties.psobject.Properties.Remove('osProfile')

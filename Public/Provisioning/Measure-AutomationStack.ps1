@@ -1,8 +1,8 @@
 function Measure-AutomationStack {
     $metrics = New-Object AutoMetrics $CurrentContext
-    Write-Host @($metrics.GetDescription('Deployment'), ': ', $metrics.GetDuration('Deployment'))
-    Write-Host
+    $elapsed = [timespan]::Zero
     1..9 | % {
+        $elapsed = $elapsed.Add($metrics.GetRaw($_))
         New-Object psobject -Property @{
             Stage = $_
             Activity = $metrics.GetDescription($_)
@@ -10,4 +10,6 @@ function Measure-AutomationStack {
             Percentage = $metrics.GetPercentage($_, 'Deployment')
         }
     } | Sort-Object -Property Stage | Format-Table -AutoSize -Property @('Stage','Activity','Duration','Percentage')
+    Write-Host @($metrics.GetDescription('Deployment'), ': ', $metrics.GetDuration('Deployment'))
+    Write-Host @('Elapsed time: ', [Humanizer.TimeSpanHumanizeExtensions]::Humanize($elapsed, 2))
 }

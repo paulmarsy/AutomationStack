@@ -26,7 +26,6 @@ function Import-OctopusDeployInitialState {
             Start-Sleep 1
             Get-Content -Path $logFile -ErrorAction Ignore | Select-Object -Skip $logPosition | % { $logPosition++; $_ | Out-Host }
         } while ($job.State -eq 'Running')
-        $job | Wait-Job
         if ($job.State -ne 'Completed') {
             $job | Receive-Job | Out-Host
         }

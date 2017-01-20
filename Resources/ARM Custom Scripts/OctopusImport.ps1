@@ -5,9 +5,9 @@ if (!(Test-Path 'C:\CustomScriptLogs')) { New-Item -ItemType Directory -Path 'C:
 $script:localLogFile = "C:\CustomScriptLogs\$LogFile"
 $script:remoteLogFile = "O:\$LogFile"
 filter Write-Log {
-    $entry = '[{0}] {1}: {2}' -f $env:COMPUTERNAME, (Get-Date).ToShortTimeString(), ($_ | Out-String)
-    Add-Content -Path $localLogFile -Value $entry -NoNewline
-    Add-Content -Path $remoteLogFile -Value $entry -NoNewline
+    $entry = '[{0}] {1}: {2}' -f $env:COMPUTERNAME, (Get-Date).ToShortTimeString(), ($_ | Out-String | % Trim)
+    $entry | Out-File -FilePath $localLogFile -Encoding ascii -Append 
+    $entry | Out-File -FilePath $remoteLogFile -Encoding ascii -Append 
 }
 
 try {
@@ -27,7 +27,9 @@ try {
 
     "{0}[ Starting Octopus Import ]{0}" -f ("-"*36) | Write-Log
     & "C:\Program Files\Octopus Deploy\Octopus\Octopus.Migrator.exe" import --console --directory="O:\" --password=#{StackAdminPassword} --overwrite *>&1 | Write-Log
+
+    "{0}[ Finished ]{0}" -f ("-"*44) | Write-Log
 }
 finally {
-    & net use O: /DELETE *>> $localLogFile 
+    & net use O: /DELETE /Y *>> $localLogFile 
 }
