@@ -1,8 +1,8 @@
 {
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
-  "Id": "deploymentprocess-Projects-5",
-  "OwnerId": "Projects-5",
-  "Version": 133,
+  "Id": "deploymentprocess-Projects-7",
+  "OwnerId": "Projects-7",
+  "Version": 134,
   "Steps": [
     {
       "Id": "f915e03f-4a5b-4fa2-aa88-d572523b1b3b",
@@ -62,13 +62,14 @@
             "Octopus.Action.Script.ScriptSource": "Package",
             "Octopus.Action.Script.ScriptFileName": "Import-TeamCityConfig.ps1",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Automation",
-            "Octopus.Action.Script.ScriptParameters": "-Path '#{Path}' -InfraRg '#{InfraRg}' -AutomationAccountName '#{AutomationAccountName}' -OctopusServerUrl '#{OctopusHostHeader}' -OctopusApiKey '#{APIKey}' -OctopusEnvironment '#{OctopusEnvironment}' -OctopusRole '#{OctopusRole}' -OctopusDisplayName '#{OctopusDisplayName}'",
+            "Octopus.Action.Script.ScriptParameters": "-Path '#{Path}' -InfraRg '#{InfraRg}' -AutomationAccountName '#{AutomationAccountName}' -OctopusServerUrl '#{OctopusHostHeader}' -OctopusApiKey '#{APIKey}' -OctopusEnvironment '#{OctopusEnvironment}' -OctopusRole '#{OctopusRole}' -OctopusDisplayName '#{OctopusDisplayName}' -HostHeader '#{TeamCityHostHeader}' -TeamCityVersion '#{TeamCityVersion}'",
             "Path": "#{DSCConfigFile}",
             "OctopusEnvironment": "#{Octopus.Environment.Name}",
             "OctopusRole": "TeamCity Server (Windows)",
             "OctopusDisplayName": "TeamCity Server",
             "Octopus.Action.Template.Id": "ActionTemplates-7",
-            "Octopus.Action.Template.Version": "2"
+            "Octopus.Action.Template.Version": "5",
+            "TeamCityVersion": "#{TeamCityVersion}"
           }
         }
       ],

@@ -2,8 +2,7 @@ function New-AutomationStack {
     param(
         [Parameter()][switch]$WhatIf,
         [Parameter(DontShow)][switch]$SkipChecks,
-        [Parameter(DontShow)][int]$TotalStages = 9,
-        [Parameter(DontShow)][int[]]$Stages = (1..$TotalStages)
+        [Parameter(DontShow)][int[]]$Stages = (1..$TotalDeploymentStages)
     )
     DynamicParam {
         $Dictionary = New-Object System.Management.Automation.RuntimeDefinedParameterDictionary
@@ -25,26 +24,27 @@ function New-AutomationStack {
     process{
         try {
             $Stages | % {
-                $sequenceNumber = $_
-                $ScriptBlock = switch ($sequenceNumber) {
+                $stageNumber = $_
+                if ($stageNumber -lt 1 -or $stageNumber -gt $TotalDeploymentStages) {
+                    Write-Warning "Stage $stageNumber is outside the allowed range of 0-$TotalDeploymentStages, skipping"
+                }
+                $ScriptBlock = switch ($stageNumber) {
                     1 {
-                        $ProgressText = 'Deployment Context' 
-                        $Heading = 'Creating AutomationStack Deployment Details'
+                        $Heading = 'Creating AutomationStack Deployment Context'
                         {
                             Install-AzureReqs
 
                             if ($null -eq $CurrentContext) {
                                 New-DeploymentContext -AzureRegion $AzureRegion
                             } else {
-                                Write-Warning 'AutomationStack deployment details already created, skipping'
+                                Write-Warning 'AutomationStack deployment context already created, skipping'
                             }
                             
                             Show-AutomationStackDetail
                         }
                     }
                     2 {
-                        $ProgressText = 'Azure Service Principal & KeyVault' 
-                        $Heading = 'Creating & Switching Authentication to Service Principal & KeyVault'
+                        $Heading = 'Azure KeyVault & Service Principal Authentication'
                         {
                             New-AzureServicePrincipal
                             Initialize-KeyVault
@@ -52,50 +52,51 @@ function New-AutomationStack {
                         }
                     }
                     3 {
-                        $ProgressText = 'Core Infrastructure' 
-                        $Heading = 'Provisioning Core Infrastructure'
+                        $Heading = 'Provisioning Infrastructure'
                         {
                             Initialize-CoreInfrastructure
                         }
                     }
                     4 {
-                        $ProgressText = 'Octopus Deploy - DSC Configuration'
-                        $Heading = 'Compiling Octopus Deploy DSC Configuration'
+                        $Heading = 'Octopus Deploy - Provisioning Infrastructure'
                         {
                             Register-OctopusDSCConfiguration
+                            Write-Host 'Creating Octopus Deploy SQL Database...'
+                            Invoke-SharedScript AzureSQL 'New-AzureSQLDatabase' -ResourceGroupName $CurrentContext.Get('InfraRg') -ServerName $CurrentContext.Get('SqlServerName') -DatabaseName 'OctopusDeploy'
                         }
                     }
                     5 {
-                        $ProgressText = 'Octopus Deploy - Infrastructure'
-                        $Heading = 'Provisioning Octopus Deploy'
+                        $Heading = 'Octopus Deploy - Creating Application'
                         {
                             Initialize-OctopusDeployInfrastructure
                         }
                     }
                     6 {
-                        $ProgressText = 'AutomationStack Resources' 
-                        $Heading = 'Uploading Resources to Azure Storage'
+                        $Heading = 'Uploading AutomationStack into Azure Storage'
                         {
                             Publish-StackResources
                         }
                     }
                     7 {
-                        $ProgressText = 'Octopus Deploy - Initial State' 
-                        $Heading = 'Importing Octopus Deploy Initial State'
+                        $Heading = 'Azure Automation DSC Compliance'
                         {
-                            Import-OctopusDeployInitialState
+                            Invoke-SharedScript Compute 'Invoke-CustomScript' -Name 'AutomationNodeCompliance' -ResourceGroupName $CurrentContext.Get('OctopusRg') -VMName $CurrentContext.Get('OctopusVMName') -Location $CurrentContext.Get('AzureRegion') -StorageAccountName $CurrentContext.Get('StackResourcesName') -StorageAccountKey $CurrentContext.Get('StackResourcesKey')
+                        }
+                    }     
+                    8 {
+                        $Heading = 'Octopus Deploy - Importing Initial State'
+                        {
+                            Invoke-SharedScript Compute 'Invoke-CustomScript' -Name 'OctopusImport' -ResourceGroupName $CurrentContext.Get('OctopusRg') -VMName $CurrentContext.Get('OctopusVMName') -Location $CurrentContext.Get('AzureRegion') -StorageAccountName $CurrentContext.Get('StackResourcesName') -StorageAccountKey $CurrentContext.Get('StackResourcesKey')
                         }
                     }
-                    8 {
-                        $ProgressText = 'Octopus Deploy - AutomationStack Packages' 
-                        $Heading = 'Publishing AutomationStack Scripts & Templates to Octopus Deploy'
+                    9 {
+                        $Heading = 'Octopus Deploy - Publishing AutomationStack Packages'
                         {
                             Publish-StackPackages
                         }
                     }
-                    9 {
-                        $ProgressText = 'Complete' 
-                        $Heading = 'AutomationStack Provisioning Complete'
+                    10 {
+                        $Heading = 'AutomationStack Deployment Complete'
                         {
                             $metrics = New-Object AutoMetrics $CurrentContext
                             $metrics.Finish('Deployment')
@@ -103,7 +104,7 @@ function New-AutomationStack {
                             Write-Host -ForegroundColor Cyan "`t  Additional functionality can be deployed/enabled using Octopus Deploy"
                             Write-Host
                             Write-Host -ForegroundColor Green "`t   Octopus Deploy URL (& copied to clipboard): $($CurrentContext.Get('OctopusHostHeader'))"
-                            Set-Clipboard -Value $CurrentContext.Get('OctopusHostHeader')
+                            Microsoft.PowerShell.Management\Set-Clipboard -Value $CurrentContext.Get('OctopusHostHeader')
                             Write-Host
                             Write-Host -ForegroundColor Gray "`t  Available PowerShell Module commands:"
                             Write-Host -ForegroundColor Gray "`t`t- Measure-AutomationStack - Shows timing & deployment stats"
@@ -115,7 +116,7 @@ function New-AutomationStack {
                         }
                     }
                 }
-                Start-DeploymentStage -SequenceNumber $SequenceNumber -TotalStages $TotalStages -ProgressText $ProgressText -Heading $Heading -ScriptBlock $ScriptBlock -WhatIf:$WhatIf
+                Start-DeploymentStage -StageNumber $StageNumber -Heading $Heading -ScriptBlock $ScriptBlock -WhatIf:$WhatIf
             }
         }
         finally {   

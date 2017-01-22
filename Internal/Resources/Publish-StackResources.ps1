@@ -1,5 +1,8 @@
 function Publish-StackResources {
-    param([switch]$ResetStorage)
+    param(
+        [switch]$ResetStorage,
+        [ValidateSet('ARM','DSC','OctopusDeploy','TeamCity','All')]$Upload = 'All'
+    )
 
     Write-Host 'Configuring Stack Resources Storage Account...'
 
@@ -21,21 +24,25 @@ function Publish-StackResources {
     $teamCityEncoder = New-Object TeamCityEncoder @($CurrentContext)
     $teamCityEncoder.Hash('TeamCityPasswordHash', $CurrentContext.Get('StackAdminPassword'))
 
-    Write-Host
-    Write-Host -ForegroundColor Green "`tUploading ARM Custom Scripts..."
-    Upload-ToBlobContainer -ContainerName scripts -Source (Join-Path -Resolve $ResourcesPath 'ARM Custom Scripts') -TokeniseFiles @('OctopusImport.ps1','TeamCityPrepare.sh') -Context $stackresources -ResetStorage:$ResetStorage
-    
-    Write-Host
-    Write-Host -ForegroundColor Green "`tUploading DSC Configurations..."
-    Upload-ToFileShare -FileShareName dsc -Source (Join-Path -Resolve $ResourcesPath 'DSC Configurations') -TokeniseFiles @() -Context $stackresources -ResetStorage:$ResetStorage
-
-    Write-Host
-    Write-Host -ForegroundColor Green "`tUploading Octopus Deploy Data Import..."
-    Upload-ToFileShare -FileShareName octopusdeploy -Source (Join-Path -Resolve $ExportsPath 'OctopusDeploy') -TokeniseFiles @('metadata.json','server.json','Automation Stack Parameters-VariableSet.json','Microsoft Azure Service Principal.json','Tentacle Auth.json','#{ApiKeyId}.json','#{StackAdminUsername}.json') -Context $stackresources -ResetStorage:$ResetStorage
-
-    Write-Host
-    Write-Host -ForegroundColor Green "`tUploading TeamCity Data Import..."
-    Upload-ToFileShare -FileShareName teamcity -Source (Join-Path -Resolve $ExportsPath 'TeamCity') -TokeniseFiles @('vcs_username','users','database.properties') -Context $stackresources -ResetStorage:$ResetStorage
-
+    if ($Upload -in @('All','ARM')) {
+        Write-Host
+        Write-Host -ForegroundColor Green "`tUploading ARM Custom Scripts..."
+        Upload-ToBlobContainer -ContainerName scripts -Source (Join-Path -Resolve $ResourcesPath 'ARM Custom Scripts') -TokeniseFiles @('OctopusImport.ps1','TeamCityPrepare.sh') -Context $stackresources -ResetStorage:$ResetStorage
+    }
+    if ($Upload -in @('All','DSC')) {
+        Write-Host
+        Write-Host -ForegroundColor Green "`tUploading DSC Configurations..."
+        Upload-ToFileShare -FileShareName dsc -Source (Join-Path -Resolve $ResourcesPath 'DSC Configurations') -TokeniseFiles @() -Context $stackresources -ResetStorage:$ResetStorage
+    }
+    if ($Upload -in @('All','OctopusDeploy')) {
+        Write-Host
+        Write-Host -ForegroundColor Green "`tUploading Octopus Deploy Data Import..."
+        Upload-ToFileShare -FileShareName octopusdeploy -Source (Join-Path -Resolve $ExportsPath 'OctopusDeploy') -TokeniseFiles @('metadata.json','server.json','Automation Stack Parameters-VariableSet.json','Microsoft Azure Service Principal.json','Tentacle Auth.json','#{ApiKeyId}.json','#{StackAdminUsername}.json') -Context $stackresources -ResetStorage:$ResetStorage
+    }
+    if ($Upload -in @('All','TeamCity')) {
+        Write-Host
+        Write-Host -ForegroundColor Green "`tUploading TeamCity Data Import..."
+        Upload-ToFileShare -FileShareName teamcity -Source (Join-Path -Resolve $ExportsPath 'TeamCity') -TokeniseFiles @('vcs_username','users','database.properties') -Context $stackresources -ResetStorage:$ResetStorage
+    }
     Write-Host
 }

@@ -2,7 +2,7 @@
   "$type": "Octopus.Core.Model.Variables.VariableSet, Octopus.Core",
   "Id": "variableset-LibraryVariableSets-1",
   "OwnerId": "LibraryVariableSets-1",
-  "Version": 4,
+  "Version": 5,
   "Variables": [
     {
       "Id": "97c0ebe0-d669-1654-8f4a-a872980b204e",
@@ -35,11 +35,6 @@
       "Value": "#{StackResourcesKey}"
     },
     {
-      "Id": "c5fd091d-26f4-7f33-d1b2-6f07ec78af9c",
-      "Name": "OctopusHostName",
-      "Value": "#{OctopusHostName}"
-    },
-    {
       "Id": "1f3308bc-4d83-a441-5eee-9042762f4a9b",
       "Name": "KeyVaultResourceId",
       "Value": "#{KeyVaultResourceId}"
@@ -53,6 +48,11 @@
       "Id": "fea81dc9-c5dd-c051-e911-a529c528ef3f",
       "Name": "AutomationRegistrationUrl",
       "Value": "#{AutomationRegistrationUrl}"
+    },
+    {
+      "Id": "fe46a403-dd0c-821e-81ff-27fece3e88b6",
+      "Name": "AzureRegionValue",
+      "Value": "#{AzureRegionValue}"
     }
   ],
   "RelatedDocumentIds": []

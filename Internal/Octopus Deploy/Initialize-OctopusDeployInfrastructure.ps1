@@ -1,7 +1,4 @@
 function Initialize-OctopusDeployInfrastructure {
-    Write-Host 'Creating Octopus Deploy SQL Database...'
-    Invoke-SharedScript AzureSQL 'New-AzureSQLDatabase' -ResourceGroupName $CurrentContext.Get('InfraRg') -ServerName $CurrentContext.Get('SqlServerName') -DatabaseName 'OctopusDeploy'
-
     Write-Host
     Write-Host 'Deploying Octopus Deploy ARM Infrastructure...'
     $CurrentContext.Set('OctopusRg', 'OctopusStack#{UDP}')

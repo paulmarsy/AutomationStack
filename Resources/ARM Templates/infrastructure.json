@@ -146,6 +146,18 @@
                     "uri": "https://www.powershellgallery.com/api/v2/package/PackageManagementProviderResource/1.0.3"
                 }
             }
+        }, {
+            "name": "[concat(variables('automationName'), '/', 'xSystemSecurity')]",
+            "type": "microsoft.automation/automationAccounts/Modules",
+            "apiVersion": "2015-10-31",
+            "dependsOn": [
+                "[concat('Microsoft.Automation/automationAccounts/', variables('automationName'))]"
+            ],
+            "properties": {
+                "contentLink": {
+                    "uri": "https://www.powershellgallery.com/api/v2/package/xSystemSecurity/1.2.0.0"
+                }
+            }
         }]
     }]
 }

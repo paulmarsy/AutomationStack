@@ -1,8 +1,11 @@
 function Write-DeploymentUpdate {
-    param($SequenceNumber, $TotalStages, $ProgressText, $Heading)
+    param($StageNumber, $ProgressText, $LineOneText, $LineTwoText)
 
-    $text = '{0}{1}{0}' -f (' '*3), $Heading
-    Write-Progress -Activity ('AutomationStack Deployment - Stage #{0} of {1}' -f $SequenceNumber, $TotalStages) -Status $ProgressText -PercentComplete ($SequenceNumber/$TotalStages*100) 
+    $lineTwo = '{0}{1}{0}' -f (' '*3), $LineTwoText
+    $lineOne = $LineOneText.PadLeft(($lineTwo.Length / 2) + ($LineOneText.Length / 2)).PadRight($lineTwo.Length)
+    $leftPadding = [System.Math]::Floor((($Host.UI.RawUI.BufferSize.Width-4) - $lineTwo.Length) / 2)
+    $rightPadding = $leftPadding+($lineOne.Length % 2)
+    Write-Progress -Activity ('AutomationStack Deployment - Stage #{0} of {1}' -f $StageNumber, $TotalDeploymentStages) -Status $ProgressText -PercentComplete ($StageNumber/$TotalDeploymentStages*100) 
     Write-Host 
     # Box corner, line for top of box, box corner
     Write-Host -ForegroundColor White (@(
@@ -10,17 +13,17 @@ function Write-DeploymentUpdate {
         ([string][char]0x2554)
         ([string][char]0x2550)*($Host.UI.RawUI.BufferSize.Width-4)
         ([string][char]0x2557)) -join '')
-    # Box edge
+    # Line One
     Write-Host -ForegroundColor White -NoNewLine (@(' ',([string][char]0x2551)) -join '')
-    # Left spacing so the center of the text is the center of the console
-    $padding = [System.Math]::Floor((($Host.UI.RawUI.BufferSize.Width-4) - $text.Length) / 2)
-    Write-Host -NoNewLine (" "*$padding)
-    # The heading..
-    Write-Host -NoNewLine -BackgroundColor DarkCyan -ForegroundColor White $text
-    if ($text.Length % 2 -eq 1) { $padding++ }
-    # Right spacing to place the far right box edge
-    Write-Host -NoNewLine (" "*$padding)
-    # Box edge
+    Write-Host -NoNewLine (" "*$leftPadding)
+    Write-Host -NoNewLine -BackgroundColor DarkCyan -ForegroundColor White $lineOne
+    Write-Host -NoNewLine (" "*$rightPadding)
+    Write-Host -ForegroundColor White ([string][char]0x2551)
+    # Line Two
+    Write-Host -ForegroundColor White -NoNewLine (@(' ',([string][char]0x2551)) -join '')
+    Write-Host -NoNewLine (" "*$leftPadding)
+    Write-Host -NoNewLine -BackgroundColor DarkCyan -ForegroundColor White $lineTwo
+    Write-Host -NoNewLine (" "*$rightPadding)
     Write-Host -ForegroundColor White ([string][char]0x2551)
     # Box corner, line for bottom of box, box corner
     Write-Host -ForegroundColor White (@(

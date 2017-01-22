@@ -14,9 +14,11 @@ Configuration TeamCity
     Import-DscResource -ModuleName xPSDesiredStateConfiguration
     Import-DscResource -ModuleName xNetworking
     Import-DscResource -ModuleName PackageManagementProviderResource
-    
+    Import-DscResource -ModuleName xSystemSecurity
+
     Node Server
     {
+        #include <Common>
         #include <TeamCityCommon>
         
         xFirewall TeamCityServerFirewall
@@ -67,6 +69,7 @@ Configuration TeamCity
 
     Node CloudAgent
     {
+        #include <Common>
         #include <TeamCityCommon>
         
         xFirewall TeamCityAgentFirewall

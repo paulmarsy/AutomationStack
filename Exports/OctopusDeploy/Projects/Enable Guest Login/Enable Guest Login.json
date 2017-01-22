@@ -1,13 +1,13 @@
 {
   "$type": "Octopus.Core.Model.Projects.Project, Octopus.Core",
-  "Id": "Projects-22",
+  "Id": "Projects-3",
   "Name": "Enable Guest Login",
   "Description": "",
   "Slug": "enable-guest-login",
   "IsDisabled": false,
-  "VariableSetId": "variableset-Projects-22",
-  "DeploymentProcessId": "deploymentprocess-Projects-22",
-  "ProjectGroupId": "ProjectGroups-22",
+  "VariableSetId": "variableset-Projects-3",
+  "DeploymentProcessId": "deploymentprocess-Projects-3",
+  "ProjectGroupId": "ProjectGroups-23",
   "LifecycleId": "Lifecycles-25",
   "AutoCreateRelease": false,
   "IncludedLibraryVariableSetIds": [],
@@ -28,6 +28,6 @@
     "TargetRoles": []
   },
   "AutoDeployReleaseOverrides": [],
-  "LogoAttachmentKey": "Projects-22",
+  "LogoAttachmentKey": "Projects-3",
   "LogoAttachmentMimeType": "image/png"
 }

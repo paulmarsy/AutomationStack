@@ -18,7 +18,7 @@ function Install-AzureReqs {
                 Write-Warning 'You do not have required Azure PowerShell Modules present to continue, and Administrator / UAC elevation is needed to install them'
                 Write-Warning 'An elevated PowerShell prompt is being opened, where this process will continue...'
                 Start-Process -WorkingDirectory $PWD.ProviderPath -FilePath 'powershell.exe' -Verb 'RunAs' -ArgumentList @('-NoExit','-Command','& { irm https://git.io/automationstack | iex }')
-                break
+                break execution
              }
 
             Write-Host 'Configuring PowerShell 5 Package Management...'

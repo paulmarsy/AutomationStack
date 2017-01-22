@@ -9,9 +9,12 @@ Configuration OctopusDeploy
     Import-DscResource -ModuleName PSDesiredStateConfiguration
     Import-DscResource -ModuleName xPSDesiredStateConfiguration
     Import-DscResource -ModuleName xNetworking
+    Import-DscResource -ModuleName xSystemSecurity
 
     Node "Server"
     {
+        #include <Common>
+
         xFirewall OctopusDeployServer
         {
             Name                  = "OctopusServer"

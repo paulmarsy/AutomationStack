@@ -2,7 +2,7 @@ param(
     [string]$UDP
 )
 
-$ErrorActionPreference = 'Stop'
+$script:ErrorActionPreference = 'Stop'
 
 $script:ExportsPath = Join-Path -Resolve $PSScriptRoot 'Exports' | Convert-Path
 $script:ResourcesPath = Join-Path -Resolve $PSScriptRoot 'Resources' | Convert-Path
@@ -17,6 +17,8 @@ if (!(Test-Path $TempPath)) { New-Item -ItemType Directory -Path $TempPath | Out
 $script:TempPath = Get-Item -Path $TempPath | % FullName
 
 $script:ConcurrentNetTasks = 20
+$script:TotalDeploymentStages = 10
+
 
 . (Join-Path $PSScriptRoot 'Classes\Loader.ps1')
 Get-ChildItem -File -Filter *.ps1 -Path (Join-Path $PSScriptRoot 'Internal') -Recurse | % { . "$($_.FullName)" }

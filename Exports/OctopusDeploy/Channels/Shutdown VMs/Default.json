@@ -1,9 +1,9 @@
 {
   "$type": "Octopus.Core.Model.Projects.Channel, Octopus.Core",
-  "Id": "Channels-7",
+  "Id": "Channels-9",
   "Name": "Default",
   "Description": null,
-  "ProjectId": "Projects-7",
+  "ProjectId": "Projects-9",
   "LifecycleId": null,
   "IsDefault": true,
   "TenantTags": [],

@@ -3,7 +3,7 @@
   "Id": "ActionTemplates-7",
   "Name": "Import-TeamCityConfig",
   "Description": null,
-  "Version": 2,
+  "Version": 5,
   "ActionType": "Octopus.AzurePowerShell",
   "CommunityActionTemplateId": null,
   "Properties": {
@@ -12,7 +12,7 @@
     "Octopus.Action.Script.ScriptSource": "Package",
     "Octopus.Action.Script.ScriptFileName": "Import-TeamCityConfig.ps1",
     "Octopus.Action.Package.PackageId": "AutomationStackScripts.Automation",
-    "Octopus.Action.Script.ScriptParameters": "-Path '#{Path}' -InfraRg '#{InfraRg}' -AutomationAccountName '#{AutomationAccountName}' -OctopusServerUrl '#{OctopusHostHeader}' -OctopusApiKey '#{APIKey}' -OctopusEnvironment '#{OctopusEnvironment}' -OctopusRole '#{OctopusRole}' -OctopusDisplayName '#{OctopusDisplayName}'"
+    "Octopus.Action.Script.ScriptParameters": "-Path '#{Path}' -InfraRg '#{InfraRg}' -AutomationAccountName '#{AutomationAccountName}' -OctopusServerUrl '#{OctopusHostHeader}' -OctopusApiKey '#{APIKey}' -OctopusEnvironment '#{OctopusEnvironment}' -OctopusRole '#{OctopusRole}' -OctopusDisplayName '#{OctopusDisplayName}' -HostHeader '#{TeamCityHostHeader}' -TeamCityVersion '#{TeamCityVersion}'"
   },
   "Parameters": [
     {
@@ -48,6 +48,16 @@
     {
       "Id": "a77f88c3-4bd3-459f-9f6f-f4390b0ff1ff",
       "Name": "OctopusDisplayName",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": null,
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "57adf4a9-b599-4484-8b6e-d8a16a5b34c3",
+      "Name": "TeamCityVersion",
       "Label": "",
       "HelpText": null,
       "DefaultValue": null,

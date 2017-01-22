@@ -1,4 +1,4 @@
 #include <Octopus\OctopusTentacle>
-#include <TeamCity\7Zip>
-#include <TeamCity\JDK>
+#include <software\7Zip>
+#include <software\JDK>
 #include <TeamCity\TCArchive>

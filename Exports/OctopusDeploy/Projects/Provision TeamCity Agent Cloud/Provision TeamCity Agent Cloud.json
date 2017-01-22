@@ -1,13 +1,13 @@
 {
   "$type": "Octopus.Core.Model.Projects.Project, Octopus.Core",
-  "Id": "Projects-6",
+  "Id": "Projects-8",
   "Name": "Provision TeamCity Agent Cloud",
   "Description": "",
   "Slug": "provision-teamcity-agent-cloud",
   "IsDisabled": false,
-  "VariableSetId": "variableset-Projects-6",
-  "DeploymentProcessId": "deploymentprocess-Projects-6",
-  "ProjectGroupId": "ProjectGroups-23",
+  "VariableSetId": "variableset-Projects-8",
+  "DeploymentProcessId": "deploymentprocess-Projects-8",
+  "ProjectGroupId": "ProjectGroups-24",
   "LifecycleId": "Lifecycles-21",
   "AutoCreateRelease": false,
   "IncludedLibraryVariableSetIds": [
@@ -32,6 +32,6 @@
     "TargetRoles": []
   },
   "AutoDeployReleaseOverrides": [],
-  "LogoAttachmentKey": "Projects-6",
+  "LogoAttachmentKey": "Projects-8",
   "LogoAttachmentMimeType": "image/png"
 }

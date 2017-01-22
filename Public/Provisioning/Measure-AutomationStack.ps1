@@ -1,7 +1,7 @@
 function Measure-AutomationStack {
     $metrics = New-Object AutoMetrics $CurrentContext
     $elapsed = [timespan]::Zero
-    1..9 | % {
+    (1..$TotalDeploymentStages) | % {
         $elapsed = $elapsed.Add($metrics.GetRaw($_))
         New-Object psobject -Property @{
             Stage = $_

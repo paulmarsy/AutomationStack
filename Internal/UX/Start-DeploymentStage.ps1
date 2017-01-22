@@ -1,19 +1,19 @@
 function Start-DeploymentStage {
-    param($SequenceNumber, $TotalStages, $ProgressText, $Heading, $ScriptBlock, [switch]$WhatIf)
+    param($StageNumber, $Heading, $ScriptBlock, [switch]$WhatIf)
     
     $RetryAttemptsAllowed = 2
 
     $attempt = 0
-    $currentHeading = $Heading
+    $currentLineOneText = 'Stage #{0} of {1}' -f $StageNumber, $TotalDeploymentStages
     while ($attempt -lt $RetryAttemptsAllowed) {
         $attempt++
-        Write-DeploymentUpdate -SequenceNumber $SequenceNumber -TotalStages $TotalStages -ProgressText $ProgressText -Heading $currentHeading
+        Write-DeploymentUpdate -StageNumber $StageNumber -ProgressText $Heading -LineOneText $currentLineOneText -LineTwoText $Heading
 
         try {
             if ($null -ne $CurrentContext -and -not $WhatIf) { 
                 $metrics = New-Object AutoMetrics $CurrentContext
-                $metrics.Start($SequenceNumber, $Heading) }
-            if ($WhatIf -and $SequenceNumber -notin @(1, 10)) {
+                $metrics.Start($StageNumber, $Heading) }
+            if ($WhatIf -and $StageNumber -notin @(1, 10)) {
                 Write-Host 'Skipping in WhatIf mode'
                 Start-Sleep -Seconds 1
             } else {
@@ -22,22 +22,22 @@ function Start-DeploymentStage {
             $attempt = $RetryAttemptsAllowed
         }
         catch {
-           if (Test-ExceptionComplete $_.Exception.InnerException) { Write-Verbose "Inner Exception" }
-           elseif (Test-ExceptionComplete $_.Exception.GetBaseException()) { Write-Verbose "Base Exception" }
-           elseif (Test-ExceptionComplete $_.Exception) { Write-Verbose "Exception" }
-           else {
-               $_ | Format-List -Force | Out-Host
-           }
-            
-            if ($attempt -eq $RetryAttemptsAllowed) {
-                throw $baseException
+            if (!(Write-ResolvedException $_.Exception.InnerException)) {
+                $global:AutomationException = $_
+                Write-Warning 'Unable to resolve exception, check variable $AutomationException'
             }
-            Write-Warning 'Retrying stage in 30 seconds...'
+
+            Write-Host
+            if ($attempt -eq $RetryAttemptsAllowed) {
+                Write-Host -ForegroundColor Red 'FATAL: Retry attempts exceeded'
+                break execution
+            }
+            Write-Host 'Retrying stage in 30 seconds...'
             Start-Sleep -Seconds 30
-            $currentHeading = ('{0} (Attempt #{1} of {2})' -f $Heading, ($attempt + 1), $RetryAttemptsAllowed)
+            $currentLineOneText = 'Stage #{0} of {1} (Attempt #{2} of {3})' -f $StageNumber, $TotalDeploymentStages, ($attempt + 1), $RetryAttemptsAllowed
         }
                 
     }
     if ($null -eq $metrics) { $metrics = New-Object AutoMetrics $CurrentContext }
-    $metrics.Finish($SequenceNumber)
+    $metrics.Finish($StageNumber)
 }
