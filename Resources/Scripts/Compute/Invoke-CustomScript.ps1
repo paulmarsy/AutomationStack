@@ -34,7 +34,7 @@ Write-Host 'Waiting for script to run...'
 $logPosition = 0
 do {
         Start-Sleep 1
-        $logFileBlobRef.DownloadText() | Split-String -NewLine | Select-Object -Skip $logPosition | % { $logPosition++; $_ | Out-Host }
+        $logFileBlobRef.DownloadText() -split "`n" | Select-Object -Skip $logPosition | % { $logPosition++; $_ | Out-Host }
 } while ($job.State -eq 'Running')
 
 if ($job.State -ne 'Completed') {
