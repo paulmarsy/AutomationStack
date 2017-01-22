@@ -2,7 +2,7 @@ function New-AutomationStack {
     param(
         [Parameter()][switch]$WhatIf,
         [Parameter(DontShow)][switch]$SkipChecks,
-        [Parameter(DontShow)][int[]]$Stages = (1..$TotalDeploymentStages)
+        [Parameter(DontShow)][int[]]$Stages
     )
     DynamicParam {
         $Dictionary = New-Object System.Management.Automation.RuntimeDefinedParameterDictionary
@@ -19,6 +19,15 @@ function New-AutomationStack {
         if (!$SkipChecks) {
             Install-AzureReqs -Basic
             Connect-AzureRm
+        }
+        if (!$Stages) {
+            if ($null -eq $CurrentContext) {
+                $Stages = 1..$TotalDeploymentStages
+            } else {
+                $lastSuccessfulStage = $CurrentContext.Get('LastSuccessfulStage')
+                Write-Host -ForegroundColor Magenta "Resuming deployment from stage $lastSuccessfulStage"
+                $Stages = $lastSuccessfulStage..$TotalDeploymentStages
+            }  
         }
     }
     process{
@@ -117,6 +126,7 @@ function New-AutomationStack {
                     }
                 }
                 Start-DeploymentStage -StageNumber $StageNumber -Heading $Heading -ScriptBlock $ScriptBlock -WhatIf:$WhatIf
+                $CurrentContext.Set('LastSuccessfulStage', $StageNumber)
             }
         }
         finally {   
