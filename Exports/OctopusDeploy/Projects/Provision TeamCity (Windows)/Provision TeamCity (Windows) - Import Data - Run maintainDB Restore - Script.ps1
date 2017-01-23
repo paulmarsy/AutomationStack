@@ -1,1 +1,2 @@
+[System.Environment]::SetEnvironmentVariable('TEAMCITY_DATA_PATH', "${env:ALLUSERSPROFILE}\JetBrains\TeamCity", [System.EnvironmentVariableTarget]::Process)
 & C:\TeamCity\bin\maintainDB.cmd restore -F $ArchivePath -T $DatabaseConfig

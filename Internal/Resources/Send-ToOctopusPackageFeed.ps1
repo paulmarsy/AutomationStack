@@ -16,5 +16,7 @@ function Send-ToOctopusPackageFeed {
     $wc = new-object System.Net.WebClient
     $uri = '{0}api/packages/raw?apiKey={1}' -f $CurrentContext.Get('OctopusHostHeader'), $CurrentContext.Get('ApiKey')
     $wc.UploadFile($uri, $packageFile) | Out-Null
+
+    Remove-Item -Path $packageFile -Force
     Write-Host 'done'
 }

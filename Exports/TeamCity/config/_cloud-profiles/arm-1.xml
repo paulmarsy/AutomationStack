@@ -8,7 +8,7 @@
     <param name="images_data">[{"imageUrl":"https://#{StackResourcesName}.blob.core.windows.net/images/TCAgentVM.image.vhd","osType":"Windows","networkId":"/subscriptions/#{AzureSubscriptionId}/resourceGroups/#{InfraRg}/providers/Microsoft.Network/virtualNetworks/VirtualNetwork","subnetId":"Default","maxInstances":1,"vmNamePrefix":"#{AgentCloudName}","vmPublicIp":false,"vmSize":"Standard_F4s","vmUsername":"#{StackAdminUsername}","reuseVm":true}]</param>
     <param name="location">#{AzureRegionValue}</param>
     <param name="secure:clientSecret">#{Encoding[TeamCityScramble].ServicePrincipalClientSecret}</param>
-    <param name="secure:passwords_data">#{Encoding[TeamCityScramble].AgentCloudPasswordData}/param>
+    <param name="secure:passwords_data">#{Encoding[TeamCityScramble].AgentCloudPasswordData}</param>
     <param name="subscriptionId">#{AzureSubscriptionId}</param>
     <param name="system.cloud.profile_id">arm-1</param>
     <param name="tenantId">#{AzureTenantId}</param>
