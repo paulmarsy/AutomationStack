@@ -45,7 +45,7 @@ function Publish-StackResources {
     if ($Upload -in @('All','OctopusDeploy')) {
         Write-Host
         Write-Host -ForegroundColor Green "`tUploading Octopus Deploy Data Import..."
-        Upload-ToFileShare -FileShareName octopusdeploy -Source (Join-Path -Resolve $ExportsPath 'OctopusDeploy') -TokeniseFiles @('metadata.json','server.json','Automation Stack Parameters-VariableSet.json','Microsoft Azure Service Principal.json','Tentacle Auth.json','#{ApiKeyId}.json','#{StackAdminUsername}.json') -Context $stackresources -ResetStorage:$ResetStorage -Octosprache $clonedContext
+        Upload-ToFileShare -FileShareName octopusdeploy -Source (Join-Path -Resolve $ExportsPath 'OctopusDeploy') -TokeniseFiles @('metadata.json','server.json','Automation Stack Parameters-VariableSet.json','Microsoft Azure Service Principal.json','Tentacle Auth.json','#{Encoding[OctopusApiKeyId].ApiKey}.json','#{StackAdminUsername}.json') -Context $stackresources -ResetStorage:$ResetStorage -Octosprache $clonedContext
     }
     if ($Upload -in @('All','TeamCity')) {
         Write-Host

@@ -1,6 +1,6 @@
 {
   "$type": "Octopus.Core.Model.Projects.ProjectTrigger.ProjectTrigger, Octopus.Core",
-  "Id": "ProjectTriggers-21",
+  "Id": "ProjectTriggers-3",
   "Name": "Continue with Agent Image Capture",
   "ProjectId": "Projects-8",
   "Filter": {

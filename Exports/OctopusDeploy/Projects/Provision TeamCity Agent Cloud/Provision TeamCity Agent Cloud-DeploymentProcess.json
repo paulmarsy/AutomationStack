@@ -2,7 +2,7 @@
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
   "Id": "deploymentprocess-Projects-8",
   "OwnerId": "Projects-8",
-  "Version": 60,
+  "Version": 61,
   "Steps": [
     {
       "Id": "960b4de1-2296-4d97-b547-def57ea373fa",
@@ -62,14 +62,11 @@
             "Octopus.Action.Script.ScriptSource": "Package",
             "Octopus.Action.Script.ScriptFileName": "Import-TeamCityConfig.ps1",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Automation",
-            "Octopus.Action.Script.ScriptParameters": "-Path '#{Path}' -InfraRg '#{InfraRg}' -AutomationAccountName '#{AutomationAccountName}' -OctopusServerUrl '#{OctopusHostHeader}' -OctopusApiKey '#{APIKey}' -OctopusEnvironment '#{OctopusEnvironment}' -OctopusRole '#{OctopusRole}' -OctopusDisplayName '#{OctopusDisplayName}' -HostHeader '#{TeamCityHostHeader}' -TeamCityVersion '#{TeamCityVersion}'",
-            "Octopus.Action.Template.Id": "ActionTemplates-7",
-            "Octopus.Action.Template.Version": "5",
+            "Octopus.Action.Script.ScriptParameters": "-Path '#{Path}' -InfraRg '#{InfraRg}' -AutomationAccountName '#{AutomationAccountName}' -OctopusServerUrl '#{OctopusHostHeader}' -OctopusApiKey '#{APIKey}' -HostHeader '#{TeamCityHostHeader}' -TeamCityVersion '#{TeamCityVersion}'",
             "Path": "#{DSCConfigFile}",
-            "OctopusEnvironment": "#{Octopus.Environment.Name}",
-            "OctopusRole": "TeamCity Agent Image",
-            "OctopusDisplayName": "TeamCity Agent",
-            "TeamCityVersion": "#{TeamCityVersion}"
+            "TeamCityVersion": "#{TeamCityVersion}",
+            "Octopus.Action.Template.Id": "ActionTemplates-7",
+            "Octopus.Action.Template.Version": "6"
           }
         }
       ],
@@ -102,7 +99,7 @@
             "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName '#{ResourceGroupName}' -Location '#{Location}'",
             "ResourceGroupName": "#{ResourceGroup}",
             "Location": "#{AzureRegion}",
-            "Octopus.Action.Template.Id": "ActionTemplates-9",
+            "Octopus.Action.Template.Id": "ActionTemplates-10",
             "Octopus.Action.Template.Version": "6"
           }
         }
@@ -171,7 +168,7 @@
             "Octopus.Action.Script.ScriptFileName": "Invoke-CustomScript.ps1",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Compute",
             "Octopus.Action.Script.ScriptParameters": "-Name '#{Name}' -ResourceGroupName '#{ResourceGroupName}' -VMName '#{VMName}' -Location '#{Location}' -StorageAccountName '#{StorageAccountName}' -StorageAccountKey '#{StorageAccountKey}'",
-            "Octopus.Action.Template.Id": "ActionTemplates-11",
+            "Octopus.Action.Template.Id": "ActionTemplates-8",
             "Octopus.Action.Template.Version": "3",
             "Location": "#{AzureRegion}",
             "StorageAccountName": "#{StackResourcesName}",
@@ -320,7 +317,7 @@
             "Octopus.Action.Script.ScriptFileName": "Remove-ResourceGroup.ps1",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Resources",
             "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName '#{ResourceGroupName}' -PassThru '#{PassThru}'",
-            "Octopus.Action.Template.Id": "ActionTemplates-10",
+            "Octopus.Action.Template.Id": "ActionTemplates-11",
             "Octopus.Action.Template.Version": "1",
             "ResourceGroupName": "#{ResourceGroup}"
           }

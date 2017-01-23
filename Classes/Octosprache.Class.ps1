@@ -28,14 +28,14 @@ class Octosprache {
         return $this.VariableDictionary.Evaluate($Expression)
     }
     ParseFile($FilePath) {
-        $content = Get-Content -Path $FilePath -Raw
+        $content = Get-Content -LiteralPath $FilePath -Raw
         $tokenised = $this.Eval($content)
-        Set-Content -Path $FilePath -Value $tokenised -Encoding ASCII
+        Set-Content -LiteralPath $FilePath -Value $tokenised -Encoding ASCII
     }
     ParseFile($From, $To) {
-        $content = Get-Content -Path $From -Raw
+        $content = Get-Content -LiteralPath $From -Raw
         $tokenised = $this.Eval($content)
-        Set-Content -Path $To -Value $tokenised -Encoding ASCII
+        Set-Content -LiteralPath $To -Value $tokenised -Encoding ASCII
     }
     [Octosprache] Clone() {
         $clone = New-Object Octosprache

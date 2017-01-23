@@ -1,6 +1,6 @@
 {
   "$type": "Octopus.Core.Model.Projects.ProjectTrigger.ProjectTrigger, Octopus.Core",
-  "Id": "ProjectTriggers-22",
+  "Id": "ProjectTriggers-2",
   "Name": "Import TeamCity Initial Data",
   "ProjectId": "Projects-7",
   "Filter": {

@@ -1,6 +1,6 @@
 {
   "$type": "Octopus.Core.Model.Projects.ActionTemplate, Octopus.Core",
-  "Id": "ActionTemplates-11",
+  "Id": "ActionTemplates-8",
   "Name": "Invoke-CustomScript",
   "Description": null,
   "Version": 3,

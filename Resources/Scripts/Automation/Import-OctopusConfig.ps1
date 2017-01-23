@@ -8,7 +8,7 @@ Remove-Item -Path $tempFile -Force
 
 $configurationDataFile = [System.IO.Path]::ChangeExtension($Path, 'psd1')
 if (Test-Path $configurationDataFile) {
-    $configurationData = & $configurationDataFile
+    $configurationData = Invoke-Expression (Get-Content $configurationDataFile -Raw)
 } else {
     $configurationData =  @{AllNodes = @()}
 }

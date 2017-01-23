@@ -1,6 +1,6 @@
 {
   "$type": "Octopus.Core.Model.Projects.ActionTemplate, Octopus.Core",
-  "Id": "ActionTemplates-8",
+  "Id": "ActionTemplates-9",
   "Name": "New-AzureSQLDatabase",
   "Description": null,
   "Version": 3,

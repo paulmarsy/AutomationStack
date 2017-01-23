@@ -22,7 +22,7 @@ function Start-DeploymentStage {
             $attempt = $RetryAttemptsAllowed
         }
         catch {
-            if (!(Write-ResolvedException $_.Exception.InnerException)) {
+            if (!(Write-ResolvedException $_.Exception.InnerException -and !(Write-ResolvedException $_.Exception))) {
                 $global:AutomationException = $_
                 Write-Warning 'Unable to resolve exception, check variable $AutomationException'
             }

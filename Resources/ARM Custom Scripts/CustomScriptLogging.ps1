@@ -1,10 +1,12 @@
 param($LogFileName, $StorageAccountName, $StorageAccountKey, $ContainerName = 'scriptlogs')
 
 if (!(Get-Module -ListAvailable -Name Azure.Storage)) {
+    New-Item -Path "$env:APPDATA\Windows Azure Powershell" -Type Directory | Out-Null
+    Set-Content -Path "$env:APPDATA\Windows Azure Powershell\AzureDataCollectionProfile.json" -Value '{"enableAzureDataCollection":false}'
+
     Install-PackageProvider -Name NuGet -Force | Out-Null
     Set-PSRepository -Name PSGallery -InstallationPolicy Trusted | Out-Null
     Install-Module Azure.Storage -Force  -WarningAction Ignore
-    Disable-AzureDataCollection
 }
 Import-Module Azure.Storage -Force -Global
 if (!(Test-Path 'C:\CustomScriptLogs')) { New-Item -ItemType Directory -Path 'C:\CustomScriptLogs' | Out-Null }

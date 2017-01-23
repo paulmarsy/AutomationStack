@@ -29,7 +29,7 @@
             "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName '#{ResourceGroupName}' -PassThru '#{PassThru}'",
             "ResourceGroupName": "#{ResourceGroup}",
             "PassThru": "True",
-            "Octopus.Action.Template.Id": "ActionTemplates-10",
+            "Octopus.Action.Template.Id": "ActionTemplates-11",
             "Octopus.Action.Template.Version": "1"
           }
         }
