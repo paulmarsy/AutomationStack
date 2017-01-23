@@ -20,6 +20,7 @@ function Suspend-AutomationStack {
     $blobName = 'OctopusVM-OS.vhd'
     Write-Host "Copying $blobName from $($srcContext.StorageAccountName) to $($dstContext.StorageAccountName)... "
     $copyBlob = Start-AzureStorageBlobCopy -Context $srcContext -SrcContainer vhds -SrcBlob $blobName -DestContext $dstContext -DestContainer images -DestBlob $blobName -Force -Verbose
+    $copyState = $copyBlob | Get-AzureStorageBlobCopyState
     while ($copyState.Status -ne "Success")
     {   
         Start-Sleep -Seconds 5

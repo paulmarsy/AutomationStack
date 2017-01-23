@@ -4,7 +4,8 @@ function Upload-ToFileShare {
         [string]$FileShareName,
         [string[]]$TokeniseFiles,
         $Context,
-        [switch]$ResetStorage
+        [switch]$ResetStorage,
+        $Octosprache
     )
 
     $fileShare = Get-AzureStorageShare -Name $FileShareName -Context $Context -ErrorAction SilentlyContinue
@@ -19,7 +20,7 @@ function Upload-ToFileShare {
         [Console]::WriteLine("  Runspace ID`tAction`t`t`tFile`n$('-'*120)")
     $sourcePath = Get-Item -Path $Source | % FullName
     Get-ChildItem -Path $sourcePath -Recurse -Directory | % {
-        $dest = $CurrentContext.Eval($_.FullName.Substring($sourcePath.Length+1).Replace('\','/'))
+        $dest = $Octosprache.Eval($_.FullName.Substring($sourcePath.Length+1).Replace('\','/'))
         [void][System.Console]::Out.WriteLineAsync("  -`t`tCreate Directory`t$dest")
         New-AzureStorageDirectory -Share $fileShare -Path $dest -ConcurrentTaskCount $ConcurrentNetTasks -ErrorAction Ignore | Out-Null
     }
@@ -34,7 +35,7 @@ function Upload-ToFileShare {
             $item = $items[$_]
             if ($item.Name -in $TokeniseFiles) {
                     $sourceFile = (Join-Path $TempPath $item.Name)
-                    $CurrentContext.ParseFile($item.FullName, $sourceFile)
+                    $Octosprache.ParseFile($item.FullName, $sourceFile)
                     $tokenised = $true
             } else {
                     $sourceFile = $item.FullName
@@ -42,7 +43,7 @@ function Upload-ToFileShare {
             }
             @{
                 Tokenised = $tokenised
-                Dest = $CurrentContext.Eval($item.FullName.Substring($sourcePath.Length+1).Replace('\','/'))
+                Dest = $Octosprache.Eval($item.FullName.Substring($sourcePath.Length+1).Replace('\','/'))
                 Source = $sourceFile
             }
         })

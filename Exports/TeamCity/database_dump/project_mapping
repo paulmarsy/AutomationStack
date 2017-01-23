@@ -1,2 +1,4 @@
 int_id, ext_id, main
 _Root, _Root, 1
+project1, TestProject, 1
+project1, TestProjects, 0

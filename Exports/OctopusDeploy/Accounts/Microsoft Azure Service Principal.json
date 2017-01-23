@@ -3,7 +3,7 @@
   "SubscriptionNumber": "#{AzureSubscriptionId}",
   "ClientId": "#{ServicePrincipalClientId}",
   "TenantId": "#{AzureTenantId}",
-  "Password": "#{ServicePrincipalPassword}",
+  "Password": "#{Encoding[OctopusEncrypt].ServicePrincipalClientSecret}",
   "Id": "azureserviceprincipal-microsoft-azure-service-principal",
   "AccountType": "AzureServicePrincipal",
   "Name": "Microsoft Azure Service Principal",

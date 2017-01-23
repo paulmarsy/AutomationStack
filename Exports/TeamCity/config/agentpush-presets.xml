@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<agentpush-presets>
+  <agentpush-preset name="Azure Agent Cloud" id="1485094788671">
+    <description />
+    <platform>Windows</platform>
+    <installLocation>%SystemDrive%\\buildAgent</installLocation>
+    <user>#{StackAdminUsername}</user>
+    <authenticationScheme>PASSWORD</authenticationScheme>
+    <keyFilePath />
+    <password>#{Encoding[TeamCityScramble].StackAdminPassword}</password>
+    <passphrase>#{Encoding[TeamCityScramble].Null}</passphrase>
+    <runtimeUser />
+    <runtimePassword>#{Encoding[TeamCityScramble].Null}</runtimePassword>
+    <port>22</port>
+  </agentpush-preset>
+</agentpush-presets>

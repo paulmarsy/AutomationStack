@@ -1,0 +1,80 @@
+{
+  "$type": "Octopus.Core.Model.Projects.ActionTemplate, Octopus.Core",
+  "Id": "ActionTemplates-11",
+  "Name": "Invoke-CustomScript",
+  "Description": null,
+  "Version": 3,
+  "ActionType": "Octopus.AzurePowerShell",
+  "CommunityActionTemplateId": null,
+  "Properties": {
+    "Octopus.Action.Package.FeedId": "feeds-builtin",
+    "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
+    "Octopus.Action.Script.ScriptSource": "Package",
+    "Octopus.Action.Script.ScriptFileName": "Invoke-CustomScript.ps1",
+    "Octopus.Action.Package.PackageId": "AutomationStackScripts.Compute",
+    "Octopus.Action.Script.ScriptParameters": "-Name '#{Name}' -ResourceGroupName '#{ResourceGroupName}' -VMName '#{VMName}' -Location '#{Location}' -StorageAccountName '#{StorageAccountName}' -StorageAccountKey '#{StorageAccountKey}'"
+  },
+  "Parameters": [
+    {
+      "Id": "3a36bd6e-2bdd-4af2-bb5b-c1efac4583dc",
+      "Name": "ResourceGroupName",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": "",
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "58e42f0c-d3a3-4ff9-ae2f-e04a1099b893",
+      "Name": "VMName",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": "",
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "5024b8b8-49a1-40d6-b814-ce4fb3ad1982",
+      "Name": "Name",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": null,
+      "DisplaySettings": {
+        "Octopus.ControlType": "Select",
+        "Octopus.SelectOptions": "AutomationNodeCompliance\nOctopusImport"
+      }
+    },
+    {
+      "Id": "30b57c4e-3950-4dfc-a88f-d4112c9a5a90",
+      "Name": "Location",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": "#{AzureRegion}",
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "1ea64529-3610-45ee-a760-f671a372589b",
+      "Name": "StorageAccountName",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": "#{StackResourcesName}",
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "b3306dab-b704-4d16-98e1-93354da3badd",
+      "Name": "StorageAccountKey",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": "#{StackResourcesKey}",
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    }
+  ]
+}

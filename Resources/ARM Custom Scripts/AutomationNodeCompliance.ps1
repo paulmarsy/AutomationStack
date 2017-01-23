@@ -3,7 +3,7 @@ param($LogFileName, $StorageAccountName, $StorageAccountKey)
 
 "{0}[ Waiting for Local Configuration Manager ]{0}" -f ("-"*28) | Write-Log
 $lcm = Get-DscLocalConfigurationManager
-while ($lcm.LCMState -notin @('Idle','PendingConfiguration')) {
+while ($lcm.LCMState -ne 'Idle') {
     "DSC Local Configuration Manager state is $($lcm.LCMState); waiting..." | Write-Log
     Start-Sleep -Seconds 10
     $lcm = Get-DscLocalConfigurationManager

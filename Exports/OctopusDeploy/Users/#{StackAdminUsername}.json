@@ -5,7 +5,7 @@
   "DisplayName": "Admin",
   "EmailAddress": "",
   "Notes": null,
-  "PasswordHashed": "#{OctopusAdminPasswordHash}",
+  "PasswordHashed": "#{Encoding[OctopusHash].StackAdminPassword}",
   "IsActive": true,
   "IsService": false,
   "ApiKey": null,

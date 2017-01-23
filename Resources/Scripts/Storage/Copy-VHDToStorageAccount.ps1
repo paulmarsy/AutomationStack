@@ -20,4 +20,11 @@ if(!$dstContainer) {
 
 Write-Host 'Copying VM Image to Storage Account... '
 $copyBlob = Start-AzureStorageBlobCopy -Context $srcContext -SrcContainer $srcContainer -SrcBlob $srcBlob -DestContext $dstContext -DestContainer images -DestBlob $DstBlob -Force
-$copyBlob | Get-AzureStorageBlobCopyState -WaitForComplete
+$copyState = $copyBlob | Get-AzureStorageBlobCopyState
+while ($copyState.Status -ne "Success")
+{   
+    Start-Sleep -Seconds 5
+    $copyState = $copyBlob | Get-AzureStorageBlobCopyState
+    $percent = ($copyState.BytesCopied / $copyState.TotalBytes) * 100
+    Write-Host "Completed $('{0:N2}' -f $percent)%"
+}

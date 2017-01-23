@@ -1,2 +1,2 @@
 id, username, password, name, email, last_login_timestamp
-1, #{StackAdminUsername}, #{TeamCityPasswordHash}, "", "", 1483361818374
+1, #{StackAdminUsername}, #{Encoding[TeamCityHash].StackAdminPassword}, "", "", 1483361818374

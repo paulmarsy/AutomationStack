@@ -1,2 +1,0 @@
-node_id, starting_code, starting_time, lock_mode, ip_address, additional_info, last_time, update_interval, uuid, app_type, url, access_token, build_number, display_version
-MAIN_SERVER, 853875832, 20170102.121349, W, 10.0.0.5, "IP: 10.0.0.5, Port: 8111, Installation Directory: C:\\TeamCity, Data Directory: C:\\ProgramData\\JetBrains\\TeamCity", 20170102.130021, 60000, fba73f7f-29b0-4ba8-a3cc-8f437622cb17, main_server, http://localhost:8111, 6002155376034452718, 42538, 10.0.4

@@ -4,7 +4,8 @@ function Upload-ToBlobContainer {
         [string]$ContainerName,
         [string[]]$TokeniseFiles,
         $Context,
-        [switch]$ResetStorage
+        [switch]$ResetStorage,
+        $Octosprache
     )
 
     $storageContainer = Get-AzureStorageContainer -Name $ContainerName -Context $Context -ErrorAction SilentlyContinue
@@ -21,7 +22,7 @@ function Upload-ToBlobContainer {
     Get-ChildItem -Path $sourcePath -Recurse -File | % {
         if ($_.Name -in $TokeniseFiles) {
             $sourceFile = Join-Path $TempPath $_.Name
-            $CurrentContext.ParseFile($_.FullName, $sourceFile)
+            $Octosprache.ParseFile($_.FullName, $sourceFile)
             [Console]::WriteLine("  -`t`tTokenise & Upload`t$($_.Name)")
         } else {
             $sourceFile = $_.FullName

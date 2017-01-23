@@ -26,6 +26,7 @@ Get-ChildItem -File -Filter *.ps1 -Path (Join-Path $PSScriptRoot 'Public') -Recu
 Set-ServicePointManager
 
 if ($UDP) {
+    Write-Host "Loading deployment context: $UDP"
     $script:CurrentContext = New-Object Octosprache $UDP
 } else {
     $script:CurrentContext = $null

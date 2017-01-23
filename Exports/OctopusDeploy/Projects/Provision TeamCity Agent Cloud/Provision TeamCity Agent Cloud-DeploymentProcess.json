@@ -2,18 +2,18 @@
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
   "Id": "deploymentprocess-Projects-8",
   "OwnerId": "Projects-8",
-  "Version": 48,
+  "Version": 60,
   "Steps": [
     {
-      "Id": "17f4df42-d6af-4d72-8b14-d0a6f9f89cb6",
-      "Name": "Copy DSC Configurations",
+      "Id": "960b4de1-2296-4d97-b547-def57ea373fa",
+      "Name": "Download DSC Configuration",
       "Condition": "Success",
       "StartTrigger": "StartAfterPrevious",
       "RequiresPackagesToBeAcquired": false,
       "Actions": [
         {
-          "Id": "57f3e4df-e29b-4f68-bff6-2e1750f96c4a",
-          "Name": "Copy DSC Configurations",
+          "Id": "1173c03f-ded0-433b-b85f-cb8ee9ccab30",
+          "Name": "Download DSC Configuration",
           "ActionType": "Octopus.Script",
           "IsDisabled": false,
           "Environments": [],
@@ -27,12 +27,12 @@
             "Octopus.Action.Package.FeedId": "feeds-builtin",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Storage",
             "Octopus.Action.Script.ScriptParameters": "-StorageAccountName '#{StorageAccountName}' -StorageAccountKey '#{StorageAccountKey}' -FileShareName '#{FileShareName}' -LocalPath '#{LocalPath}'",
-            "LocalPath": "dsc",
+            "Octopus.Action.Template.Id": "ActionTemplates-5",
+            "Octopus.Action.Template.Version": "2",
             "StorageAccountName": "#{StackResourcesName}",
             "StorageAccountKey": "#{StackResourcesKey}",
-            "FileShareName": "dsc",
-            "Octopus.Action.Template.Id": "ActionTemplates-5",
-            "Octopus.Action.Template.Version": "2"
+            "LocalPath": "#{DSCConfigPath}",
+            "FileShareName": "dsc"
           }
         }
       ],
@@ -41,14 +41,14 @@
       }
     },
     {
-      "Id": "3e1421c8-0f2a-49d8-8f7a-eabc705031c5",
+      "Id": "4ec43535-5518-42fe-90a3-5cf542e79328",
       "Name": "Import DSC Configuration",
       "Condition": "Success",
       "StartTrigger": "StartAfterPrevious",
       "RequiresPackagesToBeAcquired": false,
       "Actions": [
         {
-          "Id": "cde16212-2b16-4f80-80e9-867ddc5fdc86",
+          "Id": "89ca9f5f-f7e7-4cce-838c-c6b8331fda9e",
           "Name": "Import DSC Configuration",
           "ActionType": "Octopus.AzurePowerShell",
           "IsDisabled": false,
@@ -62,13 +62,14 @@
             "Octopus.Action.Script.ScriptSource": "Package",
             "Octopus.Action.Script.ScriptFileName": "Import-TeamCityConfig.ps1",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Automation",
-            "Octopus.Action.Script.ScriptParameters": "-Path '#{Path}' -InfraRg '#{InfraRg}' -AutomationAccountName '#{AutomationAccountName}' -OctopusServerUrl '#{OctopusHostHeader}' -OctopusApiKey '#{APIKey}' -OctopusEnvironment '#{OctopusEnvironment}' -OctopusRole '#{OctopusRole}' -OctopusDisplayName '#{OctopusDisplayName}'",
+            "Octopus.Action.Script.ScriptParameters": "-Path '#{Path}' -InfraRg '#{InfraRg}' -AutomationAccountName '#{AutomationAccountName}' -OctopusServerUrl '#{OctopusHostHeader}' -OctopusApiKey '#{APIKey}' -OctopusEnvironment '#{OctopusEnvironment}' -OctopusRole '#{OctopusRole}' -OctopusDisplayName '#{OctopusDisplayName}' -HostHeader '#{TeamCityHostHeader}' -TeamCityVersion '#{TeamCityVersion}'",
             "Octopus.Action.Template.Id": "ActionTemplates-7",
-            "Octopus.Action.Template.Version": "0",
-            "Path": "dsc",
-            "OctopusDisplayName": "TeamCity Server",
-            "OctopusRole": "TeamCity Server (Windows)",
-            "OctopusEnvironment": "#{TeamCityRg}"
+            "Octopus.Action.Template.Version": "5",
+            "Path": "#{DSCConfigFile}",
+            "OctopusEnvironment": "#{Octopus.Environment.Name}",
+            "OctopusRole": "TeamCity Agent Image",
+            "OctopusDisplayName": "TeamCity Agent",
+            "TeamCityVersion": "#{TeamCityVersion}"
           }
         }
       ],
@@ -148,14 +149,14 @@
       }
     },
     {
-      "Id": "5e0a3ac7-7ec8-41ce-93ba-34a60c3d7782",
+      "Id": "311a11b7-2c53-4be6-8203-469a3e82ec2f",
       "Name": "Wait for DSC Node Compliance",
       "Condition": "Success",
       "StartTrigger": "StartAfterPrevious",
       "RequiresPackagesToBeAcquired": false,
       "Actions": [
         {
-          "Id": "122750af-9377-4cba-a07b-9b654e99dd92",
+          "Id": "478e3758-8cfe-4d33-9ebd-d171a94ac7b5",
           "Name": "Wait for DSC Node Compliance",
           "ActionType": "Octopus.AzurePowerShell",
           "IsDisabled": false,
@@ -167,14 +168,17 @@
             "Octopus.Action.Package.FeedId": "feeds-builtin",
             "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
             "Octopus.Action.Script.ScriptSource": "Package",
-            "Octopus.Action.Script.ScriptFileName": "Wait-NodeCompliance.ps1",
-            "Octopus.Action.Package.PackageId": "AutomationStackScripts.Automation",
-            "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName '#{ResourceGroupName}' -AutomationAccountName '#{AutomationAccountName}' -NodeName '#{NodeName}'",
-            "ResourceGroupName": "#{InfraRg}",
-            "AutomationAccountName": "#{AutomationAccountName}",
-            "NodeName": "#{VMName}",
+            "Octopus.Action.Script.ScriptFileName": "Invoke-CustomScript.ps1",
+            "Octopus.Action.Package.PackageId": "AutomationStackScripts.Compute",
+            "Octopus.Action.Script.ScriptParameters": "-Name '#{Name}' -ResourceGroupName '#{ResourceGroupName}' -VMName '#{VMName}' -Location '#{Location}' -StorageAccountName '#{StorageAccountName}' -StorageAccountKey '#{StorageAccountKey}'",
             "Octopus.Action.Template.Id": "ActionTemplates-11",
-            "Octopus.Action.Template.Version": "2"
+            "Octopus.Action.Template.Version": "3",
+            "Location": "#{AzureRegion}",
+            "StorageAccountName": "#{StackResourcesName}",
+            "StorageAccountKey": "#{StackResourcesKey}",
+            "ResourceGroupName": "#{ResourceGroup}",
+            "VMName": "#{VMName}",
+            "Name": "AutomationNodeCompliance"
           }
         }
       ],
@@ -265,14 +269,14 @@
     },
     {
       "Id": "1c18cb0a-4d77-40c8-ac9a-833039cc2541",
-      "Name": "Copy VM Images to Stack Resource Storage Account",
+      "Name": "Copy VM Image",
       "Condition": "Success",
       "StartTrigger": "StartAfterPrevious",
       "RequiresPackagesToBeAcquired": false,
       "Actions": [
         {
           "Id": "cae7ebea-cec9-4602-878b-88d60f9f6aa9",
-          "Name": "Copy VM Images to Stack Resource Storage Account",
+          "Name": "Copy VM Image",
           "ActionType": "Octopus.AzurePowerShell",
           "IsDisabled": false,
           "Environments": [],
@@ -285,7 +289,7 @@
             "Octopus.Action.Script.ScriptSource": "Package",
             "Octopus.Action.Script.ScriptFileName": "Copy-VHDToStorageAccount.ps1",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Storage",
-            "Octopus.Action.Script.ScriptParameters": "-VHDUri '#{VHDUri}' -SrcResourceGroupName '#{ResourceGroup}' -DstResourceGroupName '#{InfraRg}' -DstStorageAccount '#{StackResourcesName}'  -DstBlob '#{VMName}.image.vhd'"
+            "Octopus.Action.Script.ScriptParameters": "-VHDUri '#{Octopus.Action[Convert VM to Image].Output.ImageUri}' -SrcResourceGroupName '#{ResourceGroup}' -DstResourceGroupName '#{InfraRg}' -DstStorageAccount '#{StackResourcesName}'  -DstBlob '#{VMName}.image.vhd'"
           }
         }
       ],

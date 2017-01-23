@@ -1,4 +1,4 @@
-param($Path, $InfraRg, $AutomationAccountName, $OctopusServerUrl, $OctopusApiKey, $OctopusEnvironment, $OctopusRole, $OctopusDisplayName, $HostHeader, $TeamCityVersion)
+param($Path, $InfraRg, $AutomationAccountName, $OctopusServerUrl, $OctopusApiKey, $HostHeader, $TeamCityVersion)
 
 $tempFile = & (Join-Path $PSScriptRoot 'Invoke-DSCComposition.ps1') -Path $Path
 
@@ -6,12 +6,16 @@ Import-AzureRmAutomationDscConfiguration -ResourceGroupName $InfraRg -Automation
 
 Remove-Item -Path $tempFile -Force
 
-Start-AzureRmAutomationDscCompilationJob -ResourceGroupName $InfraRg -AutomationAccountName $AutomationAccountName -ConfigurationName 'TeamCity' -Parameters @{
+$configurationDataFile = [System.IO.Path]::ChangeExtension($Path, 'psd1')
+if (Test-Path $configurationDataFile) {
+    $configurationData = & $configurationDataFile
+} else {
+    $configurationData =  @{AllNodes = @()}
+}
+
+Start-AzureRmAutomationDscCompilationJob -ResourceGroupName $InfraRg -AutomationAccountName $AutomationAccountName -ConfigurationName 'TeamCity' -ConfigurationData $configurationData -Parameters @{
     OctopusServerUrl = $OctopusServerUrl
     OctopusApiKey = $OctopusApiKey
-    OctopusEnvironment = $OctopusEnvironment
-    OctopusRole = $OctopusRole
-    OctopusDisplayName = $OctopusDisplayName
     HostHeader = $HostHeader
     TeamCityVersion = $TeamCityVersion
 }

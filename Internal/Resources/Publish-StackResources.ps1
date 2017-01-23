@@ -13,36 +13,44 @@ function Publish-StackResources {
     Write-Host
 
     Write-Host 'Encoding required values for Octopus & TeamCity data import...'
-    $octopusEncoder = New-Object  OctopusEncoder @($CurrentContext, $CurrentContext.Get('StackAdminPassword'))
-    $octopusEncoder.Encrypt('ProtectedImportHello', 'Hello')
-    $octopusEncoder.Encrypt('ServicePrincipalPassword', $CurrentContext.Get('ServicePrincipalClientSecret'))
-    $octopusEncoder.Encrypt('SSHPassword', $CurrentContext.Get('StackAdminPassword'))
-    $octopusEncoder.Hash('OctopusAdminPasswordHash', $CurrentContext.Get('StackAdminPassword')) 
-    $octopusEncoder.Hash('ApiKeyHash', $CurrentContext.Get('ApiKey'))
-    $octopusEncoder.ApiKeyID('ApiKeyId', $CurrentContext.Get('ApiKey'))
+    $clonedContext = $CurrentContext.Clone()
+    $octopusEncoder = New-Object  OctopusEncoder @($clonedContext, $clonedContext.Get('StackAdminPassword'))
+    $octopusEncoder.Encrypt('Hello', 'Hello')
+    $octopusEncoder.Encrypt('ServicePrincipalClientSecret', $clonedContext.Get('ServicePrincipalClientSecret'))
+    $octopusEncoder.Encrypt('StackAdminPassword', $clonedContext.Get('StackAdminPassword'))
+    $octopusEncoder.Hash('StackAdminPassword', $clonedContext.Get('StackAdminPassword')) 
+    $octopusEncoder.Hash('ApiKey', $clonedContext.Get('ApiKey'))
+    $octopusEncoder.ApiKeyID('ApiKey', $clonedContext.Get('ApiKey'))
 
-    $teamCityEncoder = New-Object TeamCityEncoder @($CurrentContext)
-    $teamCityEncoder.Hash('TeamCityPasswordHash', $CurrentContext.Get('StackAdminPassword'))
+    $teamCityEncoder = New-Object TeamCityEncoder @($clonedContext)
+    $teamCityEncoder.Hash('StackAdminPassword', $clonedContext.Get('StackAdminPassword'))
+    $teamCityEncoder.Scramble('Null', $null)
+    $teamCityEncoder.Scramble('StackAdminPassword', $clonedContext.Get('StackAdminPassword'))
+    $agentCloudName = 'AgentStack'
+    $clonedContext.Set('AgentCloudName', $agentCloudName)
+    $agentCloudPasswordData = @{$agentCloudName = $clonedContext.Get('StackAdminPassword') } | ConvertTo-Json -Compress
+    $teamCityEncoder.Scramble('AgentCloudPasswordData', $agentCloudPasswordData)
+    $teamCityEncoder.Scramble('ServicePrincipalClientSecret', $clonedContext.Get('ServicePrincipalClientSecret'))
 
     if ($Upload -in @('All','ARM')) {
         Write-Host
         Write-Host -ForegroundColor Green "`tUploading ARM Custom Scripts..."
-        Upload-ToBlobContainer -ContainerName scripts -Source (Join-Path -Resolve $ResourcesPath 'ARM Custom Scripts') -TokeniseFiles @('OctopusImport.ps1','TeamCityPrepare.sh') -Context $stackresources -ResetStorage:$ResetStorage
+        Upload-ToBlobContainer -ContainerName scripts -Source (Join-Path -Resolve $ResourcesPath 'ARM Custom Scripts') -TokeniseFiles @('OctopusImport.ps1','TeamCityPrepare.sh') -Context $stackresources -ResetStorage:$ResetStorage -Octosprache $clonedContext
     }
     if ($Upload -in @('All','DSC')) {
         Write-Host
         Write-Host -ForegroundColor Green "`tUploading DSC Configurations..."
-        Upload-ToFileShare -FileShareName dsc -Source (Join-Path -Resolve $ResourcesPath 'DSC Configurations') -TokeniseFiles @() -Context $stackresources -ResetStorage:$ResetStorage
+        Upload-ToFileShare -FileShareName dsc -Source (Join-Path -Resolve $ResourcesPath 'DSC Configurations') -TokeniseFiles @() -Context $stackresources -ResetStorage:$ResetStorage -Octosprache $clonedContext
     }
     if ($Upload -in @('All','OctopusDeploy')) {
         Write-Host
         Write-Host -ForegroundColor Green "`tUploading Octopus Deploy Data Import..."
-        Upload-ToFileShare -FileShareName octopusdeploy -Source (Join-Path -Resolve $ExportsPath 'OctopusDeploy') -TokeniseFiles @('metadata.json','server.json','Automation Stack Parameters-VariableSet.json','Microsoft Azure Service Principal.json','Tentacle Auth.json','#{ApiKeyId}.json','#{StackAdminUsername}.json') -Context $stackresources -ResetStorage:$ResetStorage
+        Upload-ToFileShare -FileShareName octopusdeploy -Source (Join-Path -Resolve $ExportsPath 'OctopusDeploy') -TokeniseFiles @('metadata.json','server.json','Automation Stack Parameters-VariableSet.json','Microsoft Azure Service Principal.json','Tentacle Auth.json','#{ApiKeyId}.json','#{StackAdminUsername}.json') -Context $stackresources -ResetStorage:$ResetStorage -Octosprache $clonedContext
     }
     if ($Upload -in @('All','TeamCity')) {
         Write-Host
         Write-Host -ForegroundColor Green "`tUploading TeamCity Data Import..."
-        Upload-ToFileShare -FileShareName teamcity -Source (Join-Path -Resolve $ExportsPath 'TeamCity') -TokeniseFiles @('vcs_username','users','database.properties') -Context $stackresources -ResetStorage:$ResetStorage
+        Upload-ToFileShare -FileShareName teamcity -Source (Join-Path -Resolve $ExportsPath 'TeamCity') -TokeniseFiles @('vcs_username','users','database.properties','agentpush-presets.xml','arm-1.xml') -Context $stackresources -ResetStorage:$ResetStorage -Octosprache $clonedContext
     }
     Write-Host
 }

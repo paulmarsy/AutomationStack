@@ -4,6 +4,5 @@
   "Name": "#{OctopusVMName}",
   "Created": "2017-01-21T04:18:26.2658241+00:00",
   "DatabaseVersion": "3.8.1",
-
-  "Hello": "#{ProtectedImportHello}"
+  "Hello": "#{Encoding[OctopusEncrypt].Hello}"
 }

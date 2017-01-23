@@ -1,16 +1,16 @@
 {
   "$type": "Octopus.Core.Model.Projects.ProjectTrigger.ProjectTrigger, Octopus.Core",
-  "Id": "ProjectTriggers-3",
+  "Id": "ProjectTriggers-21",
   "Name": "Continue with Agent Image Capture",
-  "ProjectId": "Projects-6",
+  "ProjectId": "Projects-8",
   "Filter": {
     "$type": "Octopus.Core.Model.Projects.ProjectTrigger.MachineFilter, Octopus.Core",
-    "EventGroups": [],
-    "EventCategories": [
-      "MachineAdded"
+    "EventGroups": [
+      "MachineAvailableForDeployment"
     ],
+    "EventCategories": [],
     "EnvironmentIds": [
-      "Environments-23"
+      "Environments-1"
     ],
     "Roles": [
       "TeamCity Agent Image"

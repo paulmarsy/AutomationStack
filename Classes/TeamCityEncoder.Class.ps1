@@ -1,6 +1,6 @@
 class TeamCityEncoder {
     TeamCityEncoder([Octosprache]$Octosprache) {
-     $this.Octosprache = $Octosprache
+        $this.Octosprache = $Octosprache
     }
     hidden $Octosprache
     hidden static $Prefix = 'zxx'
@@ -29,7 +29,22 @@ class TeamCityEncoder {
 
         return [System.Text.Encoding]::UTF8.GetString($decodedBytes)
     }
+    Scramble([string]$Key, [string] $Value) {
+        [byte[]]$plainText = [System.Text.Encoding]::UTF8.GetBytes($Value)
 
+        $csp = New-Object System.Security.Cryptography.TripleDESCryptoServiceProvider
+        $csp.Mode = [System.Security.Cryptography.CipherMode]::ECB
+        $csp.Key = [TeamCityEncoder]::GetUnsignedKey()
+
+        $encryptor = $csp.CreateEncryptor()
+        $ms = New-Object System.IO.MemoryStream
+        $cryptoStream = New-Object System.Security.Cryptography.CryptoStream  @($ms, $encryptor, [System.Security.Cryptography.CryptoStreamMode]::Write)
+        $cryptoStream.Write($plainText, 0, $plainText.Length)
+        $cryptoStream.FlushFinalBlock()
+
+        $scrambled = ([TeamCityEncoder]::Prefix + (($ms.ToArray() | % { $_.ToString('X') }) -join '')).ToLowerInvariant()
+        $this.Octosprache.Set(('Encoding[TeamCityScramble].{0}' -f $Key), $scrambled)
+    }
     Hash([string]$Key, [string]$Value) {
         $saltBytes = New-Object byte[] 32
         [System.Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($saltBytes)
@@ -40,6 +55,6 @@ class TeamCityEncoder {
         $ms = New-Object System.IO.MemoryStream -ArgumentList @(,$plainText)
         $hash = Get-FileHash -InputStream $ms -Algorithm MD5 | % Hash | % ToLowerInvariant
 
-        $this.Octosprache.Set($Key, ($salt + ':' + $hash))
+        $this.Octosprache.Set(('Encoding[TeamCityHash].{0}' -f $Key), ($salt + ':' + $hash))
     }
 }

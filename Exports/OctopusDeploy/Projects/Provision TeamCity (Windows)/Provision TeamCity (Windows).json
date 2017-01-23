@@ -21,7 +21,8 @@
     "AutomationStackScripts.Automation",
     "AutomationStackScripts.AzureSQL",
     "AutomationStackScripts.Resources",
-    "AutomationStackScripts.Storage"
+    "AutomationStackScripts.Storage",
+    "AutomationStackScripts.Compute"
   ],
   "DefaultToSkipIfAlreadyInstalled": false,
   "TenantedDeploymentMode": "Untenanted",

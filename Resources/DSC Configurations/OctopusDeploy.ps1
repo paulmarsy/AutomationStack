@@ -11,7 +11,7 @@ Configuration OctopusDeploy
     Import-DscResource -ModuleName xNetworking
     Import-DscResource -ModuleName xSystemSecurity
 
-    Node "Server"
+    Node Server
     {
         #include <Common>
 

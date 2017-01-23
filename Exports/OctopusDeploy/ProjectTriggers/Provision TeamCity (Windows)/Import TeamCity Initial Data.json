@@ -1,8 +1,8 @@
 {
   "$type": "Octopus.Core.Model.Projects.ProjectTrigger.ProjectTrigger, Octopus.Core",
-  "Id": "ProjectTriggers-2",
+  "Id": "ProjectTriggers-22",
   "Name": "Import TeamCity Initial Data",
-  "ProjectId": "Projects-5",
+  "ProjectId": "Projects-7",
   "Filter": {
     "$type": "Octopus.Core.Model.Projects.ProjectTrigger.MachineFilter, Octopus.Core",
     "EventGroups": [
@@ -10,7 +10,6 @@
     ],
     "EventCategories": [],
     "EnvironmentIds": [
-      "Environments-22",
       "Environments-4"
     ],
     "Roles": [

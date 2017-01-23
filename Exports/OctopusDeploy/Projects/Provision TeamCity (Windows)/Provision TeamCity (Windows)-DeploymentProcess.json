@@ -2,18 +2,18 @@
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
   "Id": "deploymentprocess-Projects-7",
   "OwnerId": "Projects-7",
-  "Version": 134,
+  "Version": 140,
   "Steps": [
     {
       "Id": "f915e03f-4a5b-4fa2-aa88-d572523b1b3b",
-      "Name": "Copy DSC Configurations",
+      "Name": "Download DSC Configuration",
       "Condition": "Success",
       "StartTrigger": "StartAfterPrevious",
       "RequiresPackagesToBeAcquired": false,
       "Actions": [
         {
           "Id": "5ccf1a3b-a1e9-49f8-a1cd-9d21daa08883",
-          "Name": "Copy DSC Configurations",
+          "Name": "Download DSC Configuration",
           "ActionType": "Octopus.Script",
           "IsDisabled": false,
           "Environments": [],
@@ -184,41 +184,6 @@
       }
     },
     {
-      "Id": "c2c553b7-11b5-47c0-acde-f0a6eed54800",
-      "Name": "Wait for DSC Node Compliance",
-      "Condition": "Success",
-      "StartTrigger": "StartAfterPrevious",
-      "RequiresPackagesToBeAcquired": false,
-      "Actions": [
-        {
-          "Id": "59b0ab8f-c0f8-41e7-99df-3b8c3ab560ca",
-          "Name": "Wait for DSC Node Compliance",
-          "ActionType": "Octopus.AzurePowerShell",
-          "IsDisabled": false,
-          "Environments": [],
-          "ExcludedEnvironments": [],
-          "Channels": [],
-          "TenantTags": [],
-          "Properties": {
-            "Octopus.Action.Package.FeedId": "feeds-builtin",
-            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
-            "Octopus.Action.Script.ScriptSource": "Package",
-            "Octopus.Action.Script.ScriptFileName": "Wait-NodeCompliance.ps1",
-            "Octopus.Action.Package.PackageId": "AutomationStackScripts.Automation",
-            "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName '#{ResourceGroupName}' -AutomationAccountName '#{AutomationAccountName}' -NodeName '#{NodeName}'",
-            "ResourceGroupName": "#{InfraRg}",
-            "AutomationAccountName": "#{AutomationAccountName}",
-            "NodeName": "#{VMName}",
-            "Octopus.Action.Template.Id": "ActionTemplates-11",
-            "Octopus.Action.Template.Version": "2"
-          }
-        }
-      ],
-      "Properties": {
-        "Octopus.Action.TargetRoles": "Azure Automation"
-      }
-    },
-    {
       "Id": "04461a02-728d-4c9b-be71-e328fe016010",
       "Name": "Enable KeyVault Disk Encryption",
       "Condition": "Success",
@@ -253,6 +218,44 @@
       ],
       "Properties": {
         "Octopus.Action.TargetRoles": "ARM Provisioning"
+      }
+    },
+    {
+      "Id": "fba9af51-e22e-4882-b99f-1f74985581f0",
+      "Name": "Wait for DSC Node Compliance",
+      "Condition": "Success",
+      "StartTrigger": "StartAfterPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "dcc8980a-b231-4a1a-abc5-89ab6cb357a7",
+          "Name": "Wait for DSC Node Compliance",
+          "ActionType": "Octopus.AzurePowerShell",
+          "IsDisabled": false,
+          "Environments": [],
+          "ExcludedEnvironments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.Package.FeedId": "feeds-builtin",
+            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
+            "Octopus.Action.Script.ScriptSource": "Package",
+            "Octopus.Action.Script.ScriptFileName": "Invoke-CustomScript.ps1",
+            "Octopus.Action.Package.PackageId": "AutomationStackScripts.Compute",
+            "Octopus.Action.Script.ScriptParameters": "-Name '#{Name}' -ResourceGroupName '#{ResourceGroupName}' -VMName '#{VMName}' -Location '#{Location}' -StorageAccountName '#{StorageAccountName}' -StorageAccountKey '#{StorageAccountKey}'",
+            "Octopus.Action.Template.Id": "ActionTemplates-11",
+            "Octopus.Action.Template.Version": "3",
+            "Location": "#{AzureRegion}",
+            "StorageAccountName": "#{StackResourcesName}",
+            "StorageAccountKey": "#{StackResourcesKey}",
+            "ResourceGroupName": "#{ResourceGroup}",
+            "VMName": "#{VMName}",
+            "Name": "AutomationNodeCompliance"
+          }
+        }
+      ],
+      "Properties": {
+        "Octopus.Action.TargetRoles": "Azure Automation"
       }
     },
     {

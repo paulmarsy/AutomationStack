@@ -13,9 +13,15 @@
   "IncludedLibraryVariableSetIds": [
     "LibraryVariableSets-2",
     "LibraryVariableSets-1",
-    "LibraryVariableSets-3"
+    "LibraryVariableSets-3",
+    "LibraryVariableSets-6"
   ],
-  "UsedPackages": [],
+  "UsedPackages": [
+    "ARMTemplates",
+    "AutomationStackScripts.Compute",
+    "AutomationStackScripts.Resources",
+    "AutomationStackScripts.Storage"
+  ],
   "DefaultToSkipIfAlreadyInstalled": false,
   "TenantedDeploymentMode": "Untenanted",
   "VersioningStrategy": {

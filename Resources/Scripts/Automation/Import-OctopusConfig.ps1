@@ -6,7 +6,14 @@ Import-AzureRmAutomationDscConfiguration -ResourceGroupName $InfraRg -Automation
 
 Remove-Item -Path $tempFile -Force
 
-Start-AzureRmAutomationDscCompilationJob -ResourceGroupName $InfraRg -AutomationAccountName $AutomationAccountName -ConfigurationName 'OctopusDeploy' -Parameters @{
+$configurationDataFile = [System.IO.Path]::ChangeExtension($Path, 'psd1')
+if (Test-Path $configurationDataFile) {
+    $configurationData = & $configurationDataFile
+} else {
+    $configurationData =  @{AllNodes = @()}
+}
+
+Start-AzureRmAutomationDscCompilationJob -ResourceGroupName $InfraRg -AutomationAccountName $AutomationAccountName -ConfigurationName 'OctopusDeploy' -ConfigurationData $configurationData -Parameters @{
     OctopusNodeName = $VMName
     ConnectionString = $ConnectionString
     HostHeader = $HostHeader

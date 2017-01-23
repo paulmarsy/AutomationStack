@@ -2,7 +2,7 @@
   "$type": "Octopus.Core.Model.Variables.VariableSet, Octopus.Core",
   "Id": "variableset-Projects-5",
   "OwnerId": "Projects-5",
-  "Version": 8,
+  "Version": 9,
   "Variables": [
     {
       "Id": "2e80127f-377b-331b-0b8b-e35f73087eca",

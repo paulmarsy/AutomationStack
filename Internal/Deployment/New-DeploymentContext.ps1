@@ -7,6 +7,7 @@ function New-DeploymentContext {
 
     Write-Host 'Creating Octostache Config Store...'
     $script:CurrentContext = New-Object Octosprache $deploymentGuid.Substring(9,4)
+    $CurrentContext.Set('UDP', $deploymentGuid.Substring(9,4))
     $metrics = New-Object AutoMetrics $CurrentContext
     $metrics.Start('Deployment', 'Total deployment time')
     $metrics.Start(1, 'Creating AutomationStack Deployment Details')

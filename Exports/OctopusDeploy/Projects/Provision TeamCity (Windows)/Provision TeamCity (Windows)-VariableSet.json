@@ -2,7 +2,7 @@
   "$type": "Octopus.Core.Model.Variables.VariableSet, Octopus.Core",
   "Id": "variableset-Projects-7",
   "OwnerId": "Projects-7",
-  "Version": 13,
+  "Version": 14,
   "Variables": [
     {
       "Id": "f8698758-6c72-efb6-6c4f-805a3d0a3196",
@@ -58,16 +58,6 @@
       "Id": "24fd9d5e-e55f-b05b-e519-e996ab46e01f",
       "Name": "DSCConfigFile",
       "Value": "#{DSCConfigPath}\\TeamCity.ps1"
-    },
-    {
-      "Id": "1cab7b38-292f-08b0-6a73-b73638ed962b",
-      "Name": "TeamCityVersion",
-      "Value": "10.0.4",
-      "Prompt": {
-        "Label": "TeamCity Version",
-        "Description": "",
-        "Required": true
-      }
     }
   ],
   "RelatedDocumentIds": []

@@ -3,9 +3,6 @@ Configuration TeamCity
     param(
         $OctopusServerUrl,
         $OctopusApiKey,
-        $OctopusEnvironment,
-        $OctopusRole,
-        $OctopusDisplayName,
         $HostHeader,
         $TeamCityVersion
     )
