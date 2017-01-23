@@ -4,18 +4,7 @@ function New-AutomationStack {
         [Parameter(DontShow)][switch]$SkipChecks,
         [Parameter(DontShow)][int[]]$Stages
     )
-    DynamicParam {
-        $Dictionary = New-Object System.Management.Automation.RuntimeDefinedParameterDictionary
-
-        New-DynamicParam -Name AzureRegion -ValidateSet (Get-AzureLocations | % Name) -Position 0 -DPDictionary $Dictionary
-    
-        $Dictionary
-    }
     begin{
-        $AzureRegion = $PSBoundParameters.AzureRegion
-        if (!$AzureRegion) {
-            $AzureRegion = 'West Europe'
-        }
         if (!$SkipChecks) {
             Install-AzureReqs -Basic
             Connect-AzureRm
@@ -44,7 +33,7 @@ function New-AutomationStack {
                             Install-AzureReqs
 
                             if ($null -eq $CurrentContext) {
-                                New-DeploymentContext -AzureRegion $AzureRegion
+                                New-DeploymentContext
                             } else {
                                 Write-Warning 'AutomationStack deployment context already created, skipping'
                             }
