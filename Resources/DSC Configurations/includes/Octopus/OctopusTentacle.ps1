@@ -22,6 +22,7 @@ xRemoteFile OctopusTentacle
 {
     Uri = 'https://octopus.com/downloads/latest/WindowsX64/OctopusTentacle'
     DestinationPath = $octopusInstallFile
+    MatchSource = $false
     DependsOn = '[File]OctopusDeployFolder'
 }
 $octopusInstallLogFile = Join-Path $octopusDeployRoot "OctopusTentacle.install.log"
@@ -50,17 +51,17 @@ Script OctopusTentacleConfiguration
         $octopusTentacleExe = Join-Path $env:ProgramFiles 'Octopus Deploy\Tentacle\Tentacle.exe'
 
         & $octopusTentacleExe create-instance --console --instance "Tentacle" --config "C:\Octopus\Tentacle.config" *>> $using:octopusConfigLogFile
-        if ($LASTEXITCODE -gt 0) { throw "Exit code $LASTEXITCODE from Octopus Tentacle: create-instance" }
+        if ($LASTEXITCODE -ne 0) { throw "Exit code $LASTEXITCODE from Octopus Tentacle: create-instance" }
         & $octopusTentacleExe new-certificate --console --instance "Tentacle" *>> $using:octopusConfigLogFile
-        if ($LASTEXITCODE -gt 0) { throw "Exit code $LASTEXITCODE from Octopus Tentacle: new-certificate" }
+        if ($LASTEXITCODE -ne 0) { throw "Exit code $LASTEXITCODE from Octopus Tentacle: new-certificate" }
         & $octopusTentacleExe configure --console --instance "Tentacle" --reset-trust *>> $using:octopusConfigLogFile
-        if ($LASTEXITCODE -gt 0) { throw "Exit code $LASTEXITCODE from Octopus Tentacle: reset-trust" }
+        if ($LASTEXITCODE -ne 0) { throw "Exit code $LASTEXITCODE from Octopus Tentacle: reset-trust" }
         & $octopusTentacleExe configure --console --instance "Tentacle" --home "C:\Octopus" --app "C:\Octopus\Applications" --port "10933" --noListen "False" *>> $using:octopusConfigLogFile
-        if ($LASTEXITCODE -gt 0) { throw "Exit code $LASTEXITCODE from Octopus Tentacle: configure" }
+        if ($LASTEXITCODE -ne 0) { throw "Exit code $LASTEXITCODE from Octopus Tentacle: configure" }
         & $octopusTentacleExe register-with --console --instance "Tentacle" --server $using:OctopusServerUrl --apikey="$($using:OctopusApiKey)"  --role="$($using:Node.Octopus.Role)" --environment="$($using:Node.Octopus.Environment)" --name="$($using:Node.Octopus.Name)" --comms-style TentaclePassive *>> $using:octopusConfigLogFile
-        if ($LASTEXITCODE -gt 0) { throw "Exit code $LASTEXITCODE from Octopus Tentacle: register-with" }
+        if ($LASTEXITCODE -ne 0) { throw "Exit code $LASTEXITCODE from Octopus Tentacle: register-with" }
         & $octopusTentacleExe service --console --instance "Tentacle" --install --start *>> $using:octopusConfigLogFile
-        if ($LASTEXITCODE -gt 0) { throw "Exit code $LASTEXITCODE from Octopus Tentacle: service" }
+        if ($LASTEXITCODE -ne 0) { throw "Exit code $LASTEXITCODE from Octopus Tentacle: service" }
         
         Start-Service OctopusDeploy *>> $using:octopusConfigLogFile
         [System.IO.FIle]::WriteAllText($using:octopusConfigStateFile, $LASTEXITCODE,[System.Text.Encoding]::ASCII)

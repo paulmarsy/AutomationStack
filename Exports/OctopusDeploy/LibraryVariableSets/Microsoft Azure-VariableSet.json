@@ -27,7 +27,7 @@
     {
       "Id": "4616a933-2655-4463-6a82-5c10747bc2a4",
       "Name": "ResourceGroup",
-      "Value": "TeamCityStack#{UDP}",
+      "Value": "TeamCityStack#{UDP | ToUpper}",
       "Scope": {
         "Environment": [
           "Environments-4"
@@ -37,7 +37,7 @@
     {
       "Id": "b1128373-4a65-bc37-1b31-b5b1a8128d74",
       "Name": "ResourceGroup",
-      "Value": "OctopusStack#{UDP}",
+      "Value": "OctopusStack#{UDP | ToUpper}",
       "Scope": {
         "Environment": [
           "Environments-3"
@@ -87,7 +87,7 @@
     {
       "Id": "8e9bbcc3-ec98-defd-4fc4-aa04bd7106b5",
       "Name": "ResourceGroup",
-      "Value": "TeamCityAgents#{UDP}",
+      "Value": "TeamCityAgents#{UDP | ToUpper}",
       "Scope": {
         "Environment": [
           "Environments-1"

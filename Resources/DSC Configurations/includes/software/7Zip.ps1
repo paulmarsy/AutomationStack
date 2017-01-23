@@ -2,6 +2,7 @@ xRemoteFile SevenZipDownloader
 {
     Uri = 'http://www.7-zip.org/a/7z1604-x64.msi'
     DestinationPath = 'D:\7z1604-x64.msi'
+    MatchSource = $false
 }
 Package SevenZip
 {

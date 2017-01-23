@@ -2,9 +2,8 @@ function New-AzureServicePrincipal {
     Write-Host 'Creating Azure Service Principal...'
     
     Get-AzureRmADApplication -DisplayNameStartWith $CurrentContext.Get('Name') | Remove-AzureRmADApplication -Force | Out-Host
-
     
-    $app = New-AzureRmADApplication -DisplayName $CurrentContext.Get('Name') -IdentifierUris "http://$($CurrentContext.Get('Name')).local" -Password $CurrentContext.Get('ServicePrincipalClientSecret')
+    $app = New-AzureRmADApplication -DisplayName $CurrentContext.Get('Name') -IdentifierUris $CurrentContext.Eval('http://#{Name}.local') -Password $CurrentContext.Get('ServicePrincipalClientSecret')
     
     $CurrentContext.Set('ServicePrincipalClientId', $app.ApplicationId)
     

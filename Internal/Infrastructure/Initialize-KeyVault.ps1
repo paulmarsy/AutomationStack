@@ -1,5 +1,5 @@
 function Initialize-KeyVault {
-    $CurrentContext.Set('KeyVaultName', 'keyvault#{UDP}')
+    $CurrentContext.Set('KeyVaultName', 'keyvault-#{UDP}')
     $keyvaultdeploy = Start-ARMDeployment -ResourceGroupName $CurrentContext.Get('InfraRg') -Template 'keyvault' -Mode Complete -TemplateParameters @{
         udp = $CurrentContext.Get('UDP')
         tenantId = $CurrentContext.Get('AzureTenantId')
@@ -20,6 +20,7 @@ function Initialize-KeyVault {
     New-KeyVaultSecret -Name StackAdminPassword -Value $CurrentContext.Get('StackAdminPassword')
     New-KeyVaultSecret -Name SqlAdminPassword -Value $CurrentContext.Get('SqlServerPassword')
     New-KeyVaultSecret -Name VMAdminPassword -Value $CurrentContext.Get('StackAdminPassword')
+    New-KeyVaultSecret -Name OctopusServiceAccountPassword -Value $CurrentContext.Get('OctopusAutomationCredentialPassword')
     New-KeyVaultSecret -Name ServicePrincipalClientSecret -Value $CurrentContext.Get('ServicePrincipalClientSecret')
 
 }

@@ -28,8 +28,8 @@
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Storage",
             "Octopus.Action.Script.ScriptParameters": "-StorageAccountName '#{StorageAccountName}' -StorageAccountKey '#{StorageAccountKey}' -FileShareName '#{FileShareName}' -LocalPath '#{LocalPath}'",
             "LocalPath": "#{DSCConfigPath}",
-            "StorageAccountName": "#{StackResourcesName}",
-            "StorageAccountKey": "#{StackResourcesKey}",
+            "StorageAccountName": "#{StorageAccountName}",
+            "StorageAccountKey": "#{StorageAccountKey}",
             "FileShareName": "dsc",
             "Octopus.Action.Template.Id": "ActionTemplates-5",
             "Octopus.Action.Template.Version": "2"
@@ -243,8 +243,8 @@
             "Octopus.Action.Template.Id": "ActionTemplates-8",
             "Octopus.Action.Template.Version": "3",
             "Location": "#{AzureRegion}",
-            "StorageAccountName": "#{StackResourcesName}",
-            "StorageAccountKey": "#{StackResourcesKey}",
+            "StorageAccountName": "#{StorageAccountName}",
+            "StorageAccountKey": "#{StorageAccountKey}",
             "ResourceGroupName": "#{ResourceGroup}",
             "VMName": "#{VMName}",
             "Name": "AutomationNodeCompliance"
@@ -295,8 +295,8 @@
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Storage",
             "Octopus.Action.Script.ScriptParameters": "-StorageAccountName '#{StorageAccountName}' -StorageAccountKey '#{StorageAccountKey}' -FileShareName '#{FileShareName}' -LocalPath '#{LocalPath}'",
             "LocalPath": "#{ExportPath}",
-            "StorageAccountName": "#{StackResourcesName}",
-            "StorageAccountKey": "#{StackResourcesKey}",
+            "StorageAccountName": "#{StorageAccountName}",
+            "StorageAccountKey": "#{StorageAccountKey}",
             "FileShareName": "teamcity",
             "Octopus.Action.Template.Id": "ActionTemplates-5",
             "Octopus.Action.Template.Version": "2"

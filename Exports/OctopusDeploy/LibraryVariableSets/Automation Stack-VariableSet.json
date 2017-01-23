@@ -7,22 +7,22 @@
     {
       "Id": "04107455-ce7d-0174-c2bc-6c75bf7f5f2a",
       "Name": "InfraRg",
-      "Value": "AutomationStack#{UDP}"
+      "Value": "AutomationStack#{UDP | ToUpper}"
     },
     {
       "Id": "e7e4ac86-68ba-9323-318b-82155aeb7c5d",
       "Name": "SqlServerName",
-      "Value": "sqlserver#{UDP}"
+      "Value": "azuresql-#{UDP}"
     },
     {
       "Id": "a8c12932-590b-5fb7-0de7-e59047a4c4d7",
-      "Name": "StackResourcesName",
+      "Name": "StorageAccountName",
       "Value": "stackresources#{UDP}"
     },
     {
       "Id": "5eefe522-98ee-418b-6414-36cdc6707946",
       "Name": "AutomationAccountName",
-      "Value": "automation#{UDP}"
+      "Value": "automation-#{UDP}"
     },
     {
       "Id": "9a2aa1a4-e333-6eb9-1dcb-cde3e66ba61b",

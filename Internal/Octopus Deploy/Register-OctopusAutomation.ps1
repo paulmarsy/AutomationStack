@@ -1,4 +1,10 @@
-function Register-OctopusDSCConfiguration {
+function Register-OctopusAutomation {
+    Write-Host "Creating Octopus Deploy Service Credentials..."
+
+    Remove-AzureRmAutomationCredential -ResourceGroupName $CurrentContext.Get('InfraRg') -AutomationAccountName $CurrentContext.Get('AutomationAccountName') -Name OctopusDeployServiceAccount -ErrorAction Ignore
+    $octopusDeployServiceAccount = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $CurrentContext.Get('OctopusAutomationCredentialUsername'), (ConvertTo-SecureString $CurrentContext.Get('OctopusAutomationCredentialPassword') -AsPlainText -Force)
+    New-AzureRmAutomationCredential -ResourceGroupName $CurrentContext.Get('InfraRg') -AutomationAccountName $CurrentContext.Get('AutomationAccountName') -Name OctopusDeployServiceAccount -Value $octopusDeployServiceAccount | Out-Host
+    
     Write-Host "Importing Octopus Deploy DSC Configuration..."
 
     $CurrentContext.Set('OctopusVMName', 'OctopusVM')
@@ -9,6 +15,6 @@ function Register-OctopusDSCConfiguration {
     Invoke-SharedScript Automation 'Import-OctopusConfig' -Path (Join-Path $ResourcesPath 'DSC Configurations\OctopusDeploy.ps1') -InfraRg  $CurrentContext.Get('InfraRg') -AutomationAccountName $CurrentContext.Get('AutomationAccountName') `
         -VMName $CurrentContext.Get('OctopusVMName') `
         -ConnectionString $CurrentContext.Get('OctopusConnectionString') `
-        -HostHeader $CurrentContext.Get('OctopusHostHeader') `
+        -OctopusHostName $CurrentContext.Get('OctopusHostName') `
         -OctopusVersionToInstall 'latest' | Out-Host
 }

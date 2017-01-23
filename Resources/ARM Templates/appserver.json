@@ -48,7 +48,7 @@
     "publicIPAddressName": "[concat(parameters('productName'),'PublicIP')]",
     "virtualNetworkId": "[resourceId(parameters('infraResourceGroup'), 'Microsoft.Network/virtualNetworks', 'VirtualNetwork')]",
     "subnetId": "[concat(variables('virtualNetworkId'),'/subnets/', 'Default')]",
-    "keyVaultName": "[concat('keyvault', parameters('udp'))]"
+    "keyVaultName": "[concat('keyvault-', parameters('udp'))]"
   },
   "resources": [{
     "apiVersion": "2016-01-01",

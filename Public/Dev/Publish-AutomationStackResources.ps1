@@ -1,12 +1,14 @@
 function Publish-AutomationStackResources {
     param(
         [switch]$ResetStorage,
-        [ValidateSet('ARM','DSC','OctopusDeploy','TeamCity','All')]$Upload = 'All'
+        [ValidateSet('AzureCustomScripts','DSCConfigurations','OctopusDeployDataSet','TeamCityDataSet','NuGetPackages','All')]$Upload = 'All'
     )
     Connect-AzureRmServicePrincipal
     try {
-        Publish-StackResources -ResetStorage:$ResetStorage -Upload:$Upload
-        Publish-StackPackages
+        Publish-StorageAccountResources -ResetStorage:$ResetStorage -Upload:$Upload
+        if ($Upload -in @('All','NuGetPackages')) {
+            Publish-OctopusNuGetPackages
+        }
     }
     finally {
         Restore-AzureRmAuthContext

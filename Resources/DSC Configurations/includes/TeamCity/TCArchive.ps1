@@ -2,6 +2,7 @@ xRemoteFile TeamCityDownload
 {
     Uri = "https://download.jetbrains.com/teamcity/TeamCity-$($TeamCityVersion).tar.gz"
     DestinationPath = "D:\TeamCity-$($TeamCityVersion).tar.gz"
+    MatchSource = $false
 }
 Script TeamCityExtract
 {

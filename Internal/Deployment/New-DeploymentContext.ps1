@@ -12,8 +12,9 @@ function New-DeploymentContext {
     $metrics = New-Object AutoMetrics $CurrentContext
     $metrics.Start('Deployment', 'Total deployment time')
     $metrics.Start(1, 'Creating AutomationStack Deployment Details')
-    $CurrentContext.Set('Name', 'AutomationStack#{UDP}')
-    
+    $CurrentContext.Set('Name', 'AutomationStack#{UDP | ToUpper}')
+    $CurrentContext.Set('InfraRg', 'AutomationStack#{UDP | ToUpper}')
+
     $azureRmContext = Get-AzureRmContext
     $CurrentContext.Set('AzureTenantId', $azureRmContext.Tenant.TenantId)
     $CurrentContext.Set('AzureSubscriptionId', $azureRmContext.Subscription.SubscriptionId)
@@ -21,18 +22,18 @@ function New-DeploymentContext {
     $CurrentContext.Set('AzureRegion', $AzureRegion.Name)
     $CurrentContext.Set('AzureRegionValue', $AzureRegion.Value)
     
-    $CurrentContext.Set('InfraRg', 'AutomationStack#{UDP}')
 
     Write-Host 'Generating deployment passwords...'
-    $CurrentContext.Set('StackAdminUsername', 'Stack')
-    $CurrentContext.Set('Username', '#{StackAdminUsername}')
-    $CurrentContext.Set('StackAdminPassword', ($deploymentGuid.Substring(0,8) + (($deploymentGuid.Substring(24,12).GetEnumerator() | ? { [char]::IsLetter($_) } | % { [char]::ToUpper($_) }) -join '')))  
-    $CurrentContext.Set('Password', '#{StackAdminPassword}')
-
-    $CurrentContext.Set('SqlServerPassword', (New-ContextSafePassword))
-
     Add-Type -AssemblyName System.Web
+    
+    $CurrentContext.Set('StackAdminUsername', 'Stack')
+    $CurrentContext.Set('StackAdminPassword', ($deploymentGuid.Substring(0,8) + (($deploymentGuid.Substring(24,12).GetEnumerator() | ? { [char]::IsLetter($_) } | % { [char]::ToUpper($_) }) -join '')))
+    $CurrentContext.Set('SqlServerPassword', (New-ContextSafePassword))
+    $CurrentContext.Set('OctopusAutomationCredentialUsername', 'OctopusDeploy')
+    $CurrentContext.Set('OctopusAutomationCredentialPassword', [System.Web.Security.Membership]::GeneratePassword(16, 4))
     $CurrentContext.Set('ServicePrincipalClientSecret', [System.Web.Security.Membership]::GeneratePassword(16, 4))
-
     $CurrentContext.Set('ApiKey', ('API-AUTOMATIONstack{0}{1}' -f $deploymentGuid.Substring(15,3).ToUpperInvariant(), $deploymentGuid.Substring(20,3).ToUpperInvariant()))
+
+    $CurrentContext.Set('Username', '#{StackAdminUsername}')
+    $CurrentContext.Set('Password', '#{StackAdminPassword}')
 }

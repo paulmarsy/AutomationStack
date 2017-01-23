@@ -30,7 +30,7 @@
       "Name": "StorageAccountName",
       "Label": "",
       "HelpText": null,
-      "DefaultValue": "#{StackResourcesName}",
+      "DefaultValue": "#{StorageAccountName}",
       "DisplaySettings": {
         "Octopus.ControlType": "SingleLineText"
       }
@@ -40,7 +40,7 @@
       "Name": "StorageAccountKey",
       "Label": "",
       "HelpText": null,
-      "DefaultValue": "#{StackResourcesKey}",
+      "DefaultValue": "#{StorageAccountKey}",
       "DisplaySettings": {
         "Octopus.ControlType": "SingleLineText"
       }

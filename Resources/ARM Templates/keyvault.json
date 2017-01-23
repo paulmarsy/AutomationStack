@@ -13,7 +13,7 @@
         }
     },
     "variables": {
-        "keyVaultName": "[concat('keyvault', parameters('udp'))]"
+        "keyVaultName": "[concat('keyvault-', parameters('udp'))]"
     },
     "resources": [{
         "type": "Microsoft.KeyVault/vaults",

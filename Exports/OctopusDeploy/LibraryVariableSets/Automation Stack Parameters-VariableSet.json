@@ -31,8 +31,8 @@
     },
     {
       "Id": "db96ce14-001c-41cc-3b79-ecaf3c2b28c5",
-      "Name": "StackResourcesKey",
-      "Value": "#{StackResourcesKey}"
+      "Name": "StorageAccountKey",
+      "Value": "#{StorageAccountKey}"
     },
     {
       "Id": "1f3308bc-4d83-a441-5eee-9042762f4a9b",

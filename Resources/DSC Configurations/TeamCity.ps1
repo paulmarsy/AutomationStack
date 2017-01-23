@@ -27,10 +27,9 @@ Configuration TeamCity
             Action                = "Allow"
             Profile               = "Any"
             Direction             = "InBound"
-            LocalPort             = ("80", "444")
+            LocalPort             = "80"
             Protocol              = "TCP"
         }
-
 
         File TeamCityServerInstall
         {

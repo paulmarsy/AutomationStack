@@ -7,7 +7,7 @@
     {
       "Id": "3406e61a-97dc-f94f-a691-0fa1aae9c9d6",
       "Name": "OctopusRg",
-      "Value": "OctopusStack#{UDP}"
+      "Value": "OctopusStack#{UDP | ToUpper}"
     },
     {
       "Id": "12c2e0b0-1235-2a13-a44d-ed2ce619cde9",

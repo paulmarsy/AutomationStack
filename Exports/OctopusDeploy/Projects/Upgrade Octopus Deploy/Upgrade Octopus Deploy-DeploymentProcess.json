@@ -29,8 +29,8 @@
             "Octopus.Action.Script.ScriptParameters": "-StorageAccountName '#{StorageAccountName}' -StorageAccountKey '#{StorageAccountKey}' -FileShareName '#{FileShareName}' -LocalPath '#{LocalPath}'",
             "Octopus.Action.Template.Id": "ActionTemplates-5",
             "Octopus.Action.Template.Version": "2",
-            "StorageAccountName": "#{StackResourcesName}",
-            "StorageAccountKey": "#{StackResourcesKey}",
+            "StorageAccountName": "#{StorageAccountName}",
+            "StorageAccountKey": "#{StorageAccountKey}",
             "LocalPath": "dsc",
             "FileShareName": "dsc"
           }

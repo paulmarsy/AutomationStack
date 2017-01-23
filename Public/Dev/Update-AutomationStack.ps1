@@ -20,10 +20,5 @@ function Update-AutomationStack {
         Move-Item -Path (Join-Path $Path 'AutomationStack-master\*') -Destination $Path -Force
     }
 
-    Remove-Module AutomationStack -Force
-    if ($null -ne $CurrentContext) {
-        Import-Module (Join-Path $Path 'AutomationStack.psd1') -Force -Global -ArgumentList $CurrentContext.Get('UDP')
-    } else {
-        Import-Module (Join-Path $Path 'AutomationStack.psd1') -Force -Global
-    }
+    Sync-AutomationStackModule
 }

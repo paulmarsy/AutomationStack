@@ -29,8 +29,8 @@
             "Octopus.Action.Script.ScriptParameters": "-StorageAccountName '#{StorageAccountName}' -StorageAccountKey '#{StorageAccountKey}' -FileShareName '#{FileShareName}' -LocalPath '#{LocalPath}'",
             "Octopus.Action.Template.Id": "ActionTemplates-5",
             "Octopus.Action.Template.Version": "2",
-            "StorageAccountName": "#{StackResourcesName}",
-            "StorageAccountKey": "#{StackResourcesKey}",
+            "StorageAccountName": "#{StorageAccountName}",
+            "StorageAccountKey": "#{StorageAccountKey}",
             "LocalPath": "#{DSCConfigPath}",
             "FileShareName": "dsc"
           }
@@ -171,8 +171,8 @@
             "Octopus.Action.Template.Id": "ActionTemplates-8",
             "Octopus.Action.Template.Version": "3",
             "Location": "#{AzureRegion}",
-            "StorageAccountName": "#{StackResourcesName}",
-            "StorageAccountKey": "#{StackResourcesKey}",
+            "StorageAccountName": "#{StorageAccountName}",
+            "StorageAccountKey": "#{StorageAccountKey}",
             "ResourceGroupName": "#{ResourceGroup}",
             "VMName": "#{VMName}",
             "Name": "AutomationNodeCompliance"
@@ -286,7 +286,7 @@
             "Octopus.Action.Script.ScriptSource": "Package",
             "Octopus.Action.Script.ScriptFileName": "Copy-VHDToStorageAccount.ps1",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Storage",
-            "Octopus.Action.Script.ScriptParameters": "-VHDUri '#{Octopus.Action[Convert VM to Image].Output.ImageUri}' -SrcResourceGroupName '#{ResourceGroup}' -DstResourceGroupName '#{InfraRg}' -DstStorageAccount '#{StackResourcesName}'  -DstBlob '#{VMName}.image.vhd'"
+            "Octopus.Action.Script.ScriptParameters": "-VHDUri '#{Octopus.Action[Convert VM to Image].Output.ImageUri}' -SrcResourceGroupName '#{ResourceGroup}' -DstResourceGroupName '#{InfraRg}' -DstStorageAccount '#{StorageAccountName}'  -DstBlob '#{VMName}.image.vhd'"
           }
         }
       ],

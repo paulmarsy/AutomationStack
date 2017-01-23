@@ -6,7 +6,7 @@ function Suspend-AutomationStack {
     $srcStorageAccountName = Get-AzureRmStorageAccount -ResourceGroupName $rg | % StorageAccountName
     $srcStorageAccountKey = (Get-AzureRmStorageAccountKey -ResourceGroupName $rg -Name $srcStorageAccountName)[0].Value
     $srcContext = New-AzureStorageContext -StorageAccountName $srcStorageAccountName -StorageAccountKey $srcStorageAccountKey
-    $dstContext = New-AzureStorageContext -StorageAccountName $CurrentContext.Get('StackResourcesName') -StorageAccountKey $CurrentContext.Get('StackResourcesKey')
+    $dstContext = New-AzureStorageContext -StorageAccountName $CurrentContext.Get('StorageAccountName') -StorageAccountKey $CurrentContext.Get('StorageAccountKey')
     $dstContainer = Get-AzureStorageContainer -Name images -Context $dstContext -ErrorAction SilentlyContinue
     if (!$dstContainer) {
         $dstContainer = New-AzureStorageContainer -Name images -Context $dstContext -Permission Off | Out-Null

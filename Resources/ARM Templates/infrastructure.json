@@ -22,9 +22,9 @@
     },
     "variables": {
         "resourcesStorageName": "[concat('stackresources', parameters('udp'))]",
-        "sqlServerName": "[concat('sqlserver', parameters('udp'))]",
-        "automationName": "[concat('automation', parameters('udp'))]",
-        "keyVaultName": "[concat('keyvault', parameters('udp'))]"
+        "sqlServerName": "[concat('azuresql-', parameters('udp'))]",
+        "automationName": "[concat('automation-', parameters('udp'))]",
+        "keyVaultName": "[concat('keyvault-', parameters('udp'))]"
     },
     "resources": [{
         "apiVersion": "2016-03-30",
@@ -66,7 +66,7 @@
         }
     }, {
         "type": "Microsoft.KeyVault/vaults/secrets",
-        "name": "[concat(variables('keyVaultName'), '/StackResourcesKey')]",
+        "name": "[concat(variables('keyVaultName'), '/StorageAccountKey')]",
         "apiVersion": "2015-06-01",
         "properties": {
             "value": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('resourcesStorageName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value]"

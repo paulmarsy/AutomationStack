@@ -1,4 +1,4 @@
-param($Path, $InfraRg, $AutomationAccountName, $VMName, $ConnectionString, $HostHeader, $OctopusVersionToInstall)
+param($Path, $InfraRg, $AutomationAccountName, $VMName, $ConnectionString, $OctopusHostName, $OctopusVersionToInstall)
 
 $tempFile = & (Join-Path $PSScriptRoot 'Invoke-DSCComposition.ps1') -Path $Path
 
@@ -16,6 +16,7 @@ if (Test-Path $configurationDataFile) {
 Start-AzureRmAutomationDscCompilationJob -ResourceGroupName $InfraRg -AutomationAccountName $AutomationAccountName -ConfigurationName 'OctopusDeploy' -ConfigurationData $configurationData -Parameters @{
     OctopusNodeName = $VMName
     ConnectionString = $ConnectionString
-    HostHeader = $HostHeader
+    HostHeader = ('http://{0}/' -f $OctopusHostName)
+    FullyQualifiedUrl = ('http://{0}:80/' -f $OctopusHostName)
     OctopusVersionToInstall = $OctopusVersionToInstall
 }

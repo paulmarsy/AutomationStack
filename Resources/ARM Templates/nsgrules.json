@@ -20,18 +20,6 @@
                     "direction": "Inbound"
                 }
             }, {
-                "name": "HTTPS",
-                "properties": {
-                    "protocol": "Tcp",
-                    "sourcePortRange": "*",
-                    "destinationPortRange": "443",
-                    "sourceAddressPrefix": "Internet",
-                    "destinationAddressPrefix": "*",
-                    "access": "Allow",
-                    "priority": 200,
-                    "direction": "Inbound"
-                }
-            }, {
                 "name": "RDP",
                 "properties": {
                     "protocol": "Tcp",
@@ -64,18 +52,6 @@
                     "direction": "Inbound"
                 }
             }, {
-                "name": "HTTPS",
-                "properties": {
-                    "protocol": "Tcp",
-                    "sourcePortRange": "*",
-                    "destinationPortRange": "443",
-                    "sourceAddressPrefix": "Internet",
-                    "destinationAddressPrefix": "*",
-                    "access": "Allow",
-                    "priority": 200,
-                    "direction": "Inbound"
-                }
-            }, {
                 "name": "OctopusTentacle",
                 "properties": {
                     "protocol": "Tcp",
@@ -84,7 +60,7 @@
                     "sourceAddressPrefix": "Internet",
                     "destinationAddressPrefix": "*",
                     "access": "Allow",
-                    "priority": 300,
+                    "priority": 200,
                     "direction": "Inbound"
                 }
             }, {
@@ -117,18 +93,6 @@
                     "destinationAddressPrefix": "*",
                     "access": "Allow",
                     "priority": 100,
-                    "direction": "Inbound"
-                }
-            }, {
-                "name": "HTTPS",
-                "properties": {
-                    "protocol": "Tcp",
-                    "sourcePortRange": "*",
-                    "destinationPortRange": "443",
-                    "sourceAddressPrefix": "Internet",
-                    "destinationAddressPrefix": "*",
-                    "access": "Allow",
-                    "priority": 200,
                     "direction": "Inbound"
                 }
             }, {

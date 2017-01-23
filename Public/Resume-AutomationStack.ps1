@@ -33,7 +33,7 @@ function Resume-AutomationStack {
         }
 
     Write-Host 'Connecting to storage accounts... ' -NoNewLine
-        $srcContext = New-AzureStorageContext -StorageAccountName $CurrentContext.Get('StackResourcesName') -StorageAccountKey $CurrentContext.Get('StackResourcesKey')
+        $srcContext = New-AzureStorageContext -StorageAccountName $CurrentContext.Get('StorageAccountName') -StorageAccountKey $CurrentContext.Get('StorageAccountKey')
         $dstStorageAccountName = Get-AzureRmStorageAccount -ResourceGroupName $rg | % StorageAccountName
         $dstStorageAccountKey = (Get-AzureRmStorageAccountKey -ResourceGroupName $rg -Name $dstStorageAccountName)[0].Value
         $dstContext = New-AzureStorageContext -StorageAccountName $dstStorageAccountName -StorageAccountKey $dstStorageAccountKey

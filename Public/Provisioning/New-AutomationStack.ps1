@@ -53,21 +53,21 @@ function New-AutomationStack {
                         }
                     }
                     3 {
-                        $Heading = 'Provisioning Infrastructure'
+                        $Heading = 'Provisioning Core Infrastructure'
                         {
                             Initialize-CoreInfrastructure
                         }
                     }
                     4 {
-                        $Heading = 'Octopus Deploy - Provisioning Infrastructure'
+                        $Heading = 'Provisioning Octopus Deploy Infrastructure'
                         {
-                            Register-OctopusDSCConfiguration
+                            Register-OctopusAutomation
                             Write-Host 'Creating Octopus Deploy SQL Database...'
                             Invoke-SharedScript AzureSQL 'New-AzureSQLDatabase' -ResourceGroupName $CurrentContext.Get('InfraRg') -ServerName $CurrentContext.Get('SqlServerName') -DatabaseName 'OctopusDeploy'
                         }
                     }
                     5 {
-                        $Heading = 'Octopus Deploy - Creating Application'
+                        $Heading = 'Provisioning Octopus Deploy Application'
                         {
                             Initialize-OctopusDeployInfrastructure
                         }
@@ -75,25 +75,25 @@ function New-AutomationStack {
                     6 {
                         $Heading = 'Uploading AutomationStack into Azure Storage'
                         {
-                            Publish-StackResources
+                            Publish-StorageAccountResources -Upload All
                         }
                     }
                     7 {
                         $Heading = 'Azure Automation DSC Compliance'
                         {
-                            Invoke-SharedScript Compute 'Invoke-CustomScript' -Name 'AutomationNodeCompliance' -ResourceGroupName $CurrentContext.Get('OctopusRg') -VMName $CurrentContext.Get('OctopusVMName') -Location $CurrentContext.Get('AzureRegion') -StorageAccountName $CurrentContext.Get('StackResourcesName') -StorageAccountKey $CurrentContext.Get('StackResourcesKey')
+                            Invoke-SharedScript Compute 'Invoke-CustomScript' -Name 'AutomationNodeCompliance' -ResourceGroupName $CurrentContext.Get('OctopusRg') -VMName $CurrentContext.Get('OctopusVMName') -Location $CurrentContext.Get('AzureRegion') -StorageAccountName $CurrentContext.Get('StorageAccountName') -StorageAccountKey $CurrentContext.Get('StorageAccountKey')
                         }
                     }     
                     8 {
                         $Heading = 'Octopus Deploy - Importing Initial State'
                         {
-                            Invoke-SharedScript Compute 'Invoke-CustomScript' -Name 'OctopusImport' -ResourceGroupName $CurrentContext.Get('OctopusRg') -VMName $CurrentContext.Get('OctopusVMName') -Location $CurrentContext.Get('AzureRegion') -StorageAccountName $CurrentContext.Get('StackResourcesName') -StorageAccountKey $CurrentContext.Get('StackResourcesKey')
+                            Invoke-SharedScript Compute 'Invoke-CustomScript' -Name 'OctopusImport' -ResourceGroupName $CurrentContext.Get('OctopusRg') -VMName $CurrentContext.Get('OctopusVMName') -Location $CurrentContext.Get('AzureRegion') -StorageAccountName $CurrentContext.Get('StorageAccountName') -StorageAccountKey $CurrentContext.Get('StorageAccountKey')
                         }
                     }
                     9 {
                         $Heading = 'Octopus Deploy - Publishing AutomationStack Packages'
                         {
-                            Publish-StackPackages
+                            Publish-OctopusNuGetPackages
                         }
                     }
                     10 {
