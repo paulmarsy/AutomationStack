@@ -1,25 +1,28 @@
 function New-AutomationStack {
     param(
-        [Parameter()][switch]$WhatIf,
-        [Parameter(DontShow)][switch]$SkipChecks,
         [Parameter(DontShow)][int[]]$Stages
     )
-    begin{
-        if (!$SkipChecks) {
-            Install-AzureReqs -Basic
-            Connect-AzureRm
-        }
+    begin {
         if (!$Stages) {
             if ($null -eq $CurrentContext) {
                 $Stages = 1..$TotalDeploymentStages
+                $firstRun = $true
             } else {
                 $lastSuccessfulStage = $CurrentContext.Get('LastSuccessfulStage')
                 Write-Host -ForegroundColor Magenta "Resuming deployment from stage $lastSuccessfulStage"
                 $Stages = $lastSuccessfulStage..$TotalDeploymentStages
+                $firstRun = $false
             }  
         }
+        if ($firstRun) {
+            Install-AzureReqs -Basic
+        }
+        Connect-AzureRm
+        if ($firstRun) {
+            $azureRegion = Select-AzureLocation
+        }     
     }
-    process{
+    process {
         try {
             $Stages | % {
                 $stageNumber = $_
@@ -33,7 +36,7 @@ function New-AutomationStack {
                             Install-AzureReqs
 
                             if ($null -eq $CurrentContext) {
-                                New-DeploymentContext
+                                New-DeploymentContext -AzureRegion $azureRegion
                             } else {
                                 Write-Warning 'AutomationStack deployment context already created, skipping'
                             }
@@ -114,7 +117,7 @@ function New-AutomationStack {
                         }
                     }
                 }
-                Start-DeploymentStage -StageNumber $StageNumber -Heading $Heading -ScriptBlock $ScriptBlock -WhatIf:$WhatIf
+                Start-DeploymentStage -StageNumber $StageNumber -Heading $Heading -ScriptBlock $ScriptBlock
                 $CurrentContext.Set('LastSuccessfulStage', $StageNumber)
             }
         }

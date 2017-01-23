@@ -1,5 +1,5 @@
 function Start-DeploymentStage {
-    param($StageNumber, $Heading, $ScriptBlock, [switch]$WhatIf)
+    param($StageNumber, $Heading, $ScriptBlock)
     
     $RetryAttemptsAllowed = 2
 
@@ -10,16 +10,13 @@ function Start-DeploymentStage {
         Write-DeploymentUpdate -StageNumber $StageNumber -ProgressText $Heading -LineOneText $currentLineOneText -LineTwoText $Heading
 
         try {
-            if ($null -ne $CurrentContext -and -not $WhatIf) { 
+            if ($null -ne $CurrentContext) { 
                 $metrics = New-Object AutoMetrics $CurrentContext
-                $metrics.Start($StageNumber, $Heading) }
-            if ($WhatIf -and $StageNumber -notin @(1, 10)) {
-                Write-Host 'Skipping in WhatIf mode'
-                Start-Sleep -Seconds 1
-            } else {
-                $ScriptBlock.Invoke()
+                $metrics.Start($StageNumber, $Heading)
             }
-            $attempt = $RetryAttemptsAllowed
+
+            $ScriptBlock.Invoke()
+            break
         }
         catch {
             if (!(Write-ResolvedException $_.Exception.InnerException -and !(Write-ResolvedException $_.Exception))) {

@@ -1,4 +1,6 @@
 function New-DeploymentContext {
+    param($AzureRegion)
+
     # X & Y - Not random
     # 1 - UDP, 2 Password start, 3 Password end  , 4 - Api key      
     # 22222222-1111-X444-Y444-333333333333
@@ -16,9 +18,8 @@ function New-DeploymentContext {
     $CurrentContext.Set('AzureTenantId', $azureRmContext.Tenant.TenantId)
     $CurrentContext.Set('AzureSubscriptionId', $azureRmContext.Subscription.SubscriptionId)
 
-    $azureRegion = Select-AzureLocation
-    $CurrentContext.Set('AzureRegion', $azureRegion.Name)
-    $CurrentContext.Set('AzureRegionValue', $azureRegion.Value)
+    $CurrentContext.Set('AzureRegion', $AzureRegion.Name)
+    $CurrentContext.Set('AzureRegionValue', $AzureRegion.Value)
     
     $CurrentContext.Set('InfraRg', 'AutomationStack#{UDP}')
 
