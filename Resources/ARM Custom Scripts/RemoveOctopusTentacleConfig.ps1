@@ -1,2 +1,2 @@
 Remove-Item C:\Octopus\Tentacle.config -Force
-Start-DscConfiguration -UseExisting
+Start-DscConfiguration -UseExisting -verbose -wait
