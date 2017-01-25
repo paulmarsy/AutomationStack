@@ -13,6 +13,8 @@ function Start-DeploymentStage {
             if ($null -ne $CurrentContext) { 
                 $metrics = New-Object AutoMetrics $CurrentContext
                 $metrics.Start($StageNumber, $Heading)
+
+                $CurrentContext.Set('CurrentStage', $StageNumber)
             }
 
             $ScriptBlock.Invoke()

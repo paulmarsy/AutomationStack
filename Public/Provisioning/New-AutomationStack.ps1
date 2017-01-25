@@ -29,7 +29,6 @@ function New-AutomationStack {
                 if ($stageNumber -lt 1 -or $stageNumber -gt $TotalDeploymentStages) {
                     Write-Warning "Stage $stageNumber is outside the allowed range of 0-$TotalDeploymentStages, skipping"
                 }
-                $CurrentContext.Set('CurrentStage', $StageNumber)
                 $ScriptBlock = switch ($stageNumber) {
                     1 {
                         $Heading = 'Creating AutomationStack Deployment Context'
