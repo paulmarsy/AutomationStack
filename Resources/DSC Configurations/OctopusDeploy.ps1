@@ -135,6 +135,20 @@ Configuration OctopusDeploy
             PasswordChangeRequired  = $false
             PasswordNeverExpires    = $true
         }
+        Script SetOctopusUserGroups
+        {
+            SetScript = {
+                $user = Get-LocalUser -Name $using:octopusServiceAccountUsername
+                Add-LocalGroupMember -Name Users -Member $user
+            }
+            TestScript = {
+                $user = Get-LocalUser -Name $using:octopusServiceAccountUsername
+                ($null -ne (Get-LocalGroupMember -Name Users -Member $user -ErrorAction Ignore))
+            }
+            GetScript = { @{} }
+            DependsOn = '[User]OctopusDeployServiceAccount'
+        }
+
         Service OctopusDeploy
         {
             Name        = 'OctopusDeploy'
@@ -159,13 +173,20 @@ Configuration OctopusDeploy
                 & $netsh http add urlacl url=$using:FullyQualifiedUrl user=$username *>&1 |  Write-Verbose
                 if ($LASTEXITCODE -ne 0) { throw "Exit code $LASTEXITCODE from netsh add urlacl" }
                 
-                [System.IO.FIle]::WriteAllText($using:octopusUrlAclStateFile, $LASTEXITCODE,[System.Text.Encoding]::ASCII)
+                [System.IO.File]::WriteAllText($using:octopusUrlAclStateFile, $LASTEXITCODE,[System.Text.Encoding]::ASCII)
             }
             TestScript = {
-                ((Test-Path $using:octopusUrlAclStateFile) -and ([System.IO.FIle]::ReadAllText($using:octopusUrlAclStateFile).Trim()) -eq '0')
+                ((Test-Path $using:octopusUrlAclStateFile) -and ([System.IO.File]::ReadAllText($using:octopusUrlAclStateFile).Trim()) -eq '0')
             }
             GetScript = { @{} }
             DependsOn = '[User]OctopusDeployServiceAccount'
+        }
+
+        xFileSystemAccessRule OctopusConfigFile {
+            Path = "$($env:SystemDrive)\Octopus\"
+            Identity = $octopusServiceAccountUsername
+            Rights = @("FullControl")
+            DependsOn = @('[User]OctopusDeployServiceAccount','[Script]OctopusDeployConfiguration')
         }
 
         $octopusServiceStartedStateFile = Join-Path $octopusDeployRoot 'service.statefile'
@@ -181,8 +202,7 @@ Configuration OctopusDeploy
                 ((Test-Path $using:octopusServiceStartedStateFile) -and ([System.IO.FIle]::ReadAllText($using:octopusServiceStartedStateFile).Trim()) -eq 'Running')
             }
             GetScript = { @{} }
-            DependsOn = @('[xFirewall]OctopusDeployServer','[Script]URLAccessControlList','[Service]OctopusDeploy','[Script]OctopusDeployConfiguration')
+            DependsOn = @('[xFirewall]OctopusDeployServer','[Script]URLAccessControlList','[Service]OctopusDeploy','[Script]OctopusDeployConfiguration','[User]OctopusDeployServiceAccount','[Script]SetOctopusUserGroups','[xFileSystemAccessRule]OctopusConfigFile')
         }
-
     }
 }

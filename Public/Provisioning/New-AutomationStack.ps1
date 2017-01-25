@@ -8,9 +8,9 @@ function New-AutomationStack {
                 $Stages = 1..$TotalDeploymentStages
                 $firstRun = $true
             } else {
-                $lastSuccessfulStage = $CurrentContext.Get('LastSuccessfulStage')
-                Write-Host -ForegroundColor Magenta "Resuming deployment from stage $lastSuccessfulStage"
-                $Stages = $lastSuccessfulStage..$TotalDeploymentStages
+                $currentStage = $CurrentContext.Get('CurrentStage')
+                Write-Host -ForegroundColor Magenta "Resuming deployment from stage $currentStage"
+                $Stages = $currentStage..$TotalDeploymentStages
                 $firstRun = $false
             }  
         }
@@ -29,6 +29,7 @@ function New-AutomationStack {
                 if ($stageNumber -lt 1 -or $stageNumber -gt $TotalDeploymentStages) {
                     Write-Warning "Stage $stageNumber is outside the allowed range of 0-$TotalDeploymentStages, skipping"
                 }
+                $CurrentContext.Set('CurrentStage', $StageNumber)
                 $ScriptBlock = switch ($stageNumber) {
                     1 {
                         $Heading = 'Creating AutomationStack Deployment Context'
@@ -118,7 +119,6 @@ function New-AutomationStack {
                     }
                 }
                 Start-DeploymentStage -StageNumber $StageNumber -Heading $Heading -ScriptBlock $ScriptBlock
-                $CurrentContext.Set('LastSuccessfulStage', $StageNumber)
             }
         }
         finally {   
