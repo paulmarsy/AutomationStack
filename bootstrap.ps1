@@ -33,6 +33,6 @@ Move-Item -Path (Join-Path $Path 'AutomationStack-master\*') -Destination $Path 
 $moduleManifest = Join-Path $Path 'AutomationStack.psd1'
 if (!(Test-Path $moduleManifest)) { Write-Error 'Unable to find the AutomationStack module' }
 
-Write-Output 'AutomationStack aquired, importing module & starting deployment...'
+Write-Output 'AutomationStack acquired, importing module & starting deployment...'
 Import-Module $moduleManifest -Force
 AutomationStack\New-AutomationStack
