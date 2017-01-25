@@ -16,7 +16,7 @@ Write-Host -N $padding; Write-Host -B White -F Black '                          
 Write-Host
 
 if ($PSVersionTable.PSVersion.Major -lt 5) { Write-Error 'AutomationStack requires PowerShell 5 to begin. Go to ''Download WMF 5.0'' at https://msdn.microsoft.com/en-us/powershell' }
-
+Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope Process -Force
 if (Test-Path $Path) {
     Write-Warning 'Previous AutomationStack directory exists...'
     Remove-Item $Path -Recurse -Force -ErrorAction Ignore
