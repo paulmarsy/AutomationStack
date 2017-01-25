@@ -1,27 +1,31 @@
 class AutoMetrics {
     AutoMetrics([Octosprache]$Octosprache) {
-        $this.Octosprache = $Octosprache
+        $backingFile = Join-Path $script:DeploymentsPath ('{0}.metrics.json' -f $Octosprache.Get('UDP'))        
+        $this.VariableDictionary = New-Object Octostache.VariableDictionary $backingFile
     }
-    hidden $Octosprache
+    
+    hidden $VariableDictionary
 
     Start([string]$Key, [string]$Description) {
-        if ($this.Octosprache.Get('DeploymentComplete') -eq 'True') { return }
-        $this.Octosprache.Set(('Timing[{0}].Start' -f $Key), (Get-Date))
-        $this.Octosprache.Set(('Timing[{0}].Description' -f $Key), $Description)
+        if ($this.VariableDictionary.Get('DeploymentComplete') -eq 'True') { return }
+        $this.VariableDictionary.Set(('Timing[{0}].Start' -f $Key), (Get-Date))
+        $this.VariableDictionary.Set(('Timing[{0}].Description' -f $Key), $Description)
+        $this.VariableDictionary.Save()
     }
     Finish([string]$Key) {
-        if ($this.Octosprache.Get('DeploymentComplete') -eq 'True') { return }
-        $this.Octosprache.Set(('Timing[{0}].End' -f $Key), (Get-Date))
+        if ($this.VariableDictionary.Get('DeploymentComplete') -eq 'True') { return }
+        $this.VariableDictionary.Set(('Timing[{0}].End' -f $Key), (Get-Date))
+        $this.VariableDictionary.Save()
     }
     [string] GetDescription([string]$Key) {
-         $description = $this.Octosprache.Get(('Timing[{0}].Description' -f $Key))
+         $description = $this.VariableDictionary.Get(('Timing[{0}].Description' -f $Key))
          if (!$description) { return 'Not yet started' }
          else { return  $description }
     }
     [timespan] GetRaw([string]$Key) {
-        $startdatetime = $this.Octosprache.Get(('Timing[{0}].Start' -f $Key))
+        $startdatetime = $this.VariableDictionary.Get(('Timing[{0}].Start' -f $Key))
         if (!$startdatetime) { return [timespan]::Zero }
-        $enddatetime = $this.Octosprache.Get(('Timing[{0}].End' -f $Key))
+        $enddatetime = $this.VariableDictionary.Get(('Timing[{0}].End' -f $Key))
         if (!$enddatetime) { return [timespan]::Zero }
         return (([datetime]$enddatetime) - ([datetime]$startdatetime))
     }

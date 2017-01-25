@@ -3,15 +3,10 @@ class Octosprache {
         $this.VariableDictionary = New-Object Octostache.VariableDictionary
     }
     Octosprache([string]$UDP) {
-        $backingFile = Join-Path $script:DeploymentsPath ('{0}.json' -f $UDP)        
+        $backingFile = Join-Path $script:DeploymentsPath ('{0}.config.json' -f $UDP)        
         $this.VariableDictionary = New-Object Octostache.VariableDictionary $backingFile
     }
-    hidden static [string] PrepareJson([string]$Json) {
-        $deserialized = ConvertFrom-Json -InputObject $Json
-        $minifiedJson = ConvertTo-Json -InputObject $deserialized -Depth 100 -Compress | % { $_ -replace '\{\s*\}', '{}' } 
-        $decodedJson = [regex]::replace($minifiedJson,'\\u[a-fA-F0-9]{4}',{[char]::ConvertFromUtf32(($args[0].Value -replace '\\u','0x'))})
-        return $decodedJson
-    }
+
     hidden $VariableDictionary
 
     Set([string]$Key, [string]$Value) {
@@ -26,11 +21,6 @@ class Octosprache {
     }
     [string] Eval([string]$Expression) {
         return $this.VariableDictionary.Evaluate($Expression)
-    }
-    ParseFile($FilePath) {
-        $content = Get-Content -LiteralPath $FilePath -Raw
-        $tokenised = $this.Eval($content)
-        Set-Content -LiteralPath $FilePath -Value $tokenised -Encoding ASCII
     }
     ParseFile($From, $To) {
         $content = Get-Content -LiteralPath $From -Raw
