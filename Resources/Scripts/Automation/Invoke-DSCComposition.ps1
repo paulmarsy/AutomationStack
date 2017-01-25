@@ -24,6 +24,6 @@ if (Test-Path $tempFile) {
     Remove-Item $tempFile -Force
 }
 Set-Content -Path $tempFile -Value $resolvedConfiguration
-Write-Host  "Complete DSC Configuration: $tempFile"
+Write-Host  "Composite DSC Configuration: $tempFile"
 
 return $tempFile
