@@ -22,6 +22,9 @@ class AutoMetrics {
          if (!$description) { return 'Not yet started' }
          else { return  $description }
     }
+    [string] Get([string]$Key, [string]$Property) {
+         return $this.VariableDictionary.Get(('Timing[{0}].{1}' -f $Key, $Property))
+    }
     [timespan] GetRaw([string]$Key) {
         $startdatetime = $this.VariableDictionary.Get(('Timing[{0}].Start' -f $Key))
         if (!$startdatetime) { return [timespan]::Zero }

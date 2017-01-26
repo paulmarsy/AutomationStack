@@ -11,7 +11,7 @@ function Send-ToOctopusPackageFeed {
     try {
         Compress-Archive -Path "$Path\*" -DestinationPath $packageFile -CompressionLevel Optimal
         
-        [System.Net.WebClient]::new().UploadFile(('{0}api/packages/raw?apiKey={1}' -f $CurrentContext.Get('OctopusHostHeader'), $CurrentContext.Get('ApiKey')), $packageFile)
+        [System.Net.WebClient]::new().UploadFile(('{0}api/packages/raw?apiKey={1}' -f $CurrentContext.Get('OctopusHostHeader'), $CurrentContext.Get('ApiKey')), $packageFile) | Out-Null
 
         Write-Host 'done'
     }
