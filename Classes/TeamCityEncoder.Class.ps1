@@ -42,7 +42,7 @@ class TeamCityEncoder {
         $cryptoStream.Write($plainText, 0, $plainText.Length)
         $cryptoStream.FlushFinalBlock()
 
-        $scrambled = ([TeamCityEncoder]::Prefix + (($ms.ToArray() | % { $_.ToString('X') }) -join '')).ToLowerInvariant()
+        $scrambled = ([TeamCityEncoder]::Prefix + (($ms.ToArray() | % { $_.ToString('X2') }) -join '')).ToLowerInvariant()
         $this.Octosprache.Set(('Encoding[TeamCityScramble].{0}' -f $Key), $scrambled)
     }
     Hash([string]$Key, [string]$Value) {
