@@ -1,7 +1,7 @@
 function Sync-AutomationStackModule {
     param($UDP)
 
-    Remove-Module AutomationStack -Force
+    Remove-Module AutomationStack -Force -ErrorAction Continue
     if ($null -ne $CurrentContext -and $null -eq $UDP) {
         $UDP  = $CurrentContext.Get('UDP')
     }

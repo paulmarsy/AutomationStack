@@ -1,22 +1,37 @@
 class AutoMetrics {
-    AutoMetrics([Octosprache]$Octosprache) {
-        $backingFile = Join-Path $script:DeploymentsPath ('{0}.metrics.json' -f $Octosprache.Get('UDP'))        
-        $this.VariableDictionary = New-Object Octostache.VariableDictionary $backingFile
+    AutoMetrics() {
+        $this.VariableDictionary = New-Object Octostache.VariableDictionary ([AutoMetrics]::GetBackingFile())
     }
-    
+
     hidden $VariableDictionary
 
-    Start([string]$Key, [string]$Description) {
-        if ($this.VariableDictionary.Get('DeploymentComplete') -eq 'True') { return }
-        $this.VariableDictionary.Set(('Timing[{0}].Start' -f $Key), (Get-Date))
-        $this.VariableDictionary.Set(('Timing[{0}].Description' -f $Key), $Description)
-        $this.VariableDictionary.Save()
+    hidden static [string]GetBackingFile() {
+        return (Join-Path $script:DeploymentsPath ('{0}.metrics.json' -f $script:CurrentContext.Get('UDP')))
     }
-    Finish([string]$Key) {
-        if ($this.VariableDictionary.Get('DeploymentComplete') -eq 'True') { return }
-        $this.VariableDictionary.Set(('Timing[{0}].End' -f $Key), (Get-Date))
-        $this.VariableDictionary.Save()
+
+    static Start([string]$Key, [string]$Description) {
+        $currentVariableDictionary = New-Object Octostache.VariableDictionary ([AutoMetrics]::GetBackingFile())
+        if ($currentVariableDictionary.Get('DeploymentComplete') -eq 'True') { return }
+
+        if ($Key -eq 1) {
+            $currentVariableDictionary.Set('Timing[Deployment].Start', (Get-Date))
+        }
+        $currentVariableDictionary.Set(('Timing[{0}].Start' -f $Key), (Get-Date))
+        $currentVariableDictionary.Set(('Timing[{0}].Description' -f $Key), $Description)
+        $currentVariableDictionary.Save()
     }
+    static Finish([string]$Key) {
+        $currentVariableDictionary = New-Object Octostache.VariableDictionary ([AutoMetrics]::GetBackingFile())
+        if ($currentVariableDictionary.Get('DeploymentComplete') -eq 'True') { return }
+
+        $currentVariableDictionary.Set(('Timing[{0}].End' -f $Key), (Get-Date))
+        if ($Key -eq $script:TotalDeploymentStages) {
+            $currentVariableDictionary.Set('Timing[Deployment].End', (Get-Date))
+            $currentVariableDictionary.Set('DeploymentComplete', $true)
+        }
+        $currentVariableDictionary.Save()
+    }
+
     [string] GetDescription([string]$Key) {
          $description = $this.VariableDictionary.Get(('Timing[{0}].Description' -f $Key))
          if (!$description) { return 'Not yet started' }

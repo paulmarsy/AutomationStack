@@ -11,9 +11,7 @@ function Start-DeploymentStage {
 
         try {
             if ($null -ne $CurrentContext) { 
-                $metrics = New-Object AutoMetrics $CurrentContext
-                $metrics.Start($StageNumber, $Heading)
-
+                [AutoMetrics]::Start($StageNumber, $Heading)
                 $CurrentContext.Set('CurrentStage', $StageNumber)
             }
 
@@ -37,6 +35,5 @@ function Start-DeploymentStage {
         }
                 
     }
-    if ($null -eq $metrics) { $metrics = New-Object AutoMetrics $CurrentContext }
-    $metrics.Finish($StageNumber)
+    [AutoMetrics]::Finish($StageNumber)
 }

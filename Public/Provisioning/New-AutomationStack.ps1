@@ -99,8 +99,6 @@ function New-AutomationStack {
                     10 {
                         $Heading = 'AutomationStack Deployment Complete'
                         {
-                            $metrics = New-Object AutoMetrics $CurrentContext
-                            $metrics.Finish('Deployment')
                             Show-AutomationStackDetail
                             Write-Host -ForegroundColor Cyan "`t  Additional functionality can be deployed/enabled using Octopus Deploy"
                             Write-Host
@@ -113,7 +111,6 @@ function New-AutomationStack {
                             Write-Host -ForegroundColor Gray "`t`t- Remove-AutomationStack - Removes Azure resources created by the project including the Service Principal"
                             Write-Host -ForegroundColor Gray "`t`t- New-AutomationStack - Creates another isolated & seperate instance of AutomationStack"
                             Write-Host -ForegroundColor Gray "`t`t- Import-Module AutomationStack -ArgumentList <UDP> - Imports the module with the context of a previous deployment"
-                            $CurrentContext.Set('DeploymentComplete', $true)
                         }
                     }
                 }

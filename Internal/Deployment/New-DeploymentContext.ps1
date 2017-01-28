@@ -7,11 +7,11 @@ function New-DeploymentContext {
     $deploymentGuid = [guid]::NewGuid().guid
 
     Write-Host 'Creating Octostache Config Store...'
-    $script:CurrentContext = New-Object Octosprache $deploymentGuid.Substring(9,4)
-    $CurrentContext.Set('UDP', $deploymentGuid.Substring(9,4))
-    $metrics = New-Object AutoMetrics $CurrentContext
-    $metrics.Start('Deployment', 'Total deployment time')
-    $metrics.Start(1, 'Creating AutomationStack Deployment Details')
+    $udp = $deploymentGuid.Substring(9,4)
+    $script:CurrentContext = New-Object Octosprache $udp
+    $CurrentContext.Set('UDP', $udp)
+
+    [AutoMetrics]::Start(1, 'Creating AutomationStack Deployment Details')
     $CurrentContext.Set('Name', 'AutomationStack#{UDP | ToUpper}')
     $CurrentContext.Set('InfraRg', 'AutomationStack#{UDP | ToUpper}')
 
