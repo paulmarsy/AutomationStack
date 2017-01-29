@@ -45,7 +45,7 @@ Script OctopusTentacleInstall
 }
 $octopusConfigStateFile = Join-Path $octopusDeployRoot 'config.statefile'
 $octopusConfigLogFile = Join-Path $octopusDeployRoot "OctopusTentacle.config.log"
-Script OctopusTentacleConfiguration
+Script OctopusDeployConfiguration
 {
     SetScript = {
         $octopusTentacleExe = Join-Path $env:ProgramFiles 'Octopus Deploy\Tentacle\Tentacle.exe'
