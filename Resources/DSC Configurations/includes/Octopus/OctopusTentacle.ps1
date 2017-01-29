@@ -26,7 +26,7 @@ xRemoteFile OctopusTentacle
     DependsOn = '[File]OctopusDeployFolder'
 }
 $octopusInstallLogFile = Join-Path $octopusDeployRoot "OctopusTentacle.install.log"
-$octopusInstallStateFile = Join-Path $octopusDeployRoot 'OctopusDeploy.install'
+$octopusInstallStateFile = Join-Path $octopusDeployRoot 'install.statefile'
 Script OctopusTentacleInstall
 {
     SetScript = {
@@ -43,7 +43,7 @@ Script OctopusTentacleInstall
     GetScript = { @{} }
     DependsOn = '[xRemoteFile]OctopusTentacle'
 }
-$octopusConfigStateFile = Join-Path $octopusDeployRoot 'OctopusDeploy.config'
+$octopusConfigStateFile = Join-Path $octopusDeployRoot 'config.statefile'
 $octopusConfigLogFile = Join-Path $octopusDeployRoot "OctopusTentacle.config.log"
 Script OctopusTentacleConfiguration
 {
