@@ -127,6 +127,9 @@ Configuration OctopusDeploy
             DependsOn = '[Script]OctopusDeployInstall'
         }
 
+        $watchdogExe = Join-Path $env:ProgramFiles 'Octopus Deploy\Octopus\Octopus.Server.exe'
+        #include <Octopus\OctopusWatchdog>
+
         $octopusServiceAccountUsername = $octopusDeployServiceAccount.UserName
         User OctopusDeployServiceAccount
         {

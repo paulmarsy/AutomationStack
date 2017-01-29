@@ -71,4 +71,7 @@ Script OctopusDeployConfiguration
     }
     GetScript = { @{} }
     DependsOn = @('[xFirewall]OctopusDeployTentacle','[Script]OctopusTentacleInstall')
+
+    $watchdogExe = Join-Path $env:ProgramFiles 'Octopus Deploy\Tentacle\Tentacle.exe'
+    #include <Octopus\OctopusWatchdog>
 }
