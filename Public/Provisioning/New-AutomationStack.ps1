@@ -102,8 +102,8 @@ function New-AutomationStack {
                             Show-AutomationStackDetail
                             Write-Host -ForegroundColor Cyan "`t  Additional functionality can be deployed/enabled using Octopus Deploy"
                             Write-Host
-                            Write-Host -ForegroundColor Green "`t   Octopus Deploy URL (& copied to clipboard): $($CurrentContext.Get('OctopusHostHeader'))"
-                            Microsoft.PowerShell.Management\Set-Clipboard -Value $CurrentContext.Get('OctopusHostHeader')
+                            Write-Host -ForegroundColor Green "`t   Octopus Deploy URL: $($CurrentContext.Get('OctopusHostHeader'))"
+                            Open-AuthenticatedOctopusDeployUri
                             Write-Host
                             Write-Host -ForegroundColor Gray "`t  Available PowerShell Module commands:"
                             Write-Host -ForegroundColor Gray "`t`t- Measure-AutomationStack - Shows timing & deployment stats"

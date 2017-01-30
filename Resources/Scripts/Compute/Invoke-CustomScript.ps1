@@ -40,7 +40,8 @@ do {
 if ($job.State -ne 'Completed') {
     Write-Warning "Job did not complete successfully, output:"
     $job | Receive-Job | Out-Host
-
+    Write-Host "Extension output:"
+    Get-AzureRmVMExtension -ResourceGroupName $ResourceGroupName -VMName $VMName -Name 'CustomScript' -Status | % SubStatuses | % Message | % Replace '\n' "`n" | Out-Host
 }
 Write-Host
 $duration = $job.PSEndTime - $job.PSBeginTime
