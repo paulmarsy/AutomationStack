@@ -43,12 +43,12 @@ function Publish-StorageAccountResources {
     if ($Upload -in @('All','OctopusDataSet')) {
         Write-Host
         Write-Host -ForegroundColor Green "`tUploading Octopus Deploy DataSet..."
-        Upload-ToFileShare -FileShareName octopusdeploy -Source (Join-Path -Resolve $ExportsPath 'OctopusDeploy') -TokeniseFiles @('metadata.json','server.json','Automation Stack Parameters-VariableSet.json','Microsoft Azure Service Principal.json','Tentacle Auth.json','#{Encoding[OctopusApiKeyId].ApiKey}.json','#{StackAdminUsername}.json') -Context $context -ResetStorage:$ResetStorage -Octosprache $clonedContext
+        Upload-ToFileShare -FileShareName octopusdeploy -Source (Join-Path -Resolve $DataImportPath 'OctopusDeploy') -TokeniseFiles @('metadata.json','server.json','Automation Stack Parameters-VariableSet.json','Microsoft Azure Service Principal.json','Tentacle Auth.json','#{Encoding[OctopusApiKeyId].ApiKey}.json','#{StackAdminUsername}.json') -Context $context -ResetStorage:$ResetStorage -Octosprache $clonedContext
     }
     if ($Upload -in @('All','TeamCityDataSet')) {
         Write-Host
         Write-Host -ForegroundColor Green "`tUploading TeamCity DataSet..."
-        Upload-ToFileShare -FileShareName teamcity -Source (Join-Path -Resolve $ExportsPath 'TeamCity') -TokeniseFiles @('vcs_username','users','database.properties','agentpush-presets.xml','arm-1.xml') -Context $context -ResetStorage:$ResetStorage -Octosprache $clonedContext
+        Upload-ToFileShare -FileShareName teamcity -Source (Join-Path -Resolve $DataImportPath 'TeamCity') -TokeniseFiles @('vcs_username','users','database.properties','agentpush-presets.xml','arm-1.xml') -Context $context -ResetStorage:$ResetStorage -Octosprache $clonedContext
     }
     Write-Host
 }

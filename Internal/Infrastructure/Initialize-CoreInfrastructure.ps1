@@ -2,7 +2,7 @@ function Initialize-CoreInfrastructure {
     $CurrentContext.Set('SqlServerName', 'azuresql-#{UDP}')
     Start-ARMDeployment -ResourceGroupName $CurrentContext.Get('InfraRg') -Template 'infrastructure' -Mode Incremental -TemplateParameters @{
         udp = $CurrentContext.Get('UDP')
-        sqlAdminUsername = $CurrentContext.Get('StackAdminUsername')
+        sqlAdminUsername = $CurrentContext.Get('SqlServerUsername')
     } | Out-Null
 
     $CurrentContext.Set('StorageAccountName', 'stackresources#{UDP}')

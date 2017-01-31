@@ -28,6 +28,7 @@ function New-DeploymentContext {
     
     $CurrentContext.Set('StackAdminUsername', 'Stack')
     $CurrentContext.Set('StackAdminPassword', ($deploymentGuid.Substring(0,8) + (($deploymentGuid.Substring(24,12).GetEnumerator() | ? { [char]::IsLetter($_) } | % { [char]::ToUpper($_) }) -join '')))
+    $CurrentContext.Set('SqlServerUsername', '#{StackAdminUsername}')
     $CurrentContext.Set('SqlServerPassword', (New-ContextSafePassword))
     $CurrentContext.Set('OctopusAutomationCredentialUsername', 'OctopusDeploy')
     $CurrentContext.Set('OctopusAutomationCredentialPassword', [System.Web.Security.Membership]::GeneratePassword(16, 4))
