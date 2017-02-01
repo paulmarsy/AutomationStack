@@ -15,7 +15,7 @@ function Start-DeploymentStage {
                 $CurrentContext.Set('CurrentStage', $StageNumber)
             }
 
-            $ScriptBlock.Invoke()
+            & $ScriptBlock
             break
         }
         catch {

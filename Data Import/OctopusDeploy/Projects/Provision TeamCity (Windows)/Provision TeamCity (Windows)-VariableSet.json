@@ -2,7 +2,7 @@
   "$type": "Octopus.Core.Model.Variables.VariableSet, Octopus.Core",
   "Id": "variableset-Projects-7",
   "OwnerId": "Projects-7",
-  "Version": 14,
+  "Version": 16,
   "Variables": [
     {
       "Id": "f8698758-6c72-efb6-6c4f-805a3d0a3196",
@@ -20,29 +20,9 @@
       "Value": "Server"
     },
     {
-      "Id": "e8f7bff4-82fc-fc31-a48c-0c3e7498f3d4",
-      "Name": "ArchivePath",
-      "Value": "#{ExportPath}\\export.zip"
-    },
-    {
       "Id": "fc78ab77-a5fd-df59-cee5-23723d55d3b5",
       "Name": "ExportPath",
       "Value": "D:\\TeamCityExport"
-    },
-    {
-      "Id": "5fd530d3-7640-fed9-8f39-d2fb97100fdc",
-      "Name": "DatabaseConfig",
-      "Value": "#{ExportPath}\\config\\database.properties"
-    },
-    {
-      "Id": "1710b566-16bd-ea26-392c-bf691e7eb82b",
-      "Name": "JDBCSrc",
-      "Value": "#{ExportPath}\\lib\\jdbc\\sqljdbc42.jar"
-    },
-    {
-      "Id": "836a378f-378b-6148-8c5b-8f8e087a3893",
-      "Name": "JDBCDst",
-      "Value": "#{TeamCityDataDir}\\lib\\jdbc"
     },
     {
       "Id": "aec9838a-d2d0-bacb-2e91-807dae557744",
@@ -58,6 +38,11 @@
       "Id": "24fd9d5e-e55f-b05b-e519-e996ab46e01f",
       "Name": "DSCConfigFile",
       "Value": "#{DSCConfigPath}\\TeamCity.ps1"
+    },
+    {
+      "Id": "2121f3d5-c535-bcd0-95bb-bc76199cadc4",
+      "Name": "Octopus.Action.Azure.UseBundledAzurePowerShellModules",
+      "Value": "False"
     }
   ],
   "RelatedDocumentIds": []

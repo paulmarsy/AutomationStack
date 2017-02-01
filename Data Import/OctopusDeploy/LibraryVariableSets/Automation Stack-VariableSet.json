@@ -2,7 +2,7 @@
   "$type": "Octopus.Core.Model.Variables.VariableSet, Octopus.Core",
   "Id": "variableset-LibraryVariableSets-2",
   "OwnerId": "LibraryVariableSets-2",
-  "Version": 10,
+  "Version": 11,
   "Variables": [
     {
       "Id": "04107455-ce7d-0174-c2bc-6c75bf7f5f2a",
@@ -43,6 +43,11 @@
       "Id": "1f3cbd01-a40b-91b4-7b70-c11a2000ba07",
       "Name": "TeamCityHostName",
       "Value": "teamcitystack-#{UDP}.#{AzureRegionValue}.cloudapp.azure.com"
+    },
+    {
+      "Id": "d0ecce5b-8824-5845-d6f7-eabfee322adb",
+      "Name": "SqlServerUsername",
+      "Value": "#{StackAdminUsername}"
     }
   ],
   "RelatedDocumentIds": []

@@ -54,6 +54,10 @@
     "apiVersion": "2016-01-01",
     "type": "Microsoft.Storage/storageAccounts",
     "name": "[variables('vmStorageName')]",
+    "tags": {
+      "application": "AutomationStack",
+      "udp": "[parameters('udp')]"
+    },
     "location": "[resourceGroup().location]",
     "sku": {
       "name": "Premium_LRS",
@@ -74,6 +78,10 @@
     "apiVersion": "2015-06-15",
     "type": "Microsoft.Network/networkInterfaces",
     "name": "[variables('nicName')]",
+    "tags": {
+      "application": "AutomationStack",
+      "udp": "[parameters('udp')]"
+    },
     "location": "[resourceGroup().location]",
     "dependsOn": [
       "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]"
@@ -99,6 +107,10 @@
     "apiVersion": "2015-05-01-preview",
     "type": "Microsoft.Network/publicIPAddresses",
     "name": "[variables('publicIPAddressName')]",
+    "tags": {
+      "application": "AutomationStack",
+      "udp": "[parameters('udp')]"
+    },
     "location": "[resourceGroup().location]",
     "properties": {
       "publicIPAllocationMethod": "Static",
@@ -111,6 +123,10 @@
     "apiVersion": "2016-03-30",
     "type": "Microsoft.Compute/virtualMachines",
     "name": "[variables('vmName')]",
+    "tags": {
+      "application": "AutomationStack",
+      "udp": "[parameters('udp')]"
+    },
     "location": "[resourceGroup().location]",
     "dependsOn": [
       "[concat('Microsoft.Storage/storageAccounts/', variables('vmStorageName'))]",
@@ -155,6 +171,10 @@
     "resources": [{
       "type": "extensions",
       "name": "AzureDiskEncryption",
+      "tags": {
+        "application": "AutomationStack",
+        "udp": "[parameters('udp')]"
+      },
       "apiVersion": "2016-03-30",
       "location": "[resourceGroup().location]",
       "properties": {
@@ -179,6 +199,10 @@
     }, {
       "type": "extensions",
       "name": "Microsoft.Powershell.DSC",
+      "tags": {
+        "application": "AutomationStack",
+        "udp": "[parameters('udp')]"
+      },
       "apiVersion": "2015-06-15",
       "location": "[resourceGroup().location]",
       "properties": {
@@ -241,9 +265,9 @@
           }]
         }
       },
-        "dependsOn": [
-          "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
-        ]
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
+      ]
     }]
   }],
   "outputs": {

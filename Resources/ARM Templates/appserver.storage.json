@@ -13,6 +13,10 @@
     "apiVersion": "2016-01-01",
     "type": "Microsoft.Storage/storageAccounts",
     "name": "[variables('vmStorageName')]",
+    "tags": {
+      "application": "AutomationStack",
+      "udp": "[parameters('udp')]"
+    },
     "location": "[resourceGroup().location]",
     "sku": {
       "name": "Premium_LRS",
@@ -27,7 +31,7 @@
             "enabled": true
           }
         }
-      
+
       }
     }
   }],

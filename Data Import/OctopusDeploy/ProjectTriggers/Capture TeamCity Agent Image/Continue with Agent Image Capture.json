@@ -1,0 +1,23 @@
+{
+  "$type": "Octopus.Core.Model.Projects.ProjectTrigger.ProjectTrigger, Octopus.Core",
+  "Id": "ProjectTriggers-21",
+  "Name": "Continue with Agent Image Capture",
+  "ProjectId": "Projects-21",
+  "Filter": {
+    "$type": "Octopus.Core.Model.Projects.ProjectTrigger.MachineFilter, Octopus.Core",
+    "EventGroups": [
+      "MachineAvailableForDeployment"
+    ],
+    "EventCategories": [],
+    "EnvironmentIds": [
+      "Environments-1"
+    ],
+    "Roles": [
+      "TeamCity Agent Image"
+    ]
+  },
+  "Action": {
+    "$type": "Octopus.Core.Model.Projects.ProjectTrigger.AutoDeployAction, Octopus.Core",
+    "ShouldRedeployWhenMachineHasBeenDeployedTo": false
+  }
+}

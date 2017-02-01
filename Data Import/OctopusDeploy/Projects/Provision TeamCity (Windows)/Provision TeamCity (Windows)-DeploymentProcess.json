@@ -2,8 +2,36 @@
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
   "Id": "deploymentprocess-Projects-7",
   "OwnerId": "Projects-7",
-  "Version": 141,
+  "Version": 158,
   "Steps": [
+    {
+      "Id": "3eaab2f7-a8f5-41f2-9cfd-8eac985fdf5c",
+      "Name": "Install Azure PowerShell Cmdlets",
+      "Condition": "Success",
+      "StartTrigger": "StartAfterPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "eda2c575-0a92-425e-975b-06fdfb6d44d4",
+          "Name": "Install Azure PowerShell Cmdlets",
+          "ActionType": "Octopus.Script",
+          "IsDisabled": false,
+          "Environments": [],
+          "ExcludedEnvironments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.Script.Syntax": "PowerShell",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.RunOnServer": "true",
+            "Octopus.Action.Script.ScriptBody": "if ($OctopusParameters['Octopus.Action.Azure.UseBundledAzurePowerShellModules'] -ne 'False') {\r\n    throw 'Octopus.Action.Azure.UseBundledAzurePowerShellModules variable must be set to false'\r\n}\r\nif (Get-Module -ListAvailable -Name AzureRm) {\r\n    return\r\n}\r\n\r\nNew-Item -Path \"$env:APPDATA\\Windows Azure Powershell\" -Type Directory -Force | Out-Null\r\nSet-Content -Path \"$env:APPDATA\\Windows Azure Powershell\\AzureDataCollectionProfile.json\" -Value '{\"enableAzureDataCollection\":false}'\r\n\r\nInstall-PackageProvider -Name NuGet -Force\r\nSet-PSRepository -Name PSGallery -InstallationPolicy Trusted\r\nInstall-Module AzureRm -Force",
+            "Octopus.Action.Template.Id": "ActionTemplates-21",
+            "Octopus.Action.Template.Version": "4"
+          }
+        }
+      ],
+      "Properties": {}
+    },
     {
       "Id": "f915e03f-4a5b-4fa2-aa88-d572523b1b3b",
       "Name": "Download DSC Configuration",
@@ -131,11 +159,11 @@
             "Octopus.Action.Package.FeedId": "feeds-builtin",
             "Octopus.Action.Script.ScriptFileName": "New-ResourceGroup.ps1",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Resources",
-            "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName '#{ResourceGroupName}' -Location '#{Location}'",
+            "Octopus.Action.Script.ScriptParameters": "-UDP '#{UDP}' -ResourceGroupName '#{ResourceGroupName}' -Location '#{Location}'",
             "ResourceGroupName": "#{ResourceGroup}",
             "Location": "#{AzureRegion}",
             "Octopus.Action.Template.Id": "ActionTemplates-10",
-            "Octopus.Action.Template.Version": "6"
+            "Octopus.Action.Template.Version": "7"
           }
         }
       ],
@@ -257,7 +285,7 @@
     },
     {
       "Id": "0aadda3f-2fae-4ecb-8717-f44a38deeb60",
-      "Name": "Import Data",
+      "Name": "TeamCity Import",
       "Condition": "Success",
       "StartTrigger": "StartAfterPrevious",
       "RequiresPackagesToBeAcquired": false,
@@ -266,7 +294,7 @@
           "Id": "c8022bc0-bcc1-4cb1-b2ee-01beeb54a415",
           "Name": "Reset state",
           "ActionType": "Octopus.Script",
-          "IsDisabled": false,
+          "IsDisabled": true,
           "Environments": [],
           "ExcludedEnvironments": [],
           "Channels": [],
@@ -275,12 +303,12 @@
             "Octopus.Action.RunOnServer": "false",
             "Octopus.Action.Script.Syntax": "PowerShell",
             "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "if (Test-Path $ExportPath) {\n    Remove-Item $ExportPath -Recurse -Force\n}\nNew-Item -ItemType Directory -Path $ExportPath\n\nif (Test-Path $TeamCityDataDir) {\n    Remove-Item $TeamCityDataDir -Recurse -Force\n}\nNew-Item -ItemType Directory -Path $TeamCityDataDir\n"
+            "Octopus.Action.Script.ScriptBody": "Stop-Service TeamCity -Force -ErrorAction Ignore\nStart-Process -FilePath \"${TeamCityBin}teamcity-server.bat\" -UseNewEnvironment -ArgumentList @('service','delete') -Wait -NoNewWindow\nif (Test-Path $ExportPath) {\n    Remove-Item $ExportPath -Recurse -Force\n}\nNew-Item -ItemType Directory -Path $ExportPath\n\nif (Test-Path $TeamCityDataDir) {\n    Remove-Item $TeamCityDataDir -Recurse -Force\n}\nNew-Item -ItemType Directory -Path $TeamCityDataDir\n"
           }
         },
         {
           "Id": "7f96fe71-7694-4b58-b379-c71d25d5c781",
-          "Name": "Retrieve Export",
+          "Name": "Download Import",
           "ActionType": "Octopus.Script",
           "IsDisabled": false,
           "Environments": [],
@@ -304,7 +332,7 @@
         },
         {
           "Id": "60a2239f-48c9-433a-9ff8-9e3851480c3b",
-          "Name": "Prepare export for import",
+          "Name": "Import Data",
           "ActionType": "Octopus.Script",
           "IsDisabled": false,
           "Environments": [],
@@ -313,62 +341,16 @@
           "TenantTags": [],
           "Properties": {
             "Octopus.Action.RunOnServer": "false",
-            "Octopus.Action.Script.Syntax": "PowerShell",
-            "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "Compress-Archive -Path \"${ExportPath}\\*\" -DestinationPath $ArchivePath -CompressionLevel Fastest\r\n\r\nNew-Item -Path $JDBCDst -ItemType Directory\r\nCopy-Item -Path $JDBCSrc -Destination $JDBCDst\r\n\r\n[system.io.file]::WriteAllText($DatabaseConfig, ([system.io.file]::ReadAllText($DatabaseConfig, [system.text.encoding]::UTF8)), [system.text.encoding]::ASCII)"
-          }
-        },
-        {
-          "Id": "18330634-5115-4bd1-8726-5a4463d840d8",
-          "Name": "Run maintainDB Restore",
-          "ActionType": "Octopus.Script",
-          "IsDisabled": false,
-          "Environments": [],
-          "ExcludedEnvironments": [],
-          "Channels": [],
-          "TenantTags": [],
-          "Properties": {
-            "Octopus.Action.RunOnServer": "false",
-            "Octopus.Action.Script.Syntax": "PowerShell",
-            "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "& C:\\TeamCity\\bin\\maintainDB.cmd restore -F $ArchivePath -T $DatabaseConfig"
-          }
-        },
-        {
-          "Id": "1136ddc9-bbf3-4660-94d5-441eaf5d8aad",
-          "Name": "Restore Data Folder",
-          "ActionType": "Octopus.Script",
-          "IsDisabled": false,
-          "Environments": [],
-          "ExcludedEnvironments": [],
-          "Channels": [],
-          "TenantTags": [],
-          "Properties": {
-            "Octopus.Action.RunOnServer": "false",
-            "Octopus.Action.Script.Syntax": "PowerShell",
-            "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "$srcConfig = Join-Path $ExportPath 'config'\n$dstConfig = Join-Path $TeamCityDataDir 'config'\nif (Test-Path $dstConfig) {\n    Remove-Item -Path $dstConfig -Recurse -Force \n}\nCopy-Item -Recurse -Force -Path $srcConfig -Destination $TeamCityDataDir"
-          }
-        },
-        {
-          "Id": "3c132e0f-539f-48db-8936-41fcdb56f6f6",
-          "Name": "Install Service",
-          "ActionType": "Octopus.Script",
-          "IsDisabled": false,
-          "Environments": [],
-          "ExcludedEnvironments": [],
-          "Channels": [],
-          "TenantTags": [],
-          "Properties": {
-            "Octopus.Action.RunOnServer": "false",
-            "Octopus.Action.Script.Syntax": "PowerShell",
-            "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "& \"${TeamCityBin}teamcity-server.bat\" service install /runAsSystem"
+            "Octopus.Action.Script.ScriptSource": "Package",
+            "Octopus.Action.Script.ScriptFileName": "TeamCityImport.ps1",
+            "Octopus.Action.Package.FeedId": "feeds-builtin",
+            "Octopus.Action.Package.PackageId": "ARMCustomScripts",
+            "Octopus.Action.Script.ScriptParameters": "-ExportPath '#{ExportPath}' -TeamCityDataDir '#{TeamCityDataDir}' -TeamCityBin '#{TeamCityBin}'"
           }
         },
         {
           "Id": "8c54309b-aa19-4636-9495-57419df1517c",
-          "Name": "Start TeamCity",
+          "Name": "Configure Service",
           "ActionType": "Octopus.Script",
           "IsDisabled": false,
           "Environments": [],
@@ -379,7 +361,7 @@
             "Octopus.Action.RunOnServer": "false",
             "Octopus.Action.Script.Syntax": "PowerShell",
             "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "Start-Service TeamCity"
+            "Octopus.Action.Script.ScriptBody": "& \"${TeamCityBin}teamcity-server.bat\" service install /runAsSystem\nStart-Service TeamCity"
           }
         }
       ],

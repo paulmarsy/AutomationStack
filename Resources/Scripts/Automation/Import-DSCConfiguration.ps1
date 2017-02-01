@@ -5,7 +5,7 @@ if (([System.IO.Path]::GetFileNameWithoutExtension($Path)) -ne $ConfigurationNam
 }
 
 $tempFile = & (Join-Path $PSScriptRoot 'Invoke-DSCComposition.ps1') -Path $Path
-Import-AzureRmAutomationDscConfiguration -ResourceGroupName $ResourceGroupName -AutomationAccountName $AutomationAccountName -SourcePath $tempFile -Force -Published
+Import-AzureRmAutomationDscConfiguration -ResourceGroupName $ResourceGroupName -AutomationAccountName $AutomationAccountName -SourcePath $tempFile -Force -Published -Tag (Get-AzureRmResourceGroup -Name $ResourceGroupName).Tags
 Remove-Item -Path $tempFile -Force
 
 $configurationDataFile = [System.IO.Path]::ChangeExtension($Path, 'psd1')

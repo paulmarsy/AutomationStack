@@ -30,6 +30,10 @@
         "apiVersion": "2016-03-30",
         "type": "Microsoft.Network/virtualNetworks",
         "name": "VirtualNetwork",
+        "tags": {
+            "application": "AutomationStack",
+            "udp": "[parameters('udp')]"
+        },
         "location": "[resourceGroup().location]",
         "properties": {
             "addressSpace": {
@@ -48,6 +52,10 @@
         "apiVersion": "2016-01-01",
         "type": "Microsoft.Storage/storageAccounts",
         "name": "[variables('resourcesStorageName')]",
+        "tags": {
+            "application": "AutomationStack",
+            "udp": "[parameters('udp')]"
+        },
         "location": "[resourceGroup().location]",
         "sku": {
             "name": "Standard_LRS",
@@ -67,6 +75,10 @@
     }, {
         "type": "Microsoft.KeyVault/vaults/secrets",
         "name": "[concat(variables('keyVaultName'), '/StorageAccountKey')]",
+        "tags": {
+            "application": "AutomationStack",
+            "udp": "[parameters('udp')]"
+        },
         "apiVersion": "2015-06-01",
         "properties": {
             "value": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('resourcesStorageName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value]"
@@ -80,6 +92,10 @@
         "apiVersion": "2014-04-01-preview",
         "type": "Microsoft.Sql/servers",
         "name": "[variables('sqlServerName')]",
+        "tags": {
+            "application": "AutomationStack",
+            "udp": "[parameters('udp')]"
+        },
         "location": "[resourceGroup().location]",
         "kind": "v12.0",
         "properties": {
@@ -90,20 +106,24 @@
         "resources": [{
             "apiVersion": "2014-04-01-preview",
             "type": "firewallrules",
-             "name": "AllowAllWindowsAzureIps",
+            "name": "AllowAllWindowsAzureIps",
             "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[concat('Microsoft.Sql/servers/', variables('sqlServerName'))]"
             ],
-          "properties": {
-            "endIpAddress": "0.0.0.0",
-            "startIpAddress": "0.0.0.0"
-          }
+            "properties": {
+                "endIpAddress": "0.0.0.0",
+                "startIpAddress": "0.0.0.0"
+            }
         }]
     }, {
         "apiVersion": "2015-10-31",
         "type": "Microsoft.Automation/automationAccounts",
         "name": "[variables('automationName')]",
+        "tags": {
+            "application": "AutomationStack",
+            "udp": "[parameters('udp')]"
+        },
         "location": "westeurope",
         "properties": {
             "sku": {
@@ -113,6 +133,10 @@
         "resources": [{
             "name": "[concat(variables('automationName'), '/', 'xNetworking')]",
             "type": "microsoft.automation/automationAccounts/Modules",
+            "tags": {
+                "application": "AutomationStack",
+                "udp": "[parameters('udp')]"
+            },
             "apiVersion": "2015-10-31",
             "dependsOn": [
                 "[concat('Microsoft.Automation/automationAccounts/', variables('automationName'))]"
@@ -125,6 +149,10 @@
         }, {
             "name": "[concat(variables('automationName'), '/', 'xPSDesiredStateConfiguration')]",
             "type": "microsoft.automation/automationAccounts/Modules",
+            "tags": {
+                "application": "AutomationStack",
+                "udp": "[parameters('udp')]"
+            },
             "apiVersion": "2015-10-31",
             "dependsOn": [
                 "[concat('Microsoft.Automation/automationAccounts/', variables('automationName'))]"
@@ -137,6 +165,10 @@
         }, {
             "name": "[concat(variables('automationName'), '/', 'PackageManagementProviderResource')]",
             "type": "microsoft.automation/automationAccounts/Modules",
+            "tags": {
+                "application": "AutomationStack",
+                "udp": "[parameters('udp')]"
+            },
             "apiVersion": "2015-10-31",
             "dependsOn": [
                 "[concat('Microsoft.Automation/automationAccounts/', variables('automationName'))]"
@@ -149,6 +181,10 @@
         }, {
             "name": "[concat(variables('automationName'), '/', 'xSystemSecurity')]",
             "type": "microsoft.automation/automationAccounts/Modules",
+            "tags": {
+                "application": "AutomationStack",
+                "udp": "[parameters('udp')]"
+            },
             "apiVersion": "2015-10-31",
             "dependsOn": [
                 "[concat('Microsoft.Automation/automationAccounts/', variables('automationName'))]"

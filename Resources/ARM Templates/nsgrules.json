@@ -1,9 +1,18 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
+    "parameters": {
+        "udp": {
+            "type": "string"
+        }
+    },
     "resources": [{
         "type": "Microsoft.Network/networkSecurityGroups",
         "name": "OctopusNSG",
+        "tags": {
+            "application": "AutomationStack",
+            "udp": "[parameters('udp')]"
+        },
         "apiVersion": "2016-03-30",
         "location": "[resourceGroup().location]",
         "properties": {
@@ -36,6 +45,10 @@
     }, {
         "type": "Microsoft.Network/networkSecurityGroups",
         "name": "TeamCityNSG",
+        "tags": {
+            "application": "AutomationStack",
+            "udp": "[parameters('udp')]"
+        },
         "apiVersion": "2016-03-30",
         "location": "[resourceGroup().location]",
         "properties": {
@@ -80,6 +93,10 @@
     }, {
         "type": "Microsoft.Network/networkSecurityGroups",
         "name": "LinuxNSG",
+        "tags": {
+            "application": "AutomationStack",
+            "udp": "[parameters('udp')]"
+        },
         "apiVersion": "2016-03-30",
         "location": "[resourceGroup().location]",
         "properties": {

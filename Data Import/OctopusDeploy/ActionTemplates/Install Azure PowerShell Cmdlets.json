@@ -1,0 +1,16 @@
+{
+  "$type": "Octopus.Core.Model.Projects.ActionTemplate, Octopus.Core",
+  "Id": "ActionTemplates-21",
+  "Name": "Install Azure PowerShell Cmdlets",
+  "Description": null,
+  "Version": 4,
+  "ActionType": "Octopus.Script",
+  "CommunityActionTemplateId": null,
+  "Properties": {
+    "Octopus.Action.Script.Syntax": "PowerShell",
+    "Octopus.Action.Script.ScriptSource": "Inline",
+    "Octopus.Action.RunOnServer": "false",
+    "Octopus.Action.Script.ScriptBody": "if ($OctopusParameters['Octopus.Action.Azure.UseBundledAzurePowerShellModules'] -ne 'False') {\r\n    throw 'Octopus.Action.Azure.UseBundledAzurePowerShellModules variable must be set to false'\r\n}\r\nif (Get-Module -ListAvailable -Name AzureRm) {\r\n    return\r\n}\r\n\r\nNew-Item -Path \"$env:APPDATA\\Windows Azure Powershell\" -Type Directory -Force | Out-Null\r\nSet-Content -Path \"$env:APPDATA\\Windows Azure Powershell\\AzureDataCollectionProfile.json\" -Value '{\"enableAzureDataCollection\":false}'\r\n\r\nInstall-PackageProvider -Name NuGet -Force\r\nSet-PSRepository -Name PSGallery -InstallationPolicy Trusted\r\nInstall-Module AzureRm -Force"
+  },
+  "Parameters": []
+}

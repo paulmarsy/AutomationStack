@@ -9,7 +9,7 @@ function Start-ARMDeployment {
     Write-Host 
     Write-Host -ForegroundColor Cyan "`tStarting Resource Group Deployment of '$Template' to $ResourceGroupName"
 
-    Invoke-SharedScript Resources 'New-ResourceGroup' -ResourceGroupName $ResourceGroupName -Location ($CurrentContext.Get('AzureRegion'))
+    Invoke-SharedScript Resources 'New-ResourceGroup' -UDP $CurrentContext.Get('UDP') -ResourceGroupName $ResourceGroupName -Location ($CurrentContext.Get('AzureRegion'))
 
     $args = @{
         ResourceGroupName = $ResourceGroupName

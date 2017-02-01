@@ -3,7 +3,7 @@
   "Id": "ActionTemplates-10",
   "Name": "New-ResourceGroup",
   "Description": "",
-  "Version": 6,
+  "Version": 7,
   "ActionType": "Octopus.AzurePowerShell",
   "CommunityActionTemplateId": null,
   "Properties": {
@@ -12,7 +12,7 @@
     "Octopus.Action.Package.FeedId": "feeds-builtin",
     "Octopus.Action.Script.ScriptFileName": "New-ResourceGroup.ps1",
     "Octopus.Action.Package.PackageId": "AutomationStackScripts.Resources",
-    "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName '#{ResourceGroupName}' -Location '#{Location}'"
+    "Octopus.Action.Script.ScriptParameters": "-UDP '#{UDP}' -ResourceGroupName '#{ResourceGroupName}' -Location '#{Location}'"
   },
   "Parameters": [
     {

@@ -2,7 +2,7 @@
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
   "Id": "deploymentprocess-Projects-6",
   "OwnerId": "Projects-6",
-  "Version": 44,
+  "Version": 45,
   "Steps": [
     {
       "Id": "825c74ca-8910-4f23-ac7a-be7564d2a6c5",
@@ -26,11 +26,11 @@
             "Octopus.Action.Package.FeedId": "feeds-builtin",
             "Octopus.Action.Script.ScriptFileName": "New-ResourceGroup.ps1",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Resources",
-            "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName '#{ResourceGroupName}' -Location '#{Location}'",
+            "Octopus.Action.Script.ScriptParameters": "-UDP '#{UDP}' -ResourceGroupName '#{ResourceGroupName}' -Location '#{Location}'",
             "ResourceGroupName": "#{ResourceGroup}",
             "Location": "#{AzureRegion}",
             "Octopus.Action.Template.Id": "ActionTemplates-10",
-            "Octopus.Action.Template.Version": "6"
+            "Octopus.Action.Template.Version": "7"
           }
         }
       ],

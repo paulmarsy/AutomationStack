@@ -18,6 +18,10 @@
     "resources": [{
         "type": "Microsoft.KeyVault/vaults",
         "name": "[variables('keyVaultName')]",
+        "tags": {
+            "application": "AutomationStack",
+            "udp": "[parameters('udp')]"
+        },
         "apiVersion": "2015-06-01",
         "location": "[resourceGroup().location]",
         "properties": {

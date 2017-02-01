@@ -42,6 +42,8 @@ function New-AutomationStack {
                             }
                             
                             Show-AutomationStackDetail
+                            Write-Host ('Azure Region: {0}' -f $CurrentContext.Get('AzureRegion'))
+                            Start-Sleep -Seconds 2
                         }
                     }
                     2 {
