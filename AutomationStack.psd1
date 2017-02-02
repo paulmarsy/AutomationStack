@@ -68,6 +68,7 @@ PowerShellVersion = '5.0'
 FunctionsToExport = 'New-AutomationStack',
                     'Measure-AutomationStack',
                     'Remove-AutomationStack',
+                    'Show-AutomationStackUsage',
                     
                     'Find-AutomationStackDeployment',
                     'Suspend-AutomationStack',
