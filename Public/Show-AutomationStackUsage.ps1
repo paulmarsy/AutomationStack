@@ -22,8 +22,8 @@ function Show-AutomationStackUsage {
 
     $usage = Invoke-AzureRestApi -ResourceId '/providers/Microsoft.Commerce/UsageAggregates' -WithoutSubscriptionId `
                     -ODataQuery ('&reportedStartTime={0}&reportedEndTime={1}&aggregationGranularity=Hourly&showDetails=true' -f `
-                    (Get-Date).AddDays($ForLastDays * -1).ToString('yyyy-MM-dd'),
-                    (Get-Date).ToString('yyyy-MM-dd'))
+                    (Get-Date).AddDays($ForLastDays * -1).ToString('yyyy-MM-ddTHH:00:00Z'),
+                    (Get-Date).ToString('yyyy-MM-ddTHH:00:00Z'))
 
     if ($usage.error) {
         Write-Warning $usage.error
