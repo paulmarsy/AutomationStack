@@ -32,7 +32,6 @@ function Show-AutomationStackUsage {
             % {
                 $rate = $ratecard.Meters | ? meterId -eq $_.meterId | % meterRates
                 $price = $_.quantity * $rate.0
-                $script:total += $price
                 New-Object psobject -Property @{ 
                     Uri = $data.resourceUri
                     Quantity = $_.quantity
@@ -56,9 +55,9 @@ function Show-AutomationStackUsage {
                     $category = '{0} - {1}' -f $_.Group[0].Category, $_.Group[0].SubCategory
                 }
                 New-Object psobject -Property @{ 
-                    ResourceName = [Microsoft.Azure.Commands.ResourceManager.Cmdlets.Components.ResourceIdUtility]::GetResourceName($_.Group[0].Uri)
-                    Price = '{0:C}' -f $resourcePrice
-                    Quantity = [System.Math]::Round($resourceQuantity, 3)
+                    Uri = $_.Group[0].Uri
+                    Price = $resourcePrice
+                    Quantity = $resourceQuantity
                     Name = $_.Group[0].Name
                     Category = $category
                 }
@@ -80,8 +79,8 @@ function Show-AutomationStackUsage {
                     $Locale,
                     $RegionInfo)
     Write-Host -ForegroundColor DarkGreen 'done'  
+    Write-Host  
 
-    $script:total = 0
     $billingData = @()
     while ($HoursToCollect -gt 0) {
         $billingPeriod = $billingPeriod.AddHours(-1)
@@ -90,16 +89,38 @@ function Show-AutomationStackUsage {
         Write-Host -ForegroundColor DarkGreen 'done'
         $HoursToCollect--
     }
-        
+    Write-Host
+
+    Write-Host -NoNewLine -ForegroundColor Yellow 'Merging billing data... '
+    $total = 0
+    $mergedBillingData = $billingData | Group-Object -Property Uri,Name  | % { 
+        $resourcePrice = 0
+        $resourceQuantity = 0
+        $_.Group | % {
+            $resourcePrice += $_.Price
+            $resourceQuantity += $_.Quantity
+        }
+        $total += $resourcePrice
+        New-Object psobject -Property @{ 
+            ResourceName = [Microsoft.Azure.Commands.ResourceManager.Cmdlets.Components.ResourceIdUtility]::GetResourceName($_.Group[0].Uri)
+            Price = '{0:C}' -f $resourcePrice
+            Quantity = [System.Math]::Round($resourceQuantity, 3)
+            Name = $_.Group[0].Name
+            Category = $_.Group[0].Name
+        }
+    }
+    Write-Host -ForegroundColor DarkGreen 'done'  
+    Write-Host  
+   
     if ($NoFormat) {
         return @{
             TotalPrice = '{0:C}' -f $total
-            Items = $billingData
+            Items = $mergedBillingData
          }
      } else {
-         $billingData |
+         $mergedBillingData |
             Sort-Object -Property Price,ResourceName,Category,Name -Descending |
-            Format-Table ResourceName,Category,Name,Quantity,Price
+            Format-Table ResourceName,Category,Name,Quantity,Price -AutoSize
 
         Write-Host -ForegroundColor Magenta ('Total: {0:C}' -f $total)
      }
