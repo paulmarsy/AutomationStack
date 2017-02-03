@@ -72,12 +72,14 @@ function Show-AutomationStackUsage {
     $now = Get-Date
     $billingPeriod = (Get-Date -Year $now.Year -Month $now.Month -Day $now.Day -Hour $now.Hour -Minute 0 -Second 0 -Millisecond 0).AddHours(-1)
 
+    Write-Host -NoNewLine -ForegroundColor Yellow 'Getting Azure Billing RateCard... '
     $rateCard = Invoke-AzureRestApi -ResourceId '/providers/Microsoft.Commerce/RateCard' -WithoutSubscriptionId `
                 -ODataQuery ("`$filter=OfferDurableId eq 'MS-AZR-{0}' and Currency eq '{1}' and Locale eq '{2}' and RegionInfo eq '{3}'" -f `
                     $AzureOfferNumber,
                     $Currency,
                     $Locale,
                     $RegionInfo)
+    Write-Host -ForegroundColor DarkGreen 'done'  
 
     $script:total = 0
     $billingData = @()
