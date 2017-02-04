@@ -16,7 +16,11 @@ class AutoMetrics {
         if ($Key -eq 1) {
             $currentVariableDictionary.Set('Timing[Deployment].Start', (Get-Date))
         }
+        $count = $currentVariableDictionary.GetInt32(('Timing[{0}].Count' -f $Key))
+        if ($count) { $count++ }
+        else { $count = 1 }
         $currentVariableDictionary.Set(('Timing[{0}].Start' -f $Key), (Get-Date))
+        $currentVariableDictionary.Set(('Timing[{0}].Count' -f $Key), $count)
         $currentVariableDictionary.Set(('Timing[{0}].Description' -f $Key), $Description)
         $currentVariableDictionary.Save()
     }

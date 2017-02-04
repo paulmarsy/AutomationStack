@@ -6,10 +6,11 @@ function Measure-AutomationStack {
         New-Object psobject -Property @{
             Stage = $_
             Activity = $metrics.GetDescription($_)
+            TimesRun = $metrics.Get($_, 'Count')
             Duration = $metrics.GetDuration($_)
             Percentage = $metrics.GetPercentage($_, 'Deployment')
         }
-    } | Sort-Object -Property Stage | Format-Table -AutoSize -Property @('Stage','Activity','Duration','Percentage')
+    } | Sort-Object -Property Stage | Format-Table -AutoSize -Property @('Stage','Activity','TimesRun','Duration','Percentage')
     Write-Host @('Total deployment time: ', $metrics.GetDuration('Deployment'))
     Write-Host @('Elapsed time: ', [Humanizer.TimeSpanHumanizeExtensions]::Humanize($elapsed, 2))
     $unaccounted = $metrics.GetRaw('Deployment') - $elapsed

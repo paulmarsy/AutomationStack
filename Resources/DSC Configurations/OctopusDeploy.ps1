@@ -128,7 +128,7 @@ Configuration OctopusDeploy
         $watchdogExe = Join-Path $env:ProgramFiles 'Octopus Deploy\Octopus\Octopus.Server.exe'
         #include <Octopus\OctopusWatchdog>
 
-        #include <Octopus\ServiceAccount>>
+        #include <Octopus\ServiceAccount>
 
         Service OctopusDeploy
         {
