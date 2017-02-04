@@ -1,8 +1,8 @@
 {
   "$type": "Octopus.Core.Model.Projects.ProjectTrigger.ProjectTrigger, Octopus.Core",
-  "Id": "ProjectTriggers-1",
+  "Id": "ProjectTriggers-3",
   "Name": "Deploy TeamCity Docker Image",
-  "ProjectId": "Projects-6",
+  "ProjectId": "Projects-7",
   "Filter": {
     "$type": "Octopus.Core.Model.Projects.ProjectTrigger.MachineFilter, Octopus.Core",
     "EventGroups": [
@@ -10,7 +10,6 @@
     ],
     "EventCategories": [],
     "EnvironmentIds": [
-      "Environments-23",
       "Environments-4"
     ],
     "Roles": [

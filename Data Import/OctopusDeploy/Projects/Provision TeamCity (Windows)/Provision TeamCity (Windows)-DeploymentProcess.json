@@ -1,8 +1,8 @@
 {
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
-  "Id": "deploymentprocess-Projects-7",
-  "OwnerId": "Projects-7",
-  "Version": 158,
+  "Id": "deploymentprocess-Projects-8",
+  "OwnerId": "Projects-8",
+  "Version": 160,
   "Steps": [
     {
       "Id": "3eaab2f7-a8f5-41f2-9cfd-8eac985fdf5c",
@@ -25,12 +25,14 @@
             "Octopus.Action.Script.ScriptSource": "Inline",
             "Octopus.Action.RunOnServer": "true",
             "Octopus.Action.Script.ScriptBody": "if ($OctopusParameters['Octopus.Action.Azure.UseBundledAzurePowerShellModules'] -ne 'False') {\r\n    throw 'Octopus.Action.Azure.UseBundledAzurePowerShellModules variable must be set to false'\r\n}\r\nif (Get-Module -ListAvailable -Name AzureRm) {\r\n    return\r\n}\r\n\r\nNew-Item -Path \"$env:APPDATA\\Windows Azure Powershell\" -Type Directory -Force | Out-Null\r\nSet-Content -Path \"$env:APPDATA\\Windows Azure Powershell\\AzureDataCollectionProfile.json\" -Value '{\"enableAzureDataCollection\":false}'\r\n\r\nInstall-PackageProvider -Name NuGet -Force\r\nSet-PSRepository -Name PSGallery -InstallationPolicy Trusted\r\nInstall-Module AzureRm -Force",
-            "Octopus.Action.Template.Id": "ActionTemplates-21",
+            "Octopus.Action.Template.Id": "ActionTemplates-8",
             "Octopus.Action.Template.Version": "4"
           }
         }
       ],
-      "Properties": {}
+      "Properties": {
+        "Octopus.Action.TargetRoles": "ARM Provisioning,Azure Automation"
+      }
     },
     {
       "Id": "f915e03f-4a5b-4fa2-aa88-d572523b1b3b",
@@ -128,7 +130,7 @@
             "ResourceGroupName": "#{InfraRg}",
             "ServerName": "#{SqlServerName}",
             "DatabaseName": "TeamCity",
-            "Octopus.Action.Template.Id": "ActionTemplates-9",
+            "Octopus.Action.Template.Id": "ActionTemplates-10",
             "Octopus.Action.Template.Version": "3"
           }
         }
@@ -162,7 +164,7 @@
             "Octopus.Action.Script.ScriptParameters": "-UDP '#{UDP}' -ResourceGroupName '#{ResourceGroupName}' -Location '#{Location}'",
             "ResourceGroupName": "#{ResourceGroup}",
             "Location": "#{AzureRegion}",
-            "Octopus.Action.Template.Id": "ActionTemplates-10",
+            "Octopus.Action.Template.Id": "ActionTemplates-11",
             "Octopus.Action.Template.Version": "7"
           }
         }
@@ -268,7 +270,7 @@
             "Octopus.Action.Script.ScriptFileName": "Invoke-CustomScript.ps1",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Compute",
             "Octopus.Action.Script.ScriptParameters": "-Name '#{Name}' -ResourceGroupName '#{ResourceGroupName}' -VMName '#{VMName}' -Location '#{Location}' -StorageAccountName '#{StorageAccountName}' -StorageAccountKey '#{StorageAccountKey}'",
-            "Octopus.Action.Template.Id": "ActionTemplates-8",
+            "Octopus.Action.Template.Id": "ActionTemplates-9",
             "Octopus.Action.Template.Version": "3",
             "Location": "#{AzureRegion}",
             "StorageAccountName": "#{StorageAccountName}",

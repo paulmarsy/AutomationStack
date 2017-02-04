@@ -1,6 +1,6 @@
 {
   "$type": "Octopus.Core.Model.Projects.ActionTemplate, Octopus.Core",
-  "Id": "ActionTemplates-21",
+  "Id": "ActionTemplates-8",
   "Name": "Install Azure PowerShell Cmdlets",
   "Description": null,
   "Version": 4,
