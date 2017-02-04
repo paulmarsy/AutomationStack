@@ -1,2 +1,3 @@
 int_id, ext_id, main
 -1, _deleted_vcs_root, 1
+1, OctopusDeployExtensions_GitHubOctopusApiKeyAuthenticationProvider, 1

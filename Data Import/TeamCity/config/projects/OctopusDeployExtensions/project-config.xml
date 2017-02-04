@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" uuid="39bcb2ad-1f31-46a4-bc9b-6feee54bfcd9" xsi:noNamespaceSchemaLocation="http://www.jetbrains.com/teamcity/schemas/10.0/project-config.xsd">
+  <name>Octopus Deploy Extensions</name>
+  <parameters />
+  <cleanup />
+</project>
+

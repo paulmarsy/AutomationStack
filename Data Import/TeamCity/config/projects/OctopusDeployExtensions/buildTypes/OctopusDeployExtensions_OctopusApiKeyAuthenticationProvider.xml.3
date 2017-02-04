@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<build-type xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" uuid="58eb6f0b-4ba6-46a7-95ff-4fabe7dc5512" xsi:noNamespaceSchemaLocation="http://www.jetbrains.com/teamcity/schemas/10.0/project-config.xsd">
+  <name>Octopus ApiKey Authentication Provider</name>
+  <description>Octopus Deploy Authentication using an API key</description>
+  <settings>
+    <parameters />
+    <build-runners>
+      <runner id="RUNNER_1" name="Restore NuGet Packages" type="jb.nuget.installer">
+        <parameters>
+          <param name="nuget.path" value="%teamcity.tool.NuGet.CommandLine.DEFAULT%" />
+          <param name="nuget.updatePackages.mode" value="sln" />
+          <param name="nuget.use.restore" value="restore" />
+          <param name="sln.path" value="OctopusApiKeyAuthenticationProvider.sln" />
+          <param name="teamcity.step.mode" value="default" />
+          <param name="toolCustomPath" value="j" />
+          <param name="toolPathSelector" value="%teamcity.tool.NuGet.CommandLine.DEFAULT%" />
+        </parameters>
+      </runner>
+      <runner id="RUNNER_2" name="" type="VS.Solution">
+        <parameters>
+          <param name="build-file-path" value="OctopusApiKeyAuthenticationProvider.sln" />
+          <param name="msbuild.prop.Configuration" value="Release" />
+          <param name="msbuild_version" value="12.0" />
+          <param name="targets" value="Rebuild" />
+          <param name="teamcity.step.mode" value="default" />
+          <param name="toolsVersion" value="12.0" />
+          <param name="vs.version" value="vs2013" />
+        </parameters>
+      </runner>
+    </build-runners>
+    <vcs-settings>
+      <vcs-entry-ref root-id="OctopusDeployExtensions_GitHubOctopusApiKeyAuthenticationProvider" />
+    </vcs-settings>
+    <requirements />
+    <build-triggers />
+    <cleanup />
+  </settings>
+</build-type>
+

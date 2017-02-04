@@ -1,0 +1,2 @@
+id, parent_id, settings_hash, body
+2, 1, 8604765438071688301, "agentCleanFilesPolicy=ALL_UNTRACKED\nagentCleanPolicy=ON_BRANCH_CHANGE\nauthMethod=ANONYMOUS\nbranch=refs/heads/master\nignoreKnownHosts=true\nsubmoduleCheckout=CHECKOUT\nteamcity:vcsRootName=GitHub - OctopusApiKeyAuthenticationProvider\nurl=https://github.com/paulmarsy/OctopusApiKeyAuthenticationProvider.git\nuseAlternates=true\nusernameStyle=USERID\nvcs=jetbrains.git\n"
