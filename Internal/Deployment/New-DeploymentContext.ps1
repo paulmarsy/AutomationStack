@@ -22,6 +22,9 @@ function New-DeploymentContext {
     $CurrentContext.Set('AzureRegion', $AzureRegion.Name)
     $CurrentContext.Set('AzureRegionValue', $AzureRegion.Value)
     
+    Write-Host 'Creating Azure Tags...'
+    New-AzureRmTag -Name application -Value AutomationStack
+    New-AzureRmTag -Name udp -Value $udp
 
     Write-Host 'Generating deployment passwords...'
     Add-Type -AssemblyName System.Web
