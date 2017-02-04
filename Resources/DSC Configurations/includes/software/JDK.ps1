@@ -11,7 +11,7 @@ Script JDKDownloader
         Invoke-WebRequest -Uri $uri -UseBasicParsing -WebSession $session -OutFile 'D:\JDKInstall.exe'
     }
     TestScript = {
-        $hash = 'B57ABCFBCDD42D15626775FB214811328F614A9A9E623D4904BBFD6BB2AAC79F'
+        $hash = 'E71FC3EB9F895EBA5C2836B05D627884EDD0157A'
         ((Test-Path 'D:\JDKInstall.exe') -and (Get-FileHash -Path 'D:\JDKInstall.exe' -Algorithm SHA1 | % Hash) -eq $hash)
     }
     GetScript = { @{} }

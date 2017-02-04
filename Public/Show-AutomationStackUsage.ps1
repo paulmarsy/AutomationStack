@@ -6,7 +6,8 @@ function Show-AutomationStackUsage {
         $Currency = 'GBP',
         $Locale = 'en-GP',
         $RegionInfo = 'GB',
-        [switch]$NoFormat
+        [switch]$NoFormat,
+        [switch]$All
     )
 
     if ($null -ne $CurrentContext -and $null -eq $UDP) {
@@ -44,7 +45,7 @@ function Show-AutomationStackUsage {
         ? { $null -ne $_.instanceData } |
         ? {
             $data = $_.instanceData | ConvertFrom-Json | % Microsoft.Resources
-            $data.tags.application -eq 'AutomationStack' -and $data.tags.udp -eq $UDP
+            $data.tags.application -eq 'AutomationStack' -and ($data.tags.udp -eq $UDP -or $All)
         }  |
         % {
             $rate = $ratecard.Meters | ? meterId -eq $_.meterId | % meterRates

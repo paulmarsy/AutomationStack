@@ -35,7 +35,7 @@ function Install-AzureReqs {
         Assert-AzureModule -Module 'AzureRM.Profile'
 
         Write-Host -NoNewLine "Importing AzureRM.Profile Module... "
-        Import-Module AzureRM.Profile -Force -Global
+        Import-Module AzureRM.Profile -Force
         Write-Host -ForegroundColor Green 'imported'
     } else {
         @(  @{ Module = 'AzureRM.Resources'; Provider = 'Microsoft.Resources' },
@@ -47,7 +47,7 @@ function Install-AzureReqs {
             @{ Module = @('AzureRM.Storage', 'Azure.Storage'); Provider = 'Microsoft.Storage' }) | % {
             Assert-AzureModule -Module $_.Module
             Write-Host -NoNewLine "Importing $($_.Module) Module... "
-            Import-Module $_.Module -Force -Global
+            Import-Module $_.Module -Force
             Write-Host -ForegroundColor Green 'imported'
 
             Write-Host -NoNewLine "Registering $($_.Provider) Resource Provider... "

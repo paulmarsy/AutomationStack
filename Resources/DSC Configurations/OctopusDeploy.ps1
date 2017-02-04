@@ -12,8 +12,6 @@ Configuration OctopusDeploy
     Import-DscResource -ModuleName xNetworking
     Import-DscResource -ModuleName xSystemSecurity
 
-    $octopusDeployServiceAccount = Get-AutomationPSCredential -Name 'OctopusDeployServiceAccount'
-
     Node Server
     {
         #include <Common>
@@ -130,35 +128,14 @@ Configuration OctopusDeploy
         $watchdogExe = Join-Path $env:ProgramFiles 'Octopus Deploy\Octopus\Octopus.Server.exe'
         #include <Octopus\OctopusWatchdog>
 
-        $octopusServiceAccountUsername = $octopusDeployServiceAccount.UserName
-        User OctopusDeployServiceAccount
-        {
-            UserName                = $octopusServiceAccountUsername
-            Password                = $octopusDeployServiceAccount
-            PasswordChangeRequired  = $false
-            PasswordNeverExpires    = $true
-        }
-        Script SetOctopusUserGroups
-        {
-            SetScript = {
-                $user = Get-LocalUser -Name $using:octopusServiceAccountUsername
-                try { Add-LocalGroupMember -Name Users -Member $user -ErrorAction Stop } catch [Microsoft.PowerShell.Commands.MemberExistsException] {}
-                try { Add-LocalGroupMember -Name Administrators -Member $user -ErrorAction Stop } catch [Microsoft.PowerShell.Commands.MemberExistsException] {}
-            }
-            TestScript = {
-                $user = Get-LocalUser -Name $using:octopusServiceAccountUsername
-                (($null -ne (Get-LocalGroupMember -Name Users -Member $user -ErrorAction Ignore)) -and ($null -ne (Get-LocalGroupMember -Name Administrators -Member $user -ErrorAction Ignore)))
-            }
-            GetScript = { @{} }
-            DependsOn = '[User]OctopusDeployServiceAccount'
-        }
+        #include <Octopus\ServiceAccount>>
 
         Service OctopusDeploy
         {
             Name        = 'OctopusDeploy'
-            Credential  = $octopusDeployServiceAccount
+            Credential  = $octopusServiceAccount
             StartupType = 'Automatic'
-            DependsOn = @('[User]OctopusDeployServiceAccount','[Script]OctopusDeployConfiguration')
+            DependsOn = @('[User]OctopusServiceAccount','[Script]OctopusDeployConfiguration')
         } 
 
         $octopusUrlAclStateFile = Join-Path $octopusDeployRoot 'urlacl.statefile'
@@ -183,14 +160,14 @@ Configuration OctopusDeploy
                 ((Test-Path $using:octopusUrlAclStateFile) -and ([System.IO.File]::ReadAllText($using:octopusUrlAclStateFile).Trim()) -eq '0')
             }
             GetScript = { @{} }
-            DependsOn = '[User]OctopusDeployServiceAccount'
+            DependsOn = '[User]OctopusServiceAccount'
         }
 
         xFileSystemAccessRule OctopusConfigFile {
             Path = "$($env:SystemDrive)\Octopus\"
             Identity = $octopusServiceAccountUsername
             Rights = @("FullControl")
-            DependsOn = @('[User]OctopusDeployServiceAccount','[Script]OctopusDeployConfiguration')
+            DependsOn = @('[User]OctopusServiceAccount','[Script]OctopusDeployConfiguration')
         }
 
         $octopusServiceStartedStateFile = Join-Path $octopusDeployRoot 'service.statefile'
@@ -198,6 +175,10 @@ Configuration OctopusDeploy
         {
             SetScript = {
                 Stop-Service OctopusDeploy -Force -Verbose | Write-Verbose
+                if ((Get-Service OctopusDeploy | % Status) -eq "Running") {
+                    Stop-Process -Name Octopus.Server -Force -Verbose | Write-Verbose
+                }
+
                 Start-Service OctopusDeploy -Verbose | Write-Verbose
 
                 [System.IO.FIle]::WriteAllText($using:octopusServiceStartedStateFile, (Get-Service OctopusDeploy | % Status),[System.Text.Encoding]::ASCII)
@@ -206,7 +187,7 @@ Configuration OctopusDeploy
                 ((Test-Path $using:octopusServiceStartedStateFile) -and ([System.IO.FIle]::ReadAllText($using:octopusServiceStartedStateFile).Trim()) -eq 'Running')
             }
             GetScript = { @{} }
-            DependsOn = @('[xFirewall]OctopusDeployServer','[Script]URLAccessControlList','[Service]OctopusDeploy','[Script]OctopusDeployConfiguration','[User]OctopusDeployServiceAccount','[Script]SetOctopusUserGroups','[xFileSystemAccessRule]OctopusConfigFile')
+            DependsOn = @('[xFirewall]OctopusDeployServer','[Script]URLAccessControlList','[Service]OctopusDeploy','[Script]OctopusDeployConfiguration','[User]OctopusServiceAccount','[Script]SetOctopusUserGroups','[xFileSystemAccessRule]OctopusConfigFile')
         }
     }
 }

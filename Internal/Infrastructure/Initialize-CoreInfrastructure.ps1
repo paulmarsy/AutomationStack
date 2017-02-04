@@ -6,7 +6,10 @@ function Initialize-CoreInfrastructure {
     } | Out-Null
 
     $CurrentContext.Set('StorageAccountName', 'stackresources#{UDP}')
-    $CurrentContext.Set('StorageAccountKey', (Get-AzureRmStorageAccountKey -ResourceGroupName $CurrentContext.Get('InfraRg')  -Name $CurrentContext.Get('StorageAccountName'))[0].Value)
+    $storageAccountKeys = Get-AzureRmStorageAccountKey -ResourceGroupName $CurrentContext.Get('InfraRg')  -Name $CurrentContext.Get('StorageAccountName')
+    if ($storageAccountKeys[0].Value.StartsWith('/')) { $storageKey = $storageAccountKeys[1].Value }
+    else { $storageKey = $storageAccountKeys[0].Value }
+    $CurrentContext.Set('StorageAccountKey', $storageKey)
 
     Write-Host 'Getting Azure Automation Registration Info...'
     $CurrentContext.Set('AutomationAccountName', 'automation-#{UDP}')

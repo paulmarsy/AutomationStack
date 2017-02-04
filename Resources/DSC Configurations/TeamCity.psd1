@@ -2,6 +2,7 @@
     AllNodes = @(
         @{
             NodeName = 'Server'
+            PSDscAllowPlainTextPassword = $true
             Octopus = @{
                 Role = 'TeamCity Server (Windows)'
                 Environment = 'TeamCity Stack'
@@ -10,6 +11,7 @@
         }
         @{
             NodeName = 'CloudAgent'
+            PSDscAllowPlainTextPassword = $true
             Octopus = @{
                 Role = 'TeamCity Agent Image'
                 Environment = 'TeamCity Stack'

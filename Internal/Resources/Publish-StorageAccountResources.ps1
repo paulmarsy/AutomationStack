@@ -5,7 +5,6 @@ function Publish-StorageAccountResources {
     )
 
     Write-Host 'Configuring Stack Resources Storage Account...'
-
     $context = New-AzureStorageContext -StorageAccountName $CurrentContext.Get('StorageAccountName') -StorageAccountKey $CurrentContext.Get('StorageAccountKey')
   
     Write-Host

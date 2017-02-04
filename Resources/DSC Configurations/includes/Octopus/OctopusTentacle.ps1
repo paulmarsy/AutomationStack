@@ -75,3 +75,39 @@ Script OctopusDeployConfiguration
 
 $watchdogExe = Join-Path $env:ProgramFiles 'Octopus Deploy\Tentacle\Tentacle.exe'
 #include <Octopus\OctopusWatchdog>
+
+#include <Octopus\ServiceAccount>
+
+Service Tentacle
+{
+    Name        =  'OctopusDeploy Tentacle'
+    Credential  = $octopusServiceAccount
+    StartupType = 'Automatic'
+    DependsOn = @('[User]OctopusServiceAccount','[Script]OctopusDeployConfiguration')
+}
+
+xFileSystemAccessRule OctopusConfigFile {
+    Path = "$($env:SystemDrive)\Octopus\"
+    Identity = $octopusServiceAccountUsername
+    Rights = @("FullControl")
+    DependsOn = @('[User]OctopusServiceAccount','[Script]OctopusDeployConfiguration')
+}
+
+$octopusServiceStartedStateFile = Join-Path $octopusDeployRoot 'service.statefile'
+Script OctopusTentacleServiceStart
+{
+    SetScript = {
+        Stop-Service 'OctopusDeploy Tentacle' -Force -Verbose | Write-Verbose
+        if ((Get-Service 'OctopusDeploy Tentacle' | % Status) -eq "Running") {
+            Stop-Process -Name Tentacle -Force -Verbose | Write-Verbose
+        }
+        Start-Service 'OctopusDeploy Tentacle' -Verbose | Write-Verbose
+
+        [System.IO.FIle]::WriteAllText($using:octopusServiceStartedStateFile, (Get-Service 'OctopusDeploy Tentacle' | % Status),[System.Text.Encoding]::ASCII)
+    }
+    TestScript = {
+        ((Test-Path $using:octopusServiceStartedStateFile) -and ([System.IO.FIle]::ReadAllText($using:octopusServiceStartedStateFile).Trim()) -eq 'Running')
+    }
+    GetScript = { @{} }
+    DependsOn = @('[xFirewall]OctopusDeployTentacle','[Service]Tentacle','[Script]OctopusDeployConfiguration','[User]OctopusServiceAccount','[Script]SetOctopusUserGroups','[xFileSystemAccessRule]OctopusConfigFile')
+}

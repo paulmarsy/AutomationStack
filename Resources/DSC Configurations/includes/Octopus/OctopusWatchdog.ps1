@@ -5,7 +5,7 @@ $octopusWatchdogStateFile = Join-Path $octopusDeployRoot 'OctopusWatchdog.statef
 Script OctopusWatchdog
 {
     SetScript = {
-        & $using:watchdogExe watchdog --create --instances * *>&1 | Write-Verbose
+        & $using:watchdogExe watchdog --create --instances * --interval=1 *>&1 | Write-Verbose
         if ($LASTEXITCODE -ne 0) { throw "Exit code $LASTEXITCODE from Octopus Watchdog creation" }
  
         [System.IO.FIle]::WriteAllText($using:octopusWatchdogStateFile, $LASTEXITCODE,[System.Text.Encoding]::ASCII)
