@@ -1,12 +1,12 @@
 {
   "$type": "Octopus.Core.Model.Projects.Project, Octopus.Core",
-  "Id": "Projects-6",
+  "Id": "Projects-5",
   "Name": "Export System State",
   "Description": "",
   "Slug": "export-system-state",
   "IsDisabled": false,
-  "VariableSetId": "variableset-Projects-6",
-  "DeploymentProcessId": "deploymentprocess-Projects-6",
+  "VariableSetId": "variableset-Projects-5",
+  "DeploymentProcessId": "deploymentprocess-Projects-5",
   "ProjectGroupId": "ProjectGroups-22",
   "LifecycleId": "Lifecycles-22",
   "AutoCreateRelease": false,
@@ -30,6 +30,6 @@
     "TargetRoles": []
   },
   "AutoDeployReleaseOverrides": [],
-  "LogoAttachmentKey": "Projects-6",
+  "LogoAttachmentKey": "Projects-5",
   "LogoAttachmentMimeType": "image/jpeg"
 }

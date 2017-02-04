@@ -1,8 +1,8 @@
 {
   "$type": "Octopus.Core.Model.Users.ApiKey, Octopus.Core",
   "Id": "#{Encoding[OctopusApiKeyId].ApiKey}",
-  "Purpose": "",
+  "Purpose": "AutomationStack API Interaction",
   "UserId": "Users-1",
   "ApiKeyHashed": "#{Encoding[OctopusHash].ApiKey}",
-  "Created": "2016-12-31T18:52:26.2331325+00:00"
+  "Created": "2017-01-01T00:00:00.0000000+00:00"
 }

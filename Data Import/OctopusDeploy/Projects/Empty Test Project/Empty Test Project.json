@@ -1,12 +1,12 @@
 {
   "$type": "Octopus.Core.Model.Projects.Project, Octopus.Core",
-  "Id": "Projects-3",
+  "Id": "Projects-2",
   "Name": "Empty Test Project",
   "Description": "",
   "Slug": "empty-test-project",
   "IsDisabled": false,
-  "VariableSetId": "variableset-Projects-3",
-  "DeploymentProcessId": "deploymentprocess-Projects-3",
+  "VariableSetId": "variableset-Projects-2",
+  "DeploymentProcessId": "deploymentprocess-Projects-2",
   "ProjectGroupId": "ProjectGroups-21",
   "LifecycleId": "Lifecycles-1",
   "AutoCreateRelease": false,
@@ -30,6 +30,6 @@
     "TargetRoles": []
   },
   "AutoDeployReleaseOverrides": [],
-  "LogoAttachmentKey": "Projects-3",
+  "LogoAttachmentKey": "Projects-2",
   "LogoAttachmentMimeType": "image/png"
 }
