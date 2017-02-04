@@ -63,7 +63,6 @@ Script OctopusDeployConfiguration
         & $octopusTentacleExe service --console --instance "Tentacle" --install --start *>> $using:octopusConfigLogFile
         if ($LASTEXITCODE -ne 0) { throw "Exit code $LASTEXITCODE from Octopus Tentacle: service" }
         
-        Start-Service OctopusDeploy *>> $using:octopusConfigLogFile
         [System.IO.FIle]::WriteAllText($using:octopusConfigStateFile, $LASTEXITCODE,[System.Text.Encoding]::ASCII)
     }
     TestScript = {
