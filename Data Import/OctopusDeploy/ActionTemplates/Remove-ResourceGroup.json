@@ -3,7 +3,7 @@
   "Id": "ActionTemplates-12",
   "Name": "Remove-ResourceGroup",
   "Description": null,
-  "Version": 2,
+  "Version": 3,
   "ActionType": "Octopus.AzurePowerShell",
   "CommunityActionTemplateId": null,
   "Properties": {
@@ -12,7 +12,7 @@
     "Octopus.Action.Script.ScriptSource": "Package",
     "Octopus.Action.Script.ScriptFileName": "Remove-ResourceGroup.ps1",
     "Octopus.Action.Package.PackageId": "AutomationStackScripts.Resources",
-    "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName '#{ResourceGroupName}' -PassThru '#{PassThru}'"
+    "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName '#{ResourceGroupName}' -PassThru $False"
   },
   "Parameters": [
     {
@@ -23,16 +23,6 @@
       "DefaultValue": null,
       "DisplaySettings": {
         "Octopus.ControlType": "SingleLineText"
-      }
-    },
-    {
-      "Id": "9f8565df-af7d-4bcd-ba2d-e4a2c0439bd1",
-      "Name": "PassThru",
-      "Label": "",
-      "HelpText": null,
-      "DefaultValue": null,
-      "DisplaySettings": {
-        "Octopus.ControlType": "Checkbox"
       }
     }
   ]

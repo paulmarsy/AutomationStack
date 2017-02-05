@@ -1,19 +1,25 @@
 param($LogFileName, $StorageAccountName, $StorageAccountKey)
 . (Join-Path -Resolve $PSScriptRoot 'CustomScriptLogging.ps1') -LogFileName $LogFileName -StorageAccountName $StorageAccountName -StorageAccountKey $StorageAccountKey
 
-$sysprepStateFile = "$($env:SystemDrive)\sysprep.statefile"
-if (Test-Path $sysprepStateFile) {
+if (!(Test-Path "$($env:SystemDrive)\sysprep")) { New-Item -ItemType Directory -Path "$($env:SystemDrive)\sysprep" | Out-Null }
+
+if (Test-Path "$($env:SystemDrive)\sysprep\statefile") {
     'Sysprep already run' | Write-Log
     return
 }
 
-"{0}[ Setting Sysprep Flag ]{0}" -f ("-"*38) | Write-Log
- [System.IO.FIle]::WriteAllText($sysprepStateFile, (Get-Date -Format u),[System.Text.Encoding]::ASCII)
-
 "{0}[ Running Sysprep ]{0}" -f ("-"*40) | Write-Log
-Set-Location (Join-Path ([System.Environment]::SystemDirectory) 'sysprep')
-$sysprep = Join-Path -Resolve ([System.Environment]::SystemDirectory) 'sysprep\sysprep.exe'
-Write-Verbose "Found $sysprep"
+$sysprepScriptblock = {
+    do {
+        Start-Sleep -Seconds 1
+        $status = Get-ChildItem C:\Packages\Plugins\Microsoft.Compute.CustomScriptExtension\*\Status\ -File | Sort-Object LastWriteTime -Descending | Select-Object -First 1 | Get-Content | ConvertFrom-Json
+    } while ($status[0].status.code -ne 0)
+    
+    Start-Sleep -Seconds 60
+    
+    & (Join-Path -Resolve ([System.Environment]::SystemDirectory) 'sysprep\sysprep.exe') /oobe /generalize /quiet /shutdown
+    [System.IO.FIle]::WriteAllText("$($env:SystemDrive)\sysprep\statefile", $LASTEXITCODE, [System.Text.Encoding]::ASCII)
+}
+$encodedCommand = [System.Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($sysprepScriptblock.ToString()))
 
-& $sysprep /oobe /generalize /quiet /shutdown *>&1 | Write-Log
-if ($LASTEXITCODE -ne 0) { throw "Exit code $LASTEXITCODE from Sysprep" }
+Start-Process -FilePath 'powershell.exe' -RedirectStandardOutput 'C:\sysprep\stdout' -RedirectStandardError 'C:\sysprep\stderr' -WorkingDirectory (Join-Path ([System.Environment]::SystemDirectory) 'sysprep') -ArgumentList @('-NonInteractive','-NoProfile',"-EncodedCommand $encodedCommand") -PassThru | Format-List -Force * | Out-String | Write-Log

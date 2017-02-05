@@ -1,5 +1,11 @@
 param($ResourceGroupName, $VMName)
 
+do {
+    Write-Host 'Waiting for VM Shutdown... '
+    Start-Sleep -Seconds 5
+    $state = Get-AzureRmVM -ResourceGroupName $ResourceGroupName -Name $VMName -Status | % Statuses | ? Code -like 'PowerState/*' | % DisplayStatus
+} while ($state -ne 'VM stopped')
+
 Write-Host 'Stopping VM... '
 Stop-AzureRmVM -ResourceGroupName $ResourceGroupName -Name $VMName -Force | Out-Host
 

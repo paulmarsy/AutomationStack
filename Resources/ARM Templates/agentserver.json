@@ -36,36 +36,12 @@
   },
   "variables": {
     "vmName": "[concat(parameters('productName'),'VM')]",
-    "vmStorageName": "[concat('vmvhds', parameters('udp'), uniquestring(resourceGroup().id))]",
+    "resourcesStorageName": "[concat('stackresources', parameters('udp'))]",
     "nicName": "[concat(parameters('productName'),'NIC')]",
     "virtualNetworkId": "[resourceId(parameters('infraResourceGroup'), 'Microsoft.Network/virtualNetworks', 'VirtualNetwork')]",
     "subnetId": "[concat(variables('virtualNetworkId'),'/subnets/', 'Default')]"
   },
   "resources": [{
-    "apiVersion": "2016-01-01",
-    "type": "Microsoft.Storage/storageAccounts",
-    "name": "[variables('vmStorageName')]",
-    "tags": {
-      "application": "AutomationStack",
-      "udp": "[parameters('udp')]"
-    },
-    "location": "[resourceGroup().location]",
-    "sku": {
-      "name": "Premium_LRS",
-      "tier": "Premium"
-    },
-    "kind": "Storage",
-    "properties": {
-      "encryption": {
-        "keySource": "Microsoft.Storage",
-        "services": {
-          "blob": {
-            "enabled": true
-          }
-        }
-      }
-    }
-  }, {
     "apiVersion": "2015-06-15",
     "type": "Microsoft.Network/networkInterfaces",
     "name": "[variables('nicName')]",
@@ -95,7 +71,6 @@
     },
     "location": "[resourceGroup().location]",
     "dependsOn": [
-      "[concat('Microsoft.Storage/storageAccounts/', variables('vmStorageName'))]",
       "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
     ],
     "properties": {
@@ -121,7 +96,7 @@
         "osDisk": {
           "name": "[concat(variables('vmName'),'-OS')]",
           "vhd": {
-            "uri": "[concat('http://',variables('vmStorageName'),'.blob.core.windows.net/vhds/',variables('vmName'),'-OS.vhd')]"
+            "uri": "[concat('http://',variables('resourcesStorageName'),'.blob.core.windows.net/vhds/',variables('vmName'),'-OS.vhd')]"
           },
           "caching": "ReadWrite",
           "createOption": "FromImage"

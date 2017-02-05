@@ -1,8 +1,8 @@
 {
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
-  "Id": "deploymentprocess-Projects-8",
-  "OwnerId": "Projects-8",
-  "Version": 77,
+  "Id": "deploymentprocess-Projects-7",
+  "OwnerId": "Projects-7",
+  "Version": 83,
   "Steps": [
     {
       "Id": "960b4de1-2296-4d97-b547-def57ea373fa",
@@ -218,7 +218,7 @@
         }
       ],
       "Properties": {
-        "Octopus.Action.TargetRoles": "Azure Automation"
+        "Octopus.Action.TargetRoles": "ARM Provisioning"
       }
     },
     {
@@ -248,7 +248,7 @@
         }
       ],
       "Properties": {
-        "Octopus.Action.TargetRoles": "Azure Automation"
+        "Octopus.Action.TargetRoles": "ARM Provisioning"
       }
     },
     {
@@ -273,7 +273,7 @@
             "Octopus.Action.Script.ScriptSource": "Package",
             "Octopus.Action.Script.ScriptFileName": "Copy-VHDToStorageAccount.ps1",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Storage",
-            "Octopus.Action.Script.ScriptParameters": "-VHDUri '#{Octopus.Action[Convert VM to Image].Output.ImageUri}' -SrcResourceGroupName '#{ResourceGroup}' -DstResourceGroupName '#{InfraRg}' -DstStorageAccount '#{StorageAccountName}'  -DstBlob '#{VMName}.image.vhd'"
+            "Octopus.Action.Script.ScriptParameters": "-VHDUri '#{Octopus.Action[Convert VM to Image].Output.ImageUri}' -SrcResourceGroupName '#{InfraRg}' -DstResourceGroupName '#{InfraRg}' -DstStorageAccount '#{StorageAccountName}'  -DstBlob '#{VMName}.image.vhd'"
           }
         }
       ],
@@ -282,14 +282,14 @@
       }
     },
     {
-      "Id": "388c9513-38a8-48e0-9904-a621b5a4a605",
+      "Id": "0aa3983b-cafe-4589-9e3e-e51ea0a4499e",
       "Name": "Remove Resource Group",
       "Condition": "Success",
       "StartTrigger": "StartAfterPrevious",
       "RequiresPackagesToBeAcquired": false,
       "Actions": [
         {
-          "Id": "b0b101df-6505-4517-a7cb-3242075aed6c",
+          "Id": "b30e0ab4-d526-4d72-8e0d-b8017ad13a13",
           "Name": "Remove Resource Group",
           "ActionType": "Octopus.AzurePowerShell",
           "IsDisabled": false,
@@ -303,10 +303,10 @@
             "Octopus.Action.Script.ScriptSource": "Package",
             "Octopus.Action.Script.ScriptFileName": "Remove-ResourceGroup.ps1",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Resources",
-            "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName '#{ResourceGroupName}' -PassThru '#{PassThru}'",
-            "ResourceGroupName": "#{ResourceGroup}",
+            "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName '#{ResourceGroupName}' -PassThru $False",
             "Octopus.Action.Template.Id": "ActionTemplates-12",
-            "Octopus.Action.Template.Version": "2"
+            "Octopus.Action.Template.Version": "3",
+            "ResourceGroupName": "#{ResourceGroup}"
           }
         }
       ],

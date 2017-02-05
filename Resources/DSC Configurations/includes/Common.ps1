@@ -9,3 +9,4 @@ xIEEsc EnableIEEscUser
     IsEnabled = $false
 }
 #include <software/VisualStudioCode>
+#include <software/AzCopy>
