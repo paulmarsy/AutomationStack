@@ -3,7 +3,7 @@
   "Id": "ActionTemplates-9",
   "Name": "Invoke-CustomScript",
   "Description": null,
-  "Version": 3,
+  "Version": 4,
   "ActionType": "Octopus.AzurePowerShell",
   "CommunityActionTemplateId": null,
   "Properties": {
@@ -43,7 +43,7 @@
       "DefaultValue": null,
       "DisplaySettings": {
         "Octopus.ControlType": "Select",
-        "Octopus.SelectOptions": "AutomationNodeCompliance\nOctopusImport"
+        "Octopus.SelectOptions": "AutomationNodeCompliance\nOctopusImport\nSysprep"
       }
     },
     {

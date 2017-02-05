@@ -20,7 +20,8 @@
     "ARMTemplates",
     "AutomationStackScripts.Compute",
     "AutomationStackScripts.Resources",
-    "AutomationStackScripts.Storage"
+    "AutomationStackScripts.Storage",
+    "AutomationStackScripts.Automation"
   ],
   "DefaultToSkipIfAlreadyInstalled": false,
   "TenantedDeploymentMode": "Untenanted",

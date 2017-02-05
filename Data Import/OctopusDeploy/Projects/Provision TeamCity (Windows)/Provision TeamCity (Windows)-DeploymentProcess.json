@@ -2,38 +2,8 @@
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
   "Id": "deploymentprocess-Projects-7",
   "OwnerId": "Projects-7",
-  "Version": 160,
+  "Version": 163,
   "Steps": [
-    {
-      "Id": "3eaab2f7-a8f5-41f2-9cfd-8eac985fdf5c",
-      "Name": "Install Azure PowerShell Cmdlets",
-      "Condition": "Success",
-      "StartTrigger": "StartAfterPrevious",
-      "RequiresPackagesToBeAcquired": false,
-      "Actions": [
-        {
-          "Id": "eda2c575-0a92-425e-975b-06fdfb6d44d4",
-          "Name": "Install Azure PowerShell Cmdlets",
-          "ActionType": "Octopus.Script",
-          "IsDisabled": false,
-          "Environments": [],
-          "ExcludedEnvironments": [],
-          "Channels": [],
-          "TenantTags": [],
-          "Properties": {
-            "Octopus.Action.Script.Syntax": "PowerShell",
-            "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.RunOnServer": "true",
-            "Octopus.Action.Script.ScriptBody": "if ($OctopusParameters['Octopus.Action.Azure.UseBundledAzurePowerShellModules'] -ne 'False') {\r\n    throw 'Octopus.Action.Azure.UseBundledAzurePowerShellModules variable must be set to false'\r\n}\r\nif (Get-Module -ListAvailable -Name AzureRm) {\r\n    return\r\n}\r\n\r\nNew-Item -Path \"$env:APPDATA\\Windows Azure Powershell\" -Type Directory -Force | Out-Null\r\nSet-Content -Path \"$env:APPDATA\\Windows Azure Powershell\\AzureDataCollectionProfile.json\" -Value '{\"enableAzureDataCollection\":false}'\r\n\r\nInstall-PackageProvider -Name NuGet -Force\r\nSet-PSRepository -Name PSGallery -InstallationPolicy Trusted\r\nInstall-Module AzureRm -Force",
-            "Octopus.Action.Template.Id": "ActionTemplates-8",
-            "Octopus.Action.Template.Version": "4"
-          }
-        }
-      ],
-      "Properties": {
-        "Octopus.Action.TargetRoles": "ARM Provisioning,Azure Automation"
-      }
-    },
     {
       "Id": "f915e03f-4a5b-4fa2-aa88-d572523b1b3b",
       "Name": "Download DSC Configuration",
@@ -270,14 +240,14 @@
             "Octopus.Action.Script.ScriptFileName": "Invoke-CustomScript.ps1",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Compute",
             "Octopus.Action.Script.ScriptParameters": "-Name '#{Name}' -ResourceGroupName '#{ResourceGroupName}' -VMName '#{VMName}' -Location '#{Location}' -StorageAccountName '#{StorageAccountName}' -StorageAccountKey '#{StorageAccountKey}'",
-            "Octopus.Action.Template.Id": "ActionTemplates-9",
-            "Octopus.Action.Template.Version": "3",
+            "ResourceGroupName": "#{ResourceGroup}",
+            "VMName": "#{VMName}",
+            "Name": "AutomationNodeCompliance",
             "Location": "#{AzureRegion}",
             "StorageAccountName": "#{StorageAccountName}",
             "StorageAccountKey": "#{StorageAccountKey}",
-            "ResourceGroupName": "#{ResourceGroup}",
-            "VMName": "#{VMName}",
-            "Name": "AutomationNodeCompliance"
+            "Octopus.Action.Template.Id": "ActionTemplates-9",
+            "Octopus.Action.Template.Version": "4"
           }
         }
       ],
@@ -292,22 +262,6 @@
       "StartTrigger": "StartAfterPrevious",
       "RequiresPackagesToBeAcquired": false,
       "Actions": [
-        {
-          "Id": "c8022bc0-bcc1-4cb1-b2ee-01beeb54a415",
-          "Name": "Reset state",
-          "ActionType": "Octopus.Script",
-          "IsDisabled": true,
-          "Environments": [],
-          "ExcludedEnvironments": [],
-          "Channels": [],
-          "TenantTags": [],
-          "Properties": {
-            "Octopus.Action.RunOnServer": "false",
-            "Octopus.Action.Script.Syntax": "PowerShell",
-            "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "Stop-Service TeamCity -Force -ErrorAction Ignore\nStart-Process -FilePath \"${TeamCityBin}teamcity-server.bat\" -UseNewEnvironment -ArgumentList @('service','delete') -Wait -NoNewWindow\nif (Test-Path $ExportPath) {\n    Remove-Item $ExportPath -Recurse -Force\n}\nNew-Item -ItemType Directory -Path $ExportPath\n\nif (Test-Path $TeamCityDataDir) {\n    Remove-Item $TeamCityDataDir -Recurse -Force\n}\nNew-Item -ItemType Directory -Path $TeamCityDataDir\n"
-          }
-        },
         {
           "Id": "7f96fe71-7694-4b58-b379-c71d25d5c781",
           "Name": "Download Import",

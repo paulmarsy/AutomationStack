@@ -10,7 +10,6 @@ Configuration TeamCity
     Import-DscResource -ModuleName PSDesiredStateConfiguration
     Import-DscResource -ModuleName xPSDesiredStateConfiguration
     Import-DscResource -ModuleName xNetworking
-    Import-DscResource -ModuleName PackageManagementProviderResource
     Import-DscResource -ModuleName xSystemSecurity
 
     Node Server
@@ -91,6 +90,29 @@ Configuration TeamCity
             DependsOn = '[Script]TeamCityExtract'
         }
 
-        #include <AgentConfig>
+        $teamcityAgentConfigStateFile = "$($env:SystemDrive)\buildAgent\agentconfiguration.statefile"
+        Script TeamCityAgentConfig
+        {
+            SetScript = {
+                & "$($env:SystemDrive)\buildAgent\bin\changeAgentProps.bat" serverUrl $using:HostHeader "$($env:SystemDrive)\buildAgent\conf\buildAgent.properties" *>&1 | Write-Verbose
+                if ($LASTEXITCODE -ne 0) { throw "Exit code $LASTEXITCODE from TeamCity Agent Configuration: changeAgentProps serverUrl" }
+
+                & "$($env:SystemDrive)\buildAgent\launcher\bin\TeamCityAgentService-windows-x86-32.exe" -i "$($env:SystemDrive)\buildAgent\launcher\conf\wrapper.conf" *>&1 | Write-Verbose
+                if ($LASTEXITCODE -ne 0) { throw "Exit code $LASTEXITCODE from TeamCity Agent Configuration: TeamCityAgentService-windows-x86-64.exe" }
+
+                $sc = Join-Path -Resolve ([System.Environment]::SystemDirectory) 'sc.exe'
+                Write-Verbose "Found $netsh"
+
+                & $sc config TCBuildAgent start= delayed-auto type= own *>&1 | Write-Verbose
+                if ($LASTEXITCODE -ne 0) { throw "Exit code $LASTEXITCODE from TeamCity Agent Configuration: sc.exe" }
+
+                [System.IO.FIle]::WriteAllText($using:teamcityAgentConfigStateFile, $LASTEXITCODE,[System.Text.Encoding]::ASCII)
+            }
+            TestScript = {
+                ((Test-Path $using:teamcityAgentConfigStateFile) -and ([System.IO.FIle]::ReadAllText($using:teamcityAgentConfigStateFile).Trim()) -eq '0')
+            }
+            GetScript = { @{} }
+            DependsOn = '[File]TeamCityAgentInstall'
+        }
     }
 }

@@ -2,7 +2,7 @@
   "$type": "Octopus.Core.Model.Variables.VariableSet, Octopus.Core",
   "Id": "variableset-Projects-8",
   "OwnerId": "Projects-8",
-  "Version": 6,
+  "Version": 8,
   "Variables": [
     {
       "Id": "61fa3889-c44a-6bb3-4edc-fd4ba1f68672",
@@ -18,6 +18,16 @@
       "Id": "fd9fe3eb-ade1-31a6-121c-41b9f26ccc6e",
       "Name": "DSCConfigPath",
       "Value": "D:\\DSC"
+    },
+    {
+      "Id": "3f0b1279-70ea-44ee-3c31-0178e26ca4b6",
+      "Name": "DSCConfigFile",
+      "Value": "#{DSCConfigPath}\\TeamCity.ps1"
+    },
+    {
+      "Id": "604d4c62-4db0-3b52-8d0b-1b80460cb6f5",
+      "Name": "Octopus.Action.Azure.UseBundledAzurePowerShellModules",
+      "Value": "False"
     }
   ],
   "RelatedDocumentIds": []

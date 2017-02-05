@@ -1,0 +1,3 @@
+[submodule "Resources/AzureRest"]
+	path = Resources/AzureRest
+	url = https://github.com/paulmarsy/AzureRest.git

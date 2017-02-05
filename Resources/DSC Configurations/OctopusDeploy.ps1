@@ -11,6 +11,7 @@ Configuration OctopusDeploy
     Import-DscResource -ModuleName xPSDesiredStateConfiguration
     Import-DscResource -ModuleName xNetworking
     Import-DscResource -ModuleName xSystemSecurity
+    Import-DscResource -ModuleName PackageManagementProviderResource
 
     Node Server
     {
@@ -189,5 +190,12 @@ Configuration OctopusDeploy
             GetScript = { @{} }
             DependsOn = @('[xFirewall]OctopusDeployServer','[Script]URLAccessControlList','[Service]OctopusDeploy','[Script]OctopusDeployConfiguration','[User]OctopusServiceAccount','[Script]SetOctopusUserGroups','[xFileSystemAccessRule]OctopusConfigFile')
         }
+
+        PSModule AzureRM
+        {
+            Name              = 'AzureRM'
+            Repository        = "PSGallery"
+            InstallationPolicy= "Trusted"     
+        }     
     }
 }

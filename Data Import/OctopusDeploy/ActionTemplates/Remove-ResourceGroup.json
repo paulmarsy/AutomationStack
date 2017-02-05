@@ -3,7 +3,7 @@
   "Id": "ActionTemplates-12",
   "Name": "Remove-ResourceGroup",
   "Description": null,
-  "Version": 1,
+  "Version": 2,
   "ActionType": "Octopus.AzurePowerShell",
   "CommunityActionTemplateId": null,
   "Properties": {

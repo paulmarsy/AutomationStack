@@ -2,7 +2,7 @@
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
   "Id": "deploymentprocess-Projects-8",
   "OwnerId": "Projects-8",
-  "Version": 62,
+  "Version": 77,
   "Steps": [
     {
       "Id": "960b4de1-2296-4d97-b547-def57ea373fa",
@@ -168,14 +168,14 @@
             "Octopus.Action.Script.ScriptFileName": "Invoke-CustomScript.ps1",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Compute",
             "Octopus.Action.Script.ScriptParameters": "-Name '#{Name}' -ResourceGroupName '#{ResourceGroupName}' -VMName '#{VMName}' -Location '#{Location}' -StorageAccountName '#{StorageAccountName}' -StorageAccountKey '#{StorageAccountKey}'",
-            "Octopus.Action.Template.Id": "ActionTemplates-9",
-            "Octopus.Action.Template.Version": "3",
+            "ResourceGroupName": "#{ResourceGroup}",
+            "VMName": "#{VMName}",
+            "Name": "AutomationNodeCompliance",
             "Location": "#{AzureRegion}",
             "StorageAccountName": "#{StorageAccountName}",
             "StorageAccountKey": "#{StorageAccountKey}",
-            "ResourceGroupName": "#{ResourceGroup}",
-            "VMName": "#{VMName}",
-            "Name": "AutomationNodeCompliance"
+            "Octopus.Action.Template.Id": "ActionTemplates-9",
+            "Octopus.Action.Template.Version": "4"
           }
         }
       ],
@@ -184,65 +184,52 @@
       }
     },
     {
-      "Id": "653da013-f15c-4b74-a836-51380fe206a3",
-      "Name": "Wait until ready for image capture",
-      "Condition": "Success",
-      "StartTrigger": "StartAfterPrevious",
-      "RequiresPackagesToBeAcquired": false,
-      "Actions": [
-        {
-          "Id": "f5e668b2-6188-4f38-81b1-b1f837dbc702",
-          "Name": "Wait until ready for image capture",
-          "ActionType": "Octopus.Manual",
-          "IsDisabled": false,
-          "Environments": [],
-          "ExcludedEnvironments": [],
-          "Channels": [],
-          "TenantTags": [],
-          "Properties": {
-            "Octopus.Action.Manual.Instructions": "Proceed when ready to capture an image of the virtual machine"
-          }
-        }
-      ],
-      "Properties": {}
-    },
-    {
-      "Id": "15750c37-d131-4a53-a8d3-eb05dff1be67",
+      "Id": "e90df294-20cc-4f5f-974c-9765296ec252",
       "Name": "Run Sysprep",
       "Condition": "Success",
       "StartTrigger": "StartAfterPrevious",
       "RequiresPackagesToBeAcquired": false,
       "Actions": [
         {
-          "Id": "9cbf30cc-83c8-496c-82ef-d4d75054a6f8",
+          "Id": "abf4faeb-71e0-4f31-971b-d4230ab86f78",
           "Name": "Run Sysprep",
-          "ActionType": "Octopus.Script",
+          "ActionType": "Octopus.AzurePowerShell",
           "IsDisabled": false,
           "Environments": [],
           "ExcludedEnvironments": [],
           "Channels": [],
           "TenantTags": [],
           "Properties": {
-            "Octopus.Action.RunOnServer": "false",
-            "Octopus.Action.Script.Syntax": "PowerShell",
-            "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "Set-Location (Join-Path $env:windir 'system32\\sysprep')\n& sysprep.exe /oobe /generalize /quiet /shutdown"
+            "Octopus.Action.Package.FeedId": "feeds-builtin",
+            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
+            "Octopus.Action.Script.ScriptSource": "Package",
+            "Octopus.Action.Script.ScriptFileName": "Invoke-CustomScript.ps1",
+            "Octopus.Action.Package.PackageId": "AutomationStackScripts.Compute",
+            "Octopus.Action.Script.ScriptParameters": "-Name '#{Name}' -ResourceGroupName '#{ResourceGroupName}' -VMName '#{VMName}' -Location '#{Location}' -StorageAccountName '#{StorageAccountName}' -StorageAccountKey '#{StorageAccountKey}'",
+            "ResourceGroupName": "#{ResourceGroup}",
+            "VMName": "#{VMName}",
+            "Name": "Sysprep",
+            "Location": "#{AzureRegion}",
+            "StorageAccountName": "#{StorageAccountName}",
+            "StorageAccountKey": "#{StorageAccountKey}",
+            "Octopus.Action.Template.Id": "ActionTemplates-9",
+            "Octopus.Action.Template.Version": "4"
           }
         }
       ],
       "Properties": {
-        "Octopus.Action.TargetRoles": "TeamCity Agent Image"
+        "Octopus.Action.TargetRoles": "Azure Automation"
       }
     },
     {
-      "Id": "8a30c09b-a241-4bcf-8b0a-626fcdf2ba36",
+      "Id": "489af284-4fdc-4948-9e1a-a148ca66400e",
       "Name": "Convert VM to Image",
       "Condition": "Success",
       "StartTrigger": "StartAfterPrevious",
       "RequiresPackagesToBeAcquired": false,
       "Actions": [
         {
-          "Id": "c9d74a24-0ca9-48a0-9456-8b8df84f832d",
+          "Id": "c88ec6e4-581d-4e89-a6ad-729d09d9bd67",
           "Name": "Convert VM to Image",
           "ActionType": "Octopus.AzurePowerShell",
           "IsDisabled": false,
@@ -261,18 +248,18 @@
         }
       ],
       "Properties": {
-        "Octopus.Action.TargetRoles": "ARM Provisioning"
+        "Octopus.Action.TargetRoles": "Azure Automation"
       }
     },
     {
-      "Id": "1c18cb0a-4d77-40c8-ac9a-833039cc2541",
+      "Id": "7a4d23f6-fb9b-4cca-b6bb-06280993ff16",
       "Name": "Copy VM Image",
       "Condition": "Success",
       "StartTrigger": "StartAfterPrevious",
       "RequiresPackagesToBeAcquired": false,
       "Actions": [
         {
-          "Id": "cae7ebea-cec9-4602-878b-88d60f9f6aa9",
+          "Id": "cb18f90f-18c9-4b27-8e02-95d5755333eb",
           "Name": "Copy VM Image",
           "ActionType": "Octopus.AzurePowerShell",
           "IsDisabled": false,
@@ -295,14 +282,14 @@
       }
     },
     {
-      "Id": "3df6937c-98d4-43fd-9e80-f03eb7455b9c",
+      "Id": "388c9513-38a8-48e0-9904-a621b5a4a605",
       "Name": "Remove Resource Group",
       "Condition": "Success",
       "StartTrigger": "StartAfterPrevious",
       "RequiresPackagesToBeAcquired": false,
       "Actions": [
         {
-          "Id": "120ea5a7-b0fc-499b-94d6-1da8dfade7c7",
+          "Id": "b0b101df-6505-4517-a7cb-3242075aed6c",
           "Name": "Remove Resource Group",
           "ActionType": "Octopus.AzurePowerShell",
           "IsDisabled": false,
@@ -317,9 +304,9 @@
             "Octopus.Action.Script.ScriptFileName": "Remove-ResourceGroup.ps1",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Resources",
             "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName '#{ResourceGroupName}' -PassThru '#{PassThru}'",
+            "ResourceGroupName": "#{ResourceGroup}",
             "Octopus.Action.Template.Id": "ActionTemplates-12",
-            "Octopus.Action.Template.Version": "1",
-            "ResourceGroupName": "#{ResourceGroup}"
+            "Octopus.Action.Template.Version": "2"
           }
         }
       ],
