@@ -23,7 +23,7 @@ function Publish-StorageAccountResources {
     $teamCityEncoder.Hash('StackAdminPassword', $clonedContext.Get('StackAdminPassword'))
     $teamCityEncoder.Scramble('Null', $null)
     $teamCityEncoder.Scramble('StackAdminPassword', $clonedContext.Get('StackAdminPassword'))
-    $agentCloudName = 'AgentStack'
+    $agentCloudName = $clonedContext.Eval('TCAgents#{UDP | ToUpper}') 
     $clonedContext.Set('AgentCloudName', $agentCloudName)
     $agentCloudPasswordData = @{$agentCloudName = $clonedContext.Get('StackAdminPassword') } | ConvertTo-Json -Compress
     $teamCityEncoder.Scramble('AgentCloudPasswordData', $agentCloudPasswordData)
