@@ -17,6 +17,10 @@ $logFileBlobRef = $storageContainer.CloudBlobContainer.GetAppendBlobReference($l
 
 $script:logFilePath = "C:\CustomScriptLogs\$LogFileName"
 
+function Send-SignalTerminate {
+    'SIGTERM' | Out-File -FilePath $logFilePath -Append 
+    $logFileBlobRef.AppendText('SIGTERM')
+}
 filter Write-Log {
     $entry = '[{0}] {1}: {2}' -f $env:COMPUTERNAME, (Get-Date).ToShortTimeString(), ($_ | Out-String)
     $entry | Out-File -FilePath $logFilePath -Append 

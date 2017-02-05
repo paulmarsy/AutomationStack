@@ -13,9 +13,9 @@
             NodeName = 'CloudAgent'
             PSDscAllowPlainTextPassword = $true
             Octopus = @{
-                Role = 'TeamCity Agent Image'
+                Role = 'TeamCity Cloud Agent'
                 Environment = 'TeamCity Stack'
-                Name = 'TeamCity Server'
+                Name = 'TeamCity Cloud Agent'
             }       
         }
     )

@@ -34,7 +34,11 @@ Write-Host 'Waiting for script to run...'
 $logPosition = 0
 do {
         Start-Sleep 1
-        $logFileBlobRef.DownloadText().Split([System.Environment]::NewLine) | ? { -not [string]::IsNullOrEmpty($_) } | Select-Object -Skip $logPosition | % { $logPosition++; $_ | Out-Host }
+        $logFileBlobRef.DownloadText().Split([System.Environment]::NewLine) | ? { -not [string]::IsNullOrEmpty($_) } | Select-Object -Skip $logPosition | % { 
+                $logPosition++
+                if ($_.Trim() -eq 'SIGTERM') { $job | Stop-Job }
+                $_ | Out-Host
+        }
 } while ($job.State -eq 'Running')
 
 if ($job.State -ne 'Completed') {
