@@ -1,10 +1,10 @@
 function Write-ResolvedException {
     param($Exception)
 
-    $message = $Exception.ErrorRecord.Exception.Message
-    $errorId = $Exception.ErrorRecord.FullyQualifiedErrorId
-    $scriptStackTrace = $Exception.ErrorRecord.ScriptStackTrace
-    $positionMessage = $Exception.ErrorRecord.InvocationInfo.PositionMessage
+    $message = $Exception.Exception.Message
+    $errorId = $Exception.FullyQualifiedErrorId
+    $scriptStackTrace = $Exception.ScriptStackTrace
+    $positionMessage = $Exception.InvocationInfo.PositionMessage
 
     if ($message -and $errorId -and $scriptStackTrace -and $positionMessage) {
         Write-Host

@@ -19,7 +19,7 @@ function Start-DeploymentStage {
             break
         }
         catch {
-            if (!(Write-ResolvedException $_.Exception.InnerException -and !(Write-ResolvedException $_.Exception))) {
+            if (!(Write-ResolvedException $_.Exception.InnerException) -and !(Write-ResolvedException $_.Exception) -and !(Write-ResolvedException $_)) {
                 $global:AutomationException = $_
                 Write-Warning 'Unable to resolve exception, check variable $AutomationException'
             }
