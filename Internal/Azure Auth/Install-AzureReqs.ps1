@@ -33,13 +33,13 @@ function Install-AzureReqs {
 
     if ($Basic) {
         Assert-AzureModule -Module 'AzureRM.Profile'
+        Assert-AzureModule -Module 'AzureRM.Resources'
 
         Write-Host -NoNewLine "Importing AzureRM.Profile Module... "
         Import-Module AzureRM.Profile -Force
         Write-Host -ForegroundColor Green 'imported'
     } else {
-        @(  @{ Module = 'AzureRM.Resources'; Provider = 'Microsoft.Resources' },
-            @{ Module = 'AzureRM.Automation'; Provider = 'Microsoft.Automation' },
+        @(  @{ Module = 'AzureRM.Automation'; Provider = 'Microsoft.Automation' },
             @{ Module = 'AzureRM.Compute'; Provider = 'Microsoft.Compute' },
             @{ Module = 'AzureRM.KeyVault'; Provider = 'Microsoft.KeyVault' },
             @{ Module = 'AzureRM.Network'; Provider = 'Microsoft.Network' },
