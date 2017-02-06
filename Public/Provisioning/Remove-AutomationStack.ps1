@@ -6,6 +6,7 @@ function Remove-AutomationStack {
     if (!$UDP) {
         $UDP = $CurrentContext.Get('UDP')
     }
+    $UDP = $UDP.ToUpperInvariant()
 
     Write-Host 'Removing Service Principal...'
     Get-AzureRmADApplication -DisplayNameStartWith ('AutomationStack{0}' -f $UDP) | Remove-AzureRmADApplication -Force
