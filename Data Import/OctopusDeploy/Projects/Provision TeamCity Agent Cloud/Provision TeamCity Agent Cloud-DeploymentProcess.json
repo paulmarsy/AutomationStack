@@ -282,33 +282,6 @@
       }
     },
     {
-      "Id": "2ac72372-52e5-4d97-90f1-6620faec7684",
-      "Name": "Clean Blob Files",
-      "Condition": "Success",
-      "StartTrigger": "StartAfterPrevious",
-      "RequiresPackagesToBeAcquired": false,
-      "Actions": [
-        {
-          "Id": "c950ff89-f402-41ec-aa10-3c8ac19bbfd7",
-          "Name": "Clean Blob Files",
-          "ActionType": "Octopus.AzurePowerShell",
-          "IsDisabled": false,
-          "Environments": [],
-          "ExcludedEnvironments": [],
-          "Channels": [],
-          "TenantTags": [],
-          "Properties": {
-            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
-            "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "$context = New-AzureStorageContext -StorageAccountName $StorageAccountName -StorageAccountKey $StorageAccountKey\r\n\r\nRemove-AzureStorageContainer -Name vhds -Force -Context $context\r\nRemove-AzureStorageContainer -Name system -Force -Context $context"
-          }
-        }
-      ],
-      "Properties": {
-        "Octopus.Action.TargetRoles": "ARM Provisioning"
-      }
-    },
-    {
       "Id": "0aa3983b-cafe-4589-9e3e-e51ea0a4499e",
       "Name": "Remove Resource Group",
       "Condition": "Success",
@@ -334,6 +307,33 @@
             "Octopus.Action.Template.Id": "ActionTemplates-12",
             "Octopus.Action.Template.Version": "3",
             "ResourceGroupName": "#{ResourceGroup}"
+          }
+        }
+      ],
+      "Properties": {
+        "Octopus.Action.TargetRoles": "ARM Provisioning"
+      }
+    },
+    {
+      "Id": "2ac72372-52e5-4d97-90f1-6620faec7684",
+      "Name": "Clean Blob Files",
+      "Condition": "Success",
+      "StartTrigger": "StartAfterPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "c950ff89-f402-41ec-aa10-3c8ac19bbfd7",
+          "Name": "Clean Blob Files",
+          "ActionType": "Octopus.AzurePowerShell",
+          "IsDisabled": false,
+          "Environments": [],
+          "ExcludedEnvironments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "$context = New-AzureStorageContext -StorageAccountName $StorageAccountName -StorageAccountKey $StorageAccountKey\r\n\r\nRemove-AzureStorageContainer -Name vhds -Force -Context $context\r\nRemove-AzureStorageContainer -Name system -Force -Context $context"
           }
         }
       ],
