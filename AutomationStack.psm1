@@ -17,6 +17,9 @@ $script:TempPath = Get-Item -Path $TempPath | % FullName
 $script:ConcurrentNetTasks = 10
 $script:TotalDeploymentStages = 10
 
+if (Test-Path (Join-Path $PSScriptRoot 'Resources\AzureRest\AzureRest.psd1')) {
+        Import-Module (Join-Path $PSScriptRoot 'Resources\AzureRest\AzureRest.psd1') -Force
+}
 . (Join-Path $PSScriptRoot 'Classes\Loader.ps1')
 Get-ChildItem -File -Filter *.ps1 -Path (Join-Path $PSScriptRoot 'Internal') -Recurse | % { . $_.FullName }
 Get-ChildItem -File -Filter *.ps1 -Path (Join-Path $PSScriptRoot 'Public') -Recurse | % { . $_.FullName; Export-ModuleMember -Function $_.BaseName }
