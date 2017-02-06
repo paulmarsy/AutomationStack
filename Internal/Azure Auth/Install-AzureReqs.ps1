@@ -1,10 +1,15 @@
 function Install-AzureReqs {
     param([switch]$Basic)
 
+    filter Import-AzureModule {
+        Write-Host -NoNewLine "Importing $_ Module... "
+        Import-Module $_ -Force
+        Write-Host -ForegroundColor Green 'imported'
+    }
     $script:firstInstall = $true
-     function Assert-AzureModule {
-        param($Module)
-        if (Get-Module -ListAvailable -Name $Module) {
+    filter Assert-AzureModule {
+        if (Get-Module -ListAvailable -Name $_) {
+            $_ | Import-AzureModule
             return
         }
         if ($script:firstInstall) {
@@ -26,33 +31,23 @@ function Install-AzureReqs {
             Set-PSRepository -Name PSGallery -InstallationPolicy Trusted | Out-Null
             $script:firstInstall = $false
          }
-        Write-Host -NoNewLine "Installing $Module Module... "
-        Install-Module $Module -Force  -WarningAction Ignore
-        Write-Host -ForegroundColor Green 'imported'
+        Write-Host -NoNewLine "Installing $_ Module... "
+        Install-Module $_ -Force -WarningAction Ignore
+        Write-Host -ForegroundColor Green 'installed'
+        $_ | Import-AzureModule
      }
 
     if ($Basic) {
-        Assert-AzureModule -Module 'AzureRM.Profile'
-        Assert-AzureModule -Module 'AzureRM.Resources'
-
-        Write-Host -NoNewLine "Importing AzureRM.Profile Module... "
-        Import-Module AzureRM.Profile -Force
-        Write-Host -ForegroundColor Green 'imported'
+        @('AzureRM.Profile','AzureRM.Resources') | Assert-AzureModule
     } else {
-        @(  @{ Module = 'AzureRM.Automation'; Provider = 'Microsoft.Automation' },
-            @{ Module = 'AzureRM.Compute'; Provider = 'Microsoft.Compute' },
-            @{ Module = 'AzureRM.KeyVault'; Provider = 'Microsoft.KeyVault' },
-            @{ Module = 'AzureRM.Network'; Provider = 'Microsoft.Network' },
-            @{ Module = 'AzureRM.Sql'; Provider = 'Microsoft.Sql' },
-            @{ Module = @('AzureRM.Storage', 'Azure.Storage'); Provider = 'Microsoft.Storage' }) | % {
-            Assert-AzureModule -Module $_.Module
-            Write-Host -NoNewLine "Importing $($_.Module) Module... "
-            Import-Module $_.Module -Force
-            Write-Host -ForegroundColor Green 'imported'
-
-            Write-Host -NoNewLine "Registering $($_.Provider) Resource Provider... "
-            Register-AzureRmResourceProvider -ProviderNamespace $_.Provider | Out-Null
-            Write-Host -ForegroundColor Green 'registered'
+        @('AzureRM.Automation'
+          'AzureRM.Compute'
+          'AzureRM.KeyVault'
+          'AzureRM.Network'
+          'AzureRM.Storage'
+          'AzureRM.Sql'
+          'AzureRM.Tags'
+          'Azure.Storage') | Assert-AzureModule
         }
         Write-Host
     }
