@@ -48,7 +48,6 @@ function Install-AzureReqs {
           'AzureRM.Sql'
           'AzureRM.Tags'
           'Azure.Storage') | Assert-AzureModule
-        }
-        Write-Host
     }
+    Write-Host
 }
