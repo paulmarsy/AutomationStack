@@ -3,7 +3,7 @@
   <name>Azure Agent Cloud</name>
   <description />
   <parameters>
-    <param name="agentPushPreset">1485094788671</param>
+    <param name="agentPushPreset" />
     <param name="clientId">#{ServicePrincipalClientId}</param>
     <param name="images_data">[{"imageUrl":"https://#{StorageAccountName}.blob.core.windows.net/images/TCAgentVM.image.vhd","osType":"Windows","networkId":"/subscriptions/#{AzureSubscriptionId}/resourceGroups/#{InfraRg}/providers/Microsoft.Network/virtualNetworks/VirtualNetwork","subnetId":"Default","maxInstances":1,"vmNamePrefix":"#{AgentCloudName}","vmPublicIp":false,"vmSize":"Standard_F4s","vmUsername":"#{StackAdminUsername}","reuseVm":true}]</param>
     <param name="location">#{AzureRegionValue}</param>

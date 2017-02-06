@@ -32,20 +32,24 @@ $job = Start-Job -ScriptBlock {
 
 Write-Host 'Waiting for script to run...'
 $logPosition = 0
+$terminateSignaled = $false
 do {
         Start-Sleep 1
         $logFileBlobRef.DownloadText().Split([System.Environment]::NewLine) | ? { -not [string]::IsNullOrEmpty($_) } | Select-Object -Skip $logPosition | % { 
                 $logPosition++
-                if ($_.Trim() -eq 'SIGTERM') { $job | Stop-Job }
+                if ($_.Trim() -eq 'SIGTERM') { $terminateSignaled = $true }
                 $_ | Out-Host
         }
-} while ($job.State -eq 'Running')
+} while ($job.State -eq 'Running' -and -not $terminateSignaled)
 
-if ($job.State -ne 'Completed') {
+if ($terminateSignaled) {
+        Write-Host 'Received terminate signal from script'
+        $job | Stop-Job
+} elseif ($job.State -ne 'Completed') {
     Write-Warning "Job did not complete successfully, output:"
     $job | Receive-Job | Out-Host
     Write-Host "Extension output:"
-    Get-AzureRmVMExtension -ResourceGroupName $ResourceGroupName -VMName $VMName -Name 'CustomScript' -Status | % SubStatuses | % Message | % Replace '\n' "`n" | Out-Host
+    Get-AzureRmVMExtension -ResourceGroupName $ResourceGroupName -VMName $VMName -Name 'CustomScript' -Status | % SubStatuses | % Message | ? { -not [string]::IsNullOrEmpty($_) } | % Replace '\n' "`n" | Out-Host
 }
 Write-Host
 $duration = $job.PSEndTime - $job.PSBeginTime

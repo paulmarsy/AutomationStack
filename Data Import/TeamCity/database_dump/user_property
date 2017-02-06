@@ -1,0 +1,7 @@
+user_id, prop_key, prop_value
+1, buildLogConsoleStyle, false
+1, buildLogHideBlocks, false
+1, overview.preferredProjects, project2:project1
+1, showAdvancedOpts_buildStepSettings_dotnet-tools-dupfinder, true
+1, storedLogTab, tree
+1, was.logged.in, true

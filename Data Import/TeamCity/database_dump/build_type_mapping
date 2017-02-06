@@ -1,3 +1,4 @@
 int_id, ext_id, main
 bt1, TestProject_EmptyBuild, 1
 bt2, OctopusDeployExtensions_OctopusApiKeyAuthenticationProvider, 1
+bt3, OctopusDeployExtensions_OctopusVariablesExtension, 1

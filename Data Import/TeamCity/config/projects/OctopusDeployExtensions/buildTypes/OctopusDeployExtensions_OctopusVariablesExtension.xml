@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<build-type xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" uuid="a7652d0e-24b3-4782-9279-b5e45361e86a" xsi:noNamespaceSchemaLocation="http://www.jetbrains.com/teamcity/schemas/10.0/project-config.xsd">
+  <name>Octopus Variables Extension</name>
+  <description>Octopus Deploy Authentication using an API key</description>
+  <settings>
+    <options>
+      <option name="artifactRules" value="OctopusApiKeyAuthenticationProvider\bin\Release\OctopusApiKeyAuthenticationProvider.dll" />
+      <option name="shouldFailBuildOnAnyErrorMessage" value="true" />
+    </options>
+    <disabled-settings>
+      <setting-ref ref="RUNNER_3" />
+      <setting-ref ref="RUNNER_4" />
+    </disabled-settings>
+    <parameters>
+      <param name="system.Configuration" value="Release" />
+      <param name="system.OutputPath" value="%teamcity.build.workingDir%\bin" />
+      <param name="system.Platform" value="Any CPU" />
+    </parameters>
+    <build-runners>
+      <runner id="RUNNER_5" name="Download &amp; Extract Octopus Deploy" type="jetbrains_powershell">
+        <parameters>
+          <param name="jetbrains_powershell_bitness" value="x86" />
+          <param name="jetbrains_powershell_errorToError" value="true" />
+          <param name="jetbrains_powershell_execution" value="PS1" />
+          <param name="jetbrains_powershell_script_code"><![CDATA[[System.Net.ServicePointManager]::SecurityProtocol = @("Tls12","Tls11","Tls","Ssl3")
+
+$msiFile = Join-Path '%system.teamcity.build.tempDir%' 'Octopus.msi'
+[System.Net.WebClient]::new().DownloadFile("https://octopus.com/downloads/latest/WindowsX64/OctopusServer", $msiFile)
+
+Start-Process -FilePath 'msiexec.exe' -NoNewWindow -Wait -ArgumentList @("/a $msiFile",'/qn','WIXUI_DONTVALIDATEPATH="1"',"TARGETDIR='%system.teamcity.build.tempDir%'") | Write-Output
+Get-ChildItem '%system.teamcity.build.tempDir%' -Recurse | Out-Host]]></param>
+          <param name="jetbrains_powershell_script_mode" value="CODE" />
+          <param name="teamcity.step.mode" value="default" />
+        </parameters>
+      </runner>
+      <runner id="RUNNER_1" name="Restore NuGet Packages" type="jb.nuget.installer">
+        <parameters>
+          <param name="nuget.path" value="%teamcity.tool.NuGet.CommandLine.DEFAULT%" />
+          <param name="nuget.updatePackages.mode" value="sln" />
+          <param name="nuget.use.restore" value="install" />
+          <param name="sln.path" value="OctopusVariablesExtension.sln" />
+          <param name="teamcity.step.mode" value="default" />
+          <param name="toolCustomPath" value="j" />
+          <param name="toolPathSelector" value="%teamcity.tool.NuGet.CommandLine.DEFAULT%" />
+        </parameters>
+      </runner>
+      <runner id="RUNNER_2" name="Compile Solution" type="MSBuild">
+        <parameters>
+          <param name="build-file-path" value="OctopusVariablesExtension.sln" />
+          <param name="dotNetCoverage.NCover.HTMLReport.File.Sort" value="0" />
+          <param name="dotNetCoverage.NCover.HTMLReport.File.Type" value="1" />
+          <param name="dotNetCoverage.NCover.Reg" value="selected" />
+          <param name="dotNetCoverage.NCover.platformBitness" value="x86" />
+          <param name="dotNetCoverage.NCover.platformVersion" value="v2.0" />
+          <param name="dotNetCoverage.NCover3.Reg" value="selected" />
+          <param name="dotNetCoverage.NCover3.args" value="//ias .*" />
+          <param name="dotNetCoverage.NCover3.platformBitness" value="x86" />
+          <param name="dotNetCoverage.NCover3.platformVersion" value="v2.0" />
+          <param name="dotNetCoverage.NCover3.reporter.executable.args" value="//or FullCoverageReport:Html:{teamcity.report.path}" />
+          <param name="dotNetCoverage.PartCover.Reg" value="selected" />
+          <param name="dotNetCoverage.PartCover.includes" value="[*]*" />
+          <param name="dotNetCoverage.PartCover.platformBitness" value="x86" />
+          <param name="dotNetCoverage.PartCover.platformVersion" value="v2.0" />
+          <param name="msbuild_version" value="15.0" />
+          <param name="run-platform" value="x64" />
+          <param name="teamcity.step.mode" value="default" />
+          <param name="toolsVersion" value="15.0" />
+        </parameters>
+      </runner>
+      <runner id="RUNNER_3" name="" type="dotnet-tools-dupfinder">
+        <parameters>
+          <param name="dotnet-tools-dupfinder.discard_cost" value="70" />
+          <param name="dotnet-tools-dupfinder.hashing.discard_literals" value="true" />
+          <param name="dotnet-tools-dupfinder.include_files" value="OctopusVariablesExtension.sln" />
+          <param name="jetbrains.resharper-clt.clt-path" value="%teamcity.tool.jetbrains.resharper-clt.DEFAULT%" />
+          <param name="teamcity.step.mode" value="default" />
+          <param name="toolPathSelector" value="%teamcity.tool.jetbrains.resharper-clt.DEFAULT%" />
+        </parameters>
+      </runner>
+      <runner id="RUNNER_4" name="" type="dotnet-tools-inspectcode">
+        <parameters>
+          <param name="TargetDotNetFramework_4.5.2" value="true" />
+          <param name="dotnet-tools-inspectcode.solution" value="OctopusVariablesExtension.sln" />
+          <param name="jetbrains.resharper-clt.clt-path" value="%teamcity.tool.jetbrains.resharper-clt.DEFAULT%" />
+          <param name="teamcity.step.mode" value="default" />
+          <param name="toolPathSelector" value="%teamcity.tool.jetbrains.resharper-clt.DEFAULT%" />
+        </parameters>
+      </runner>
+    </build-runners>
+    <vcs-settings>
+      <vcs-entry-ref root-id="OctopusDeployExtensions_GitHubOctopusVariablesExtension" />
+    </vcs-settings>
+    <requirements />
+    <build-triggers />
+    <cleanup />
+  </settings>
+</build-type>
+

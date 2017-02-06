@@ -2,7 +2,7 @@
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
   "Id": "deploymentprocess-Projects-7",
   "OwnerId": "Projects-7",
-  "Version": 83,
+  "Version": 85,
   "Steps": [
     {
       "Id": "960b4de1-2296-4d97-b547-def57ea373fa",
@@ -274,6 +274,33 @@
             "Octopus.Action.Script.ScriptFileName": "Copy-VHDToStorageAccount.ps1",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Storage",
             "Octopus.Action.Script.ScriptParameters": "-VHDUri '#{Octopus.Action[Convert VM to Image].Output.ImageUri}' -SrcResourceGroupName '#{InfraRg}' -DstResourceGroupName '#{InfraRg}' -DstStorageAccount '#{StorageAccountName}'  -DstBlob '#{VMName}.image.vhd'"
+          }
+        }
+      ],
+      "Properties": {
+        "Octopus.Action.TargetRoles": "ARM Provisioning"
+      }
+    },
+    {
+      "Id": "2ac72372-52e5-4d97-90f1-6620faec7684",
+      "Name": "Clean Blob Files",
+      "Condition": "Success",
+      "StartTrigger": "StartAfterPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "c950ff89-f402-41ec-aa10-3c8ac19bbfd7",
+          "Name": "Clean Blob Files",
+          "ActionType": "Octopus.AzurePowerShell",
+          "IsDisabled": false,
+          "Environments": [],
+          "ExcludedEnvironments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "$context = New-AzureStorageContext -StorageAccountName $StorageAccountName -StorageAccountKey $StorageAccountKey\r\n\r\nRemove-AzureStorageContainer -Name vhds -Force -Context $context\r\nRemove-AzureStorageContainer -Name system -Force -Context $context"
           }
         }
       ],

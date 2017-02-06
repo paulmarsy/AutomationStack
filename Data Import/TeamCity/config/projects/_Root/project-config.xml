@@ -8,5 +8,6 @@
       <option name="preventDependenciesArtifactsFromCleanup" value="false" />
     </options>
   </cleanup>
+  <subprojectsOrder order="TestProject,OctopusDeployExtensions" />
 </project>
 

@@ -3,13 +3,24 @@
   <name>Octopus ApiKey Authentication Provider</name>
   <description>Octopus Deploy Authentication using an API key</description>
   <settings>
-    <parameters />
+    <options>
+      <option name="artifactRules" value="bin\OctopusApiKeyAuthenticationProvider.dll" />
+    </options>
+    <disabled-settings>
+      <setting-ref ref="RUNNER_3" />
+      <setting-ref ref="RUNNER_4" />
+    </disabled-settings>
+    <parameters>
+      <param name="system.Configuration" value="Release" />
+      <param name="system.OutputPath" value="%teamcity.build.workingDir%\bin" />
+      <param name="system.Platform" value="Any CPU" />
+    </parameters>
     <build-runners>
       <runner id="RUNNER_1" name="Restore NuGet Packages" type="jb.nuget.installer">
         <parameters>
           <param name="nuget.path" value="%teamcity.tool.NuGet.CommandLine.DEFAULT%" />
           <param name="nuget.updatePackages.mode" value="sln" />
-          <param name="nuget.use.restore" value="restore" />
+          <param name="nuget.use.restore" value="install" />
           <param name="sln.path" value="OctopusApiKeyAuthenticationProvider.sln" />
           <param name="teamcity.step.mode" value="default" />
           <param name="toolCustomPath" value="j" />
@@ -33,10 +44,10 @@
           <param name="dotNetCoverage.PartCover.includes" value="[*]*" />
           <param name="dotNetCoverage.PartCover.platformBitness" value="x86" />
           <param name="dotNetCoverage.PartCover.platformVersion" value="v2.0" />
-          <param name="msbuild_version" value="4.5" />
+          <param name="msbuild_version" value="15.0" />
           <param name="run-platform" value="x64" />
           <param name="teamcity.step.mode" value="default" />
-          <param name="toolsVersion" value="none" />
+          <param name="toolsVersion" value="15.0" />
         </parameters>
       </runner>
       <runner id="RUNNER_3" name="" type="dotnet-tools-dupfinder">
