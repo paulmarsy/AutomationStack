@@ -34,7 +34,7 @@ function Start-ARMDeployment {
     try {
         Write-Host -NoNewLine "Starting ARM template deployment of $Template to $ResourceGroupName... "
         $deploymentName = '{0}-{1}' -f $Template, [datetime]::UtcNow.tostring('o').Replace(':','.').Substring(0,19)
-        $deployment = New-AzureRmResourceGroupDeployment -Name $deploymentName -Force -DeploymentDebugLogLevel All @args 
+        $deployment = New-AzureRmResourceGroupDeployment -Name $deploymentName -Force @args 
         Write-Host -ForegroundColor Green 'successfull!'
         Write-Host
         $deployment | Format-List -Property @('DeploymentName','ResourceGroupName','Mode','ProvisioningState','Timestamp','ParametersString', 'OutputsString') | Out-String | % Trim | Out-Host

@@ -18,7 +18,12 @@ $script:ConcurrentNetTasks = 10
 $script:TotalDeploymentStages = 10
 
 if (Test-Path (Join-Path $PSScriptRoot 'Resources\AzureRest\AzureRest.psd1')) {
+    try {
         Import-Module (Join-Path $PSScriptRoot 'Resources\AzureRest\AzureRest.psd1') -Force
+    }
+    catch {
+        Write-Warning "AzureRest module was not loaded: $_"
+    }
 }
 . (Join-Path $PSScriptRoot 'Classes\Loader.ps1')
 Get-ChildItem -File -Filter *.ps1 -Path (Join-Path $PSScriptRoot 'Internal') -Recurse | % { . $_.FullName }
