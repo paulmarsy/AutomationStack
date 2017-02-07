@@ -27,7 +27,7 @@
     {
       "Id": "4616a933-2655-4463-6a82-5c10747bc2a4",
       "Name": "ResourceGroup",
-      "Value": "TeamCityStack#{UDP | ToUpper}",
+      "Value": "AutomationStack#{UDP | ToUpper}",
       "Scope": {
         "Environment": [
           "Environments-4"
@@ -37,7 +37,7 @@
     {
       "Id": "b1128373-4a65-bc37-1b31-b5b1a8128d74",
       "Name": "ResourceGroup",
-      "Value": "OctopusStack#{UDP | ToUpper}",
+      "Value": "AutomationStack#{UDP | ToUpper}",
       "Scope": {
         "Environment": [
           "Environments-3"

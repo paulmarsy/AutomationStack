@@ -62,7 +62,7 @@
             "Octopus.Action.Script.ScriptSource": "Package",
             "Octopus.Action.Script.ScriptFileName": "Import-TeamCityConfig.ps1",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Automation",
-            "Octopus.Action.Script.ScriptParameters": "-Path '#{Path}' -InfraRg '#{InfraRg}' -AutomationAccountName '#{AutomationAccountName}' -OctopusServerUrl '#{OctopusHostHeader}' -OctopusApiKey '#{APIKey}' -HostHeader '#{TeamCityHostHeader}' -TeamCityVersion '#{TeamCityVersion}'",
+            "Octopus.Action.Script.ScriptParameters": "-Path '#{Path}' -ResourceGroup '#{ResourceGroup}' -AutomationAccountName '#{AutomationAccountName}' -OctopusServerUrl '#{OctopusHostHeader}' -OctopusApiKey '#{APIKey}' -HostHeader '#{TeamCityHostHeader}' -TeamCityVersion '#{TeamCityVersion}'",
             "Path": "#{DSCConfigFile}",
             "TeamCityVersion": "#{TeamCityVersion}",
             "Octopus.Action.Template.Id": "ActionTemplates-7",
@@ -273,7 +273,7 @@
             "Octopus.Action.Script.ScriptSource": "Package",
             "Octopus.Action.Script.ScriptFileName": "Copy-VHDToStorageAccount.ps1",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Storage",
-            "Octopus.Action.Script.ScriptParameters": "-VHDUri '#{Octopus.Action[Convert VM to Image].Output.ImageUri}' -SrcResourceGroupName '#{InfraRg}' -DstResourceGroupName '#{InfraRg}' -DstStorageAccount '#{StorageAccountName}'  -DstBlob '#{VMName}.image.vhd'"
+            "Octopus.Action.Script.ScriptParameters": "-VHDUri '#{Octopus.Action[Convert VM to Image].Output.ImageUri}' -SrcResourceGroupName '#{ResourceGroup}' -DstResourceGroupName '#{ResourceGroup}' -DstStorageAccount '#{StorageAccountName}'  -DstBlob '#{VMName}.image.vhd'"
           }
         }
       ],

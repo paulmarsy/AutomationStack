@@ -6,7 +6,7 @@ do {
     $state = Get-AzureRmVM -ResourceGroupName $ResourceGroupName -Name $VMName -Status | % Statuses | ? Code -like 'PowerState/*' | % DisplayStatus
 } while ($state -ne 'VM stopped')
 
-Write-Host 'Stopping VM... '
+Write-Host 'Deallocating VM... '
 Stop-AzureRmVM -ResourceGroupName $ResourceGroupName -Name $VMName -Force | Out-Host
 
 Write-Host 'Generalizing VM... '

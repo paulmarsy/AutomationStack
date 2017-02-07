@@ -1,5 +1,5 @@
 function Resume-AutomationStack {
-    $rg = $CurrentContext.Get('OctopusRg')
+    $rg = $CurrentContext.Get('ResourceGroup')
     $vmName = $CurrentContext.Get('OctopusVMName')
 
     Write-Host 'Generating ARM template... ' -NoNewLine
@@ -28,7 +28,7 @@ function Resume-AutomationStack {
     Copy-Item -Path  (Join-Path $ResourcesPath 'ARM Templates\appserver.parameters.json') -Destination  (Join-Path $ResourcesPath 'ARM Templates\appserver.resume.parameters.json')
     Write-Host 'created' -ForegroundColor Green
 
-        $storageDeploy = Start-ARMDeployment -ResourceGroupName $CurrentContext.Get('OctopusRg') -Template 'appserver.storage' -Mode Complete -TemplateParameters @{
+        $storageDeploy = Start-ARMDeployment -ResourceGroupName $CurrentContext.Get('ResourceGroup') -Template 'appserver.storage' -Mode Complete -TemplateParameters @{
             udp = $CurrentContext.Get('UDP')
         }
 
@@ -56,9 +56,9 @@ function Resume-AutomationStack {
             Write-Progress -Activity "Copying $blobName from $($srcContext.StorageAccountName) to $($dstContext.StorageAccountName)" -CurrentOperation "$($copyState.Status) $('{0:N2}' -f $percent)% $percent" -PercentComplete $percent
         }
 
-    $octopusDeploy = Start-ARMDeployment -ResourceGroupName $CurrentContext.Get('OctopusRg') -Template 'appserver.resume' -Mode Complete -TemplateParameters @{
+    $octopusDeploy = Start-ARMDeployment -ResourceGroupName $CurrentContext.Get('ResourceGroup') -Template 'appserver.resume' -Mode Complete -TemplateParameters @{
         udp = $CurrentContext.Get('UDP')
-        infraResourceGroup = $CurrentContext.Get('InfraRg')
+        infraResourceGroup = $CurrentContext.Get('ResourceGroup')
         productName = 'Octopus'
         vmAdminUsername = $CurrentContext.Get('StackAdminUsername')
         clientId = $CurrentContext.Get('ServicePrincipalClientId')

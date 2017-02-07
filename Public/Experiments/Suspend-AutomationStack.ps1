@@ -1,5 +1,5 @@
 function Suspend-AutomationStack {
-    $rg = $CurrentContext.Get('OctopusRg')
+    $rg = $CurrentContext.Get('ResourceGroup')
     $vmName = $CurrentContext.Get('OctopusVMName')
 
     Write-Host 'Connecting to storage accounts... ' -NoNewLine

@@ -27,7 +27,7 @@ function New-AutomationStack {
             $Stages | % {
                 $stageNumber = $_
                 if ($stageNumber -lt 1 -or $stageNumber -gt $TotalDeploymentStages) {
-                    Write-Warning "Stage $stageNumber is outside the allowed range of 0-$TotalDeploymentStages, skipping"
+                    Write-Warning "Stage $stageNumber is outside the allowed range of 1-$TotalDeploymentStages, skipping"
                 }
                 $ScriptBlock = switch ($stageNumber) {
                     1 {
@@ -50,6 +50,7 @@ function New-AutomationStack {
                         $Heading = 'Azure KeyVault & Service Principal Authentication'
                         {
                             New-AzureServicePrincipal
+                            Invoke-SharedScript Resources 'New-ResourceGroup' -UDP $CurrentContext.Get('UDP') -ResourceGroupName $CurrentContext.Get('ResourceGroup') -Location ($CurrentContext.Get('AzureRegion'))
                             Initialize-KeyVault
                             Connect-AzureRmServicePrincipal
                         }
@@ -65,7 +66,7 @@ function New-AutomationStack {
                         {
                             Register-OctopusAutomation
                             Write-Host 'Creating Octopus Deploy SQL Database...'
-                            Invoke-SharedScript AzureSQL 'New-AzureSQLDatabase' -ResourceGroupName $CurrentContext.Get('InfraRg') -ServerName $CurrentContext.Get('SqlServerName') -DatabaseName 'OctopusDeploy'
+                            Invoke-SharedScript AzureSQL 'New-AzureSQLDatabase' -ResourceGroupName $CurrentContext.Get('ResourceGroup') -ServerName $CurrentContext.Get('SqlServerName') -DatabaseName 'OctopusDeploy'
                         }
                     }
                     5 {
@@ -83,13 +84,13 @@ function New-AutomationStack {
                     7 {
                         $Heading = 'Azure Automation DSC Compliance'
                         {
-                            Invoke-SharedScript Compute 'Invoke-CustomScript' -Name 'AutomationNodeCompliance' -ResourceGroupName $CurrentContext.Get('OctopusRg') -VMName $CurrentContext.Get('OctopusVMName') -Location $CurrentContext.Get('AzureRegion') -StorageAccountName $CurrentContext.Get('StorageAccountName') -StorageAccountKey $CurrentContext.Get('StorageAccountKey')
+                            Invoke-SharedScript Compute 'Invoke-CustomScript' -Name 'AutomationNodeCompliance' -ResourceGroupName $CurrentContext.Get('ResourceGroup') -VMName $CurrentContext.Get('OctopusVMName') -Location $CurrentContext.Get('AzureRegion') -StorageAccountName $CurrentContext.Get('StorageAccountName') -StorageAccountKey $CurrentContext.Get('StorageAccountKey')
                         }
                     }     
                     8 {
                         $Heading = 'Octopus Deploy - Importing Initial State'
                         {
-                            Invoke-SharedScript Compute 'Invoke-CustomScript' -Name 'OctopusImport' -ResourceGroupName $CurrentContext.Get('OctopusRg') -VMName $CurrentContext.Get('OctopusVMName') -Location $CurrentContext.Get('AzureRegion') -StorageAccountName $CurrentContext.Get('StorageAccountName') -StorageAccountKey $CurrentContext.Get('StorageAccountKey')
+                            Invoke-SharedScript Compute 'Invoke-CustomScript' -Name 'OctopusImport' -ResourceGroupName $CurrentContext.Get('ResourceGroup') -VMName $CurrentContext.Get('OctopusVMName') -Location $CurrentContext.Get('AzureRegion') -StorageAccountName $CurrentContext.Get('StorageAccountName') -StorageAccountKey $CurrentContext.Get('StorageAccountKey')
                         }
                     }
                     9 {

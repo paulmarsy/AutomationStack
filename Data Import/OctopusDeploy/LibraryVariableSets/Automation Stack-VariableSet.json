@@ -6,7 +6,7 @@
   "Variables": [
     {
       "Id": "04107455-ce7d-0174-c2bc-6c75bf7f5f2a",
-      "Name": "InfraRg",
+      "Name": "ResourceGroup",
       "Value": "AutomationStack#{UDP | ToUpper}"
     },
     {

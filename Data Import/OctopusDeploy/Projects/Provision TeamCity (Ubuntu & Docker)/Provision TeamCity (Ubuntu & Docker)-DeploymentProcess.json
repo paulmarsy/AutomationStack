@@ -6,14 +6,14 @@
   "Steps": [
     {
       "Id": "825c74ca-8910-4f23-ac7a-be7564d2a6c5",
-      "Name": "Create TeamCityStack Resource Group",
+      "Name": "Create TeamCity Resource Group",
       "Condition": "Success",
       "StartTrigger": "StartAfterPrevious",
       "RequiresPackagesToBeAcquired": false,
       "Actions": [
         {
           "Id": "5c4cf2c2-d9cb-497d-8b64-12b19783074a",
-          "Name": "Create TeamCityStack Resource Group",
+          "Name": "Create TeamCity Resource Group",
           "ActionType": "Octopus.AzurePowerShell",
           "IsDisabled": false,
           "Environments": [],

@@ -26,7 +26,7 @@
             "Octopus.Action.Package.FeedId": "feeds-builtin",
             "Octopus.Action.Script.ScriptFileName": "Enable-RDPNSGRule.ps1",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Network",
-            "Octopus.Action.Script.ScriptParameters": "-InfraRg #{InfraRg} -NSGName #{OctopusNSGName}"
+            "Octopus.Action.Script.ScriptParameters": "-ResourceGroup #{ResourceGroup} -NSGName #{OctopusNSGName}"
           }
         }
       ],
@@ -56,7 +56,7 @@
             "Octopus.Action.Package.FeedId": "feeds-builtin",
             "Octopus.Action.Script.ScriptFileName": "Enable-RDPNSGRule.ps1",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Network",
-            "Octopus.Action.Script.ScriptParameters": "-InfraRg #{InfraRg} -NSGName #{TeamCityNSGName}"
+            "Octopus.Action.Script.ScriptParameters": "-ResourceGroup #{ResourceGroup} -NSGName #{TeamCityNSGName}"
           }
         }
       ],

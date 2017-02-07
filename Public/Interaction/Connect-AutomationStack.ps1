@@ -2,16 +2,17 @@ function Connect-AutomationStack {
     param(
         [ValidateSet('Octopus','TeamCity')]$VM
     )
-
+    
+    $rg = $CurrentContext.Get('ResourceGroup')
     switch ($VM) {
-        'Octopus' { $rg = $CurrentContext.Get('OctopusRg'); $ipName = 'OctopusPublicIP'; $nsg = 'OctopusNSG' }
-        'TeamCity' { $rg = ('TeamCityStack{0}' -f $CurrentContext.Get('UDP')); $ipName = 'TeamCityPublicIP'; $nsg = 'TeamCityNSG' }
+        'Octopus' { $ipName = 'OctopusPublicIP'; $nsg = 'OctopusNSG' }
+        'TeamCity' { $ipName = 'TeamCityPublicIP'; $nsg = 'TeamCityNSG' }
         default { throw 'You must specify the service to RDP to' }
     }
     Connect-AzureRmServicePrincipal
     try {
         Write-Host -NoNewLine "Updating $nsg network security group... "
-        Invoke-SharedScript Network 'Enable-RDPNSGRule' -InfraRg $CurrentContext.Get('InfraRg') -NSGName $nsg | Out-Null
+        Invoke-SharedScript Network 'Enable-RDPNSGRule' -ResourceGroup $CurrentContext.Get('ResourceGroup') -NSGName $nsg | Out-Null
         Write-Host 'RDP rule enabled, it may take a few seconds to propogate'
 
         Write-Host -NoNewLine "Finding $ipName address... "
