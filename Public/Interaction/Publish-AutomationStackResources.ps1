@@ -1,7 +1,7 @@
 function Publish-AutomationStackResources {
-    param(
-        [switch]$ResetStorage,
-        [ValidateSet('AzureCustomScripts','DSCConfigurations','OctopusDeployDataSet','TeamCityDataSet','NuGetPackages','All')]$Upload = 'All'
+    param(        
+        [ValidateSet('AzureCustomScripts','DSCConfigurations','OctopusDeployDataSet','TeamCityDataSet','NuGetPackages','All')]$Upload = 'All',
+        [switch]$ResetStorage
     )
     Connect-AzureRmServicePrincipal
     try {

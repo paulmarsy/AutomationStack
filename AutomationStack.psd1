@@ -65,24 +65,24 @@ PowerShellVersion = '5.0'
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = 'New-AutomationStack',
-                    'Measure-AutomationStack',
-                    'Remove-AutomationStack',
-                    'Show-AutomationStackUsage',
-                    
-                    'Find-AutomationStackDeployment',
-                    'Suspend-AutomationStack',
-                    'Resume-AutomationStack',
-
-                    'Publish-AutomationStackResources',
-                    'Get-AutomationStackConfig',
-                    'Connect-AutomationStack',
-                    'Update-AutomationStack',
+FunctionsToExport = 'Get-AutomationStackConfig',
                     'Sync-AutomationStackModule',
 
-                    'Invoke-OctopusStackApi'
-                    
+                    'Resume-AutomationStack',
+                    'Suspend-AutomationStack',
+                    'Update-AutomationStack',
 
+                    'Connect-AutomationStack',
+                    'Invoke-OctopusStackApi',
+                    'Publish-AutomationStackResources',
+
+                    'Find-AutomationStackDeployment',
+                    'New-AutomationStack',
+                    'Remove-AutomationStack',
+
+                    'Measure-AutomationStack',
+                    'Show-AutomationStackUsage'
+                    
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = ''
 
