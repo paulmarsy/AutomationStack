@@ -13,7 +13,7 @@ function New-DeploymentContext {
 
     [AutoMetrics]::Start(1, 'Creating AutomationStack Deployment Details')
     $CurrentContext.Set('Name', 'AutomationStack#{UDP | ToUpper}')
-    $CurrentContext.Set('InfraRg', 'AutomationStack#{UDP | ToUpper}')
+    $CurrentContext.Set('ResourceGroupName', 'AutomationStack#{UDP | ToUpper}')
 
     $azureRmContext = Get-AzureRmContext
     $CurrentContext.Set('AzureTenantId', $azureRmContext.Tenant.TenantId)
