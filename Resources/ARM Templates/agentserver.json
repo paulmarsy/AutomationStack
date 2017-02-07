@@ -2,9 +2,6 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "infraResourceGroup": {
-      "type": "string"
-    },
     "udp": {
       "type": "string"
     },
@@ -38,7 +35,7 @@
     "vmName": "[concat(parameters('productName'),'VM')]",
     "resourcesStorageName": "[concat('stackresources', parameters('udp'))]",
     "nicName": "[concat(parameters('productName'),'NIC')]",
-    "virtualNetworkId": "[resourceId(parameters('infraResourceGroup'), 'Microsoft.Network/virtualNetworks', 'VirtualNetwork')]",
+    "virtualNetworkId": "[resourceId('Microsoft.Network/virtualNetworks', 'VirtualNetwork')]",
     "subnetId": "[concat(variables('virtualNetworkId'),'/subnets/', 'Default')]"
   },
   "resources": [{

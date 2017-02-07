@@ -1,7 +1,4 @@
   { // Additional variables: ProductName, ScriptFileName
-    "infraResourceGroup": {
-        "value": "#{ResourceGroup}"
-    },
     "udp": {
         "value": "#{UDP}"
     },

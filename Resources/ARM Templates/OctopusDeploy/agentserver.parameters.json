@@ -1,7 +1,4 @@
   { // Additional variables: ProductName, NodeConfigurationName
-    "infraResourceGroup": {
-        "value": "#{ResourceGroup}"
-    },
     "udp": {
         "value": "#{UDP}"
     },
