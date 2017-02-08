@@ -2,7 +2,7 @@
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
   "Id": "deploymentprocess-Projects-6",
   "OwnerId": "Projects-6",
-  "Version": 163,
+  "Version": 169,
   "Steps": [
     {
       "Id": "f915e03f-4a5b-4fa2-aa88-d572523b1b3b",
@@ -106,41 +106,7 @@
         }
       ],
       "Properties": {
-        "Octopus.Action.TargetRoles": "ARM Provisioning"
-      }
-    },
-    {
-      "Id": "de8a4950-683f-4ef5-82be-483909a15040",
-      "Name": "Create TeamCity Resource Group",
-      "Condition": "Success",
-      "StartTrigger": "StartWithPrevious",
-      "RequiresPackagesToBeAcquired": false,
-      "Actions": [
-        {
-          "Id": "7938d04d-4ac5-4c6f-9c46-514a8cb466e8",
-          "Name": "Create TeamCity Resource Group",
-          "ActionType": "Octopus.AzurePowerShell",
-          "IsDisabled": false,
-          "Environments": [],
-          "ExcludedEnvironments": [],
-          "Channels": [],
-          "TenantTags": [],
-          "Properties": {
-            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
-            "Octopus.Action.Script.ScriptSource": "Package",
-            "Octopus.Action.Package.FeedId": "feeds-builtin",
-            "Octopus.Action.Script.ScriptFileName": "New-ResourceGroup.ps1",
-            "Octopus.Action.Package.PackageId": "AutomationStackScripts.Resources",
-            "Octopus.Action.Script.ScriptParameters": "-UDP '#{UDP}' -ResourceGroupName '#{ResourceGroupName}' -Location '#{Location}'",
-            "ResourceGroupName": "#{ResourceGroup}",
-            "Location": "#{AzureRegion}",
-            "Octopus.Action.Template.Id": "ActionTemplates-11",
-            "Octopus.Action.Template.Version": "7"
-          }
-        }
-      ],
-      "Properties": {
-        "Octopus.Action.TargetRoles": "ARM Provisioning"
+        "Octopus.Action.TargetRoles": "Azure SQL Server"
       }
     },
     {
@@ -163,16 +129,16 @@
             "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
             "Octopus.Action.Azure.TemplateSource": "Package",
             "Octopus.Action.Azure.ResourceGroupTemplateParameters": "OctopusDeploy\\appserver.parameters.json",
-            "Octopus.Action.Azure.ResourceGroupDeploymentMode": "Complete",
+            "Octopus.Action.Azure.ResourceGroupDeploymentMode": "Incremental",
             "Octopus.Action.Azure.ResourceGroupTemplate": "appserver.json",
             "Octopus.Action.Azure.ResourceGroupName": "#{ResourceGroupName}",
             "Octopus.Action.Package.FeedId": "feeds-builtin",
             "Octopus.Action.Package.PackageId": "ARMTemplates",
             "ResourceGroupName": "#{ResourceGroup}",
-            "ProductName": "#{ProductName}",
+            "ProductName": "TeamCity",
+            "NodeConfigurationName": "#{DSCConfigurationName}.#{DSCNodeName}",
             "Octopus.Action.Template.Id": "ActionTemplates-3",
-            "Octopus.Action.Template.Version": "6",
-            "NodeConfigurationName": "#{DSCConfigurationName}.#{DSCNodeName}"
+            "Octopus.Action.Template.Version": "7"
           }
         }
       ],
@@ -206,7 +172,7 @@
             "Octopus.Action.Package.FeedId": "feeds-builtin",
             "Octopus.Action.Package.PackageId": "ARMTemplates",
             "ResourceGroupName": "#{ResourceGroup}",
-            "ProductName": "#{ProductName}",
+            "ProductName": "TeamCity",
             "KeyVaultSecretUrl": "#{Octopus.Action[Provision Windows Server 2016 VM].Output.AzureRMOutputs[keyVaultSecretUrl]}",
             "Octopus.Action.Template.Id": "ActionTemplates-2",
             "Octopus.Action.Template.Version": "3"
@@ -241,7 +207,7 @@
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Compute",
             "Octopus.Action.Script.ScriptParameters": "-Name '#{Name}' -ResourceGroupName '#{ResourceGroupName}' -VMName '#{VMName}' -Location '#{Location}' -StorageAccountName '#{StorageAccountName}' -StorageAccountKey '#{StorageAccountKey}'",
             "ResourceGroupName": "#{ResourceGroup}",
-            "VMName": "#{VMName}",
+            "VMName": "#{TeamCityVMName}",
             "Name": "AutomationNodeCompliance",
             "Location": "#{AzureRegion}",
             "StorageAccountName": "#{StorageAccountName}",

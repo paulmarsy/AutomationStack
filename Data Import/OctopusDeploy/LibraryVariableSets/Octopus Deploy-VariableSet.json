@@ -2,13 +2,8 @@
   "$type": "Octopus.Core.Model.Variables.VariableSet, Octopus.Core",
   "Id": "variableset-LibraryVariableSets-5",
   "OwnerId": "LibraryVariableSets-5",
-  "Version": 7,
+  "Version": 10,
   "Variables": [
-    {
-      "Id": "3406e61a-97dc-f94f-a691-0fa1aae9c9d6",
-      "Name": "ResourceGroup",
-      "Value": "AutomationStack#{UDP | ToUpper}"
-    },
     {
       "Id": "12c2e0b0-1235-2a13-a44d-ed2ce619cde9",
       "Name": "OctopusNSGName",
@@ -23,6 +18,16 @@
       "Id": "9b51779b-126d-fa4f-d9e7-827a7fefedda",
       "Name": "OctopusConnectionString",
       "Value": "Server=tcp:#{SqlServerName}.database.windows.net,1433;Initial Catalog=OctopusDeploy;Persist Security Info=False;User ID=#{SqlServerUsername};Password=#{StackAdminPassword};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;"
+    },
+    {
+      "Id": "ecaca1c8-4668-02e0-a7a2-057362d144af",
+      "Name": "OctopusHostHeader",
+      "Value": "http://#{OctopusHostName}/"
+    },
+    {
+      "Id": "4eea517d-8423-60e4-f495-d9199e16b59b",
+      "Name": "OctopusHostName",
+      "Value": "octopusstack-#{UDP}.#{AzureRegionValue}.cloudapp.azure.com"
     }
   ],
   "RelatedDocumentIds": []

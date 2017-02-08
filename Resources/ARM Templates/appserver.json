@@ -39,7 +39,7 @@
   },
   "variables": {
     "vmName": "[concat(parameters('productName'),'VM')]",
-    "vmStorageName": "[concat('vmvhds', parameters('udp'), uniquestring(resourceGroup().id))]",
+    "vmStorageName": "[concat('stackvhds', parameters('udp'))]",
     "nsgName": "[concat(parameters('productName'),'NSG')]",
     "nicName": "[concat(parameters('productName'),'NIC')]",
     "publicIPAddressName": "[concat(parameters('productName'),'PublicIP')]",

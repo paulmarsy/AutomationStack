@@ -30,7 +30,8 @@
   },
   "ProjectConnectivityPolicy": {
     "SkipMachineBehavior": "None",
-    "TargetRoles": []
+    "TargetRoles": [],
+    "AllowDeploymentsToNoTargets": false
   },
   "AutoDeployReleaseOverrides": [],
   "LogoAttachmentKey": "Projects-3",

@@ -2,7 +2,7 @@
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
   "Id": "deploymentprocess-Projects-3",
   "OwnerId": "Projects-3",
-  "Version": 50,
+  "Version": 52,
   "Steps": [
     {
       "Id": "1f7eaedc-d772-4fde-8a11-c298cb6e6880",

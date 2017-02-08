@@ -8,12 +8,11 @@
   "VariableSetId": "variableset-Projects-5",
   "DeploymentProcessId": "deploymentprocess-Projects-5",
   "ProjectGroupId": "ProjectGroups-24",
-  "LifecycleId": "Lifecycles-26",
+  "LifecycleId": "Lifecycles-23",
   "AutoCreateRelease": false,
   "IncludedLibraryVariableSetIds": [
     "LibraryVariableSets-2",
-    "LibraryVariableSets-1",
-    "LibraryVariableSets-3"
+    "LibraryVariableSets-1"
   ],
   "UsedPackages": [
     "jetbrains/teamcity-server",
@@ -33,7 +32,8 @@
   },
   "ProjectConnectivityPolicy": {
     "SkipMachineBehavior": "None",
-    "TargetRoles": []
+    "TargetRoles": [],
+    "AllowDeploymentsToNoTargets": false
   },
   "AutoDeployReleaseOverrides": [],
   "LogoAttachmentKey": "Projects-5",

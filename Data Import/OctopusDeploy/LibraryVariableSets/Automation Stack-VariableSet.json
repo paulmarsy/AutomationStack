@@ -2,7 +2,7 @@
   "$type": "Octopus.Core.Model.Variables.VariableSet, Octopus.Core",
   "Id": "variableset-LibraryVariableSets-2",
   "OwnerId": "LibraryVariableSets-2",
-  "Version": 11,
+  "Version": 12,
   "Variables": [
     {
       "Id": "04107455-ce7d-0174-c2bc-6c75bf7f5f2a",
@@ -23,26 +23,6 @@
       "Id": "5eefe522-98ee-418b-6414-36cdc6707946",
       "Name": "AutomationAccountName",
       "Value": "automation-#{UDP}"
-    },
-    {
-      "Id": "9a2aa1a4-e333-6eb9-1dcb-cde3e66ba61b",
-      "Name": "OctopusHostHeader",
-      "Value": "http://#{OctopusHostName}/"
-    },
-    {
-      "Id": "18adefec-67c4-2870-e6b5-99c8820c5d64",
-      "Name": "TeamCityHostHeader",
-      "Value": "http://#{TeamCityHostName}/"
-    },
-    {
-      "Id": "020d6995-8d86-8b7a-6e3d-e863a870bc1d",
-      "Name": "OctopusHostName",
-      "Value": "octopusstack-#{UDP}.#{AzureRegionValue}.cloudapp.azure.com"
-    },
-    {
-      "Id": "1f3cbd01-a40b-91b4-7b70-c11a2000ba07",
-      "Name": "TeamCityHostName",
-      "Value": "teamcitystack-#{UDP}.#{AzureRegionValue}.cloudapp.azure.com"
     },
     {
       "Id": "d0ecce5b-8824-5845-d6f7-eabfee322adb",

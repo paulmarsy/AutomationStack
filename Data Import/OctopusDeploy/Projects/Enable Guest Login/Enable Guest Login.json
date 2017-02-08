@@ -8,7 +8,7 @@
   "VariableSetId": "variableset-Projects-2",
   "DeploymentProcessId": "deploymentprocess-Projects-2",
   "ProjectGroupId": "ProjectGroups-23",
-  "LifecycleId": "Lifecycles-25",
+  "LifecycleId": "Lifecycles-22",
   "AutoCreateRelease": false,
   "IncludedLibraryVariableSetIds": [],
   "UsedPackages": [],
@@ -25,7 +25,8 @@
   },
   "ProjectConnectivityPolicy": {
     "SkipMachineBehavior": "None",
-    "TargetRoles": []
+    "TargetRoles": [],
+    "AllowDeploymentsToNoTargets": false
   },
   "AutoDeployReleaseOverrides": [],
   "LogoAttachmentKey": "Projects-2",

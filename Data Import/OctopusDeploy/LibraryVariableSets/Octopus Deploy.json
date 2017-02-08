@@ -1,7 +1,7 @@
 {
   "$type": "Octopus.Core.Model.Variables.LibraryVariableSet, Octopus.Core",
   "Id": "LibraryVariableSets-5",
-  "Name": "Octopus Stack",
+  "Name": "Octopus Deploy",
   "Description": "",
   "VariableSetId": "variableset-LibraryVariableSets-5",
   "ContentType": "Variables",

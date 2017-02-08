@@ -8,12 +8,12 @@
   "IsDisabled": false,
   "Roles": [
     "ARM Provisioning",
-    "Azure Automation"
+    "Azure Automation",
+    "Azure PowerShell Runner",
+    "Azure SQL Server"
   ],
   "EnvironmentIds": [
     "Environments-2",
-    "Environments-3",
-    "Environments-4",
     "Environments-1"
   ],
   "TenantIds": [],
