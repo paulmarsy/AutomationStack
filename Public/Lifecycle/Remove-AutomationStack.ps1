@@ -11,12 +11,7 @@ function Remove-AutomationStack {
     Write-Host 'Removing Service Principal...'
     Get-AzureRmADApplication -DisplayNameStartWith ('AutomationStack{0}' -f $UDP) | Remove-AzureRmADApplication -Force
 
-    @(
-        (Invoke-SharedScript Resources 'Remove-ResourceGroup' -ResourceGroupName ('TeamCityStack{0}' -f $UDP) -PassThru $true)
-        (Invoke-SharedScript Resources 'Remove-ResourceGroup' -ResourceGroupName ('TeamCityAgents{0}' -f $UDP) -PassThru $true)
-        (Invoke-SharedScript Resources 'Remove-ResourceGroup' -ResourceGroupName ('OctopusStack{0}' -f $UDP) -PassThru $true)
-        (Invoke-SharedScript Resources 'Remove-ResourceGroup' -ResourceGroupName ('AutomationStack{0}' -f $UDP) -PassThru $true)
-    ) | Receive-Job -AutoRemoveJob -Wait
+    Invoke-SharedScript Resources 'Remove-ResourceGroup' -ResourceGroupName ('AutomationStack{0}' -f $UDP)
 
     $configFile = Join-Path $script:DeploymentsPath ('{0}.config.json' -f $UDP)
     if (Test-Path $configFile) {

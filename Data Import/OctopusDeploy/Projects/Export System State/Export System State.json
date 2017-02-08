@@ -10,12 +10,10 @@
   "ProjectGroupId": "ProjectGroups-22",
   "LifecycleId": "Lifecycles-22",
   "AutoCreateRelease": false,
-  "IncludedLibraryVariableSetIds": [
-    "LibraryVariableSets-1"
-  ],
+  "IncludedLibraryVariableSetIds": [],
   "UsedPackages": [],
   "DefaultToSkipIfAlreadyInstalled": false,
-  "TenantedDeploymentMode": "Untenanted",
+  "TenantedDeploymentMode": "TenantedOrUntenanted",
   "VersioningStrategy": {
     "DonorPackageStepId": null,
     "Template": "#{Octopus.Date.Year}.#{Octopus.Date.Month}.#{Octopus.Date.Day}+#{Octopus.Time.Hour}-#{Octopus.Time.Minute}"
@@ -27,7 +25,8 @@
   },
   "ProjectConnectivityPolicy": {
     "SkipMachineBehavior": "None",
-    "TargetRoles": []
+    "TargetRoles": [],
+    "AllowDeploymentsToNoTargets": false
   },
   "AutoDeployReleaseOverrides": [],
   "LogoAttachmentKey": "Projects-4",

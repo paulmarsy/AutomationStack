@@ -2,7 +2,7 @@
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
   "Id": "deploymentprocess-Projects-3",
   "OwnerId": "Projects-3",
-  "Version": 50,
+  "Version": 52,
   "Steps": [
     {
       "Id": "1f7eaedc-d772-4fde-8a11-c298cb6e6880",
@@ -26,7 +26,7 @@
             "Octopus.Action.Package.FeedId": "feeds-builtin",
             "Octopus.Action.Script.ScriptFileName": "Enable-RDPNSGRule.ps1",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Network",
-            "Octopus.Action.Script.ScriptParameters": "-InfraRg #{InfraRg} -NSGName #{OctopusNSGName}"
+            "Octopus.Action.Script.ScriptParameters": "-ResourceGroup #{ResourceGroup} -NSGName #{OctopusNSGName}"
           }
         }
       ],
@@ -56,7 +56,7 @@
             "Octopus.Action.Package.FeedId": "feeds-builtin",
             "Octopus.Action.Script.ScriptFileName": "Enable-RDPNSGRule.ps1",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Network",
-            "Octopus.Action.Script.ScriptParameters": "-InfraRg #{InfraRg} -NSGName #{TeamCityNSGName}"
+            "Octopus.Action.Script.ScriptParameters": "-ResourceGroup #{ResourceGroup} -NSGName #{TeamCityNSGName}"
           }
         }
       ],

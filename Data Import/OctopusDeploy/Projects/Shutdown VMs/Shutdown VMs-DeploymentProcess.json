@@ -23,7 +23,7 @@
           "Properties": {
             "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
             "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "Stop-AzureRmVM -ResourceGroupName $OctopusRg -Name $OctopusVMName -Force"
+            "Octopus.Action.Script.ScriptBody": "Stop-AzureRmVM -ResourceGroupName $ResourceGroup -Name $OctopusVMName -Force"
           }
         }
       ],

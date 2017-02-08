@@ -2,7 +2,7 @@
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
   "Id": "deploymentprocess-Projects-9",
   "OwnerId": "Projects-9",
-  "Version": 17,
+  "Version": 21,
   "Steps": [
     {
       "Id": "e14ac594-ec1f-47fe-a1f8-9da5c59cbee5",
@@ -62,7 +62,7 @@
             "Octopus.Action.Script.ScriptSource": "Package",
             "Octopus.Action.Script.ScriptFileName": "Import-OctopusConfig.ps1",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Automation",
-            "Octopus.Action.Script.ScriptParameters": "-Path '#{Path}' -InfraRg '#{InfraRg}' -AutomationAccountName '#{AutomationAccountName}' -VMName '#{VMName}' -ConnectionString '#{ConnectionString}' -HostHeader '#{HostHeader}' -OctopusVersionToInstall '#{OctopusVersionToInstall}'",
+            "Octopus.Action.Script.ScriptParameters": "-Path '#{Path}' -ResourceGroup '#{ResourceGroup}' -AutomationAccountName '#{AutomationAccountName}' -VMName '#{VMName}' -ConnectionString '#{ConnectionString}' -HostHeader '#{HostHeader}' -OctopusVersionToInstall '#{OctopusVersionToInstall}'",
             "Octopus.Action.Template.Id": "ActionTemplates-6",
             "Octopus.Action.Template.Version": "0",
             "Path": "dsc",
@@ -78,26 +78,36 @@
       }
     },
     {
-      "Id": "bc73d848-51a3-4536-b9b5-5dfb19d6a87b",
-      "Name": "Run DSC on OctopusVM",
+      "Id": "3092bb37-4887-4573-8382-225fc2b90962",
+      "Name": "Wait for DSC Node Compliance",
       "Condition": "Success",
       "StartTrigger": "StartAfterPrevious",
       "RequiresPackagesToBeAcquired": false,
       "Actions": [
         {
-          "Id": "23a7a06e-20ef-4204-81f0-d864545e4852",
-          "Name": "Run DSC on OctopusVM",
-          "ActionType": "Octopus.Script",
+          "Id": "d0b34b23-d82f-4324-a8bf-b9c1dc88eb99",
+          "Name": "Wait for DSC Node Compliance",
+          "ActionType": "Octopus.AzurePowerShell",
           "IsDisabled": false,
           "Environments": [],
           "ExcludedEnvironments": [],
           "Channels": [],
           "TenantTags": [],
           "Properties": {
-            "Octopus.Action.RunOnServer": "true",
-            "Octopus.Action.Script.Syntax": "PowerShell",
-            "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "Update-DscConfiguration -Verbose -Wait\nStart-DscConfiguration -UseExisting -Wait -Verbose"
+            "Octopus.Action.Package.FeedId": "feeds-builtin",
+            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
+            "Octopus.Action.Script.ScriptSource": "Package",
+            "Octopus.Action.Script.ScriptFileName": "Invoke-CustomScript.ps1",
+            "Octopus.Action.Package.PackageId": "AutomationStackScripts.Compute",
+            "Octopus.Action.Script.ScriptParameters": "-Name '#{Name}' -ResourceGroupName '#{ResourceGroupName}' -VMName '#{VMName}' -Location '#{Location}' -StorageAccountName '#{StorageAccountName}' -StorageAccountKey '#{StorageAccountKey}'",
+            "Octopus.Action.Template.Id": "ActionTemplates-9",
+            "Octopus.Action.Template.Version": "4",
+            "Location": "#{AzureRegion}",
+            "StorageAccountName": "#{StorageAccountName}",
+            "StorageAccountKey": "#{StorageAccountKey}",
+            "ResourceGroupName": "#{ResourceGroup}",
+            "VMName": "#{OctopusVMName}",
+            "Name": "AutomationNodeCompliance"
           }
         }
       ],
@@ -118,12 +128,12 @@
           "ActionType": "Octopus.TentaclePackage",
           "IsDisabled": false,
           "Environments": [],
-          "ExcludedEnvironments": [],
+          "ExcludedEnvironments": [
+            "Environments-2"
+          ],
           "Channels": [],
           "TenantTags": [],
           "Properties": {
-            "Octopus.Action.Package.AutomaticallyRunConfigurationTransformationFiles": "False",
-            "Octopus.Action.Package.AutomaticallyUpdateAppSettingsAndConnectionStrings": "False",
             "Octopus.Action.Package.DownloadOnTentacle": "True",
             "Octopus.Action.Package.FeedId": "feeds-chocolatey",
             "Octopus.Action.Package.PackageId": "OctopusDeploy"
@@ -135,5 +145,7 @@
       }
     }
   ],
-  "RelatedDocumentIds": []
+  "RelatedDocumentIds": [
+    "Environments-2"
+  ]
 }

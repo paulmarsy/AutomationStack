@@ -2,19 +2,16 @@ function Start-ARMDeployment {
     param(
         $ResourceGroupName,
         $Template,
-        $TemplateParameters,
-        [ValidateSet('Complete', 'Incremental')]$Mode
+        $TemplateParameters
     )
 
     Write-Host 
     Write-Host -ForegroundColor Cyan "`tStarting Resource Group Deployment of '$Template' to $ResourceGroupName"
 
-    Invoke-SharedScript Resources 'New-ResourceGroup' -UDP $CurrentContext.Get('UDP') -ResourceGroupName $ResourceGroupName -Location ($CurrentContext.Get('AzureRegion'))
-
     $args = @{
         ResourceGroupName = $ResourceGroupName
         TemplateFile = (Join-Path -Resolve $ResourcesPath ('ARM Templates\{0}.json' -f $Template))
-        Mode = $Mode
+        Mode = 'Incremental'
     }
 
     $TemplateParametersFilePath = Join-Path $ResourcesPath ('ARM Templates\{0}.parameters.json' -f $Template)

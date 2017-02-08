@@ -1,9 +1,9 @@
 {
   "$type": "Octopus.Core.Model.Variables.LibraryVariableSet, Octopus.Core",
-  "Id": "LibraryVariableSets-3",
-  "Name": "Microsoft Azure",
+  "Id": "LibraryVariableSets-5",
+  "Name": "TeamCity",
   "Description": "",
-  "VariableSetId": "variableset-LibraryVariableSets-3",
+  "VariableSetId": "variableset-LibraryVariableSets-5",
   "ContentType": "Variables",
   "Templates": []
 }

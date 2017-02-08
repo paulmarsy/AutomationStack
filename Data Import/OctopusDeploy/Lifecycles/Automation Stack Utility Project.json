@@ -8,9 +8,7 @@
       "Id": "f4c264e5-d950-48ba-8249-ecca2c97e068",
       "Name": "Auto Deploy",
       "AutomaticDeploymentTargets": [
-        "Environments-2",
-        "Environments-4",
-        "Environments-3"
+        "Environments-2"
       ],
       "OptionalDeploymentTargets": [],
       "MinimumEnvironmentsBeforePromotion": 0,

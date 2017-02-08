@@ -3,7 +3,7 @@
   "Id": "ActionTemplates-4",
   "Name": "ARM Template - Docker Linux",
   "Description": null,
-  "Version": 2,
+  "Version": 3,
   "ActionType": "Octopus.AzureResourceGroup",
   "CommunityActionTemplateId": null,
   "Properties": {
@@ -11,7 +11,7 @@
     "Octopus.Action.Azure.ResourceGroupName": "#{ResourceGroupName}",
     "Octopus.Action.Azure.TemplateSource": "Package",
     "Octopus.Action.Azure.ResourceGroupTemplateParameters": "OctopusDeploy\\dockerlinux.parameters.json",
-    "Octopus.Action.Azure.ResourceGroupDeploymentMode": "Complete",
+    "Octopus.Action.Azure.ResourceGroupDeploymentMode": "Incremental",
     "Octopus.Action.Azure.ResourceGroupTemplate": "dockerlinux.json",
     "Octopus.Action.Package.FeedId": "feeds-builtin",
     "Octopus.Action.Package.PackageId": "ARMTemplates"

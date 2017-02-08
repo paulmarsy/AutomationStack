@@ -8,13 +8,12 @@
   "VariableSetId": "variableset-Projects-6",
   "DeploymentProcessId": "deploymentprocess-Projects-6",
   "ProjectGroupId": "ProjectGroups-24",
-  "LifecycleId": "Lifecycles-26",
+  "LifecycleId": "Lifecycles-23",
   "AutoCreateRelease": false,
   "IncludedLibraryVariableSetIds": [
     "LibraryVariableSets-2",
     "LibraryVariableSets-1",
-    "LibraryVariableSets-3",
-    "LibraryVariableSets-6"
+    "LibraryVariableSets-5"
   ],
   "UsedPackages": [
     "ARMTemplates",
@@ -38,7 +37,8 @@
   },
   "ProjectConnectivityPolicy": {
     "SkipMachineBehavior": "None",
-    "TargetRoles": []
+    "TargetRoles": [],
+    "AllowDeploymentsToNoTargets": false
   },
   "AutoDeployReleaseOverrides": [],
   "LogoAttachmentKey": "Projects-6",

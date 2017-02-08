@@ -7,7 +7,7 @@
     }
   },
   "variables": {
-    "vmStorageName": "[concat('vmvhds', parameters('udp'), uniquestring(resourceGroup().id))]"
+    "vmStorageName": "[concat('stackvhds', parameters('udp'))]"
   },
   "resources": [{
     "apiVersion": "2016-01-01",

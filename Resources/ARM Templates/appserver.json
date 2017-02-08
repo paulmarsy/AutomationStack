@@ -2,9 +2,6 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "infraResourceGroup": {
-      "type": "string"
-    },
     "udp": {
       "type": "string"
     },
@@ -42,11 +39,11 @@
   },
   "variables": {
     "vmName": "[concat(parameters('productName'),'VM')]",
-    "vmStorageName": "[concat('vmvhds', parameters('udp'), uniquestring(resourceGroup().id))]",
+    "vmStorageName": "[concat('stackvhds', parameters('udp'))]",
     "nsgName": "[concat(parameters('productName'),'NSG')]",
     "nicName": "[concat(parameters('productName'),'NIC')]",
     "publicIPAddressName": "[concat(parameters('productName'),'PublicIP')]",
-    "virtualNetworkId": "[resourceId(parameters('infraResourceGroup'), 'Microsoft.Network/virtualNetworks', 'VirtualNetwork')]",
+    "virtualNetworkId": "[resourceId('Microsoft.Network/virtualNetworks', 'VirtualNetwork')]",
     "subnetId": "[concat(variables('virtualNetworkId'),'/subnets/', 'Default')]",
     "keyVaultName": "[concat('keyvault-', parameters('udp'))]"
   },
@@ -75,7 +72,7 @@
       }
     }
   }, {
-    "apiVersion": "2015-06-15",
+    "apiVersion": "2016-09-01",
     "type": "Microsoft.Network/networkInterfaces",
     "name": "[variables('nicName')]",
     "tags": {
@@ -100,7 +97,7 @@
         }
       }],
       "networkSecurityGroup": {
-        "id": "[resourceId(parameters('infraResourceGroup'), 'Microsoft.Network/networkSecurityGroups/', variables('nsgName'))]"
+        "id": "[resourceId('Microsoft.Network/networkSecurityGroups/', variables('nsgName'))]"
       }
     }
   }, {

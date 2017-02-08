@@ -2,7 +2,7 @@
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
   "Id": "deploymentprocess-Projects-7",
   "OwnerId": "Projects-7",
-  "Version": 85,
+  "Version": 99,
   "Steps": [
     {
       "Id": "960b4de1-2296-4d97-b547-def57ea373fa",
@@ -62,7 +62,7 @@
             "Octopus.Action.Script.ScriptSource": "Package",
             "Octopus.Action.Script.ScriptFileName": "Import-TeamCityConfig.ps1",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Automation",
-            "Octopus.Action.Script.ScriptParameters": "-Path '#{Path}' -InfraRg '#{InfraRg}' -AutomationAccountName '#{AutomationAccountName}' -OctopusServerUrl '#{OctopusHostHeader}' -OctopusApiKey '#{APIKey}' -HostHeader '#{TeamCityHostHeader}' -TeamCityVersion '#{TeamCityVersion}'",
+            "Octopus.Action.Script.ScriptParameters": "-Path '#{Path}' -ResourceGroup '#{ResourceGroup}' -AutomationAccountName '#{AutomationAccountName}' -OctopusServerUrl '#{OctopusHostHeader}' -OctopusApiKey '#{APIKey}' -HostHeader '#{TeamCityHostHeader}' -TeamCityVersion '#{TeamCityVersion}'",
             "Path": "#{DSCConfigFile}",
             "TeamCityVersion": "#{TeamCityVersion}",
             "Octopus.Action.Template.Id": "ActionTemplates-7",
@@ -75,15 +75,15 @@
       }
     },
     {
-      "Id": "6ea370e7-796b-4d7d-b5ae-4cdf1f1025e1",
-      "Name": "Create Resource Group",
+      "Id": "e84ac9f0-e69f-41f5-ae76-d70654235a2c",
+      "Name": "New Resource Group",
       "Condition": "Success",
       "StartTrigger": "StartWithPrevious",
       "RequiresPackagesToBeAcquired": false,
       "Actions": [
         {
-          "Id": "2cb1274b-c27e-4372-a0e1-536de71fd578",
-          "Name": "Create Resource Group",
+          "Id": "bf13e5eb-296b-43f2-9c91-6f5f327f58fa",
+          "Name": "New Resource Group",
           "ActionType": "Octopus.AzurePowerShell",
           "IsDisabled": false,
           "Environments": [],
@@ -97,10 +97,10 @@
             "Octopus.Action.Script.ScriptFileName": "New-ResourceGroup.ps1",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Resources",
             "Octopus.Action.Script.ScriptParameters": "-UDP '#{UDP}' -ResourceGroupName '#{ResourceGroupName}' -Location '#{Location}'",
-            "ResourceGroupName": "#{ResourceGroup}",
-            "Location": "#{AzureRegion}",
             "Octopus.Action.Template.Id": "ActionTemplates-11",
-            "Octopus.Action.Template.Version": "7"
+            "Octopus.Action.Template.Version": "7",
+            "ResourceGroupName": "#{TCAgentResourceGroup}",
+            "Location": "#{AzureRegion}"
           }
         }
       ],
@@ -129,15 +129,15 @@
             "Octopus.Action.Azure.ResourceGroupName": "#{ResourceGroupName}",
             "Octopus.Action.Azure.TemplateSource": "Package",
             "Octopus.Action.Azure.ResourceGroupTemplateParameters": "OctopusDeploy\\agentserver.parameters.json",
-            "Octopus.Action.Azure.ResourceGroupDeploymentMode": "Complete",
+            "Octopus.Action.Azure.ResourceGroupDeploymentMode": "Incremental",
             "Octopus.Action.Azure.ResourceGroupTemplate": "agentserver.json",
             "Octopus.Action.Package.FeedId": "feeds-builtin",
             "Octopus.Action.Package.PackageId": "ARMTemplates",
-            "ProductName": "#{ProductName}",
-            "ResourceGroupName": "#{ResourceGroup}",
+            "ProductName": "TCAgent",
+            "NodeConfigurationName": "#{DSCConfigurationName}.#{DSCNodeName}",
+            "ResourceGroupName": "#{TCAgentResourceGroup}",
             "Octopus.Action.Template.Id": "ActionTemplates-1",
-            "Octopus.Action.Template.Version": "2",
-            "NodeConfigurationName": "#{DSCConfigurationName}.#{DSCNodeName}"
+            "Octopus.Action.Template.Version": "4"
           }
         }
       ],
@@ -169,7 +169,7 @@
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Compute",
             "Octopus.Action.Script.ScriptParameters": "-Name '#{Name}' -ResourceGroupName '#{ResourceGroupName}' -VMName '#{VMName}' -Location '#{Location}' -StorageAccountName '#{StorageAccountName}' -StorageAccountKey '#{StorageAccountKey}'",
             "ResourceGroupName": "#{ResourceGroup}",
-            "VMName": "#{VMName}",
+            "VMName": "TCAgentVM",
             "Name": "AutomationNodeCompliance",
             "Location": "#{AzureRegion}",
             "StorageAccountName": "#{StorageAccountName}",
@@ -206,8 +206,8 @@
             "Octopus.Action.Script.ScriptFileName": "Invoke-CustomScript.ps1",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Compute",
             "Octopus.Action.Script.ScriptParameters": "-Name '#{Name}' -ResourceGroupName '#{ResourceGroupName}' -VMName '#{VMName}' -Location '#{Location}' -StorageAccountName '#{StorageAccountName}' -StorageAccountKey '#{StorageAccountKey}'",
-            "ResourceGroupName": "#{ResourceGroup}",
-            "VMName": "#{VMName}",
+            "ResourceGroupName": "#{TCAgentResourceGroup}",
+            "VMName": "TCAgentVM",
             "Name": "Sysprep",
             "Location": "#{AzureRegion}",
             "StorageAccountName": "#{StorageAccountName}",
@@ -218,7 +218,7 @@
         }
       ],
       "Properties": {
-        "Octopus.Action.TargetRoles": "ARM Provisioning"
+        "Octopus.Action.TargetRoles": "Azure PowerShell Runner"
       }
     },
     {
@@ -243,12 +243,12 @@
             "Octopus.Action.Script.ScriptSource": "Package",
             "Octopus.Action.Script.ScriptFileName": "Convert-VMtoImage.ps1",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Compute",
-            "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName '#{ResourceGroup}'  -VMName '#{VMName}'"
+            "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName '#{TCAgentResourceGroup}'  -VMName 'TCAgentVM'"
           }
         }
       ],
       "Properties": {
-        "Octopus.Action.TargetRoles": "ARM Provisioning"
+        "Octopus.Action.TargetRoles": "Azure PowerShell Runner"
       }
     },
     {
@@ -273,12 +273,12 @@
             "Octopus.Action.Script.ScriptSource": "Package",
             "Octopus.Action.Script.ScriptFileName": "Copy-VHDToStorageAccount.ps1",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Storage",
-            "Octopus.Action.Script.ScriptParameters": "-VHDUri '#{Octopus.Action[Convert VM to Image].Output.ImageUri}' -SrcResourceGroupName '#{InfraRg}' -DstResourceGroupName '#{InfraRg}' -DstStorageAccount '#{StorageAccountName}'  -DstBlob '#{VMName}.image.vhd'"
+            "Octopus.Action.Script.ScriptParameters": "-VHDUri '#{Octopus.Action[Convert VM to Image].Output.ImageUri}' -SrcResourceGroupName '#{ResourceGroup}' -DstResourceGroupName '#{ResourceGroup}' -DstStorageAccount '#{StorageAccountName}'  -DstBlob 'TCAgent.image.vhd'"
           }
         }
       ],
       "Properties": {
-        "Octopus.Action.TargetRoles": "ARM Provisioning"
+        "Octopus.Action.TargetRoles": "Azure PowerShell Runner"
       }
     },
     {
@@ -306,7 +306,7 @@
             "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName '#{ResourceGroupName}' -PassThru $False",
             "Octopus.Action.Template.Id": "ActionTemplates-12",
             "Octopus.Action.Template.Version": "3",
-            "ResourceGroupName": "#{ResourceGroup}"
+            "ResourceGroupName": "#{TCAgentResourceGroup}"
           }
         }
       ],

@@ -2,42 +2,8 @@
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
   "Id": "deploymentprocess-Projects-5",
   "OwnerId": "Projects-5",
-  "Version": 45,
+  "Version": 47,
   "Steps": [
-    {
-      "Id": "825c74ca-8910-4f23-ac7a-be7564d2a6c5",
-      "Name": "Create TeamCityStack Resource Group",
-      "Condition": "Success",
-      "StartTrigger": "StartAfterPrevious",
-      "RequiresPackagesToBeAcquired": false,
-      "Actions": [
-        {
-          "Id": "5c4cf2c2-d9cb-497d-8b64-12b19783074a",
-          "Name": "Create TeamCityStack Resource Group",
-          "ActionType": "Octopus.AzurePowerShell",
-          "IsDisabled": false,
-          "Environments": [],
-          "ExcludedEnvironments": [],
-          "Channels": [],
-          "TenantTags": [],
-          "Properties": {
-            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
-            "Octopus.Action.Script.ScriptSource": "Package",
-            "Octopus.Action.Package.FeedId": "feeds-builtin",
-            "Octopus.Action.Script.ScriptFileName": "New-ResourceGroup.ps1",
-            "Octopus.Action.Package.PackageId": "AutomationStackScripts.Resources",
-            "Octopus.Action.Script.ScriptParameters": "-UDP '#{UDP}' -ResourceGroupName '#{ResourceGroupName}' -Location '#{Location}'",
-            "ResourceGroupName": "#{ResourceGroup}",
-            "Location": "#{AzureRegion}",
-            "Octopus.Action.Template.Id": "ActionTemplates-11",
-            "Octopus.Action.Template.Version": "7"
-          }
-        }
-      ],
-      "Properties": {
-        "Octopus.Action.TargetRoles": "ARM Provisioning"
-      }
-    },
     {
       "Id": "85534b6f-ac63-4b6f-8937-1cbc0f2699d1",
       "Name": "Provision Ubuntu VM with Docker",
@@ -59,15 +25,15 @@
             "Octopus.Action.Azure.ResourceGroupName": "#{ResourceGroupName}",
             "Octopus.Action.Azure.TemplateSource": "Package",
             "Octopus.Action.Azure.ResourceGroupTemplateParameters": "OctopusDeploy\\dockerlinux.parameters.json",
-            "Octopus.Action.Azure.ResourceGroupDeploymentMode": "Complete",
+            "Octopus.Action.Azure.ResourceGroupDeploymentMode": "Incremental",
             "Octopus.Action.Azure.ResourceGroupTemplate": "dockerlinux.json",
             "Octopus.Action.Package.FeedId": "feeds-builtin",
             "Octopus.Action.Package.PackageId": "ARMTemplates",
-            "Octopus.Action.Template.Id": "ActionTemplates-4",
-            "Octopus.Action.Template.Version": "2",
             "ResourceGroupName": "#{ResourceGroup}",
             "ProductName": "TeamCity",
-            "ScriptFileName": "TeamCityPrepare.sh"
+            "ScriptFileName": "TeamCityPrepare.sh",
+            "Octopus.Action.Template.Id": "ActionTemplates-4",
+            "Octopus.Action.Template.Version": "3"
           }
         }
       ],

@@ -1,14 +1,9 @@
 {
   "$type": "Octopus.Core.Model.Variables.VariableSet, Octopus.Core",
-  "Id": "variableset-LibraryVariableSets-6",
-  "OwnerId": "LibraryVariableSets-6",
-  "Version": 7,
+  "Id": "variableset-LibraryVariableSets-5",
+  "OwnerId": "LibraryVariableSets-5",
+  "Version": 10,
   "Variables": [
-    {
-      "Id": "9735e8b9-c0ab-e4d4-dff1-9d2ba2287d3d",
-      "Name": "TeamCityRg",
-      "Value": "TeamCityStack#{UDP}"
-    },
     {
       "Id": "b89b8a8e-4cf3-562e-3ec6-df75b3ce93ed",
       "Name": "TeamCityVMName",
@@ -23,6 +18,16 @@
       "Id": "b158579e-b25f-7f65-3222-0e6a6f9d37c2",
       "Name": "TeamCityVersion",
       "Value": "10.0.4"
+    },
+    {
+      "Id": "095c8339-7f28-0852-9f5b-ec87b3c86bb5",
+      "Name": "TeamCityHostHeader",
+      "Value": "http://#{TeamCityHostName}/"
+    },
+    {
+      "Id": "d6db7e7d-8895-2c40-54f3-50b84f019094",
+      "Name": "TeamCityHostName",
+      "Value": "teamcitystack-#{UDP}.#{AzureRegionValue}.cloudapp.azure.com"
     }
   ],
   "RelatedDocumentIds": []

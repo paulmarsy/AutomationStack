@@ -24,7 +24,7 @@
             "Octopus.Action.RunOnServer": "true",
             "Octopus.Action.Script.Syntax": "PowerShell",
             "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "New-Item -ItemType Directory -Path $OctopusExportPath\n \n& \"C:\\Program Files\\Octopus Deploy\\Octopus\\Octopus.Migrator.exe\" export --console --directory=$OctopusExportPath --password=$ExportPassword\n"
+            "Octopus.Action.Script.ScriptBody": "New-Item -ItemType Directory -Path $OctopusExportPath\r\n \r\n& \"C:\\Program Files\\Octopus Deploy\\Octopus\\Octopus.Migrator.exe\" export --console --directory=$OctopusExportPath --password=$ExportPassword\r\n"
           }
         },
         {
@@ -40,7 +40,7 @@
             "Octopus.Action.RunOnServer": "true",
             "Octopus.Action.Script.Syntax": "PowerShell",
             "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "Get-ChildItem -Path $OctopusExportPath -Directory | ? Name -in @('Certificates','CommunityActionTemplates','Deployments','Events','ExtensionConfigurations','Releases','ServerTasks') |\n    Remove-Item -Force -Recurse"
+            "Octopus.Action.Script.ScriptBody": "Get-ChildItem -Path $OctopusExportPath -Directory | ? Name -in @('Certificates','CommunityActionTemplates','Deployments','Events','ExtensionConfigurations','Releases','ServerTasks') |\r\n    Remove-Item -Force -Recurse"
           }
         },
         {
@@ -100,7 +100,7 @@
             "Octopus.Action.RunOnServer": "false",
             "Octopus.Action.Script.Syntax": "PowerShell",
             "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "$backupfile = Join-Path ([System.IO.Path]::GetDirectoryName($TeamCityArchivePath)) ([System.IO.Path]::GetFileNameWithoutExtension($TeamCityArchivePath))\nC:\\TeamCity\\bin\\maintainDB.cmd backup --include-database --include-config  --include-supplementary-data --backup-file $backupfile"
+            "Octopus.Action.Script.ScriptBody": "$backupfile = Join-Path ([System.IO.Path]::GetDirectoryName($TeamCityArchivePath)) ([System.IO.Path]::GetFileNameWithoutExtension($TeamCityArchivePath))\r\nC:\\TeamCity\\bin\\maintainDB.cmd backup --include-database --include-config  --include-supplementary-data --backup-file $backupfile"
           }
         },
         {
