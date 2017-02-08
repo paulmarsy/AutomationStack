@@ -13,7 +13,7 @@
   "IncludedLibraryVariableSetIds": [
     "LibraryVariableSets-2",
     "LibraryVariableSets-1",
-    "LibraryVariableSets-6"
+    "LibraryVariableSets-5"
   ],
   "UsedPackages": [
     "ARMTemplates",

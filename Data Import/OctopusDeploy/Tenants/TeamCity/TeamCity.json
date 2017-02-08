@@ -1,0 +1,20 @@
+{
+  "$type": "Octopus.Core.Model.Tenants.Tenant, Octopus.Core",
+  "Id": "Tenants-2",
+  "Name": "TeamCity",
+  "ProjectIds": [
+    "Projects-3",
+    "Projects-4"
+  ],
+  "ProjectEnvironments": {
+    "Projects-3": [
+      "Environments-2"
+    ],
+    "Projects-4": [
+      "Environments-2"
+    ]
+  },
+  "TenantTags": [],
+  "LogoAttachmentKey": "Tenants-2",
+  "LogoAttachmentMimeType": "image/png"
+}

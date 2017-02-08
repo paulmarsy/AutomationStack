@@ -12,8 +12,8 @@
   "AutoCreateRelease": false,
   "IncludedLibraryVariableSetIds": [
     "LibraryVariableSets-1",
-    "LibraryVariableSets-5",
-    "LibraryVariableSets-6"
+    "LibraryVariableSets-4",
+    "LibraryVariableSets-5"
   ],
   "UsedPackages": [],
   "DefaultToSkipIfAlreadyInstalled": false,

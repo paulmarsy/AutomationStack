@@ -46,7 +46,7 @@
       "Name": "ServicePrincipalClientId",
       "Value": "#{ServicePrincipalClientId}"
     },
-      {
+    {
       "Id": "02bbe66c-d21d-46a3-ba96-3df5211435a1",
       "Name": "ServicePrincipalClientSecret",
       "IsSensitive": true,

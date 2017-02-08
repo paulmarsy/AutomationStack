@@ -1,9 +1,9 @@
 {
   "$type": "Octopus.Core.Model.Variables.LibraryVariableSet, Octopus.Core",
-  "Id": "LibraryVariableSets-6",
+  "Id": "LibraryVariableSets-5",
   "Name": "TeamCity",
   "Description": "",
-  "VariableSetId": "variableset-LibraryVariableSets-6",
+  "VariableSetId": "variableset-LibraryVariableSets-5",
   "ContentType": "Variables",
   "Templates": []
 }

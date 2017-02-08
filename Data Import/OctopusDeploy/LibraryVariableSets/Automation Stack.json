@@ -5,5 +5,16 @@
   "Description": "",
   "VariableSetId": "variableset-LibraryVariableSets-2",
   "ContentType": "Variables",
-  "Templates": []
+  "Templates": [
+    {
+      "Id": "41e9f30b-1705-4b91-90c5-b0ba3d83f8f8",
+      "Name": "ResourceGroupName",
+      "Label": "Resource Group Name",
+      "HelpText": null,
+      "DefaultValue": null,
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    }
+  ]
 }
