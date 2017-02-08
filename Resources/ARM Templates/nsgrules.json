@@ -53,7 +53,7 @@
         "location": "[resourceGroup().location]",
         "properties": {
             "securityRules": [{
-                "name": "HTTP",
+               "name": "HTTP",
                 "properties": {
                     "protocol": "Tcp",
                     "sourcePortRange": "*",
