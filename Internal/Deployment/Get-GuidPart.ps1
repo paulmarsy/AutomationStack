@@ -1,7 +1,7 @@
 function Get-GuidPart {
     param(
         [Parameter(Position=1,Mandatory)][ValidateSet('4','8','12')]$Length,
-        [switdh]$ToUpper
+        [switch]$ToUpper
     )
     $guid = [guid]::NewGuid().guid
     # X & Y - Not random
