@@ -15,7 +15,7 @@ apt-get -y install jq
 serverUrl="#{OctopusHostHeader}"
 apiKey="#{ApiKey}"
 
-environment="TeamCity Stack"
+environment="Automation Stack"
 machineName="TeamCity (Ubuntu Docker)"
 roles="TeamCity Server (Linux)"
 

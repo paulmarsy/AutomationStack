@@ -22,6 +22,7 @@
     },
     "variables": {
         "resourcesStorageName": "[concat('stackresources', parameters('udp'))]",
+        "vmStorageName": "[concat('stackvhds', parameters('udp'))]",
         "sqlServerName": "[concat('azuresql-', parameters('udp'))]",
         "automationName": "[concat('automation-', parameters('udp'))]",
         "keyVaultName": "[concat('keyvault-', parameters('udp'))]"
@@ -73,6 +74,30 @@
             }
         }
     }, {
+        "apiVersion": "2016-01-01",
+        "type": "Microsoft.Storage/storageAccounts",
+        "name": "[variables('vmStorageName')]",
+        "tags": {
+            "application": "AutomationStack",
+            "udp": "[parameters('udp')]"
+        },
+        "location": "[resourceGroup().location]",
+        "sku": {
+            "name": "Premium_LRS",
+            "tier": "Premium"
+        },
+        "kind": "Storage",
+        "properties": {
+            "encryption": {
+                "keySource": "Microsoft.Storage",
+                "services": {
+                    "blob": {
+                        "enabled": true
+                    }
+                }
+            }
+        }
+    }, {
         "type": "Microsoft.KeyVault/vaults/secrets",
         "name": "[concat(variables('keyVaultName'), '/StorageAccountKey')]",
         "tags": {
@@ -102,20 +127,7 @@
             "administratorLogin": "[parameters('sqlAdminUsername')]",
             "administratorLoginPassword": "[parameters('sqlAdminPassword')]",
             "version": "12.0"
-        },
-        "resources": [{
-            "apiVersion": "2014-04-01-preview",
-            "type": "firewallrules",
-            "name": "AllowAllWindowsAzureIps",
-            "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "[concat('Microsoft.Sql/servers/', variables('sqlServerName'))]"
-            ],
-            "properties": {
-                "endIpAddress": "0.0.0.0",
-                "startIpAddress": "0.0.0.0"
-            }
-        }]
+        }
     }, {
         "apiVersion": "2015-10-31",
         "type": "Microsoft.Automation/automationAccounts",

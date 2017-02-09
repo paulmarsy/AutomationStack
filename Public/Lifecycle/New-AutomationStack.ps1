@@ -65,8 +65,6 @@ function New-AutomationStack {
                         $Heading = 'Provisioning Octopus Deploy Infrastructure'
                         {
                             Register-OctopusAutomation
-                            Write-Host 'Creating Octopus Deploy SQL Database...'
-                            Invoke-SharedScript AzureSQL 'New-AzureSQLDatabase' -ResourceGroupName $CurrentContext.Get('ResourceGroup') -ServerName $CurrentContext.Get('SqlServerName') -DatabaseName 'OctopusDeploy'
                         }
                     }
                     5 {

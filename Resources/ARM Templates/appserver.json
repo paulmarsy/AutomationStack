@@ -10,7 +10,7 @@
     },
     "vmSize": {
       "type": "string",
-      "defaultValue": "Standard_DS3_v2"
+      "defaultValue": "Standard_F2S"
     },
     "vmAdminUsername": {
       "type": "string"
@@ -38,6 +38,8 @@
     }
   },
   "variables": {
+    "sqlServerName": "[concat('azuresql-', parameters('udp'))]",
+    "databaseName": "[parameters('productName')]",
     "vmName": "[concat(parameters('productName'),'VM')]",
     "vmStorageName": "[concat('stackvhds', parameters('udp'))]",
     "nsgName": "[concat(parameters('productName'),'NSG')]",
@@ -48,225 +50,226 @@
     "keyVaultName": "[concat('keyvault-', parameters('udp'))]"
   },
   "resources": [{
-    "apiVersion": "2016-01-01",
-    "type": "Microsoft.Storage/storageAccounts",
-    "name": "[variables('vmStorageName')]",
-    "tags": {
-      "application": "AutomationStack",
-      "udp": "[parameters('udp')]"
-    },
-    "location": "[resourceGroup().location]",
-    "sku": {
-      "name": "Premium_LRS",
-      "tier": "Premium"
-    },
-    "kind": "Storage",
-    "properties": {
-      "encryption": {
-        "keySource": "Microsoft.Storage",
-        "services": {
-          "blob": {
-            "enabled": true
-          }
-        }
-      }
-    }
-  }, {
-    "apiVersion": "2016-09-01",
-    "type": "Microsoft.Network/networkInterfaces",
-    "name": "[variables('nicName')]",
-    "tags": {
-      "application": "AutomationStack",
-      "udp": "[parameters('udp')]"
-    },
-    "location": "[resourceGroup().location]",
-    "dependsOn": [
-      "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]"
-    ],
-    "properties": {
-      "ipConfigurations": [{
-        "name": "[concat(parameters('productName'),'-IPConfig')]",
-        "properties": {
-          "privateIPAllocationMethod": "Dynamic",
-          "publicIPAddress": {
-            "id": "[resourceId('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]"
-          },
-          "subnet": {
-            "id": "[variables('subnetId')]"
-          }
-        }
-      }],
-      "networkSecurityGroup": {
-        "id": "[resourceId('Microsoft.Network/networkSecurityGroups/', variables('nsgName'))]"
-      }
-    }
-  }, {
-    "apiVersion": "2015-05-01-preview",
-    "type": "Microsoft.Network/publicIPAddresses",
-    "name": "[variables('publicIPAddressName')]",
-    "tags": {
-      "application": "AutomationStack",
-      "udp": "[parameters('udp')]"
-    },
-    "location": "[resourceGroup().location]",
-    "properties": {
-      "publicIPAllocationMethod": "Static",
-      "idleTimeoutInMinutes": 30,
-      "dnsSettings": {
-        "domainNameLabel": "[toLower(concat(parameters('productName'),'stack-',parameters('udp')))]"
-      }
-    }
-  }, {
-    "apiVersion": "2016-03-30",
-    "type": "Microsoft.Compute/virtualMachines",
-    "name": "[variables('vmName')]",
-    "tags": {
-      "application": "AutomationStack",
-      "udp": "[parameters('udp')]"
-    },
-    "location": "[resourceGroup().location]",
-    "dependsOn": [
-      "[concat('Microsoft.Storage/storageAccounts/', variables('vmStorageName'))]",
-      "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
-    ],
-    "properties": {
-      "hardwareProfile": {
-        "vmSize": "[parameters('vmSize')]"
-      },
-      "osProfile": {
-        "computerName": "[variables('vmName')]",
-        "adminUsername": "[parameters('vmAdminUsername')]",
-        "adminPassword": "[parameters('vmAdminPassword')]",
-        "windowsConfiguration": {
-          "provisionVMAgent": true,
-          "enableAutomaticUpdates": true
-        }
-      },
-      "storageProfile": {
-        "imageReference": {
-          "publisher": "MicrosoftWindowsServer",
-          "offer": "WindowsServer",
-          "sku": "2016-Datacenter-with-Containers",
-          "version": "latest"
-        },
-        "osDisk": {
-          "name": "[concat(variables('vmName'),'-OS')]",
-          "vhd": {
-            "uri": "[concat('http://',variables('vmStorageName'),'.blob.core.windows.net/vhds/',variables('vmName'),'-OS.vhd')]"
-          },
-          "caching": "ReadWrite",
-          "DiskSizeGB": "129",
-          "createOption": "FromImage"
-        }
-      },
-      "networkProfile": {
-        "networkInterfaces": [{
-          "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]"
-        }]
-      }
-    },
-    "resources": [{
-      "type": "extensions",
-      "name": "AzureDiskEncryption",
+      "name": "[concat(variables('sqlServerName'), '/', variables('databaseName'))]",
+      "type": "Microsoft.Sql/servers/databases",
+      "location": "[resourceGroup().location]",
       "tags": {
         "application": "AutomationStack",
         "udp": "[parameters('udp')]"
       },
-      "apiVersion": "2016-03-30",
-      "location": "[resourceGroup().location]",
+      "apiVersion": "2015-05-01-preview",
       "properties": {
-        "publisher": "Microsoft.Azure.Security",
-        "type": "AzureDiskEncryption",
-        "typeHandlerVersion": "1.1",
-        "autoUpgradeMinorVersion": true,
-        "settings": {
-          "AADClientID": "[parameters('clientId')]",
-          "KeyVaultURL": "[concat('https://', variables('keyVaultName'), '.vault.azure.net/')]",
-          "KeyEncryptionAlgorithm": "RSA-OAEP",
-          "VolumeType": "All",
-          "EncryptionOperation": "EnableEncryption"
-        },
-        "protectedSettings": {
-          "AADClientSecret": "[parameters('clientSecret')]"
-        }
-      },
+        "edition": "Basic",
+        "requestedServiceObjectiveName": "Basic"
+      }
+    },
+    {
+      "type": "Microsoft.Sql/servers/firewallrules",
+      "apiVersion": "2014-04-01-preview",
+      "location": "[resourceGroup().location]",
+      "name": "[concat(variables('sqlServerName'), '/', variables('vmName'))]",
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
-      ]
+        "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]"
+      ],
+      "properties": {
+        "endIpAddress": "[reference(variables('publicIPAddressName')).IpAddress]",
+        "startIpAddress": "[reference(variables('publicIPAddressName')).IpAddress]"
+      }
     }, {
-      "type": "extensions",
-      "name": "Microsoft.Powershell.DSC",
+      "apiVersion": "2016-09-01",
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[variables('nicName')]",
       "tags": {
         "application": "AutomationStack",
         "udp": "[parameters('udp')]"
       },
-      "apiVersion": "2015-06-15",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]"
+      ],
+      "properties": {
+        "ipConfigurations": [{
+          "name": "[concat(parameters('productName'),'-IPConfig')]",
+          "properties": {
+            "privateIPAllocationMethod": "Dynamic",
+            "publicIPAddress": {
+              "id": "[resourceId('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]"
+            },
+            "subnet": {
+              "id": "[variables('subnetId')]"
+            }
+          }
+        }],
+        "networkSecurityGroup": {
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups/', variables('nsgName'))]"
+        }
+      }
+    }, {
+      "apiVersion": "2015-05-01-preview",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('publicIPAddressName')]",
+      "tags": {
+        "application": "AutomationStack",
+        "udp": "[parameters('udp')]"
+      },
       "location": "[resourceGroup().location]",
       "properties": {
-        "publisher": "Microsoft.Powershell",
-        "type": "DSC",
-        "typeHandlerVersion": "2.19",
-        "autoUpgradeMinorVersion": true,
-        "protectedSettings": {
-          "Items": {
-            "registrationKeyPrivate": "[parameters('registrationKey')]"
+        "publicIPAllocationMethod": "Static",
+        "idleTimeoutInMinutes": 30,
+        "dnsSettings": {
+          "domainNameLabel": "[toLower(concat(parameters('productName'),'stack-',parameters('udp')))]"
+        }
+      }
+    }, {
+      "apiVersion": "2016-03-30",
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[variables('vmName')]",
+      "tags": {
+        "application": "AutomationStack",
+        "udp": "[parameters('udp')]"
+      },
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('vmSize')]"
+        },
+        "osProfile": {
+          "computerName": "[variables('vmName')]",
+          "adminUsername": "[parameters('vmAdminUsername')]",
+          "adminPassword": "[parameters('vmAdminPassword')]",
+          "windowsConfiguration": {
+            "provisionVMAgent": true,
+            "enableAutomaticUpdates": true
           }
         },
-        "settings": {
-          "ModulesUrl": "https://eus2oaasibizamarketprod1.blob.core.windows.net/automationdscpreview/RegistrationMetaConfigV2.zip",
-          "SasToken": "",
-          "ConfigurationFunction": "RegistrationMetaConfigV2.ps1\\RegistrationMetaConfigV2",
-          "Properties": [{
-            "Name": "RegistrationKey",
-            "Value": {
-              "UserName": "PLACEHOLDER_DONOTUSE",
-              "Password": "PrivateSettingsRef:registrationKeyPrivate"
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2016-Datacenter-with-Containers",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "[concat(variables('vmName'),'-OS')]",
+            "vhd": {
+              "uri": "[concat('http://',variables('vmStorageName'),'.blob.core.windows.net/vhds/',variables('vmName'),'-OS.vhd')]"
             },
-            "TypeName": "System.Management.Automation.PSCredential"
-          }, {
-            "Name": "RegistrationUrl",
-            "Value": "[parameters('registrationUrl')]",
-            "TypeName": "System.String"
-          }, {
-            "Name": "NodeConfigurationName",
-            "Value": "[parameters('nodeConfigurationName')]",
-            "TypeName": "System.String"
-          }, {
-            "Name": "ConfigurationMode",
-            "Value": "ApplyAndAutocorrect",
-            "TypeName": "System.String"
-          }, {
-            "Name": "ConfigurationModeFrequencyMins",
-            "Value": 15,
-            "TypeName": "System.Int32"
-          }, {
-            "Name": "RefreshFrequencyMins",
-            "Value": 30,
-            "TypeName": "System.Int32"
-          }, {
-            "Name": "RebootNodeIfNeeded",
-            "Value": true,
-            "TypeName": "System.Boolean"
-          }, {
-            "Name": "ActionAfterReboot",
-            "Value": "ContinueConfiguration",
-            "TypeName": "System.String"
-          }, {
-            "Name": "AllowModuleOverwrite",
-            "Value": true,
-            "TypeName": "System.Boolean"
-          }, {
-            "Name": "Timestamp",
-            "Value": "[parameters('timestamp')]",
-            "TypeName": "System.String"
+            "caching": "ReadWrite",
+            "createOption": "FromImage"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [{
+            "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]"
           }]
         }
       },
-      "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
-      ]
-    }]
-  }],
+      "resources": [{
+        "type": "extensions",
+        "name": "AzureDiskEncryption",
+        "tags": {
+          "application": "AutomationStack",
+          "udp": "[parameters('udp')]"
+        },
+        "apiVersion": "2016-03-30",
+        "location": "[resourceGroup().location]",
+        "properties": {
+          "publisher": "Microsoft.Azure.Security",
+          "type": "AzureDiskEncryption",
+          "typeHandlerVersion": "1.1",
+          "autoUpgradeMinorVersion": true,
+          "settings": {
+            "AADClientID": "[parameters('clientId')]",
+            "KeyVaultURL": "[concat('https://', variables('keyVaultName'), '.vault.azure.net/')]",
+            "KeyEncryptionAlgorithm": "RSA-OAEP",
+            "VolumeType": "All",
+            "EncryptionOperation": "EnableEncryption"
+          },
+          "protectedSettings": {
+            "AADClientSecret": "[parameters('clientSecret')]"
+          }
+        },
+        "dependsOn": [
+          "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
+        ]
+      }, {
+        "type": "extensions",
+        "name": "Microsoft.Powershell.DSC",
+        "tags": {
+          "application": "AutomationStack",
+          "udp": "[parameters('udp')]"
+        },
+        "apiVersion": "2015-06-15",
+        "location": "[resourceGroup().location]",
+        "properties": {
+          "publisher": "Microsoft.Powershell",
+          "type": "DSC",
+          "typeHandlerVersion": "2.19",
+          "autoUpgradeMinorVersion": true,
+          "protectedSettings": {
+            "Items": {
+              "registrationKeyPrivate": "[parameters('registrationKey')]"
+            }
+          },
+          "settings": {
+            "ModulesUrl": "https://eus2oaasibizamarketprod1.blob.core.windows.net/automationdscpreview/RegistrationMetaConfigV2.zip",
+            "SasToken": "",
+            "ConfigurationFunction": "RegistrationMetaConfigV2.ps1\\RegistrationMetaConfigV2",
+            "Properties": [{
+              "Name": "RegistrationKey",
+              "Value": {
+                "UserName": "PLACEHOLDER_DONOTUSE",
+                "Password": "PrivateSettingsRef:registrationKeyPrivate"
+              },
+              "TypeName": "System.Management.Automation.PSCredential"
+            }, {
+              "Name": "RegistrationUrl",
+              "Value": "[parameters('registrationUrl')]",
+              "TypeName": "System.String"
+            }, {
+              "Name": "NodeConfigurationName",
+              "Value": "[parameters('nodeConfigurationName')]",
+              "TypeName": "System.String"
+            }, {
+              "Name": "ConfigurationMode",
+              "Value": "ApplyAndAutocorrect",
+              "TypeName": "System.String"
+            }, {
+              "Name": "ConfigurationModeFrequencyMins",
+              "Value": 15,
+              "TypeName": "System.Int32"
+            }, {
+              "Name": "RefreshFrequencyMins",
+              "Value": 30,
+              "TypeName": "System.Int32"
+            }, {
+              "Name": "RebootNodeIfNeeded",
+              "Value": true,
+              "TypeName": "System.Boolean"
+            }, {
+              "Name": "ActionAfterReboot",
+              "Value": "ContinueConfiguration",
+              "TypeName": "System.String"
+            }, {
+              "Name": "AllowModuleOverwrite",
+              "Value": true,
+              "TypeName": "System.Boolean"
+            }, {
+              "Name": "Timestamp",
+              "Value": "[parameters('timestamp')]",
+              "TypeName": "System.String"
+            }]
+          }
+        },
+        "dependsOn": [
+          "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
+        ]
+      }]
+    }
+  ],
   "outputs": {
     "fqdn": {
       "type": "string",

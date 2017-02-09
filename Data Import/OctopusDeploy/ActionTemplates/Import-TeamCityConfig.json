@@ -3,7 +3,7 @@
   "Id": "ActionTemplates-7",
   "Name": "Import-TeamCityConfig",
   "Description": null,
-  "Version": 6,
+  "Version": 7,
   "ActionType": "Octopus.AzurePowerShell",
   "CommunityActionTemplateId": null,
   "Properties": {
@@ -12,7 +12,7 @@
     "Octopus.Action.Script.ScriptSource": "Package",
     "Octopus.Action.Script.ScriptFileName": "Import-TeamCityConfig.ps1",
     "Octopus.Action.Package.PackageId": "AutomationStackScripts.Automation",
-    "Octopus.Action.Script.ScriptParameters": "-Path '#{Path}' -ResourceGroup '#{ResourceGroup}' -AutomationAccountName '#{AutomationAccountName}' -OctopusServerUrl '#{OctopusHostHeader}' -OctopusApiKey '#{APIKey}' -HostHeader '#{TeamCityHostHeader}' -TeamCityVersion '#{TeamCityVersion}'"
+    "Octopus.Action.Script.ScriptParameters": "-Path '#{Path}' -ResourceGroup '#{ResourceGroup}' -AutomationAccountName '#{AutomationAccountName}' -TentacleRegistrationUri '#{TentacleRegistrationUri}' -OctopusApiKey '#{APIKey}' -HostHeader '#{TeamCityHostHeader}' -TeamCityVersion '#{TeamCityVersion}'"
   },
   "Parameters": [
     {

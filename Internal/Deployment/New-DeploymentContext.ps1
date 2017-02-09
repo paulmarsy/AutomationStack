@@ -31,6 +31,9 @@ function New-DeploymentContext {
     
     $CurrentContext.Set('StackAdminUsername', 'Stack')
     $CurrentContext.Set('StackAdminPassword', ($deploymentGuid.Substring(0,8) + (($deploymentGuid.Substring(24,12).GetEnumerator() | ? { [char]::IsLetter($_) } | % { [char]::ToUpper($_) }) -join '')))
+    if ($CurrentContext.Get('StackAdminPassword') -cnotmatch '^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$') {
+        throw 'Password does not meet complexity requirements, retry'
+    }
     $CurrentContext.Set('SqlServerUsername', '#{StackAdminUsername}')
     $CurrentContext.Set('SqlServerPassword', (New-ContextSafePassword))
     $CurrentContext.Set('OctopusAutomationCredentialUsername', 'OctopusDeploy')

@@ -1,7 +1,7 @@
 Configuration TeamCity
 {
     param(
-        $OctopusServerUrl,
+        $TentacleRegistrationUri,
         $OctopusApiKey,
         $HostHeader,
         $TeamCityVersion

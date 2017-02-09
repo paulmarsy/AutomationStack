@@ -24,7 +24,7 @@
             "Octopus.Action.RunOnServer": "true",
             "Octopus.Action.Script.Syntax": "PowerShell",
             "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "$octopusServerExe = Join-Path $env:ProgramFiles 'Octopus Deploy\\Octopus\\Octopus.Server.exe'\r\n& $octopusServerExe configure --console --guestloginenabled=True"
+            "Octopus.Action.Script.ScriptBody": "$octopusServerExe = Join-Path $env:ProgramFiles 'Octopus Deploy\\Octopus\\Octopus.Server.exe'\n& $octopusServerExe configure --console --guestloginenabled=True"
           }
         }
       ],

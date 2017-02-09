@@ -10,7 +10,7 @@
     },
     "vmSize": {
       "type": "string",
-      "defaultValue": "Standard_DS2_v2"
+      "defaultValue": "Standard_F2S"
     },
     "vmAdminUsername": {
       "type": "string"
@@ -33,30 +33,6 @@
     "resourcesStorageName": "[concat('stackresources', parameters('udp'))]"
   },
   "resources": [{
-    "apiVersion": "2016-01-01",
-    "type": "Microsoft.Storage/storageAccounts",
-    "name": "[variables('vmStorageName')]",
-    "tags": {
-      "application": "AutomationStack",
-      "udp": "[parameters('udp')]"
-    },
-    "location": "[resourceGroup().location]",
-    "sku": {
-      "name": "Premium_LRS",
-      "tier": "Premium"
-    },
-    "kind": "Storage",
-    "properties": {
-      "encryption": {
-        "keySource": "Microsoft.Storage",
-        "services": {
-          "blob": {
-            "enabled": true
-          }
-        }
-      }
-    }
-  }, {
     "apiVersion": "2016-09-01",
     "type": "Microsoft.Network/networkInterfaces",
     "name": "[variables('nicName')]",
@@ -111,7 +87,6 @@
     },
     "location": "[resourceGroup().location]",
     "dependsOn": [
-      "[concat('Microsoft.Storage/storageAccounts/', variables('vmStorageName'))]",
       "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
     ],
     "properties": {

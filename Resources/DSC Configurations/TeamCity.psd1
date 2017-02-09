@@ -5,7 +5,7 @@
             PSDscAllowPlainTextPassword = $true
             Octopus = @{
                 Role = 'TeamCity Server (Windows)'
-                Environment = 'TeamCity Stack'
+                Environment = 'Automation Stack'
                 Name = 'TeamCity Server'
             }
         }
@@ -14,7 +14,7 @@
             PSDscAllowPlainTextPassword = $true
             Octopus = @{
                 Role = 'TeamCity Cloud Agent'
-                Environment = 'TeamCity Stack'
+                Environment = 'Agent Cloud'
                 Name = 'TeamCity Cloud Agent'
             }       
         }

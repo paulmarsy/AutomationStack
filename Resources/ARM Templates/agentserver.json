@@ -2,6 +2,9 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "automationStackRg": {
+      "type": "string"
+    },
     "udp": {
       "type": "string"
     },
@@ -10,7 +13,7 @@
     },
     "vmSize": {
       "type": "string",
-      "defaultValue": "Standard_DS3_v2"
+      "defaultValue": "Standard_F2S"
     },
     "vmAdminUsername": {
       "type": "string"
@@ -35,7 +38,7 @@
     "vmName": "[concat(parameters('productName'),'VM')]",
     "resourcesStorageName": "[concat('stackresources', parameters('udp'))]",
     "nicName": "[concat(parameters('productName'),'NIC')]",
-    "virtualNetworkId": "[resourceId('Microsoft.Network/virtualNetworks', 'VirtualNetwork')]",
+    "virtualNetworkId": "[resourceId(parameters('automationStackRg'), 'Microsoft.Network/virtualNetworks', 'VirtualNetwork')]",
     "subnetId": "[concat(variables('virtualNetworkId'),'/subnets/', 'Default')]"
   },
   "resources": [{

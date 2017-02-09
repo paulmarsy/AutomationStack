@@ -2,7 +2,7 @@
   "$type": "Octopus.Core.Model.Variables.VariableSet, Octopus.Core",
   "Id": "variableset-LibraryVariableSets-2",
   "OwnerId": "LibraryVariableSets-2",
-  "Version": 13,
+  "Version": 14,
   "Variables": [
     {
       "Id": "04107455-ce7d-0174-c2bc-6c75bf7f5f2a",
@@ -28,6 +28,11 @@
       "Id": "d0ecce5b-8824-5845-d6f7-eabfee322adb",
       "Name": "SqlServerUsername",
       "Value": "#{StackAdminUsername}"
+    },
+    {
+      "Id": "fa3d3883-971f-9518-7a08-ee8240a8c58c",
+      "Name": "TentacleRegistrationUri",
+      "Value": "http://octopusstack-#{UDP}.#{AzureRegionValue}.cloudapp.azure.com/"
     }
   ],
   "RelatedDocumentIds": []

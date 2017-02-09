@@ -2,7 +2,7 @@
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
   "Id": "deploymentprocess-Projects-6",
   "OwnerId": "Projects-6",
-  "Version": 169,
+  "Version": 171,
   "Steps": [
     {
       "Id": "f915e03f-4a5b-4fa2-aa88-d572523b1b3b",
@@ -62,51 +62,16 @@
             "Octopus.Action.Script.ScriptSource": "Package",
             "Octopus.Action.Script.ScriptFileName": "Import-TeamCityConfig.ps1",
             "Octopus.Action.Package.PackageId": "AutomationStackScripts.Automation",
-            "Octopus.Action.Script.ScriptParameters": "-Path '#{Path}' -ResourceGroup '#{ResourceGroup}' -AutomationAccountName '#{AutomationAccountName}' -OctopusServerUrl '#{OctopusHostHeader}' -OctopusApiKey '#{APIKey}' -HostHeader '#{TeamCityHostHeader}' -TeamCityVersion '#{TeamCityVersion}'",
+            "Octopus.Action.Script.ScriptParameters": "-Path '#{Path}' -ResourceGroup '#{ResourceGroup}' -AutomationAccountName '#{AutomationAccountName}' -TentacleRegistrationUri '#{TentacleRegistrationUri}' -OctopusApiKey '#{APIKey}' -HostHeader '#{TeamCityHostHeader}' -TeamCityVersion '#{TeamCityVersion}'",
             "Path": "#{DSCConfigFile}",
             "TeamCityVersion": "#{TeamCityVersion}",
             "Octopus.Action.Template.Id": "ActionTemplates-7",
-            "Octopus.Action.Template.Version": "6"
+            "Octopus.Action.Template.Version": "7"
           }
         }
       ],
       "Properties": {
         "Octopus.Action.TargetRoles": "Azure Automation"
-      }
-    },
-    {
-      "Id": "2b79ec1a-3a10-46eb-aeeb-fbbc92c6ffb3",
-      "Name": "Create TeamCity SQL Database",
-      "Condition": "Success",
-      "StartTrigger": "StartWithPrevious",
-      "RequiresPackagesToBeAcquired": false,
-      "Actions": [
-        {
-          "Id": "b6a74d09-acd4-4ea2-a362-a4b1525c2187",
-          "Name": "Create TeamCity SQL Database",
-          "ActionType": "Octopus.AzurePowerShell",
-          "IsDisabled": false,
-          "Environments": [],
-          "ExcludedEnvironments": [],
-          "Channels": [],
-          "TenantTags": [],
-          "Properties": {
-            "Octopus.Action.Package.FeedId": "feeds-builtin",
-            "Octopus.Action.Azure.AccountId": "azureserviceprincipal-microsoft-azure-service-principal",
-            "Octopus.Action.Script.ScriptSource": "Package",
-            "Octopus.Action.Script.ScriptFileName": "New-AzureSQLDatabase.ps1",
-            "Octopus.Action.Package.PackageId": "AutomationStackScripts.AzureSQL",
-            "Octopus.Action.Script.ScriptParameters": "-ResourceGroupName '#{ResourceGroupName}' -ServerName '#{ServerName}' -DatabaseName '#{DatabaseName}'",
-            "ResourceGroupName": "#{ResourceGroup}",
-            "ServerName": "#{SqlServerName}",
-            "DatabaseName": "TeamCity",
-            "Octopus.Action.Template.Id": "ActionTemplates-10",
-            "Octopus.Action.Template.Version": "3"
-          }
-        }
-      ],
-      "Properties": {
-        "Octopus.Action.TargetRoles": "Azure SQL Server"
       }
     },
     {
@@ -283,7 +248,7 @@
             "Octopus.Action.RunOnServer": "false",
             "Octopus.Action.Script.Syntax": "PowerShell",
             "Octopus.Action.Script.ScriptSource": "Inline",
-            "Octopus.Action.Script.ScriptBody": "& \"${TeamCityBin}teamcity-server.bat\" service install /runAsSystem\r\nStart-Service TeamCity"
+            "Octopus.Action.Script.ScriptBody": "& \"${TeamCityBin}teamcity-server.bat\" service install /runAsSystem\nStart-Service TeamCity"
           }
         }
       ],

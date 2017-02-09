@@ -1,7 +1,7 @@
-param($Path, $ResourceGroup, $AutomationAccountName, $OctopusServerUrl, $OctopusApiKey, $HostHeader, $TeamCityVersion)
+param($Path, $ResourceGroup, $AutomationAccountName, $TentacleRegistrationUri, $OctopusApiKey, $HostHeader, $TeamCityVersion)
 
 & (Join-Path $PSScriptRoot 'Import-DSCConfiguration.ps1') -Path $Path -ResourceGroupName $ResourceGroup -AutomationAccountName $AutomationAccountName -ConfigurationName 'TeamCity' -Parameters @{
-    OctopusServerUrl = $OctopusServerUrl
+    TentacleRegistrationUri = $TentacleRegistrationUri
     OctopusApiKey = $OctopusApiKey
     HostHeader = $HostHeader
     TeamCityVersion = $TeamCityVersion
