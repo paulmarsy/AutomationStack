@@ -103,17 +103,18 @@ function New-AutomationStack {
                         {
                             Show-AutomationStackDetail
                             Write-Host -ForegroundColor Cyan "`t  Additional functionality can be deployed/enabled using Octopus Deploy"
-                            Write-Host
-                            Write-Host -ForegroundColor Green "`t   Octopus Deploy URL: $($CurrentContext.Get('OctopusHostHeader'))"
+                            Write-Host -ForegroundColor Green "`t   Octopus Deploy: $($CurrentContext.Get('OctopusHostHeader'))"
                             Open-AuthenticatedOctopusDeployUri
+                            Write-Host
+                            Write-Host -ForegroundColor Cyan "`t  TeamCity Server & TeamCity Agent Cloud, after deployed by Octopus, will be available at"
+                            Write-Host -ForegroundColor Green "`t   TeamCity: $($CurrentContext.Eval('http://teamcitystack-#{UDP}.#{AzureRegionValue}.cloudapp.azure.com'))"
                             Write-Host
                             Write-Host -ForegroundColor Gray "`t  Available PowerShell Module commands:"
                             Write-Host -ForegroundColor Gray "`t`t- Measure-AutomationStack - Shows timing & deployment stats"
-                            Write-Host -ForegroundColor Gray "`t`t- Connect-AutomationStack <Octopus|TeamCity> - Opens RDP session with the Azure VM (NSG RDP Rule must be enabled"
-                            Write-Host -ForegroundColor Gray "`t`t- Remove-AutomationStack - Removes Azure resources created by the project including the Service Principal"
-                            Write-Host -ForegroundColor Gray "`t`t- New-AutomationStack - Creates another isolated & seperate instance of AutomationStack"
-                            Write-Host -ForegroundColor Gray "`t`t- Import-Module AutomationStack -ArgumentList <UDP> - Imports the module with the context of a previous deployment"
-                        }
+                            Write-Host -ForegroundColor Gray "`t`t- Show-AutomationStackUsage - Shows Azure usage & billing info (will take time for Azure to collate)"
+                            Write-Host -ForegroundColor Gray "`t`t- Connect-AutomationStack <Octopus|TeamCity> - Opens RDP session to the relevant Azure VM"
+                            Write-Host -ForegroundColor Gray "`t`t- Remove-AutomationStack - Removes Azure resources created by this deployment"
+                            Write-Host -ForegroundColor Gray "`t`t- Find-AutomationStackDeployment - Searches for any AutomationStack deployments"                        }
                     }
                 }
                 Start-DeploymentStage -StageNumber $StageNumber -Heading $Heading -ScriptBlock $ScriptBlock
