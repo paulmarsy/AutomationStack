@@ -5,7 +5,7 @@
   <parameters>
     <param name="agentPushPreset" />
     <param name="clientId">#{ServicePrincipalClientId}</param>
-    <param name="images_data">[{"imageUrl":"https://#{StorageAccountName}.blob.core.windows.net/images/TCAgentVM.image.vhd","osType":"Windows","networkId":"/subscriptions/#{AzureSubscriptionId}/resourceGroups/#{ResourceGroup}/providers/Microsoft.Network/virtualNetworks/VirtualNetwork","subnetId":"Default","maxInstances":3,"vmNamePrefix":"#{AgentCloudName}","vmPublicIp":false,"vmSize":"Standard_F2","vmUsername":"#{StackAdminUsername}","reuseVm":false}]</param>
+    <param name="images_data">[{"imageUrl":"https://#{StorageAccountName}.blob.core.windows.net/images/TCAgent.image.vhd","osType":"Windows","networkId":"/subscriptions/#{AzureSubscriptionId}/resourceGroups/#{ResourceGroup}/providers/Microsoft.Network/virtualNetworks/VirtualNetwork","subnetId":"Default","maxInstances":3,"vmNamePrefix":"#{AgentCloudName}","vmPublicIp":false,"vmSize":"Standard_F2","vmUsername":"#{StackAdminUsername}","reuseVm":false}]</param>
     <param name="location">#{AzureRegionValue}</param>
     <param name="secure:clientSecret">#{Encoding[TeamCityScramble].ServicePrincipalClientSecret}</param>
     <param name="secure:passwords_data">#{Encoding[TeamCityScramble].AgentCloudPasswordData}</param>

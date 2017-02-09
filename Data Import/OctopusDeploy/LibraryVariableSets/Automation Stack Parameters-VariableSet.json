@@ -3,8 +3,7 @@
   "Id": "variableset-LibraryVariableSets-1",
   "OwnerId": "LibraryVariableSets-1",
   "Version": 5,
-  "Variables": [
-    {
+  "Variables": [{
       "Id": "97c0ebe0-d669-1654-8f4a-a872980b204e",
       "Name": "UDP",
       "Value": "#{UDP}"
@@ -73,6 +72,16 @@
       "Name": "SqlServerPassword",
       "IsSensitive": true,
       "Value": "#{Encoding[OctopusEncrypt].SqlServerPassword}"
+    },
+    {
+      "Id": "dd92c1c5-69e5-4029-a39d-4994d0412e12",
+      "Name": "ComputeVmShutdownTask.Status",
+      "Value": "#{ComputeVmShutdownTask.Status}"
+    },
+    {
+      "Id": "ff454cae-6950-4d4d-9d25-b09414e76b88",
+      "Name": "ComputeVmShutdownTask.Time",
+      "Value": "#{ComputeVmShutdownTask.Time}"
     }
   ],
   "RelatedDocumentIds": []

@@ -13,7 +13,7 @@ $logFileName = '{0}.{1}.log' -f $Name, ([datetime]::UtcNow.tostring('o').Replace
 $logFileBlobRef = $storageContainer.CloudBlobContainer.GetAppendBlobReference($logFileName)
 $logFileBlobRef.CreateOrReplace()
 
-Write-Host 'Starting custom script extension in background job...'
+Write-Host 'Installing CustomScript extension...'
 $azureProfile = [System.IO.Path]::GetTempFileName()
 Save-AzureRmProfile -Path $azureProfile -Force
 
@@ -30,7 +30,7 @@ $job = Start-Job -ScriptBlock {
         Set-AzureRmVMCustomScriptExtension -ResourceGroupName $ResourceGroupName -VMName $VMName -Location $Location -Name 'CustomScript' -StorageAccountName $StorageAccountName -StorageAccountKey $StorageAccountKey  -FileName @($scriptFileName,'CustomScriptLogging.ps1') -ContainerName 'scripts' -Run $scriptFileName -ForceRerun (Get-Date).Ticks -SecureExecution -Argument $Argument
 } -ArgumentList @((Get-AzureRmContext).Subscription.SubscriptionId, $azureProfile, $ResourceGroupName, $VMName, $Location, $Name, $StorageAccountName, $StorageAccountKey, $ContainerName, $ArgumentList)
 
-Write-Host 'Waiting for script to run...'
+Write-Host 'Waiting for script to connect and send...'
 $logPosition = 0
 $terminateSignaled = $false
 do {
@@ -41,6 +41,7 @@ do {
                 $_ | Out-Host
         }
 } while ($job.State -eq 'Running' -and -not $terminateSignaled)
+Write-Host 'Script has disconnected'
 
 if ($terminateSignaled) {
         Write-Host 'Received terminate signal from script'

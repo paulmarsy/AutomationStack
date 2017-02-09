@@ -1,22 +1,28 @@
   { // Additional variables: ProductName, ScriptFileName
-    "udp": {
-        "value": "#{UDP}"
-    },
-    "productName": {
-        "value": "#{ProductName}"
-    },
-    "vmAdminUsername": {
-        "value": "#{StackAdminUsername}"
-    },
-    "vmAdminPassword": {
-        "reference": {
-            "keyVault": {
-                "id": "#{KeyVaultResourceId}"
-            },
-            "secretName": "VMAdminPassword"
-        }
-    },
-    "scriptFileName": {
-        "value": "#{ScriptFileName}"
-    }
-}
+      "udp": {
+          "value": "#{UDP}"
+      },
+      "productName": {
+          "value": "#{ProductName}"
+      },
+      "vmAdminUsername": {
+          "value": "#{StackAdminUsername}"
+      },
+      "vmAdminPassword": {
+          "reference": {
+              "keyVault": {
+                  "id": "#{KeyVaultResourceId}"
+              },
+              "secretName": "VMAdminPassword"
+          }
+      },
+      "scriptFileName": {
+          "value": "#{ScriptFileName}"
+      },
+      "computeVmShutdownStatus": {
+          "value": "#{ComputeVmShutdownTask.Status}"
+      },
+      "computeVmShutdownTime": {
+          "value": "#{ComputeVmShutdownTask.Time}"
+      }
+  }

@@ -20,6 +20,7 @@ function New-AutomationStack {
         Connect-AzureRm
         if ($firstRun) {
             $azureRegion = Select-AzureLocation
+            $computeVmShutdown = Select-ComputeVmAutoShutdown
         }     
     }
     process {
@@ -36,7 +37,7 @@ function New-AutomationStack {
                             Install-AzureReqs
 
                             if ($null -eq $CurrentContext) {
-                                New-DeploymentContext -AzureRegion $azureRegion
+                                New-DeploymentContext -AzureRegion $azureRegion -ComputeVmAutoShutdown $computeVmShutdown
                             } else {
                                 Write-Warning 'AutomationStack deployment context already created, skipping'
                             }

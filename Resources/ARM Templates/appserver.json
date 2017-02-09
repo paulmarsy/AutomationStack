@@ -35,6 +35,12 @@
     },
     "timestamp": {
       "type": "string"
+    },
+    "computeVmShutdownStatus": {
+      "type": "string"
+    },
+    "computeVmShutdownTime": {
+      "type": "string"
     }
   },
   "variables": {
@@ -268,6 +274,27 @@
           "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
         ]
       }]
+    }, {
+      "type": "Microsoft.DevTestLab/schedules",
+      "name": "[concat('Shutdown-ComputeVM-', variables('vmName'))]",
+      "apiVersion": "2016-05-15",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "application": "AutomationStack",
+        "udp": "[parameters('udp')]"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
+      ],
+      "properties": {
+        "status": "[parameters('computeVmShutdownStatus')]",
+        "taskType": "ComputeVmShutdownTask",
+        "dailyRecurrence": {
+          "time": "[parameters('computeVmShutdownTime')]"
+        },
+        "timeZoneId": "GMT Standard Time",
+        "targetResourceId": "[resourceId('Microsoft.Compute/virtualMachines',variables('vmName'))]"
+      }
     }
   ],
   "outputs": {

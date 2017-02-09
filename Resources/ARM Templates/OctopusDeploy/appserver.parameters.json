@@ -43,5 +43,11 @@
       },
       "timestamp": {
           "value": "#{Octopus.Deployment.CreatedUtc}"
+      },
+      "computeVmShutdownStatus": {
+          "value": "#{ComputeVmShutdownTask.Status}"
+      },
+      "computeVmShutdownTime": {
+          "value": "#{ComputeVmShutdownTask.Time}"
       }
   }

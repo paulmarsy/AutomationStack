@@ -10,6 +10,8 @@ function Initialize-OctopusDeployInfrastructure {
         registrationUrl = $CurrentContext.Get('AutomationRegistrationUrl')
         nodeConfigurationName = 'OctopusDeploy.Server'
         timestamp = ([DateTimeOffset]::UtcNow.ToString("o"))
+        computeVmShutdownStatus = $CurrentContext.Get('ComputeVmShutdownTask.Status')
+        computeVmShutdownTime = $CurrentContext.Get('ComputeVmShutdownTask.Time')
     }
 
     $CurrentContext.Set('OctopusDiskEncryptionKeyUrl', $octopusDeploy.keyVaultSecretUrl.Value)

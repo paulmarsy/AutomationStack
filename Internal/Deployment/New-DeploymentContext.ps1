@@ -1,5 +1,5 @@
 function New-DeploymentContext {
-    param($AzureRegion)
+    param($AzureRegion, $ComputeVmAutoShutdown)
 
     Write-Host 'Creating Octostache Config Store...'
     $udp = Get-GuidPart 4
@@ -16,6 +16,9 @@ function New-DeploymentContext {
 
     $CurrentContext.Set('AzureRegion', $AzureRegion.Name)
     $CurrentContext.Set('AzureRegionValue', $AzureRegion.Value)
+
+    $CurrentContext.Set('ComputeVmShutdownTask.Status', $ComputeVmAutoShutdown.Status)    
+    $CurrentContext.Set('ComputeVmShutdownTask.Time', $ComputeVmAutoShutdown.Time)
     
     Write-Host 'Creating Azure Tags...'
     New-AzureRmTag -Name application -Value AutomationStack
