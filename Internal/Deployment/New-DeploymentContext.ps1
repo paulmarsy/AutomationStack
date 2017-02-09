@@ -1,13 +1,8 @@
 function New-DeploymentContext {
     param($AzureRegion)
 
-    # X & Y - Not random
-    # 1 - UDP, 2 Password start, 3 Password end  , 4 - Api key      
-    # 22222222-1111-X444-Y444-333333333333
-    $deploymentGuid = [guid]::NewGuid().guid
-
     Write-Host 'Creating Octostache Config Store...'
-    $udp = $deploymentGuid.Substring(9,4)
+    $udp = Get-GuidPart 4
     $script:CurrentContext = New-Object Octosprache $udp
     $CurrentContext.Set('UDP', $udp)
 
@@ -30,16 +25,18 @@ function New-DeploymentContext {
     Add-Type -AssemblyName System.Web
     
     $CurrentContext.Set('StackAdminUsername', 'Stack')
-    $CurrentContext.Set('StackAdminPassword', ($deploymentGuid.Substring(0,8) + (($deploymentGuid.Substring(24,12).GetEnumerator() | ? { [char]::IsLetter($_) } | % { [char]::ToUpper($_) }) -join '')))
-    if ($CurrentContext.Get('StackAdminPassword') -cnotmatch '^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$') {
-        throw 'Password does not meet complexity requirements, retry'
-    }
+    do {
+        $CurrentContext.Set('StackAdminPassword', ((Get-GuidPart 8) + ((Get-GuidPart 4 -ToUpper))))
+    } while  ($CurrentContext.Get('StackAdminPassword') -cnotmatch '^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$')
+
     $CurrentContext.Set('SqlServerUsername', '#{StackAdminUsername}')
-    $CurrentContext.Set('SqlServerPassword', (New-ContextSafePassword))
+    do {
+        $CurrentContext.Set('SqlServerPassword', ((Get-GuidPart 12) + ((Get-GuidPart 8 -ToUpper))))
+    } while  ($CurrentContext.Get('SqlServerPassword') -cnotmatch '^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{12,}$')
     $CurrentContext.Set('OctopusAutomationCredentialUsername', 'OctopusDeploy')
     $CurrentContext.Set('OctopusAutomationCredentialPassword', [System.Web.Security.Membership]::GeneratePassword(16, 4))
     $CurrentContext.Set('ServicePrincipalClientSecret', [System.Web.Security.Membership]::GeneratePassword(16, 4))
-    $CurrentContext.Set('ApiKey', ('API-AUTOMATIONstack{0}{1}' -f $deploymentGuid.Substring(15,3).ToUpperInvariant(), $deploymentGuid.Substring(20,3).ToUpperInvariant()))
+    $CurrentContext.Set('ApiKey', ('API-AUTOMATIONstack{0}{1}' -f (Get-GuidPart 4 -ToUpper), (Get-GuidPart 4)))
 
     $CurrentContext.Set('Username', '#{StackAdminUsername}')
     $CurrentContext.Set('Password', '#{StackAdminPassword}')
