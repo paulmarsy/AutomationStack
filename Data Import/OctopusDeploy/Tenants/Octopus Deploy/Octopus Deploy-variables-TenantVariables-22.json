@@ -1,0 +1,9 @@
+{
+  "$type": "Octopus.Core.Model.Variables.TenantVariable, Octopus.Core",
+  "Id": "TenantVariables-22",
+  "TenantId": "Tenants-1",
+  "OwnerId": "Projects-4",
+  "EnvironmentId": "Environments-2",
+  "VariableTemplateId": "d3641238-143e-4e39-ab1a-d9f0b98e7d90",
+  "Value": "Certificates\nCommunityActionTemplates\nDeployments\nEvents\nExtensionConfigurations\nReleases\nServerTasks"
+}

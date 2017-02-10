@@ -4,7 +4,7 @@ function Select-ComputeVmAutoShutdown {
         (New-Object System.Management.Automation.Host.ChoiceDescription 'Thr&ee Hours'),
         (New-Object System.Management.Automation.Host.ChoiceDescription 'Six Hou&rs'),
         (New-Object System.Management.Automation.Host.ChoiceDescription '&Twelve Hours'),
-        (New-Object System.Management.Automation.Host.ChoiceDescription 'Twent&y-Four Hours'))), 2)
+        (New-Object System.Management.Automation.Host.ChoiceDescription 'Twent&y-Four Hours'))), 1)
 
     $duration = switch ($result) {
         0 { 0 }
@@ -14,8 +14,9 @@ function Select-ComputeVmAutoShutdown {
         4 { 24 }
     }
 
+    $status = if ($result -eq 0) {'Disabled'} else {'Enabled'}
     @{
-        Status = (if ($result -eq 0) {'Disabled'} else {'Enabled'})
+        Status = $status
         Time = (Get-Date | % AddHours $duration | % ToString 'HH00')
     }
 }

@@ -42,7 +42,7 @@ function Publish-StorageAccountResources {
         Write-Host -ForegroundColor Green "`tUploading DSC Configurations..."
         Upload-ToFileShare -FileShareName dsc -Source (Join-Path -Resolve $ResourcesPath 'DSC Configurations') -TokeniseFiles @() -Context $context -ResetStorage:$ResetStorage -Octosprache $clonedContext
     }
-    if ($Upload -in @('All','OctopusDataSet')) {
+    if ($Upload -in @('All','OctopusDeployDataSet')) {
         Write-Host
         Write-Host -ForegroundColor Green "`tUploading Octopus Deploy DataSet..."
         Upload-ToFileShare -FileShareName octopusdeploy -Source (Join-Path -Resolve $DataImportPath 'OctopusDeploy') -TokeniseFiles @('metadata.json','server.json','Automation Stack Parameters-VariableSet.json','Microsoft Azure Service Principal.json','Tentacle Auth.json','#{Encoding[OctopusApiKeyId].ApiKey}.json','#{StackAdminUsername}.json') -Context $context -ResetStorage:$ResetStorage -Octosprache $clonedContext

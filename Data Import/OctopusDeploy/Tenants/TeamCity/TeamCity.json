@@ -14,7 +14,9 @@
       "Environments-2"
     ]
   },
-  "TenantTags": [],
+  "TenantTags": [
+    "TagSets-1/Tags-1"
+  ],
   "LogoAttachmentKey": "Tenants-2",
   "LogoAttachmentMimeType": "image/png"
 }

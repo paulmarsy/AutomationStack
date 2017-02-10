@@ -1,0 +1,9 @@
+{
+  "$type": "Octopus.Core.Model.Variables.TenantVariable, Octopus.Core",
+  "Id": "TenantVariables-4",
+  "TenantId": "Tenants-2",
+  "OwnerId": "Projects-4",
+  "EnvironmentId": "Environments-2",
+  "VariableTemplateId": "cfa11f9b-f105-4e69-83e8-348133168617",
+  "Value": "C:\\TeamCity\\bin\\maintainDB.cmd backup --include-database --include-config --include-supplementary-data --backup-file #{ExportRootPath}\\#{ArchiveBaseName}"
+}

@@ -10,15 +10,48 @@
   "ProjectGroupId": "ProjectGroups-22",
   "LifecycleId": "Lifecycles-22",
   "AutoCreateRelease": false,
-  "IncludedLibraryVariableSetIds": [],
+  "IncludedLibraryVariableSetIds": [
+    "LibraryVariableSets-1"
+  ],
   "UsedPackages": [],
   "DefaultToSkipIfAlreadyInstalled": false,
-  "TenantedDeploymentMode": "TenantedOrUntenanted",
+  "TenantedDeploymentMode": "Tenanted",
   "VersioningStrategy": {
     "DonorPackageStepId": null,
     "Template": "#{Octopus.Date.Year}.#{Octopus.Date.Month}.#{Octopus.Date.Day}+#{Octopus.Time.Hour}-#{Octopus.Time.Minute}"
   },
-  "Templates": [],
+  "Templates": [
+    {
+      "Id": "cfa11f9b-f105-4e69-83e8-348133168617",
+      "Name": "ExportCommand",
+      "Label": "Export Command",
+      "HelpText": null,
+      "DefaultValue": null,
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "d3641238-143e-4e39-ab1a-d9f0b98e7d90",
+      "Name": "FoldersToExclude",
+      "Label": "Folders To Exclude",
+      "HelpText": null,
+      "DefaultValue": "none",
+      "DisplaySettings": {
+        "Octopus.ControlType": "MultiLineText"
+      }
+    },
+    {
+      "Id": "5fe0df56-31a0-46f4-b7df-8b35f997e9c7",
+      "Name": "ExportPath",
+      "Label": "",
+      "HelpText": null,
+      "DefaultValue": "#{ExportRootPath}",
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    }
+  ],
   "ReleaseCreationStrategy": {
     "ReleaseCreationPackageStepId": "",
     "ChannelId": null

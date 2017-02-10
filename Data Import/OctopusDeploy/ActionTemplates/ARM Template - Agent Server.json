@@ -11,7 +11,7 @@
     "Octopus.Action.Azure.ResourceGroupName": "#{ResourceGroupName}",
     "Octopus.Action.Azure.TemplateSource": "Package",
     "Octopus.Action.Azure.ResourceGroupTemplateParameters": "OctopusDeploy\\agentserver.parameters.json",
-    "Octopus.Action.Azure.ResourceGroupDeploymentMode": "Incremental",
+    "Octopus.Action.Azure.ResourceGroupDeploymentMode": "Complete",
     "Octopus.Action.Azure.ResourceGroupTemplate": "agentserver.json",
     "Octopus.Action.Package.FeedId": "feeds-builtin",
     "Octopus.Action.Package.PackageId": "ARMTemplates"

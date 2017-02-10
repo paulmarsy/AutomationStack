@@ -1,0 +1,9 @@
+{
+  "$type": "Octopus.Core.Model.Variables.TenantVariable, Octopus.Core",
+  "Id": "TenantVariables-23",
+  "TenantId": "Tenants-1",
+  "OwnerId": "Projects-4",
+  "EnvironmentId": "Environments-2",
+  "VariableTemplateId": "5fe0df56-31a0-46f4-b7df-8b35f997e9c7",
+  "Value": "#{ExportRootPath}\\#{Octopus.Release.Number}"
+}

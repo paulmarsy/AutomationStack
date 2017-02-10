@@ -22,13 +22,12 @@
     },
     "variables": {
         "resourcesStorageName": "[concat('stackresources', parameters('udp'))]",
-        "vmStorageName": "[concat('stackvhds', parameters('udp'))]",
         "sqlServerName": "[concat('azuresql-', parameters('udp'))]",
         "automationName": "[concat('automation-', parameters('udp'))]",
         "keyVaultName": "[concat('keyvault-', parameters('udp'))]"
     },
     "resources": [{
-        "apiVersion": "2016-03-30",
+        "apiVersion": "2016-12-01",
         "type": "Microsoft.Network/virtualNetworks",
         "name": "VirtualNetwork",
         "tags": {
@@ -50,7 +49,7 @@
             }]
         }
     }, {
-        "apiVersion": "2016-01-01",
+        "apiVersion": "2016-12-01",
         "type": "Microsoft.Storage/storageAccounts",
         "name": "[variables('resourcesStorageName')]",
         "tags": {
@@ -61,30 +60,6 @@
         "sku": {
             "name": "Standard_LRS",
             "tier": "Standard"
-        },
-        "kind": "Storage",
-        "properties": {
-            "encryption": {
-                "keySource": "Microsoft.Storage",
-                "services": {
-                    "blob": {
-                        "enabled": true
-                    }
-                }
-            }
-        }
-    }, {
-        "apiVersion": "2016-01-01",
-        "type": "Microsoft.Storage/storageAccounts",
-        "name": "[variables('vmStorageName')]",
-        "tags": {
-            "application": "AutomationStack",
-            "udp": "[parameters('udp')]"
-        },
-        "location": "[resourceGroup().location]",
-        "sku": {
-            "name": "Premium_LRS",
-            "tier": "Premium"
         },
         "kind": "Storage",
         "properties": {
@@ -155,7 +130,7 @@
             ],
             "properties": {
                 "contentLink": {
-                    "uri": "https://www.powershellgallery.com/api/v2/package/xNetworking/3.1.0.0"
+                    "uri": "https://www.powershellgallery.com/api/v2/package/xNetworking/3.2.0.0"
                 }
             }
         }, {
@@ -171,7 +146,7 @@
             ],
             "properties": {
                 "contentLink": {
-                    "uri": "https://www.powershellgallery.com/api/v2/package/xPSDesiredStateConfiguration/5.1.0.0"
+                    "uri": "https://www.powershellgallery.com/api/v2/package/xPSDesiredStateConfiguration/6.0.0.0"
                 }
             }
         }, {

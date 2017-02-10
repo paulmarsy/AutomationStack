@@ -1,0 +1,9 @@
+{
+  "$type": "Octopus.Core.Model.Variables.TenantVariable, Octopus.Core",
+  "Id": "TenantVariables-21",
+  "TenantId": "Tenants-1",
+  "OwnerId": "Projects-4",
+  "EnvironmentId": "Environments-2",
+  "VariableTemplateId": "cfa11f9b-f105-4e69-83e8-348133168617",
+  "Value": "& \"C:\\Program Files\\Octopus Deploy\\Octopus\\Octopus.Migrator.exe\" export --console --directory=\"#{ExportPath}\" --password=\"#{StackAdminPassword}\""
+}

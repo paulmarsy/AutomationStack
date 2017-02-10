@@ -7,12 +7,15 @@
   },
   "IsDisabled": false,
   "Roles": [
-    "Octopus Deploy Server"
+    "Octopus Deploy Server",
+    "Data Export"
   ],
   "EnvironmentIds": [
     "Environments-2"
   ],
   "TenantIds": [],
-  "TenantTags": [],
+  "TenantTags": [
+    "TagSets-1/Tags-1"
+  ],
   "MachinePolicyId": "MachinePolicies-1"
 }

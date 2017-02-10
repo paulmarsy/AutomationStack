@@ -2,7 +2,7 @@
   "$type": "Octopus.Core.Model.Projects.DeploymentProcess, Octopus.Core",
   "Id": "deploymentprocess-Projects-4",
   "OwnerId": "Projects-4",
-  "Version": 36,
+  "Version": 46,
   "Steps": [
     {
       "Id": "7f1e35df-e72e-4d16-b721-09bda2b61130",
@@ -15,7 +15,7 @@
           "Id": "a528c115-90f8-4a4b-9a94-cccec22b8769",
           "Name": "Run Octopus Migrator Export",
           "ActionType": "Octopus.Script",
-          "IsDisabled": false,
+          "IsDisabled": true,
           "Environments": [],
           "ExcludedEnvironments": [],
           "Channels": [],
@@ -31,7 +31,7 @@
           "Id": "97143226-7f96-4981-b01b-4e1463b78f01",
           "Name": "Remove unimportant object types",
           "ActionType": "Octopus.Script",
-          "IsDisabled": false,
+          "IsDisabled": true,
           "Environments": [],
           "ExcludedEnvironments": [],
           "Channels": [],
@@ -47,7 +47,7 @@
           "Id": "ff663808-5371-409a-b883-553e20cdb737",
           "Name": "Compress Export",
           "ActionType": "Octopus.Script",
-          "IsDisabled": false,
+          "IsDisabled": true,
           "Environments": [],
           "ExcludedEnvironments": [],
           "Channels": [],
@@ -63,7 +63,7 @@
           "Id": "7854bc86-9720-43a0-9c9e-882d21b9e31e",
           "Name": "Publish Octopus Artifact",
           "ActionType": "Octopus.Script",
-          "IsDisabled": false,
+          "IsDisabled": true,
           "Environments": [],
           "ExcludedEnvironments": [],
           "Channels": [],
@@ -91,7 +91,7 @@
           "Id": "83cd794e-f5e4-4640-986c-76896760dba7",
           "Name": "Run maintainDB backup",
           "ActionType": "Octopus.Script",
-          "IsDisabled": false,
+          "IsDisabled": true,
           "Environments": [],
           "ExcludedEnvironments": [],
           "Channels": [],
@@ -107,7 +107,7 @@
           "Id": "3faf97fb-71c3-4e1a-aadc-f66d40036fa5",
           "Name": "Publish TeamCity Artifact",
           "ActionType": "Octopus.Script",
-          "IsDisabled": false,
+          "IsDisabled": true,
           "Environments": [],
           "ExcludedEnvironments": [],
           "Channels": [],
@@ -122,6 +122,118 @@
       ],
       "Properties": {
         "Octopus.Action.TargetRoles": "TeamCity Server (Windows)"
+      }
+    },
+    {
+      "Id": "6dc7b8cf-e071-45d9-8241-82c66d96b4c7",
+      "Name": "Run Export",
+      "Condition": "Success",
+      "StartTrigger": "StartAfterPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "0a331a90-82e4-4bdd-902a-424a54fd4eec",
+          "Name": "Run Export",
+          "ActionType": "Octopus.Script",
+          "IsDisabled": false,
+          "Environments": [],
+          "ExcludedEnvironments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.RunOnServer": "false",
+            "Octopus.Action.Script.Syntax": "PowerShell",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "Invoke-Expression $ExportCommand"
+          }
+        }
+      ],
+      "Properties": {
+        "Octopus.Action.TargetRoles": "Data Export"
+      }
+    },
+    {
+      "Id": "00592f84-eebc-4cc8-86da-9b4b98266a28",
+      "Name": "Remove Folders to Exclude",
+      "Condition": "Success",
+      "StartTrigger": "StartAfterPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "a003aaad-2e9c-4fae-a3a3-be4f2d0615a5",
+          "Name": "Remove Folders to Exclude",
+          "ActionType": "Octopus.Script",
+          "IsDisabled": false,
+          "Environments": [],
+          "ExcludedEnvironments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.RunOnServer": "false",
+            "Octopus.Action.Script.Syntax": "PowerShell",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "if ($FoldersToExclude -eq 'none') { return }\n\nGet-ChildItem -Path $ExportPath -Directory | ? Name -in ($FoldersToExclude -split \"`n\") |\n    Remove-Item -Force -Recurse"
+          }
+        }
+      ],
+      "Properties": {
+        "Octopus.Action.TargetRoles": "Data Export"
+      }
+    },
+    {
+      "Id": "e3276c68-31de-442a-9173-b2bfb346e894",
+      "Name": "Compress Archive",
+      "Condition": "Success",
+      "StartTrigger": "StartAfterPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "d78bda7e-970f-4851-8eb5-4f49014dff75",
+          "Name": "Compress Archive",
+          "ActionType": "Octopus.Script",
+          "IsDisabled": false,
+          "Environments": [],
+          "ExcludedEnvironments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.RunOnServer": "false",
+            "Octopus.Action.Script.Syntax": "PowerShell",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "Compress-Archive -Path $ExportPath -DestinationPath $ArchivePath -CompressionLevel Optimal\r\n"
+          }
+        }
+      ],
+      "Properties": {
+        "Octopus.Action.TargetRoles": "Data Export"
+      }
+    },
+    {
+      "Id": "160ba937-5bb1-44c7-a133-297a3b014764",
+      "Name": "Publish Archive",
+      "Condition": "Success",
+      "StartTrigger": "StartAfterPrevious",
+      "RequiresPackagesToBeAcquired": false,
+      "Actions": [
+        {
+          "Id": "1aa65ca5-9217-454c-8dde-89751c132f79",
+          "Name": "Publish Archive",
+          "ActionType": "Octopus.Script",
+          "IsDisabled": false,
+          "Environments": [],
+          "ExcludedEnvironments": [],
+          "Channels": [],
+          "TenantTags": [],
+          "Properties": {
+            "Octopus.Action.RunOnServer": "false",
+            "Octopus.Action.Script.Syntax": "PowerShell",
+            "Octopus.Action.Script.ScriptSource": "Inline",
+            "Octopus.Action.Script.ScriptBody": "New-OctopusArtifact -Path $ArchivePath -Name $ArchiveFileName"
+          }
+        }
+      ],
+      "Properties": {
+        "Octopus.Action.TargetRoles": "Data Export"
       }
     }
   ],

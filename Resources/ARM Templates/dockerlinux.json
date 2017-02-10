@@ -30,7 +30,6 @@
   },
   "variables": {
     "vmName": "[concat(parameters('productName'),'VM')]",
-    "vmStorageName": "[concat('stackvhds', parameters('udp'))]",
     "nsgName": "LinuxNSG",
     "nicName": "[concat(parameters('productName'),'NIC')]",
     "publicIPAddressName": "[concat(parameters('productName'),'PublicIP')]",
@@ -39,7 +38,7 @@
     "resourcesStorageName": "[concat('stackresources', parameters('udp'))]"
   },
   "resources": [{
-    "apiVersion": "2016-09-01",
+    "apiVersion": "2016-12-01",
     "type": "Microsoft.Network/networkInterfaces",
     "name": "[variables('nicName')]",
     "tags": {
@@ -68,7 +67,7 @@
       }
     }
   }, {
-    "apiVersion": "2015-05-01-preview",
+    "apiVersion": "2016-12-01",
     "type": "Microsoft.Network/publicIPAddresses",
     "name": "[variables('publicIPAddressName')]",
     "tags": {
@@ -84,7 +83,7 @@
       }
     }
   }, {
-    "apiVersion": "2015-06-15",
+    "apiVersion": "2017-03-30",
     "type": "Microsoft.Compute/virtualMachines",
     "name": "[variables('vmName')]",
     "tags": {
@@ -108,14 +107,11 @@
         "imageReference": {
           "publisher": "Canonical",
           "offer": "UbuntuServer",
-          "sku": "16.04.0-LTS",
+          "sku": "16.10",
           "version": "latest"
         },
         "osDisk": {
           "name": "[concat(variables('vmName'),'-OS')]",
-          "vhd": {
-            "uri": "[concat('http://',variables('vmStorageName'),'.blob.core.windows.net/vhds/',variables('vmName'),'-OS.vhd')]"
-          },
           "caching": "ReadWrite",
           "createOption": "FromImage"
         }
@@ -133,7 +129,7 @@
       "application": "AutomationStack",
       "udp": "[parameters('udp')]"
     },
-    "apiVersion": "2015-05-01-preview",
+    "apiVersion": "2017-03-30",
     "location": "[resourceGroup().location]",
     "dependsOn": [
       "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
@@ -152,7 +148,7 @@
       "application": "AutomationStack",
       "udp": "[parameters('udp')]"
     },
-    "apiVersion": "2015-06-15",
+    "apiVersion": "2017-03-30",
     "location": "[resourceGroup().location]",
     "dependsOn": [
       "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"

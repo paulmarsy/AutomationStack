@@ -3,7 +3,8 @@
   "Id": "variableset-LibraryVariableSets-1",
   "OwnerId": "LibraryVariableSets-1",
   "Version": 5,
-  "Variables": [{
+  "Variables": [
+    {
       "Id": "97c0ebe0-d669-1654-8f4a-a872980b204e",
       "Name": "UDP",
       "Value": "#{UDP}"

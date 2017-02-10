@@ -13,7 +13,7 @@
             "application": "AutomationStack",
             "udp": "[parameters('udp')]"
         },
-        "apiVersion": "2016-03-30",
+        "apiVersion": "2016-12-01",
         "location": "[resourceGroup().location]",
         "properties": {
             "securityRules": [{
@@ -49,7 +49,7 @@
             "application": "AutomationStack",
             "udp": "[parameters('udp')]"
         },
-        "apiVersion": "2016-03-30",
+        "apiVersion": "2016-12-01",
         "location": "[resourceGroup().location]",
         "properties": {
             "securityRules": [{
@@ -97,7 +97,7 @@
             "application": "AutomationStack",
             "udp": "[parameters('udp')]"
         },
-        "apiVersion": "2016-03-30",
+        "apiVersion": "2016-12-01",
         "location": "[resourceGroup().location]",
         "properties": {
             "securityRules": [{

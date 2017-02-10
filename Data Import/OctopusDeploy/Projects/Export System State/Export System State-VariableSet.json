@@ -2,7 +2,7 @@
   "$type": "Octopus.Core.Model.Variables.VariableSet, Octopus.Core",
   "Id": "variableset-Projects-4",
   "OwnerId": "Projects-4",
-  "Version": 9,
+  "Version": 12,
   "Variables": [
     {
       "Id": "2e80127f-377b-331b-0b8b-e35f73087eca",
@@ -25,14 +25,24 @@
       "Value": "D:\\TeamCity\\#{TeamCityArchiveName}"
     },
     {
-      "Id": "f18b6aa8-2136-eb53-8cb1-c17b0378a510",
-      "Name": "OctopusArchiveName",
-      "Value": "Octopus - #{Octopus.Release.Number}.zip"
+      "Id": "bc3f91f9-2184-b0b9-5b40-755cbf643a09",
+      "Name": "ArchiveBaseName",
+      "Value": "#{Octopus.Deployment.Tenant.Name} - #{Octopus.Release.Number}"
     },
     {
-      "Id": "d08ce746-27e5-d943-0667-6d6ae5c60d79",
-      "Name": "TeamCityArchiveName",
-      "Value": "TeamCity - #{Octopus.Release.Number}.zip"
+      "Id": "3292c751-8229-2af3-9575-89c956e5454b",
+      "Name": "ArchiveFileName",
+      "Value": "#{ArchiveBaseName}.zip"
+    },
+    {
+      "Id": "d7519cb5-5045-4e38-1218-c1097c21dc99",
+      "Name": "ExportRootPath",
+      "Value": "D:\\#{Octopus.Deployment.Tenant.Name}"
+    },
+    {
+      "Id": "69d90320-e6d0-1a82-a0ea-1af64c123bfb",
+      "Name": "ArchivePath",
+      "Value": "#{ExportRootPath}\\#{ArchiveFileName}"
     }
   ],
   "RelatedDocumentIds": []

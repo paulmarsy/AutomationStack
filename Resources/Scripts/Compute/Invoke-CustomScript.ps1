@@ -34,7 +34,7 @@ Write-Host 'Waiting for script to connect and send...'
 $logPosition = 0
 $terminateSignaled = $false
 do {
-        Start-Sleep 1
+        Start-Sleep -Milliseconds 250
         $logFileBlobRef.DownloadText().Split([System.Environment]::NewLine) | ? { -not [string]::IsNullOrEmpty($_) } | Select-Object -Skip $logPosition | % { 
                 $logPosition++
                 if ($_.Trim() -eq 'SIGTERM') { $terminateSignaled = $true }

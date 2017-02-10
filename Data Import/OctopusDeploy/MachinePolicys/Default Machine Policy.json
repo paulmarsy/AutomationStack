@@ -7,7 +7,7 @@
   "MachineHealthCheckPolicy": {
     "TentacleEndpointHealthCheckPolicy": {
       "RunType": "Inline",
-      "ScriptBody": "$freeDiskSpaceThreshold = 5GB\r\n\r\nTry {\r\n\tGet-WmiObject win32_LogicalDisk -ErrorAction Stop  | ? { ($_.DriveType -eq 3) -and ($_.FreeSpace -ne $null)} |  % { CheckDriveCapacity @{Name =$_.DeviceId; FreeSpace=$_.FreeSpace} }\r\n} Catch [System.Runtime.InteropServices.COMException] {\r\n\tGet-WmiObject win32_Volume | ? { ($_.DriveType -eq 3) -and ($_.FreeSpace -ne $null) -and ($_.DriveLetter -ne $null)} | % { CheckDriveCapacity @{Name =$_.DriveLetter; FreeSpace=$_.FreeSpace} }\r\n\tGet-WmiObject Win32_MappedLogicalDisk | ? { ($_.FreeSpace -ne $null) -and ($_.DeviceId -ne $null)} | % { CheckDriveCapacity @{Name =$_.DeviceId; FreeSpace=$_.FreeSpace} }\t\r\n}"
+      "ScriptBody": "$freeDiskSpaceThreshold = 5GB\r\n\r\nTry {\r\n\tGet-WmiObject win32_LogicalDisk -ErrorAction Stop  | ? { ($_.DriveType -eq 3) -and ($_.FreeSpace -ne $null) -and ($_.DeviceId -notin @('D:','E:'))} |  % { CheckDriveCapacity @{Name =$_.DeviceId; FreeSpace=$_.FreeSpace} }\r\n} Catch [System.Runtime.InteropServices.COMException] {\r\n\tGet-WmiObject win32_Volume | ? { ($_.DriveType -eq 3) -and ($_.FreeSpace -ne $null) -and ($_.DriveLetter -ne $null)} | % { CheckDriveCapacity @{Name =$_.DriveLetter; FreeSpace=$_.FreeSpace} }\r\n\tGet-WmiObject Win32_MappedLogicalDisk | ? { ($_.FreeSpace -ne $null) -and ($_.DeviceId -ne $null)} | % { CheckDriveCapacity @{Name =$_.DeviceId; FreeSpace=$_.FreeSpace} }\t\r\n}"
     },
     "SshEndpointHealthCheckPolicy": {
       "RunType": "Inline",

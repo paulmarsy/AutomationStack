@@ -1,0 +1,16 @@
+{
+  "$type": "Octopus.Core.Model.TagSets.TagSet, Octopus.Core",
+  "Id": "TagSets-1",
+  "Name": "Automation Stack",
+  "Description": "",
+  "SortOrder": 0,
+  "Tags": [
+    {
+      "Id": "TagSets-1/Tags-1",
+      "Name": "Application",
+      "Description": null,
+      "Color": "#6e6e6e",
+      "SortOrder": 0
+    }
+  ]
+}

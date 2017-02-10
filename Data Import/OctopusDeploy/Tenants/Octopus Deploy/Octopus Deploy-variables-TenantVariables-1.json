@@ -1,0 +1,9 @@
+{
+  "$type": "Octopus.Core.Model.Variables.TenantVariable, Octopus.Core",
+  "Id": "TenantVariables-1",
+  "TenantId": "Tenants-1",
+  "OwnerId": "LibraryVariableSets-2",
+  "EnvironmentId": null,
+  "VariableTemplateId": "41e9f30b-1705-4b91-90c5-b0ba3d83f8f8",
+  "Value": "AutomationStack#{UDP | ToUpper}"
+}

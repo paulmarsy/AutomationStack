@@ -114,7 +114,7 @@ function New-AutomationStack {
                             Write-Host -ForegroundColor Gray "`t`t- Show-AutomationStackUsage - Shows Azure usage & billing info (will take time for Azure to collate)"
                             Write-Host -ForegroundColor Gray "`t`t- Connect-AutomationStack <Octopus|TeamCity> - Opens RDP session to the relevant Azure VM"
                             Write-Host -ForegroundColor Gray "`t`t- Remove-AutomationStack - Removes Azure resources created by this deployment"
-                            Write-Host -ForegroundColor Gray "`t`t- Find-AutomationStackDeployment - Searches for any AutomationStack deployments"                        }
+                            Write-Host -ForegroundColor Gray "`t`t- Find-AutomationStackDeployment - Searches for other AutomationStack deployments"                        }
                     }
                 }
                 Start-DeploymentStage -StageNumber $StageNumber -Heading $Heading -ScriptBlock $ScriptBlock
