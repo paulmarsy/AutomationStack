@@ -2,13 +2,10 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-                "udp": {
+        "udp": {
             "type": "string"
         },
         "name": {
-            "type": "string"
-        },
-        "vmAdminUsername": {
             "type": "string"
         }
     },
@@ -22,20 +19,25 @@
                 "uri": "[uri(deployment().properties.templateLink.uri, 'virtualMachines.json')]"
             },
             "parameters": {
-                    "udp": {
-                        "value": "[parameters('udp')]"
-                    },
-                    "osDiskType": {
-                        "value": "Managed"
-                    },
-                    "osProfileType": {
-                        "value": "Windows"
-                    },
+                "udp": {
+                    "value": "[parameters('udp')]"
+                },
                 "name": {
                     "value": "[parameters('name')]"
                 },
+                "osDiskType": {
+                    "value": "Managed"
+                },
+                "osProfileType": {
+                    "value": "Windows"
+                },
                 "vmAdminUsername": {
-                    "value": "[parameters('vmAdminUsername')]"
+                    "reference": {
+                        "keyVault": {
+                            "id": "[concat(resourceGroup().id, '/providers/Microsoft.KeyVault/vaults/keyvault-', parameters('udp'))]"
+                        },
+                        "secretName": "VMAdminUsername"
+                    }
                 },
                 "vmAdminPassword": {
                     "reference": {

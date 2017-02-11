@@ -3,13 +3,9 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "templateSasToken": {
-            "type": "string"
+            "type": "securestring"
         },
-
         "udp": {
-            "type": "string"
-        },
-        "sqlAdminUsername": {
             "type": "string"
         }
     },
@@ -20,44 +16,65 @@
     },
     "resources": [{
         "apiVersion": "2016-09-01",
-        "name": "Infrastructure/automationAccounts",
+        "name": "AutomationAccounts",
         "type": "Microsoft.Resources/deployments",
         "properties": {
             "mode": "Incremental",
             "templateLink": {
-                "uri": "[concat(uri(variables('templateBaseUrl'), 'automationAccounts.json'), parameters('templateSasToken')]"
+                "uri": "[concat(uri(variables('templateBaseUrl'), '/Infrastructure/automationAccounts.json'), parameters('templateSasToken'))]"
             },
             "parameters": {
                 "automationName": {
                     "value": "[variables('automationName')]"
+                },
+                "octopusAutomationCredentialUsername": {
+                    "reference": {
+                        "keyVault": {
+                            "id": "[concat(resourceGroup().id, '/providers/Microsoft.KeyVault/vaults/keyvault-', parameters('udp'))]"
+                        },
+                        "secretName": "OctopusAutomationCredentialUsername"
+                    }
+                },
+                "octopusAutomationCredentialPassword": {
+                    "reference": {
+                        "keyVault": {
+                            "id": "[concat(resourceGroup().id, '/providers/Microsoft.KeyVault/vaults/keyvault-', parameters('udp'))]"
+                        },
+                        "secretName": "OctopusAutomationCredentialPassword"
+                    }
                 }
             }
         }
     }, {
         "apiVersion": "2016-09-01",
-        "name": "Infrastructure/networkSecurityGroups",
+        "name": "NetworkSecurityGroups",
         "type": "Microsoft.Resources/deployments",
         "properties": {
             "mode": "Incremental",
             "templateLink": {
-                "uri": "[uri(deployment().properties.templateLink.uri, 'networkSecurityGroups.json')]"
+                "uri": "[concat(uri(variables('templateBaseUrl'), '/Infrastructure/networkSecurityGroups.json'), parameters('templateSasToken'))]"
             }
         }
     }, {
         "apiVersion": "2016-09-01",
-        "name": "Infrastructure/sqlServers",
+        "name": "SqlServers",
         "type": "Microsoft.Resources/deployments",
         "properties": {
             "mode": "Incremental",
             "templateLink": {
-                "uri": "[uri(deployment().properties.templateLink.uri, 'sqlServers.json')]"
+                "uri": "[concat(uri(variables('templateBaseUrl'), '/Infrastructure/sqlServers.json'), parameters('templateSasToken'))]"
             },
             "parameters": {
                 "sqlServerName": {
                     "value": "[variables('sqlServerName')]"
                 },
                 "sqlAdminUsername": {
-                    "value": "[parameters('sqlAdminUsername')]"
+                    "reference": {
+                        "keyVault": {
+                            "id": "[concat(resourceGroup().id, '/providers/Microsoft.KeyVault/vaults/keyvault-', parameters('udp'))]"
+                        },
+                        "secretName": "SqlAdminUsername"
+                    }
                 },
                 "sqlAdminPassword": {
                     "reference": {
@@ -71,12 +88,12 @@
         }
     }, {
         "apiVersion": "2016-09-01",
-        "name": "Infrastructure/virtualNetworks",
+        "name": "VirtualNetworks",
         "type": "Microsoft.Resources/deployments",
         "properties": {
             "mode": "Incremental",
             "templateLink": {
-                "uri": "[uri(deployment().properties.templateLink.uri, 'virtualNetworks.json')]"
+                "uri": "[concat(uri(variables('templateBaseUrl'), '/Infrastructure/virtualNetworks.json'), parameters('templateSasToken'))]"
             }
         }
     }]

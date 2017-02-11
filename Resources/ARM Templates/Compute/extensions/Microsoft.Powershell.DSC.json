@@ -9,7 +9,7 @@
       "type": "securestring"
     },
     "registrationUrl": {
-      "type": "string"
+      "type": "securestring"
     },
     "nodeConfigurationName": {
       "type": "string"

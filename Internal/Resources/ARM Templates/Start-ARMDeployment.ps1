@@ -1,6 +1,7 @@
 function Start-ARMDeployment {
     param(
         $ResourceGroupName,
+        [ValidateSet('File','Uri')]$Mode,
         $Template,
         $TemplateParameters
     )
@@ -10,18 +11,17 @@ function Start-ARMDeployment {
 
     $args = @{
         ResourceGroupName = $ResourceGroupName
-        TemplateFile = (Join-Path -Resolve $ResourcesPath ('ARM Templates\{0}.json' -f $Template))
+        TemplateParameterObject = $TemplateParameters
         Mode = 'Incremental'
     }
-
-    $TemplateParametersFilePath = Join-Path $ResourcesPath ('ARM Templates\{0}.parameters.json' -f $Template)
-    if (Test-Path $TemplateParametersFilePath) {
-        $tokenisedTemplateParameterFile = Join-Path $TempPath ('{0}.parameters.json' -f $Template)
-        $CurrentContext.ParseFile($TemplateParametersFilePath, $tokenisedTemplateParameterFile)
-        $args += @{ TemplateParameterFile = $tokenisedTemplateParameterFile }
-        $args += $TemplateParameters
-    } else {
-        $args += @{ TemplateParameterObject = $TemplateParameters }
+    $args += switch ($Mode) {
+        'File' { @{ TemplateFile = (Join-Path -Resolve $ResourcesPath ('ARM Templates\{0}.json' -f $Template)) } }
+        'Uri' {
+            @{
+                TemplateUri = (New-AzureStorageBlobSASToken -Container arm -Blob $Template -Policy 'TemplateDeployment' -FullUri -Protocol HttpsOnly)
+                templateSasToken = (New-AzureStorageContainerSASToken -Name arm -Policy 'TemplateDeployment' -Protocol HttpsOnly)
+            }
+        }
     }
 
     Write-Host -NoNewLine "Testing ARM template $Template... "
@@ -30,9 +30,8 @@ function Start-ARMDeployment {
 
     try {
         Write-Host -NoNewLine "Starting ARM template deployment of $Template to $ResourceGroupName... "
-        $deploymentName = '{0}-{1}' -f $Template, [datetime]::UtcNow.tostring('o').Replace(':','.').Substring(0,19)
-        $deployment = New-AzureRmResourceGroupDeployment -Name $deploymentName -Force @args 
-        Write-Host -ForegroundColor Green 'successfull!'
+        $deployment = New-AzureRmResourceGroupDeployment -Force @args 
+        Write-Host -ForegroundColor Green 'successfull'
         Write-Host
         $deployment | Format-List -Property @('DeploymentName','ResourceGroupName','Mode','ProvisioningState','Timestamp','ParametersString', 'OutputsString') | Out-String | % Trim | Out-Host
     }

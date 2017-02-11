@@ -5,7 +5,7 @@ function Initialize-CoreInfrastructure {
     }
     
     $CurrentContext.Set('KeyVaultName', 'keyvault-#{UDP}')
-    $coreInfrastructureDeploy = Start-ARMDeployment -ResourceGroupName $CurrentContext.Get('ResourceGroup') -Template 'coreinfrastructure' -TemplateParameters @{
+    $coreInfrastructureDeploy = Start-ARMDeployment -Mode File -ResourceGroupName $CurrentContext.Get('ResourceGroup') -Template 'coreinfrastructure' -TemplateParameters @{
         udp = $CurrentContext.Get('UDP')
         servicePrincipalObjectId = $CurrentContext.Get('ServicePrincipalObjectId')
         adminUserObjectId = $CurrentContext.Get('AdminUserObjectId')
@@ -30,10 +30,19 @@ function Initialize-CoreInfrastructure {
     Set-AzureRmKeyVaultAccessPolicy -VaultName $CurrentContext.Get('KeyVaultName') -ResourceGroupName $CurrentContext.Get('ResourceGroup') -EnabledForTemplateDeployment -EnabledForDiskEncryption 
 
     New-KeyVaultSecret -Name AutomationRegistrationKey -Value $automationRegInfo.PrimaryKey
+    New-KeyVaultSecret -Name AutomationRegistrationUrl -Value $automationRegInfo.Endpoint
+    
     New-KeyVaultSecret -Name StorageAccountKey -Value $CurrentContext.Get('StorageAccountKey')
-    New-KeyVaultSecret -Name StackAdminPassword -Value $CurrentContext.Get('StackAdminPassword')
+    
+    New-KeyVaultSecret -Name SqlAdminUsername -Value $CurrentContext.Get('SqlServerUsername')
     New-KeyVaultSecret -Name SqlAdminPassword -Value $CurrentContext.Get('SqlServerPassword')
+
+    New-KeyVaultSecret -Name VMAdminUsername -Value $CurrentContext.Get('StackAdminUsername')
     New-KeyVaultSecret -Name VMAdminPassword -Value $CurrentContext.Get('StackAdminPassword')
+
+    New-KeyVaultSecret -Name OctopusAutomationCredentialUsername -Value $CurrentContext.Get('OctopusAutomationCredentialUsername')
     New-KeyVaultSecret -Name OctopusAutomationCredentialPassword -Value $CurrentContext.Get('OctopusAutomationCredentialPassword')
+    
+    New-KeyVaultSecret -Name ServicePrincipalClientId -Value $CurrentContext.Get('ServicePrincipalClientId')
     New-KeyVaultSecret -Name ServicePrincipalClientSecret -Value $CurrentContext.Get('ServicePrincipalClientSecret')
 }

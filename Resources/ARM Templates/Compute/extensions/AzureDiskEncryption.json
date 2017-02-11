@@ -9,7 +9,7 @@
       "type": "string"
     },
     "clientID": {
-      "type": "string"
+      "type": "securestring"
     },
     "clientSecret": {
       "type": "securestring"
@@ -45,9 +45,6 @@
       "apiVersion": "2016-09-01",
       "name": "AzureDiskEncryptionUpdateVm",
       "type": "Microsoft.Resources/deployments",
-      "dependsOn": [
-        "[resourceId('Microsoft.Compute/virtualMachines/extensions',  parameters('vmName'), concat(parameters('vmName'),'/AzureDiskEncryption'))]"
-      ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {

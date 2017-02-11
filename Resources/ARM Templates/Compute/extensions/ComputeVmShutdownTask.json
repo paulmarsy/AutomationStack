@@ -18,9 +18,6 @@
     "apiVersion": "2016-05-15",
     "location": "[resourceGroup().location]",
     "tags": "[resourceGroup().tags]",
-    "dependsOn": [
-      "[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]"
-    ],
     "properties": {
       "status": "[parameters('computeVmShutdownStatus')]",
       "taskType": "ComputeVmShutdownTask",

@@ -48,30 +48,32 @@ function New-AutomationStack {
                         }
                     }
                     2 {
-                        $Heading = 'Azure KeyVault & Service Principal Authentication'
+                        $Heading = 'Configuring Service Principal Authentication'
                         {
                             New-AzureServicePrincipal
-                            Invoke-SharedScript Resources 'New-ResourceGroup' -UDP $CurrentContext.Get('UDP') -ResourceGroupName $CurrentContext.Get('ResourceGroup') -Location ($CurrentContext.Get('AzureRegion'))
-                            Initialize-KeyVault
                             Connect-AzureRmServicePrincipal
-                            Publish-AutomationStackResources -SkipAuth -Upload StackResources
                         }
                     }
                     3 {
                         $Heading = 'Provisioning Core Infrastructure'
                         {
+                            Invoke-SharedScript Resources 'New-ResourceGroup' -UDP $CurrentContext.Get('UDP') -ResourceGroupName $CurrentContext.Get('ResourceGroup') -Location ($CurrentContext.Get('AzureRegion'))
                             Initialize-CoreInfrastructure
+                            Set-AzureRmCurrentStorageAccount -ResourceGroupName $ResourceGroupName -Name $CurrentContext.Set('StorageAccountName')
+                            New-AzureStorageContainerStoredAccessPolicy -Container arm -Policy 'TemplateDeployment' -Permission r -ExpiryTime (Get-Date).AddHours(3)
+                            Publish-AutomationStackResources -SkipAuth -Upload StackResources
                         }
                     }
                     4 {
-                        $Heading = 'Provisioning Octopus Deploy Infrastructure'
+                        $Heading = 'Provisioning Azure Infrastructure'
                         {
-                            Register-OctopusAutomation
+                            Initialize-AzureInfrastructure
                         }
                     }
                     5 {
                         $Heading = 'Provisioning Octopus Deploy Application'
                         {
+                            throw 'stop'
                             Initialize-OctopusDeployInfrastructure
                         }
                     }

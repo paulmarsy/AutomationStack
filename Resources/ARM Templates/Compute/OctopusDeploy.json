@@ -5,27 +5,6 @@
         "udp": {
             "type": "string"
         },
-        "vmAdminUsername": {
-            "type": "string"
-        },
-        "vmAdminPassword": {
-            "type": "securestring"
-        },
-        "clientID": {
-            "type": "string"
-        },
-        "clientSecret": {
-            "type": "securestring"
-        },
-        "registrationKey": {
-            "type": "securestring"
-        },
-        "registrationUrl": {
-            "type": "string"
-        },
-        "nodeConfigurationName": {
-            "type": "string"
-        },
         "timestamp": {
             "type": "string"
         },
@@ -38,7 +17,8 @@
     },
     "variables": {
         "name": "Octopus",
-        "vmName": "[concat(variables('name'),'VM')]"
+        "vmName": "[concat(variables('name'),'VM')]",
+        "nodeConfigurationName": "OctopusDeploy.Server"
     },
     "resources": [{
         "apiVersion": "2016-09-01",
@@ -62,9 +42,6 @@
         "apiVersion": "2016-09-01",
         "name": "[concat(variables('name'), 'SqlDatabase')]",
         "type": "Microsoft.Resources/deployments",
-        "dependsOn": [
-            "[concat('Microsoft.Resources/deployments/', variables('name'), 'Networking')]"
-        ],
         "properties": {
             "mode": "Incremental",
             "templateLink": {
@@ -92,20 +69,17 @@
                 "uri": "[uri(deployment().properties.templateLink.uri, 'virtualMachines/WindowsServer2016.json')]"
             },
             "parameters": {
+                "udp": {
+                    "value": "[parameters('udp')]"
+                },
                 "name": {
                     "value": "[variables('name')]"
-                },
-                "vmAdminUsername": {
-                    "value": "[parameters('vmAdminUsername')]"
-                },
-                "vmAdminPassword": {
-                    "value": "[parameters('vmAdminPassword')]"
                 }
             }
         }
     }, {
         "apiVersion": "2016-09-01",
-        "name": "[concat(variables('name'), 'Extensions/AzureDiskEncryption')]",
+        "name": "[concat(variables('name'), 'Extensions', 'AzureDiskEncryption')]",
         "type": "Microsoft.Resources/deployments",
         "dependsOn": [
             "[concat('Microsoft.Resources/deployments/', variables('name'), 'VirtualMachine')]"
@@ -123,16 +97,26 @@
                     "value": "[variables('vmName')]"
                 },
                 "clientID": {
-                    "value": "[parameters('clientID')]"
+                    "reference": {
+                        "keyVault": {
+                            "id": "[concat(resourceGroup().id, '/providers/Microsoft.KeyVault/vaults/keyvault-', parameters('udp'))]"
+                        },
+                        "secretName": "ServicePrincipalClientId"
+                    }
                 },
                 "clientSecret": {
-                    "value": "[parameters('clientSecret')]"
+                    "reference": {
+                        "keyVault": {
+                            "id": "[concat(resourceGroup().id, '/providers/Microsoft.KeyVault/vaults/keyvault-', parameters('udp'))]"
+                        },
+                        "secretName": "ServicePrincipalClientSecret"
+                    }
                 }
             }
         }
     }, {
         "apiVersion": "2016-09-01",
-        "name": "[concat(variables('name'), 'Extensions/Microsoft.Powershell.DSC')]",
+        "name": "[concat(variables('name'), 'Extensions', 'Microsoft.Powershell.DSC')]",
         "type": "Microsoft.Resources/deployments",
         "dependsOn": [
             "[concat('Microsoft.Resources/deployments/', variables('name'), 'VirtualMachine')]"
@@ -147,10 +131,50 @@
                     "value": "[variables('vmName')]"
                 },
                 "registrationKey": {
-                    "value": "[parameters('registrationKey')]"
+                    "reference": {
+                        "keyVault": {
+                            "id": "[concat(resourceGroup().id, '/providers/Microsoft.KeyVault/vaults/keyvault-', parameters('udp'))]"
+                        },
+                        "secretName": "AutomationRegistrationKey"
+                    }
                 },
                 "registrationUrl": {
-                    "value": "[parameters('registrationUrl')]"
+                    "reference": {
+                        "keyVault": {
+                            "id": "[concat(resourceGroup().id, '/providers/Microsoft.KeyVault/vaults/keyvault-', parameters('udp'))]"
+                        },
+                        "secretName": "AutomationRegistrationUrl"
+                    }
+                },
+                "nodeConfigurationName": {
+                    "value": "[variables('nodeConfigurationName')]"
+                },
+                "timestamp": {
+                    "value": "[parameters('timestamp')]"
+                }
+            }
+        }
+    }, {
+        "apiVersion": "2016-09-01",
+        "name": "[concat(variables('name'), 'Extensions', 'ComputeVmShutdownTask')]",
+        "type": "Microsoft.Resources/deployments",
+        "dependsOn": [
+            "[concat('Microsoft.Resources/deployments/', variables('name'), 'VirtualMachine')]"
+        ],
+        "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+                "uri": "[uri(deployment().properties.templateLink.uri, 'extensions/ComputeVmShutdownTask.json')]"
+            },
+            "parameters": {
+                "vmName": {
+                    "value": "[variables('vmName')]"
+                },
+                "computeVmShutdownStatus": {
+                    "value": "[parameters('computeVmShutdownStatus')]"
+                },
+                "computeVmShutdownTime": {
+                    "value": "[parameters('computeVmShutdownTime')]"
                 }
             }
         }

@@ -27,7 +27,7 @@
       "defaultValue": "Standard_F2S"
     },
     "vmAdminUsername": {
-      "type": "string"
+      "type": "securestring"
     },
     "vmAdminPassword": {
       "type": "securestring"

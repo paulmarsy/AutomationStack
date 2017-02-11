@@ -7,9 +7,6 @@
         },
         "name": {
             "type": "string"
-        },
-        "vmAdminUsername": {
-            "type": "string"
         }
     },
     "resources": [{
@@ -25,17 +22,22 @@
                 "udp": {
                     "value": "[parameters('udp')]"
                 },
+                "name": {
+                    "value": "[parameters('name')]"
+                },
                 "osDiskType": {
                     "value": "Managed"
                 },
                 "osProfileType": {
                     "value": "Linux"
                 },
-                "name": {
-                    "value": "[parameters('name')]"
-                },
                 "vmAdminUsername": {
-                    "value": "[parameters('vmAdminUsername')]"
+                    "reference": {
+                        "keyVault": {
+                            "id": "[concat(resourceGroup().id, '/providers/Microsoft.KeyVault/vaults/keyvault-', parameters('udp'))]"
+                        },
+                        "secretName": "VMAdminUsername"
+                    }
                 },
                 "vmAdminPassword": {
                     "reference": {

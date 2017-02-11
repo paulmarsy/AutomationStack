@@ -6,7 +6,7 @@
             "type": "string"
         },
         "octopusAutomationCredentialUsername": {
-            "type": "string"
+            "type": "securestring"
         },
         "octopusAutomationCredentialPassword": {
             "type": "securestring"

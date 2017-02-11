@@ -18,6 +18,10 @@
         "automation": {
             "type": "object",
             "value": "[reference(resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName')), '2015-06-01')]"
+        },
+        "deploy": {
+            "type":"object",
+            "value": "[deployment()]"
         }
     }
 }
