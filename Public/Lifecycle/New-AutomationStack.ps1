@@ -77,7 +77,8 @@ function New-AutomationStack {
                     6 {
                         $Heading = 'Uploading AutomationStack into Azure Storage'
                         {
-                            Publish-StorageAccountResources -Upload All
+                            Publish-AutomationStackResources -SkipAuth -Upload StackResources
+                            Publish-AutomationStackResources -SkipAuth -Upload DataImports
                         }
                     }
                     7 {
@@ -95,7 +96,7 @@ function New-AutomationStack {
                     9 {
                         $Heading = 'Octopus Deploy - Publishing AutomationStack Packages'
                         {
-                            Publish-OctopusNuGetPackages
+                            Publish-AutomationStackResources -SkipAuth -Upload OctopusFeedPackages
                         }
                     }
                     10 {

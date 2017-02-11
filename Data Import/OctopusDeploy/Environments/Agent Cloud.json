@@ -2,7 +2,7 @@
   "$type": "Octopus.Core.Model.Environments.DeploymentEnvironment, Octopus.Core",
   "Id": "Environments-1",
   "Name": "Agent Cloud",
-  "Description": "",
-  "SortOrder": 3,
+  "Description": "TeamCity Agent Cloud",
+  "SortOrder": 2,
   "UseGuidedFailure": false
 }

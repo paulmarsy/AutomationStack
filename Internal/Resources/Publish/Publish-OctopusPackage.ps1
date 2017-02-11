@@ -1,4 +1,4 @@
-function Send-ToOctopusPackageFeed {
+function Publish-OctopusPackage {
     param(
         $Path,
         $PackageName

@@ -5,7 +5,7 @@
   "DisplayName": "Automation Stack Service",
   "EmailAddress": "",
   "Notes": null,
-  "PasswordHashed": "3E8$gNJKYYJ3l2QDMM/f8tvItQ==$wdCnaIz/20TTj/Oic63zR6zRpvcZX29C",
+  "PasswordHashed": "#{Encoding[OctopusHash].StackAdminPassword}",
   "IsActive": true,
   "IsService": true,
   "ApiKey": null,
