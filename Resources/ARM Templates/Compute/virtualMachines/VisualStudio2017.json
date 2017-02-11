@@ -1,0 +1,60 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "udp": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "vmAdminUsername": {
+      "type": "string"
+    }
+  },
+  "resources": [{
+    "apiVersion": "2016-09-01",
+    "name": "VisualStudio2017",
+    "type": "Microsoft.Resources/deployments",
+    "properties": {
+      "mode": "Incremental",
+      "templateLink": {
+        "uri": "[uri(deployment().properties.templateLink.uri, 'virtualMachines.json')]"
+      },
+      "parameters": {
+        "udp": {
+          "value": "[parameters('udp')]"
+        },
+        "osDiskType": {
+          "value": "Unmanaged"
+        },
+        "osProfileType": {
+          "value": "Windows"
+        },
+        "name": {
+          "value": "[parameters('name')]"
+        },
+        "vmAdminUsername": {
+          "value": "[parameters('vmAdminUsername')]"
+        },
+        "vmAdminPassword": {
+          "reference": {
+            "keyVault": {
+              "id": "[concat(resourceGroup().id, '/providers/Microsoft.KeyVault/vaults/keyvault-', parameters('udp'))]"
+            },
+            "secretName": "VMAdminPassword"
+          }
+        },
+        "publisher": {
+          "value": "MicrosoftVisualStudio"
+        },
+        "offer": {
+          "value": "VisualStudio"
+        },
+        "sku": {
+          "value": "VS-2017-RC3-Ent-WS2016"
+        }
+      }
+    }
+  }]
+}

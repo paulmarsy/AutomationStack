@@ -2,23 +2,20 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "productName": {
-            "type": "string"
-        },
-        "keyVaultResourceID": {
+        "vmName": {
             "type": "string"
         },
         "keyVaultSecretUrl": {
             "type": "string"
+        },
+        "keyVaultName": {
+            "type": "string"
         }
-    },
-    "variables": {
-        "vmName": "[concat(parameters('productName'),'VM')]"
     },
     "resources": [{
         "apiVersion": "2017-03-30",
         "type": "Microsoft.Compute/virtualMachines",
-        "name": "[variables('vmName')]",
+        "name": "[parameters('vmName')]",
         "location": "[resourceGroup().location]",
         "properties": {
             "storageProfile": {
@@ -26,7 +23,7 @@
                     "encryptionSettings": {
                         "diskEncryptionKey": {
                             "sourceVault": {
-                                "id": "[parameters('keyVaultResourceID')]"
+                                "id": "[resourceId('Microsoft.KeyVault/vaults',parameters('keyVaultName'))]"
                             },
                             "secretUrl": "[parameters('keyVaultSecretUrl')]"
                         }

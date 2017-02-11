@@ -1,0 +1,74 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "udp": {
+            "type": "string"
+        },
+        "sqlAdminUsername": {
+            "type": "string"
+        },
+        "sqlAdminPassword": {
+            "type": "securestring"
+        }
+    },
+    "variables": {
+        "automationName": "[concat('automation-', parameters('udp'))]",
+        "sqlServerName": "[concat('azuresql-', parameters('udp'))]"
+    },
+    "resources": [{
+        "apiVersion": "2016-09-01",
+        "name": "automationAccounts",
+        "type": "Microsoft.Resources/deployments",
+        "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+                "uri": "[uri(deployment().properties.templateLink.uri, 'automationAccounts.json')]"
+            },
+            "parameters": {
+               
+            }
+        }
+    }, {
+        "apiVersion": "2016-09-01",
+        "name": "networkSecurityGroups",
+        "type": "Microsoft.Resources/deployments",
+        "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+                "uri": "[uri(deployment().properties.templateLink.uri, 'networkSecurityGroups.json')]"
+            }
+        }
+    }, {
+        "apiVersion": "2016-09-01",
+        "name": "sqlServers",
+        "type": "Microsoft.Resources/deployments",
+        "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+                "uri": "[uri(deployment().properties.templateLink.uri, 'sqlServers.json')]"
+            },
+            "parameters": {
+                "sqlServerName": {
+                    "value": "[variables('sqlServerName')]"
+                },
+                "sqlAdminUsername": {
+                    "value": "[parameters('sqlAdminUsername')]"
+                },
+                "sqlAdminPassword": {
+                    "value": "[parameters('sqlAdminPassword')]"
+                }
+            }
+        }
+    }, {
+        "apiVersion": "2016-09-01",
+        "name": "virtualNetworks",
+        "type": "Microsoft.Resources/deployments",
+        "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+                "uri": "[uri(deployment().properties.templateLink.uri, 'virtualNetworks.json')]"
+            }
+        }
+    }]
+}

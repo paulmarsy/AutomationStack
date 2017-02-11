@@ -6,14 +6,14 @@ function New-AutomationStack {
         if (!$Stages) {
             if ($null -eq $CurrentContext) {
                 $Stages = 1..$TotalDeploymentStages
-                $firstRun = $true
             } else {
                 $currentStage = $CurrentContext.Get('CurrentStage')
                 Write-Host -ForegroundColor Magenta "Resuming deployment from stage $currentStage"
                 $Stages = $currentStage..$TotalDeploymentStages
-                $firstRun = $false
             }  
         }
+        $firstRun = if ($null -eq $CurrentContext) {$true} else {$false}
+
         if ($firstRun) {
             Install-AzureReqs -Basic
         }
@@ -54,6 +54,7 @@ function New-AutomationStack {
                             Invoke-SharedScript Resources 'New-ResourceGroup' -UDP $CurrentContext.Get('UDP') -ResourceGroupName $CurrentContext.Get('ResourceGroup') -Location ($CurrentContext.Get('AzureRegion'))
                             Initialize-KeyVault
                             Connect-AzureRmServicePrincipal
+                            Publish-AutomationStackResources -SkipAuth -Upload StackResources
                         }
                     }
                     3 {
@@ -75,9 +76,8 @@ function New-AutomationStack {
                         }
                     }
                     6 {
-                        $Heading = 'Uploading AutomationStack into Azure Storage'
+                        $Heading = 'Uploading Octopus & TeamCity Data Imports to Azure Storage'
                         {
-                            Publish-AutomationStackResources -SkipAuth -Upload StackResources
                             Publish-AutomationStackResources -SkipAuth -Upload DataImports
                         }
                     }

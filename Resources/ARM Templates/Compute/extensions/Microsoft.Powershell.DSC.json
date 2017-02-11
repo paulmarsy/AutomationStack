@@ -1,0 +1,88 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmName": {
+      "type": "string"
+    },
+    "registrationKey": {
+      "type": "securestring"
+    },
+    "registrationUrl": {
+      "type": "string"
+    },
+    "nodeConfigurationName": {
+      "type": "string"
+    },
+    "timestamp": {
+      "type": "string"
+    }
+  },
+  "resources": [{
+    "type": "Microsoft.Compute/virtualMachines/extensions",
+    "name": "[concat(parameters('vmName'), '/Microsoft.Powershell.DSC')]",
+    "tags": "[resourceGroup().tags]",
+    "apiVersion": "2017-03-30",
+    "location": "[resourceGroup().location]",
+    "properties": {
+      "publisher": "Microsoft.Powershell",
+      "type": "DSC",
+      "typeHandlerVersion": "2.19",
+      "autoUpgradeMinorVersion": true,
+      "protectedSettings": {
+        "Items": {
+          "registrationKeyPrivate": "[parameters('registrationKey')]"
+        }
+      },
+      "settings": {
+        "ModulesUrl": "https://eus2oaasibizamarketprod1.blob.core.windows.net/automationdscpreview/RegistrationMetaConfigV2.zip",
+        "SasToken": "",
+        "ConfigurationFunction": "RegistrationMetaConfigV2.ps1\\RegistrationMetaConfigV2",
+        "Properties": [{
+          "Name": "RegistrationKey",
+          "Value": {
+            "UserName": "PLACEHOLDER_DONOTUSE",
+            "Password": "PrivateSettingsRef:registrationKeyPrivate"
+          },
+          "TypeName": "System.Management.Automation.PSCredential"
+        }, {
+          "Name": "RegistrationUrl",
+          "Value": "[parameters('registrationUrl')]",
+          "TypeName": "System.String"
+        }, {
+          "Name": "NodeConfigurationName",
+          "Value": "[parameters('nodeConfigurationName')]",
+          "TypeName": "System.String"
+        }, {
+          "Name": "ConfigurationMode",
+          "Value": "ApplyAndAutocorrect",
+          "TypeName": "System.String"
+        }, {
+          "Name": "ConfigurationModeFrequencyMins",
+          "Value": 15,
+          "TypeName": "System.Int32"
+        }, {
+          "Name": "RefreshFrequencyMins",
+          "Value": 30,
+          "TypeName": "System.Int32"
+        }, {
+          "Name": "RebootNodeIfNeeded",
+          "Value": true,
+          "TypeName": "System.Boolean"
+        }, {
+          "Name": "ActionAfterReboot",
+          "Value": "ContinueConfiguration",
+          "TypeName": "System.String"
+        }, {
+          "Name": "AllowModuleOverwrite",
+          "Value": true,
+          "TypeName": "System.Boolean"
+        }, {
+          "Name": "Timestamp",
+          "Value": "[parameters('timestamp')]",
+          "TypeName": "System.String"
+        }]
+      }
+    }
+  }]
+}

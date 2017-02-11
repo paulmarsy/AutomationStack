@@ -1,0 +1,32 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "name": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "nicName": "[concat(parameters('name'),'NIC')]",
+    "virtualNetworkId": "[resourceId('Microsoft.Network/virtualNetworks', 'VirtualNetwork')]",
+    "subnetId": "[concat(variables('virtualNetworkId'),'/subnets/', 'Default')]"
+  },
+  "resources": [{
+    "apiVersion": "2016-12-01",
+    "type": "Microsoft.Network/networkInterfaces",
+    "name": "[variables('nicName')]",
+    "tags": "[resourceGroup().tags]",
+    "location": "[resourceGroup().location]",
+    "properties": {
+      "ipConfigurations": [{
+        "name": "[concat(parameters('name'),'-IPConfig')]",
+        "properties": {
+          "privateIPAllocationMethod": "Dynamic",
+          "subnet": {
+            "id": "[variables('subnetId')]"
+          }
+        }
+      }]
+    }
+  }]
+}

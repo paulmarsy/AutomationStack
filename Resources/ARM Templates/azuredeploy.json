@@ -1,0 +1,83 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "templateSasToken": {
+            "type": "string"
+        },
+
+        "udp": {
+            "type": "string"
+        },
+        "sqlAdminUsername": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "templateBaseUrl": "[concat('http://stackresources',parameters('udp'),'.blob.core.windows.net/arm/')]",
+        "automationName": "[concat('automation-', parameters('udp'))]",
+        "sqlServerName": "[concat('azuresql-', parameters('udp'))]"
+    },
+    "resources": [{
+        "apiVersion": "2016-09-01",
+        "name": "Infrastructure/automationAccounts",
+        "type": "Microsoft.Resources/deployments",
+        "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+                "uri": "[concat(uri(variables('templateBaseUrl'), 'automationAccounts.json'), parameters('templateSasToken')]"
+            },
+            "parameters": {
+                "automationName": {
+                    "value": "[variables('automationName')]"
+                }
+            }
+        }
+    }, {
+        "apiVersion": "2016-09-01",
+        "name": "Infrastructure/networkSecurityGroups",
+        "type": "Microsoft.Resources/deployments",
+        "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+                "uri": "[uri(deployment().properties.templateLink.uri, 'networkSecurityGroups.json')]"
+            }
+        }
+    }, {
+        "apiVersion": "2016-09-01",
+        "name": "Infrastructure/sqlServers",
+        "type": "Microsoft.Resources/deployments",
+        "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+                "uri": "[uri(deployment().properties.templateLink.uri, 'sqlServers.json')]"
+            },
+            "parameters": {
+                "sqlServerName": {
+                    "value": "[variables('sqlServerName')]"
+                },
+                "sqlAdminUsername": {
+                    "value": "[parameters('sqlAdminUsername')]"
+                },
+                "sqlAdminPassword": {
+                    "reference": {
+                        "keyVault": {
+                            "id": "[concat(resourceGroup().id, '/providers/Microsoft.KeyVault/vaults/keyvault-', parameters('udp'))]"
+                        },
+                        "secretName": "SqlAdminPassword"
+                    }
+                }
+            }
+        }
+    }, {
+        "apiVersion": "2016-09-01",
+        "name": "Infrastructure/virtualNetworks",
+        "type": "Microsoft.Resources/deployments",
+        "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+                "uri": "[uri(deployment().properties.templateLink.uri, 'virtualNetworks.json')]"
+            }
+        }
+    }]
+}

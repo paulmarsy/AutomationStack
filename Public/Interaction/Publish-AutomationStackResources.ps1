@@ -35,6 +35,10 @@ function Publish-AutomationStackResources {
 
         if ($Upload -in @('All','StackResources')) {
             Write-Host
+            Write-Host -ForegroundColor Green "`tUploading Azure Resource Manager Templates..."
+            Upload-StackResources -Type BlobStorage -Name arm -Path (Join-Path -Resolve $ResourcesPath 'ARM Templates') -Tokenizer $clonedContext -Context $context
+         
+            Write-Host
             Write-Host -ForegroundColor Green "`tUploading Azure Custom Scripts..."
             Upload-StackResources -Type BlobStorage -Name scripts -Path (Join-Path -Resolve $ResourcesPath 'ARM Custom Scripts') -Tokenizer $clonedContext -Context $context `
                 -FilesToTokenise @('OctopusImport.ps1','TeamCityPrepare.sh')

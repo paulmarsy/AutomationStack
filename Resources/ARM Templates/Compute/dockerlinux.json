@@ -86,10 +86,8 @@
     "apiVersion": "2017-03-30",
     "type": "Microsoft.Compute/virtualMachines",
     "name": "[variables('vmName')]",
-    "tags": {
-      "application": "AutomationStack",
-      "udp": "[parameters('udp')]"
-    },
+      "tags": "[resourceGroup().tags]",
+
     "location": "[resourceGroup().location]",
     "dependsOn": [
       "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
@@ -107,7 +105,7 @@
         "imageReference": {
           "publisher": "Canonical",
           "offer": "UbuntuServer",
-          "sku": "16.10",
+          "sku": "",
           "version": "latest"
         },
         "osDisk": {

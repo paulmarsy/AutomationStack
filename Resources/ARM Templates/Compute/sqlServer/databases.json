@@ -1,0 +1,38 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "udp": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "vmName": "[concat(parameters('name'),'VM')]",
+    "publicIPAddressName": "[concat(parameters('name'),'PublicIP')]",
+    "sqlServerName": "[concat('azuresql-', parameters('udp'))]",
+    "databaseName": "[parameters('name')]"
+  },
+  "resources": [{
+    "type": "Microsoft.Sql/servers/firewallrules",
+    "apiVersion": "2014-04-01-preview",
+    "location": "[resourceGroup().location]",
+    "name": "[concat(variables('sqlServerName'), '/', variables('vmName'))]",
+    "properties": {
+      "endIpAddress": "[reference(variables('publicIPAddressName')).IpAddress]",
+      "startIpAddress": "[reference(variables('publicIPAddressName')).IpAddress]"
+    }
+  }, {
+    "name": "[concat(variables('sqlServerName'), '/', variables('databaseName'))]",
+    "type": "Microsoft.Sql/servers/databases",
+    "location": "[resourceGroup().location]",
+    "tags": "[resourceGroup().tags]",
+    "apiVersion": "2015-05-01-preview",
+    "properties": {
+      "edition": "Basic",
+      "requestedServiceObjectiveName": "Basic"
+    }
+  }]
+}

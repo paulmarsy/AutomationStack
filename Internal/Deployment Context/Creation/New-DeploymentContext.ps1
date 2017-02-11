@@ -32,6 +32,7 @@ function New-DeploymentContext {
         $CurrentContext.Set('StackAdminPassword', ((Get-GuidPart 8) + ((Get-GuidPart 4 -ToUpper))))
     } while  ($CurrentContext.Get('StackAdminPassword') -cnotmatch '^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$')
 
+    $CurrentContext.Set('SqlServerName', 'azuresql-#{UDP}')
     $CurrentContext.Set('SqlServerUsername', '#{StackAdminUsername}')
     do {
         $CurrentContext.Set('SqlServerPassword', ((Get-GuidPart 12) + ((Get-GuidPart 8 -ToUpper))))
