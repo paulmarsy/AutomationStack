@@ -5,9 +5,6 @@
         "templateSasToken": {
             "type": "securestring"
         },
-        "octopusDscConfigurationContent": {
-            "type": "string"
-        },
         "udp": {
             "type": "string"
         },
@@ -19,23 +16,23 @@
         },
         "computeVmShutdownTime": {
             "type": "string"
-        },  
+        },
         "octopusDscJobId": {
             "type": "string"
-        },     
+        },
+        "octopusDscConfiguration": {
+            "type": "string"
+        },
         "octopusDscConfigurationData": {
             "type": "string"
         },
-        "octopusDscVMName": {
+        "octopusDscNodeName": {
             "type": "string"
         },
         "octopusDscConnectionString": {
             "type": "string"
         },
-        "octopusDscOctopusHostName": {
-            "type": "string"
-        },
-        "octopusDscOctopusVersionToInstall": {
+        "octopusDscHostName": {
             "type": "string"
         }
     },
@@ -91,32 +88,23 @@
                 "udp": {
                     "value": "[parameters('udp')]"
                 },
-                "configurationContent": {
-                    "value": "[parameters('octopusDscConfigurationContent')]"
-                },
                 "jobId": {
                     "value": "[parameters('octopusDscJobId')]"
                 },
-                "configurationName": {
-                    "value": "OctopusDeploy"
+                "configuration": {
+                    "value": "[parameters('octopusDscConfiguration')]"
                 },
                 "configurationData": {
                     "value": "[parameters('octopusDscConfigurationData')]"
                 },
                 "octopusNodeName": {
-                    "value": "[parameters('octopusDscVMName')]"
+                    "value": "[parameters('octopusDscNodeName')]"
                 },
-                "connectionString": {
+                "octopusConnectionString": {
                     "value": "[parameters('octopusDscConnectionString')]"
                 },
-                "hostHeader": {
-                    "value": "[concat('http://', parameters('octopusDscOctopusHostName'), '/')]"
-                },
-                "fullyQualifiedUrl": {
-                    "value": "[concat('http://', parameters('octopusDscOctopusHostName'), ':80/')]"
-                },
-                "octopusVersionToInstall": {
-                    "value": "[parameters('octopusDscOctopusVersionToInstall')]"
+                "octopusHostName": {
+                    "value": "[parameters('octopusDscHostName')]"
                 }
             }
         }

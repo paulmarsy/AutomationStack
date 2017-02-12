@@ -7,14 +7,8 @@ function Initialize-AzureInfrastructure {
     Write-Host 'Configuring Storage Account...'
     Publish-AutomationStackResources -SkipAuth -Upload StackResources
     
-    $global:configurationContent = [Newtonsoft.Json.JsonConvert]::SerializeObject((Invoke-DSCComposition -Path (Join-Path $ResourcesPath 'DSC Configurations\OctopusDeploy.ps1'))) | % Trim '"'
-    $configurationDataFile = Join-Path $ResourcesPath 'DSC Configurations\OctopusDeploy.psd1'
-    if (Test-Path $configurationDataFile) {
-        Write-Host "Loading DSC configuration file $configurationDataFile"
-        $configurationData = Invoke-Expression (Get-Content $configurationDataFile -Raw)
-    } else {
-        $configurationData =  @{AllNodes = @()}
-    }
+    $octopusDscConfiguration = Invoke-DSCComposition -Path (Join-Path $ResourcesPath 'DSC Configurations\OctopusDeploy.ps1')
+    $octopusDscConfigurationData = Invoke-Expression (Get-Content -Path (Join-Path $ResourcesPath 'DSC Configurations\OctopusDeploy.psd1') -Raw) | ConvertTo-Json -Compress
 
     Start-ARMDeployment -Mode Uri -ResourceGroupName $CurrentContext.Get('ResourceGroup') -Template 'azuredeploy' -TemplateParameters @{
         udp = $CurrentContext.Get('UDP')
@@ -22,11 +16,10 @@ function Initialize-AzureInfrastructure {
         computeVmShutdownStatus = $CurrentContext.Get('ComputeVmShutdownTask.Status')
         computeVmShutdownTime = $CurrentContext.Get('ComputeVmShutdownTask.Time')
         octopusDscJobId = [System.Guid]::NewGuid().ToString()
-        octopusDscConfigurationContent = $configurationContent
-        octopusDscConfigurationData = ($ConfigurationData | ConvertTo-Json -Compress).ToString()
-        octopusDscVMName = $CurrentContext.Get('OctopusVMName')
+        octopusDscConfiguration = $octopusDscConfiguration
+        octopusDscConfigurationData = $octopusDscConfigurationData
+        octopusDscNodeName = $CurrentContext.Get('OctopusVMName')
         octopusDscConnectionString = $CurrentContext.Get('OctopusConnectionString')
-        octopusDscOctopusHostName = $CurrentContext.Get('OctopusHostName')
-        octopusDscOctopusVersionToInstall = 'latest' 
+        octopusDscHostName = $CurrentContext.Get('OctopusHostName')
     } | Out-Null
 }

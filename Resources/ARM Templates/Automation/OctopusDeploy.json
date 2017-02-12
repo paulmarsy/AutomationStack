@@ -5,13 +5,14 @@
         "udp": {
             "type": "string"
         },
-        "configurationContent": {
-            "type": "string"
-        },
         "jobId": {
             "type": "string"
         },
         "configurationName": {
+            "type": "string",
+            "defaultValue": "OctopusDeploy"
+        },
+        "configuration": {
             "type": "string"
         },
         "configurationData": {
@@ -20,17 +21,15 @@
         "octopusNodeName": {
             "type": "string"
         },
-        "connectionString": {
+        "octopusConnectionString": {
             "type": "string"
         },
-        "hostHeader": {
-            "type": "string"
-        },
-        "fullyQualifiedUrl": {
+        "octopusHostName": {
             "type": "string"
         },
         "octopusVersionToInstall": {
-            "type": "string"
+            "type": "string",
+            "defaultValue": "latest"
         }
     },
     "variables": {
@@ -45,11 +44,11 @@
             "description": "[concat('DSC Configuration ', parameters('configurationName'))]",
             "logVerbose": true,
             "state": "Published",
-            "overwrite":true,
-            "source":{
-         "type":"embeddedContent",
-         "value":"[parameters('configurationContent')]"
-      }
+            "overwrite": true,
+            "source": {
+                "type": "embeddedContent",
+                "value": "[parameters('configuration')]"
+            }
         }
     }, {
         "name": "[concat(variables('automationName'), '/', parameters('jobId'))]",
@@ -66,9 +65,8 @@
             "parameters": {
                 "ConfigurationData": "[parameters('configurationData')]",
                 "OctopusNodeName": "[parameters('octopusNodeName')]",
-                "ConnectionString": "[parameters('connectionString')]",
-                "HostHeader": "[parameters('hostHeader')]",
-                "FullyQualifiedUrl": "[parameters('fullyQualifiedUrl')]",
+                "OctopusConnectionString": "[parameters('octopusConnectionString')]",
+                "OctopusHostName": "[parameters('octopusHostName')]",
                 "OctopusVersionToInstall": "[parameters('octopusVersionToInstall')]"
             }
         }

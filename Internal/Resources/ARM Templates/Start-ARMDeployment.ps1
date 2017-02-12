@@ -9,7 +9,7 @@ function Start-ARMDeployment {
     Write-Host 
     Write-Host -ForegroundColor Cyan "`tStarting Resource Group Deployment of '$Template' to $ResourceGroupName"
 
-    $global:templateDeployArgs = $TemplateParameters
+    $templateDeployArgs = $TemplateParameters.Clone()
     $templateDeployArgs.Add('ResourceGroupName', $ResourceGroupName)
     $templateDeployArgs.Add('Mode', 'Incremental')
 
