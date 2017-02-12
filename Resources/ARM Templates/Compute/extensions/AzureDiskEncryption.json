@@ -2,6 +2,9 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "templateSasToken": {
+      "type": "securestring"
+    },
     "udp": {
       "type": "string"
     },
@@ -16,6 +19,7 @@
     }
   },
   "variables": {
+    "templateBaseUrl": "[concat('https://stackresources',parameters('udp'),'.blob.core.windows.net')]",
     "keyVaultName": "[concat('keyvault-', parameters('udp'))]"
   },
   "resources": [{
@@ -48,7 +52,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[uri(deployment().properties.templateLink.uri, 'AzureDiskEncryption.UpdateVM.json')]"
+          "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Compute/extensions/AzureDiskEncryption.UpdateVM.json'), parameters('templateSasToken'))]"
         },
         "parameters": {
           "vmName": {

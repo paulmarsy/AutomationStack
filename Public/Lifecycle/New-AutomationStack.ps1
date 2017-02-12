@@ -67,37 +67,30 @@ function New-AutomationStack {
                         }
                     }
                     5 {
-                        $Heading = 'Provisioning Octopus Deploy Application'
-                        {
-                            throw 'stop'
-                            Initialize-OctopusDeployInfrastructure
-                        }
-                    }
-                    6 {
                         $Heading = 'Uploading Octopus & TeamCity Data Imports to Azure Storage'
                         {
                             Publish-AutomationStackResources -SkipAuth -Upload DataImports
                         }
                     }
-                    7 {
+                    6 {
                         $Heading = 'Azure Automation DSC Compliance'
                         {
                             Invoke-SharedScript Compute 'Invoke-CustomScript' -Name 'AutomationNodeCompliance' -ResourceGroupName $CurrentContext.Get('ResourceGroup') -VMName $CurrentContext.Get('OctopusVMName') -Location $CurrentContext.Get('AzureRegion') -StorageAccountName $CurrentContext.Get('StorageAccountName') -StorageAccountKey $CurrentContext.Get('StorageAccountKey')
                         }
                     }     
-                    8 {
+                    7 {
                         $Heading = 'Octopus Deploy - Importing Initial State'
                         {
                             Invoke-SharedScript Compute 'Invoke-CustomScript' -Name 'OctopusImport' -ResourceGroupName $CurrentContext.Get('ResourceGroup') -VMName $CurrentContext.Get('OctopusVMName') -Location $CurrentContext.Get('AzureRegion') -StorageAccountName $CurrentContext.Get('StorageAccountName') -StorageAccountKey $CurrentContext.Get('StorageAccountKey')
                         }
                     }
-                    9 {
+                    8 {
                         $Heading = 'Octopus Deploy - Publishing AutomationStack Packages'
                         {
                             Publish-AutomationStackResources -SkipAuth -Upload OctopusFeedPackages
                         }
                     }
-                    10 {
+                    9 {
                         $Heading = 'AutomationStack Deployment Complete'
                         {
                             Show-AutomationStackDetail

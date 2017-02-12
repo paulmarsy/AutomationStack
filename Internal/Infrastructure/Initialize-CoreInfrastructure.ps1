@@ -23,7 +23,7 @@ function Initialize-CoreInfrastructure {
     $CurrentContext.Set('StorageAccountKey', $storageKey)
 
     Write-Host 'Configuring KeyVault...'
-  #  Set-AzureRmKeyVaultAccessPolicy -VaultName $CurrentContext.Get('KeyVaultName') -ResourceGroupName $CurrentContext.Get('ResourceGroup') -EnabledForTemplateDeployment -EnabledForDiskEncryption 
+    Set-AzureRmKeyVaultAccessPolicy -VaultName $CurrentContext.Get('KeyVaultName') -ResourceGroupName $CurrentContext.Get('ResourceGroup') -EnabledForTemplateDeployment -EnabledForDiskEncryption 
 
     New-KeyVaultSecret -Name AutomationRegistrationKey -Value $automationRegInfo.PrimaryKey
     New-KeyVaultSecret -Name AutomationRegistrationUrl -Value $automationRegInfo.Endpoint
@@ -41,9 +41,4 @@ function Initialize-CoreInfrastructure {
     
     New-KeyVaultSecret -Name ServicePrincipalClientId -Value $CurrentContext.Get('ServicePrincipalClientId')
     New-KeyVaultSecret -Name ServicePrincipalClientSecret -Value $CurrentContext.Get('ServicePrincipalClientSecret')
-
-    Write-Host 'Configuring Storage Account...'
-    Publish-AutomationStackResources -SkipAuth -Upload StackResources
-    Set-AzureRmCurrentStorageAccount -ResourceGroupName $CurrentContext.Get('ResourceGroup') -Name $CurrentContext.Get('StorageAccountName') | Out-Null
-    New-AzureStorageContainerStoredAccessPolicy -Container arm -Policy 'TemplateDeployment' -Permission r -ExpiryTime (Get-Date).AddHours(3) | Out-Null
 }

@@ -55,5 +55,11 @@
         "domainNameLabel": "[toLower(concat(parameters('name'),'stack-',parameters('udp')))]"
       }
     }
-  }]
+  }],
+  "outputs": {
+    "publicIpAddress": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressName'))).IpAddress]"
+    }
+  }
 }

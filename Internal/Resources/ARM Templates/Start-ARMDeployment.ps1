@@ -9,28 +9,27 @@ function Start-ARMDeployment {
     Write-Host 
     Write-Host -ForegroundColor Cyan "`tStarting Resource Group Deployment of '$Template' to $ResourceGroupName"
 
-    $args = @{
+    $global:templateDeployArgs = @{
         ResourceGroupName = $ResourceGroupName
         TemplateParameterObject = $TemplateParameters
         Mode = 'Incremental'
     }
-    $args += switch ($Mode) {
-        'File' { @{ TemplateFile = (Join-Path -Resolve $ResourcesPath ('ARM Templates\{0}.json' -f $Template)) } }
+    switch ($Mode) {
+        'File' { $global:templateDeployArgs.Add('TemplateFile', (Join-Path -Resolve $ResourcesPath ('ARM Templates\{0}.json' -f $Template))) }
         'Uri' {
-            @{
-                TemplateUri = (New-AzureStorageBlobSASToken -Container arm -Blob $Template -Policy 'TemplateDeployment' -FullUri -Protocol HttpsOnly)
-                templateSasToken = (ConvertTo-SecureString -String (New-AzureStorageContainerSASToken -Name arm -Policy 'TemplateDeployment' -Protocol HttpsOnly) -AsPlainText -Force)
-            }
+            $context = Get-StackResourcesContext
+            $global:templateDeployArgs.Add('TemplateUri', (New-AzureStorageBlobSASToken -Container arm -Blob "${Template}.json" -Permission r -ExpiryTime (Get-Date).AddHours(1) -FullUri -Protocol HttpsOnly -Context $context))
+            $global:templateDeployArgs.Add('templateSasToken', (ConvertTo-SecureString -String (New-AzureStorageContainerSASToken -Name arm -Permission r -ExpiryTime (Get-Date).AddHours(1) -Protocol HttpsOnly -Context $context) -AsPlainText -Force))
         }
     }
 
     Write-Host -NoNewLine "Testing ARM template $Template... "
-    Test-AzureRmResourceGroupDeployment @args
+    Test-AzureRmResourceGroupDeployment @templateDeployArgs
     Write-Host 'valid' 
 
     try {
         Write-Host -NoNewLine "Starting ARM template deployment of $Template to $ResourceGroupName... "
-        $deployment = New-AzureRmResourceGroupDeployment -Force @args 
+        $deployment = New-AzureRmResourceGroupDeployment -Force @templateDeployArgs 
         Write-Host -ForegroundColor Green 'successfull'
         Write-Host
         $deployment | Format-List -Property @('DeploymentName','ResourceGroupName','Mode','ProvisioningState','Timestamp','ParametersString', 'OutputsString') | Out-String | % Trim | Out-Host

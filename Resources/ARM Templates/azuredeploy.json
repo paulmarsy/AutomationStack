@@ -7,10 +7,19 @@
         },
         "udp": {
             "type": "string"
+        },
+        "timestamp": {
+            "type": "string"
+        },
+        "computeVmShutdownStatus": {
+            "type": "string"
+        },
+        "computeVmShutdownTime": {
+            "type": "string"
         }
     },
     "variables": {
-        "templateBaseUrl": "[concat('http://stackresources',parameters('udp'),'.blob.core.windows.net/arm/')]",
+        "templateBaseUrl": "[concat('https://stackresources',parameters('udp'),'.blob.core.windows.net')]",
         "automationName": "[concat('automation-', parameters('udp'))]",
         "sqlServerName": "[concat('azuresql-', parameters('udp'))]"
     },
@@ -21,7 +30,7 @@
         "properties": {
             "mode": "Incremental",
             "templateLink": {
-                "uri": "[concat(uri(variables('templateBaseUrl'), '/Infrastructure/automationAccounts.json'), parameters('templateSasToken'))]"
+                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Infrastructure/automationAccounts.json'), parameters('templateSasToken'))]"
             },
             "parameters": {
                 "automationName": {
@@ -52,7 +61,7 @@
         "properties": {
             "mode": "Incremental",
             "templateLink": {
-                "uri": "[concat(uri(variables('templateBaseUrl'), '/Infrastructure/networkSecurityGroups.json'), parameters('templateSasToken'))]"
+                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Infrastructure/networkSecurityGroups.json'), parameters('templateSasToken'))]"
             }
         }
     }, {
@@ -62,7 +71,7 @@
         "properties": {
             "mode": "Incremental",
             "templateLink": {
-                "uri": "[concat(uri(variables('templateBaseUrl'), '/Infrastructure/sqlServers.json'), parameters('templateSasToken'))]"
+                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Infrastructure/sqlServers.json'), parameters('templateSasToken'))]"
             },
             "parameters": {
                 "sqlServerName": {
@@ -93,7 +102,34 @@
         "properties": {
             "mode": "Incremental",
             "templateLink": {
-                "uri": "[concat(uri(variables('templateBaseUrl'), '/Infrastructure/virtualNetworks.json'), parameters('templateSasToken'))]"
+                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Infrastructure/virtualNetworks.json'), parameters('templateSasToken'))]"
+            }
+        }
+    }, {
+        "apiVersion": "2016-09-01",
+        "name": "OctopusDeploy",
+        "type": "Microsoft.Resources/deployments",
+        "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Compute/OctopusDeploy.json'), parameters('templateSasToken'))]"
+            },
+            "parameters": {
+                "templateSasToken": {
+                    "value": "[parameters('templateSasToken')]"
+                },
+                "udp": {
+                    "value": "[parameters('udp')]"
+                },
+                "timestamp": {
+                    "value": "[parameters('timestamp')]"
+                },
+                "computeVmShutdownStatus": {
+                    "value": "[parameters('computeVmShutdownStatus')]"
+                },
+                "computeVmShutdownTime": {
+                    "value": "[parameters('computeVmShutdownTime')]"
+                }
             }
         }
     }]

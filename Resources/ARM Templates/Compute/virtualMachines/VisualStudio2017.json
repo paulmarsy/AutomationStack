@@ -2,12 +2,18 @@
 	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
 	"contentVersion": "1.0.0.0",
 	"parameters": {
+		"templateSasToken": {
+			"type": "securestring"
+		},
 		"udp": {
 			"type": "string"
 		},
 		"name": {
 			"type": "string"
 		}
+	},
+	"variables": {
+		"templateBaseUrl": "[concat('https://stackresources',parameters('udp'),'.blob.core.windows.net')]"
 	},
 	"resources": [{
 		"apiVersion": "2016-09-01",
@@ -16,7 +22,7 @@
 		"properties": {
 			"mode": "Incremental",
 			"templateLink": {
-				"uri": "[uri(deployment().properties.templateLink.uri, 'virtualMachines.json')]"
+				"uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Compute/virtualMachines/virtualMachines.json'), parameters('templateSasToken'))]"
 			},
 			"parameters": {
 				"udp": {

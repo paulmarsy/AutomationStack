@@ -2,6 +2,9 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "templateSasToken": {
+            "type": "securestring"
+        },
         "udp": {
             "type": "string"
         },
@@ -16,6 +19,7 @@
         }
     },
     "variables": {
+        "templateBaseUrl": "[concat('https://stackresources',parameters('udp'),'.blob.core.windows.net')]",
         "name": "Octopus",
         "vmName": "[concat(variables('name'),'VM')]",
         "nodeConfigurationName": "OctopusDeploy.Server"
@@ -27,7 +31,7 @@
         "properties": {
             "mode": "Incremental",
             "templateLink": {
-                "uri": "[uri(deployment().properties.templateLink.uri, 'networking/public.json')]"
+                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Compute/networking/public.json'), parameters('templateSasToken'))]"
             },
             "parameters": {
                 "udp": {
@@ -45,7 +49,7 @@
         "properties": {
             "mode": "Incremental",
             "templateLink": {
-                "uri": "[uri(deployment().properties.templateLink.uri, 'sqlServer/databases.json')]"
+                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Compute/sqlServer/databases.json'), parameters('templateSasToken'))]"
             },
             "parameters": {
                 "udp": {
@@ -53,6 +57,9 @@
                 },
                 "name": {
                     "value": "[variables('name')]"
+                },
+                "publicIpAddress": {
+                    "value": "[reference(concat(variables('name'), 'Networking')).outputs.publicIpAddress.value]"
                 }
             }
         }
@@ -66,9 +73,12 @@
         "properties": {
             "mode": "Incremental",
             "templateLink": {
-                "uri": "[uri(deployment().properties.templateLink.uri, 'virtualMachines/WindowsServer2016.json')]"
+                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Compute/virtualMachines/WindowsServer2016.json'), parameters('templateSasToken'))]"
             },
             "parameters": {
+                "templateSasToken": {
+                    "value": "[parameters('templateSasToken')]"
+                },
                 "udp": {
                     "value": "[parameters('udp')]"
                 },
@@ -87,9 +97,12 @@
         "properties": {
             "mode": "Incremental",
             "templateLink": {
-                "uri": "[uri(deployment().properties.templateLink.uri, 'extensions/AzureDiskEncryption.json')]"
+                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Compute/extensions/AzureDiskEncryption.json'), parameters('templateSasToken'))]"
             },
             "parameters": {
+                "templateSasToken": {
+                    "value": "[parameters('templateSasToken')]"
+                },
                 "udp": {
                     "value": "[parameters('udp')]"
                 },
@@ -124,7 +137,7 @@
         "properties": {
             "mode": "Incremental",
             "templateLink": {
-                "uri": "[uri(deployment().properties.templateLink.uri, 'extensions/Microsoft.Powershell.DSC.json')]"
+                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Compute/extensions/Microsoft.Powershell.DSC.json'), parameters('templateSasToken'))]"
             },
             "parameters": {
                 "vmName": {
@@ -164,7 +177,7 @@
         "properties": {
             "mode": "Incremental",
             "templateLink": {
-                "uri": "[uri(deployment().properties.templateLink.uri, 'extensions/ComputeVmShutdownTask.json')]"
+                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Compute/extensions/ComputeVmShutdownTask.json'), parameters('templateSasToken'))]"
             },
             "parameters": {
                 "vmName": {

@@ -7,11 +7,13 @@
     },
     "name": {
       "type": "string"
+    },
+    "publicIPAddress": {
+      "type": "string"
     }
   },
   "variables": {
     "vmName": "[concat(parameters('name'),'VM')]",
-    "publicIPAddressName": "[concat(parameters('name'),'PublicIP')]",
     "sqlServerName": "[concat('azuresql-', parameters('udp'))]",
     "databaseName": "[parameters('name')]"
   },
@@ -21,8 +23,8 @@
     "location": "[resourceGroup().location]",
     "name": "[concat(variables('sqlServerName'), '/', variables('vmName'))]",
     "properties": {
-      "endIpAddress": "[reference(variables('publicIPAddressName')).IpAddress]",
-      "startIpAddress": "[reference(variables('publicIPAddressName')).IpAddress]"
+      "endIpAddress": "[parameters('publicIPAddress')]",
+      "startIpAddress": "[parameters('publicIPAddress')]"
     }
   }, {
     "name": "[concat(variables('sqlServerName'), '/', variables('databaseName'))]",
