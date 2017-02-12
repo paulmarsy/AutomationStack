@@ -17,7 +17,6 @@
         "type": "Microsoft.Automation/automationAccounts/credentials",
         "tags": "[resourceGroup().tags]",
         "apiVersion": "2015-10-31",
-        "location": "[resourceGroup().location]",
         "properties": {
             "userName": "[parameters('octopusAutomationCredentialUsername')]",
             "password": "[parameters('octopusAutomationCredentialPassword')]"

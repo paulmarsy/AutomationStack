@@ -9,17 +9,16 @@ function Start-ARMDeployment {
     Write-Host 
     Write-Host -ForegroundColor Cyan "`tStarting Resource Group Deployment of '$Template' to $ResourceGroupName"
 
-    $global:templateDeployArgs = @{
-        ResourceGroupName = $ResourceGroupName
-        TemplateParameterObject = $TemplateParameters
-        Mode = 'Incremental'
-    }
+    $global:templateDeployArgs = $TemplateParameters
+    $templateDeployArgs.Add('ResourceGroupName', $ResourceGroupName)
+    $templateDeployArgs.Add('Mode', 'Incremental')
+
     switch ($Mode) {
-        'File' { $global:templateDeployArgs.Add('TemplateFile', (Join-Path -Resolve $ResourcesPath ('ARM Templates\{0}.json' -f $Template))) }
+        'File' { $templateDeployArgs.Add('TemplateFile', (Join-Path -Resolve $ResourcesPath ('ARM Templates\{0}.json' -f $Template))) }
         'Uri' {
             $context = Get-StackResourcesContext
-            $global:templateDeployArgs.Add('TemplateUri', (New-AzureStorageBlobSASToken -Container arm -Blob "${Template}.json" -Permission r -ExpiryTime (Get-Date).AddHours(1) -FullUri -Protocol HttpsOnly -Context $context))
-            $global:templateDeployArgs.Add('templateSasToken', (ConvertTo-SecureString -String (New-AzureStorageContainerSASToken -Name arm -Permission r -ExpiryTime (Get-Date).AddHours(1) -Protocol HttpsOnly -Context $context) -AsPlainText -Force))
+            $templateDeployArgs.Add('TemplateUri', (New-AzureStorageBlobSASToken -Container arm -Blob "${Template}.json" -Permission r -ExpiryTime (Get-Date).AddHours(1) -FullUri -Protocol HttpsOnly -Context $context))
+            $templateDeployArgs.Add('templateSasToken', (ConvertTo-SecureString -String (New-AzureStorageContainerSASToken -Name arm -Permission r -ExpiryTime (Get-Date).AddHours(1) -Protocol HttpsOnly -Context $context) -AsPlainText -Force))
         }
     }
 
@@ -29,14 +28,14 @@ function Start-ARMDeployment {
 
     try {
         Write-Host -NoNewLine "Starting ARM template deployment of $Template to $ResourceGroupName... "
-        $deployment = New-AzureRmResourceGroupDeployment -Force @templateDeployArgs 
+        $deployment = New-AzureRmResourceGroupDeployment -Force @templateDeployArgs -DeploymentDebugLogLevel All -WarningAction Ignore
         Write-Host -ForegroundColor Green 'successfull'
         Write-Host
         $deployment | Format-List -Property @('DeploymentName','ResourceGroupName','Mode','ProvisioningState','Timestamp','ParametersString', 'OutputsString') | Out-String | % Trim | Out-Host
     }
     finally {
         Write-Host
-        Get-AzureRmResourceGroupDeploymentOperation -ResourceGroupName $ResourceGroupName -DeploymentName $Template |
+        Get-AzureRmResourceGroupDeploymentOperation -ResourceGroupName $ResourceGroupName -DeploymentName $Template -ErrorAction Ignore |
             % Properties |
             Sort-Object -Property timestamp |
             ? provisioningOperation -ne 'EvaluateDeploymentOutput' |        

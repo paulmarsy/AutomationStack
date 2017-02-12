@@ -16,7 +16,15 @@ function New-AzureServicePrincipal {
         }
         catch { Start-Sleep -Seconds 1 }
     } while (!$roleAssignment)
+    $roleAssignment | Out-Host
 
+    do {
+        try {
+            $appGet =  Get-AzureRmADApplication -ApplicationId $app.ApplicationId
+        }
+        catch { Start-Sleep -Seconds 1 }
+    } while (!$appGet)
+    $appGet | Out-Host
 
     $CurrentContext.Set('ServicePrincipalCreated', $true)
 }

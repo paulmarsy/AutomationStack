@@ -5,6 +5,9 @@
         "templateSasToken": {
             "type": "securestring"
         },
+        "octopusDscConfigurationContent": {
+            "type": "string"
+        },
         "udp": {
             "type": "string"
         },
@@ -15,6 +18,24 @@
             "type": "string"
         },
         "computeVmShutdownTime": {
+            "type": "string"
+        },  
+        "octopusDscJobId": {
+            "type": "string"
+        },     
+        "octopusDscConfigurationData": {
+            "type": "string"
+        },
+        "octopusDscVMName": {
+            "type": "string"
+        },
+        "octopusDscConnectionString": {
+            "type": "string"
+        },
+        "octopusDscOctopusHostName": {
+            "type": "string"
+        },
+        "octopusDscOctopusVersionToInstall": {
             "type": "string"
         }
     },
@@ -51,6 +72,51 @@
                         },
                         "secretName": "OctopusAutomationCredentialPassword"
                     }
+                }
+            }
+        }
+    }, {
+        "apiVersion": "2016-09-01",
+        "name": "OctopusDeployAutomation",
+        "type": "Microsoft.Resources/deployments",
+        "dependsOn": [
+            "Microsoft.Resources/deployments/AutomationAccounts"
+        ],
+        "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Automation/OctopusDeploy.json'), parameters('templateSasToken'))]"
+            },
+            "parameters": {
+                "udp": {
+                    "value": "[parameters('udp')]"
+                },
+                "configurationContent": {
+                    "value": "[parameters('octopusDscConfigurationContent')]"
+                },
+                "jobId": {
+                    "value": "[parameters('octopusDscJobId')]"
+                },
+                "configurationName": {
+                    "value": "OctopusDeploy"
+                },
+                "configurationData": {
+                    "value": "[parameters('octopusDscConfigurationData')]"
+                },
+                "octopusNodeName": {
+                    "value": "[parameters('octopusDscVMName')]"
+                },
+                "connectionString": {
+                    "value": "[parameters('octopusDscConnectionString')]"
+                },
+                "hostHeader": {
+                    "value": "[concat('http://', parameters('octopusDscOctopusHostName'), '/')]"
+                },
+                "fullyQualifiedUrl": {
+                    "value": "[concat('http://', parameters('octopusDscOctopusHostName'), ':80/')]"
+                },
+                "octopusVersionToInstall": {
+                    "value": "[parameters('octopusDscOctopusVersionToInstall')]"
                 }
             }
         }
@@ -107,7 +173,7 @@
         }
     }, {
         "apiVersion": "2016-09-01",
-        "name": "OctopusDeploy",
+        "name": "OctopusDeployCompute",
         "type": "Microsoft.Resources/deployments",
         "dependsOn": [
             "Microsoft.Resources/deployments/SqlServers"
