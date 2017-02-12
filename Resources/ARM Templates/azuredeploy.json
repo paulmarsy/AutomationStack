@@ -34,12 +34,17 @@
         },
         "octopusDscHostName": {
             "type": "string"
+        },
+        "octopusCustomScriptLogFile": {
+            "type": "string"
         }
     },
     "variables": {
         "templateBaseUrl": "[concat('https://stackresources',parameters('udp'),'.blob.core.windows.net')]",
         "automationName": "[concat('automation-', parameters('udp'))]",
-        "sqlServerName": "[concat('azuresql-', parameters('udp'))]"
+        "sqlServerName": "[concat('azuresql-', parameters('udp'))]",
+        "octopusVmName": "OctopusVM",
+        "storageAccountName": "[concat('stackresources', parameters('udp'))]"
     },
     "resources": [{
         "apiVersion": "2016-09-01",
@@ -186,6 +191,42 @@
                 },
                 "computeVmShutdownTime": {
                     "value": "[parameters('computeVmShutdownTime')]"
+                }
+            }
+        }
+    }, {
+        "apiVersion": "2016-09-01",
+        "name": "OctopusDeployConfiguration",
+        "type": "Microsoft.Resources/deployments",
+        "dependsOn": [
+            "Microsoft.Resources/deployments/OctopusDeployAutomation",
+            "Microsoft.Resources/deployments/OctopusDeployCompute"
+        ],
+        "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Compute/extensions/CustomScript.Windows.json'), parameters('templateSasToken'))]"
+            },
+            "parameters": {
+                "udp": {
+                    "value": "[parameters('udp')]"
+                },
+                "vmName": {
+                    "value": "[variables('octopusVmName')]"
+                },
+                "fileUris": {
+                    "value": [
+                        "[concat('https://',variables('storageAccountName'),'.blob.core.windows.net/scripts/OctopusDeploy/OctopusImport.ps1')]",
+                        "[concat('https://',variables('storageAccountName'),'.blob.core.windows.net/scripts/Shared/AutomationNodeCompliance.ps1')]",
+                        "[concat('https://',variables('storageAccountName'),'.blob.core.windows.net/scripts/Shared/CustomScriptLogging.ps1')]",
+                        "[concat('https://',variables('storageAccountName'),'.blob.core.windows.net/scripts/OctopusDeploy.ps1')]"
+                    ]
+                },
+                "scriptFileName": {
+                    "value": "OctopusDeploy.ps1"
+                },
+                "scriptParameters": {
+                    "value": "[concat('-LogFileName \"', parameters('octopusCustomScriptLogFile'), '\" -StorageAccountName \"', variables('storageAccountName'), '\" -StorageAccountKey \"', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, '\"')]"
                 }
             }
         }

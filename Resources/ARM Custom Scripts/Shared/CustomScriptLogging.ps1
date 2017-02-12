@@ -12,8 +12,13 @@ Import-Module Azure.Storage -Force -Global
 if (!(Test-Path 'C:\CustomScriptLogs')) { New-Item -ItemType Directory -Path 'C:\CustomScriptLogs' | Out-Null }
 
 $context = New-AzureStorageContext -StorageAccountName $StorageAccountName -StorageAccountKey $StorageAccountKey
-$storageContainer = Get-AzureStorageContainer -Name $ContainerName -Context $context
+$storageContainer = Get-AzureStorageContainer -Name 'scriptlogs' -Context $context -ErrorAction SilentlyContinue
+if (!$storageContainer) {
+    $storageContainer = New-AzureStorageContainer -Name 'scriptlogs' -Context $context -Permission Off
+}
+
 $logFileBlobRef = $storageContainer.CloudBlobContainer.GetAppendBlobReference($logFileName)
+$logFileBlobRef.CreateOrReplace()
 
 $script:logFilePath = "C:\CustomScriptLogs\$LogFileName"
 
@@ -26,4 +31,7 @@ filter Write-Log {
     $entry | Out-File -FilePath $logFilePath -Append 
     $logFileBlobRef.AppendText($entry)
 }
+
+$script:ErrorActionPreference = 'Stop'
+
 "{0}[ Azure VM Custom Script Starting ]{0}" -f ("-"*32) | Write-Log

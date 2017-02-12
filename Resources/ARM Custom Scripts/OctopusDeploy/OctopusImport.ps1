@@ -1,13 +1,3 @@
-param($LogFileName, $StorageAccountName, $StorageAccountKey)
-
-$octopusImportStateFile =  "$($env:SystemDrive)\Octopus\import.statefile"     
-
-if (Test-Path $octopusImportStateFile) {
-    throw 'Octopus Import Already Run'
-}
-
-. (Join-Path -Resolve $PSScriptRoot 'CustomScriptLogging.ps1') -LogFileName $LogFileName -StorageAccountName $StorageAccountName -StorageAccountKey $StorageAccountKey
-
 try {
     & net use O: \\#{StorageAccountName}.file.core.windows.net\octopusdeploy /USER:"#{StorageAccountName}" "#{StorageAccountKey}" *>&1 | Write-Log
 
@@ -35,9 +25,6 @@ try {
     "{0}[ Starting Octopus Service ]{0}" -f ("-"*36) | Write-Log
     & "${env:ProgramFiles}\Octopus Deploy\Octopus\Octopus.Server.exe" service --console --start *>&1 | Write-Log
     if ($LASTEXITCODE -ne 0) { throw "Exit code $LASTEXITCODE from Octopus Server" }
-
-    "{0}[ Finished ]{0}" -f ("-"*44) | Write-Log
-    [System.IO.FIle]::WriteAllText($octopusImportStateFile, (Get-Date -Format 'u'), [System.Text.Encoding]::ASCII)
 }
 finally {
     & net use O: /DELETE /Y *>&1 | Write-Log

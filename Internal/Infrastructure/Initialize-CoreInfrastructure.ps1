@@ -1,14 +1,16 @@
 function Initialize-CoreInfrastructure {
+    Write-Host 'Creating Tags...'
+    New-AzureRmTag -Name application -Value AutomationStack
+    New-AzureRmTag -Name udp -Value $CurrentContext.Get('UDP') 
+
     Invoke-SharedScript Resources 'New-ResourceGroup' -UDP $CurrentContext.Get('UDP') -ResourceGroupName $CurrentContext.Get('ResourceGroup') -Location ($CurrentContext.Get('AzureRegion'))
 
-    $CurrentContext.Set('KeyVaultName', 'keyvault-#{UDP}')
     $coreInfrastructureDeploy = Start-ARMDeployment -Mode File -ResourceGroupName $CurrentContext.Get('ResourceGroup') -Template 'coreinfrastructure' -TemplateParameters @{
         udp = $CurrentContext.Get('UDP')
         servicePrincipalObjectId = $CurrentContext.Get('ServicePrincipalObjectId')
         azureUserObjectId = $CurrentContext.Get('AzureUserObjectId')
     }
-    $CurrentContext.Set('KeyVaultResourceId', $keyvaultdeploy.keyVaultId.Value)
-    $CurrentContext.Set('KeyVaultUri', $keyvaultdeploy.vaultUri.Value)
+    $CurrentContext.Set('KeyVaultResourceId', $coreInfrastructureDeploy.keyVaultResourceId.Value)
 
     Write-Host 'Getting Azure Automation Registration Info...'
     $CurrentContext.Set('AutomationAccountName', 'automation-#{UDP}')
@@ -23,7 +25,7 @@ function Initialize-CoreInfrastructure {
     $CurrentContext.Set('StorageAccountKey', $storageKey)
 
     Write-Host 'Configuring KeyVault...'
-    Set-AzureRmKeyVaultAccessPolicy -VaultName $CurrentContext.Get('KeyVaultName') -ResourceGroupName $CurrentContext.Get('ResourceGroup') -EnabledForTemplateDeployment -EnabledForDiskEncryption 
+    Set-AzureRmKeyVaultAccessPolicy -VaultName $CurrentContext.Eval('keyvault-#{UDP}') -ResourceGroupName $CurrentContext.Get('ResourceGroup') -EnabledForTemplateDeployment -EnabledForDiskEncryption 
 
     New-KeyVaultSecret -Name AutomationRegistrationKey -Value $automationRegInfo.PrimaryKey
     New-KeyVaultSecret -Name AutomationRegistrationUrl -Value $automationRegInfo.Endpoint

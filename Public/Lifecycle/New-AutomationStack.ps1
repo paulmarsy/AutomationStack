@@ -61,36 +61,30 @@ function New-AutomationStack {
                         }
                     }
                     4 {
-                        $Heading = 'Provisioning Azure Infrastructure'
-                        {
-                            Initialize-AzureInfrastructure
-                        }
-                    }
-                    5 {
                         $Heading = 'Uploading Octopus & TeamCity Data Imports to Azure Storage'
                         {
                             Publish-AutomationStackResources -SkipAuth -Upload DataImports
                         }
                     }
-                    6 {
-                        $Heading = 'Azure Automation DSC Compliance'
+                    5 {
+                        $Heading = 'Provisioning Azure Infrastructure'
                         {
-                            Invoke-SharedScript Compute 'Invoke-CustomScript' -Name 'AutomationNodeCompliance' -ResourceGroupName $CurrentContext.Get('ResourceGroup') -VMName $CurrentContext.Get('OctopusVMName') -Location $CurrentContext.Get('AzureRegion') -StorageAccountName $CurrentContext.Get('StorageAccountName') -StorageAccountKey $CurrentContext.Get('StorageAccountKey')
-                        }
-                    }     
-                    7 {
-                        $Heading = 'Octopus Deploy - Importing Initial State'
-                        {
-                            Invoke-SharedScript Compute 'Invoke-CustomScript' -Name 'OctopusImport' -ResourceGroupName $CurrentContext.Get('ResourceGroup') -VMName $CurrentContext.Get('OctopusVMName') -Location $CurrentContext.Get('AzureRegion') -StorageAccountName $CurrentContext.Get('StorageAccountName') -StorageAccountKey $CurrentContext.Get('StorageAccountKey')
+                            Initialize-AzureInfrastructure
                         }
                     }
-                    8 {
+                    6 {
+                        $Heading = 'Octopus Deploy First Run Configuration'
+                        {
+                            Invoke-SharedScript Compute 'Receive-CustomScriptOutput' -LogFileName $CurrentContext.Get('OctopusCustomScriptLogFile') -StorageAccountName $CurrentContext.Get('StorageAccountName') -StorageAccountKey $CurrentContext.Get('StorageAccountKey')
+                        }
+                    }
+                    7 {
                         $Heading = 'Octopus Deploy - Publishing AutomationStack Packages'
                         {
                             Publish-AutomationStackResources -SkipAuth -Upload OctopusFeedPackages
                         }
                     }
-                    9 {
+                    8 {
                         $Heading = 'AutomationStack Deployment Complete'
                         {
                             Show-AutomationStackDetail

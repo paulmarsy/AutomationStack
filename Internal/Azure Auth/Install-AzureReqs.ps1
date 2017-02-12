@@ -43,9 +43,7 @@ function Install-AzureReqs {
         @('AzureRM.Automation'
           'AzureRM.Compute'
           'AzureRM.KeyVault'
-          'AzureRM.Network'
           'AzureRM.Storage'
-          'AzureRM.Sql'
           'AzureRM.Tags'
           'Azure.Storage') | Assert-AzureModule
     }

@@ -1,7 +1,7 @@
 function Start-DeploymentStage {
     param($StageNumber, $Heading, $ScriptBlock)
     
-    $RetryAttemptsAllowed = 2
+    $RetryAttemptsAllowed = 3
 
     $attempt = 0
     $currentLineOneText = 'Stage #{0} of {1}' -f $StageNumber, $TotalDeploymentStages
@@ -29,8 +29,8 @@ function Start-DeploymentStage {
                 Write-Host -ForegroundColor Red 'FATAL: Retry attempts exceeded'
                 break execution
             }
-            Write-Host 'Retrying stage in 30 seconds...'
-            Start-Sleep -Seconds 30
+            Write-Host ('Retrying stage in {0} minute(s)...' -f $attempt)
+            Start-Sleep -Seconds (60 * $attempt)
             $currentLineOneText = 'Stage #{0} of {1} (Attempt #{2} of {3})' -f $StageNumber, $TotalDeploymentStages, ($attempt + 1), $RetryAttemptsAllowed
         }
                 
