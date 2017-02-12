@@ -109,6 +109,9 @@
         "apiVersion": "2016-09-01",
         "name": "OctopusDeploy",
         "type": "Microsoft.Resources/deployments",
+        "dependsOn": [
+            "Microsoft.Resources/deployments/SqlServers"
+        ],
         "properties": {
             "mode": "Incremental",
             "templateLink": {
