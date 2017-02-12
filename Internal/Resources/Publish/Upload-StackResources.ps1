@@ -7,8 +7,8 @@ function Upload-StackResources {
         $Tokenizer,
         $Context
     )
+    const UploadConcurrency = 4
 
-    const UploadConcurrency = ([System.Environment]::ProcessorCount * 2)
 
     $storageLocation = switch ($Type) {
         'BlobStorage' { Get-AzureStorageContainer -Name $Name -Context $Context -ErrorAction Ignore }

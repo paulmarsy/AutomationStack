@@ -26,5 +26,7 @@ function New-AzureServicePrincipal {
     } while (!$appGet)
     $appGet | Out-Host
 
+    Start-Sleep -Seconds 1
+    
     $CurrentContext.Set('ServicePrincipalCreated', $true)
 }
