@@ -57,11 +57,7 @@ function New-AutomationStack {
                     3 {
                         $Heading = 'Provisioning Core Infrastructure'
                         {
-                            Invoke-SharedScript Resources 'New-ResourceGroup' -UDP $CurrentContext.Get('UDP') -ResourceGroupName $CurrentContext.Get('ResourceGroup') -Location ($CurrentContext.Get('AzureRegion'))
                             Initialize-CoreInfrastructure
-                            Set-AzureRmCurrentStorageAccount -ResourceGroupName $ResourceGroupName -Name $CurrentContext.Set('StorageAccountName')
-                            New-AzureStorageContainerStoredAccessPolicy -Container arm -Policy 'TemplateDeployment' -Permission r -ExpiryTime (Get-Date).AddHours(3)
-                            Publish-AutomationStackResources -SkipAuth -Upload StackResources
                         }
                     }
                     4 {

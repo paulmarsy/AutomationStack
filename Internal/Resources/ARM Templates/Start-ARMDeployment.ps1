@@ -19,7 +19,7 @@ function Start-ARMDeployment {
         'Uri' {
             @{
                 TemplateUri = (New-AzureStorageBlobSASToken -Container arm -Blob $Template -Policy 'TemplateDeployment' -FullUri -Protocol HttpsOnly)
-                templateSasToken = (New-AzureStorageContainerSASToken -Name arm -Policy 'TemplateDeployment' -Protocol HttpsOnly)
+                templateSasToken = (ConvertTo-SecureString -String (New-AzureStorageContainerSASToken -Name arm -Policy 'TemplateDeployment' -Protocol HttpsOnly) -AsPlainText -Force)
             }
         }
     }
@@ -37,7 +37,7 @@ function Start-ARMDeployment {
     }
     finally {
         Write-Host
-        Get-AzureRmResourceGroupDeploymentOperation -ResourceGroupName $ResourceGroupName -DeploymentName $deploymentName |
+        Get-AzureRmResourceGroupDeploymentOperation -ResourceGroupName $ResourceGroupName -DeploymentName $Template |
             % Properties |
             Sort-Object -Property timestamp |
             ? provisioningOperation -ne 'EvaluateDeploymentOutput' |        

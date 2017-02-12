@@ -1,18 +1,14 @@
 function Initialize-CoreInfrastructure {
-    Get-AzureRmContext | % Account | ? AccountType -eq 'User' | % Id | % { Get-AzureRmADUser -UserPrincipalName $_ -ErrorAction Ignore } | ? { $null -ne $_ } | % {
-        Write-Host "User $($_.DisplayName) will be given full permission to KeyVault"
-        $CurrentContext.Set('AdminUserObjectId', $_.Id.Guid)
-    }
-    
+    Invoke-SharedScript Resources 'New-ResourceGroup' -UDP $CurrentContext.Get('UDP') -ResourceGroupName $CurrentContext.Get('ResourceGroup') -Location ($CurrentContext.Get('AzureRegion'))
+
     $CurrentContext.Set('KeyVaultName', 'keyvault-#{UDP}')
     $coreInfrastructureDeploy = Start-ARMDeployment -Mode File -ResourceGroupName $CurrentContext.Get('ResourceGroup') -Template 'coreinfrastructure' -TemplateParameters @{
         udp = $CurrentContext.Get('UDP')
         servicePrincipalObjectId = $CurrentContext.Get('ServicePrincipalObjectId')
-        adminUserObjectId = $CurrentContext.Get('AdminUserObjectId')
+        azureUserObjectId = $CurrentContext.Get('AzureUserObjectId')
     }
     $CurrentContext.Set('KeyVaultResourceId', $keyvaultdeploy.keyVaultId.Value)
     $CurrentContext.Set('KeyVaultUri', $keyvaultdeploy.vaultUri.Value)
-
 
     Write-Host 'Getting Azure Automation Registration Info...'
     $CurrentContext.Set('AutomationAccountName', 'automation-#{UDP}')
@@ -27,7 +23,7 @@ function Initialize-CoreInfrastructure {
     $CurrentContext.Set('StorageAccountKey', $storageKey)
 
     Write-Host 'Configuring KeyVault...'
-    Set-AzureRmKeyVaultAccessPolicy -VaultName $CurrentContext.Get('KeyVaultName') -ResourceGroupName $CurrentContext.Get('ResourceGroup') -EnabledForTemplateDeployment -EnabledForDiskEncryption 
+  #  Set-AzureRmKeyVaultAccessPolicy -VaultName $CurrentContext.Get('KeyVaultName') -ResourceGroupName $CurrentContext.Get('ResourceGroup') -EnabledForTemplateDeployment -EnabledForDiskEncryption 
 
     New-KeyVaultSecret -Name AutomationRegistrationKey -Value $automationRegInfo.PrimaryKey
     New-KeyVaultSecret -Name AutomationRegistrationUrl -Value $automationRegInfo.Endpoint
@@ -45,4 +41,9 @@ function Initialize-CoreInfrastructure {
     
     New-KeyVaultSecret -Name ServicePrincipalClientId -Value $CurrentContext.Get('ServicePrincipalClientId')
     New-KeyVaultSecret -Name ServicePrincipalClientSecret -Value $CurrentContext.Get('ServicePrincipalClientSecret')
+
+    Write-Host 'Configuring Storage Account...'
+    Publish-AutomationStackResources -SkipAuth -Upload StackResources
+    Set-AzureRmCurrentStorageAccount -ResourceGroupName $CurrentContext.Get('ResourceGroup') -Name $CurrentContext.Get('StorageAccountName') | Out-Null
+    New-AzureStorageContainerStoredAccessPolicy -Container arm -Policy 'TemplateDeployment' -Permission r -ExpiryTime (Get-Date).AddHours(3) | Out-Null
 }

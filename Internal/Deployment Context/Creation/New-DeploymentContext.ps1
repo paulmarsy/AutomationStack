@@ -17,6 +17,10 @@ function New-DeploymentContext {
     $CurrentContext.Set('AzureRegion', $AzureRegion.Name)
     $CurrentContext.Set('AzureRegionValue', $AzureRegion.Value)
 
+    Get-AzureRmContext | % Account | ? AccountType -eq 'User' | % Id | % { Get-AzureRmADUser -UserPrincipalName $_ -ErrorAction Ignore } | ? { $null -ne $_ } | % {
+        $CurrentContext.Set('AzureUserObjectId', $_.Id.Guid)
+    }
+
     $CurrentContext.Set('ComputeVmShutdownTask.Status', $ComputeVmAutoShutdown.Status)    
     $CurrentContext.Set('ComputeVmShutdownTask.Time', $ComputeVmAutoShutdown.Time)
     
