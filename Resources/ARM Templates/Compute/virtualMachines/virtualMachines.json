@@ -89,21 +89,21 @@
       "hardwareProfile": {
         "vmSize": "[parameters('vmSize')]"
       },
-      "osProfile": "[variables('osProfile')]"
-    },
-    "storageProfile": {
-      "imageReference": {
-        "publisher": "[parameters('publisher')]",
-        "offer": "[parameters('offer')]",
-        "sku": "[parameters('sku')]",
-        "version": "latest"
+      "osProfile": "[variables('osProfile')]",
+      "storageProfile": {
+        "imageReference": {
+          "publisher": "[parameters('publisher')]",
+          "offer": "[parameters('offer')]",
+          "sku": "[parameters('sku')]",
+          "version": "latest"
+        },
+        "osDisk": "[variables('osDisk')]"
       },
-      "osDisk": "[variables('osDisk')]"
-    },
-    "networkProfile": {
-      "networkInterfaces": [{
-        "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]"
-      }]
+      "networkProfile": {
+        "networkInterfaces": [{
+          "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]"
+        }]
+      }
     }
   }]
 }
