@@ -55,6 +55,9 @@
         },
         "teamcityDscHostHeader": {
             "type": "string"
+        },
+        "teamcityCustomScriptLogFile": {
+            "type": "string"
         }
     },
     "variables": {

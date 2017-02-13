@@ -9,6 +9,7 @@ function Initialize-AzureInfrastructure {
     $teamcityDscConfigurationData = Invoke-Expression (Get-Content -Path (Join-Path $ResourcesPath 'DSC Configurations\TeamCity.psd1') -Raw) | ConvertTo-Json -Compress
 
     $CurrentContext.Set('OctopusCustomScriptLogFile', ('OctopusDeploy.{0}.log' -f ([datetime]::UtcNow.ToString('o').Replace(':','.').Substring(0,19))))
+    $CurrentContext.Set('TeamCityCustomScriptLogFile', ('TeamCity.{0}.log' -f ([datetime]::UtcNow.ToString('o').Replace(':','.').Substring(0,19))))
 
     Start-ARMDeployment -Mode Uri -ResourceGroupName $CurrentContext.Get('ResourceGroup') -Template 'azuredeploy' -TemplateParameters @{
         udp = $CurrentContext.Get('UDP')
@@ -28,5 +29,6 @@ function Initialize-AzureInfrastructure {
         teamcityDscTentacleRegistrationUri = $CurrentContext.Get('OctopusHostHeader')
         teamcityDscTentacleRegistrationApiKey = $CurrentContext.Get('ApiKey')
         teamcityDscHostHeader = $CurrentContext.Get('TeamCityHostHeader')
+        teamcityCustomScriptLogFile = $CurrentContext.Get('TeamCityCustomScriptLogFile')
     } | Out-Null
 }

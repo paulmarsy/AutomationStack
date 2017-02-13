@@ -15,7 +15,7 @@ function Publish-AutomationStackResources {
             Write-Host
             Write-Host -ForegroundColor Green "`tUploading Azure Custom Scripts..."
             Upload-StackResources -Type BlobStorage -Name scripts -Path (Join-Path -Resolve $ResourcesPath 'ARM Custom Scripts') -Tokenizer $CurrentContext -Context $context `
-                -FilesToTokenise @('OctopusImport.ps1','TeamCityPrepare.sh')
+                -FilesToTokenise @('OctopusImport.ps1','TeamCityImport.ps1','TeamCityPrepare.sh')
         
             Write-Host
             Write-Host -ForegroundColor Green "`tUploading DSC Configurations..."
