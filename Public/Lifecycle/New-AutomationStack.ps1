@@ -85,6 +85,12 @@ function New-AutomationStack {
                         }
                     }
                     8 {
+                        $Heading = 'TeamCity First Run Configuration'
+                        {
+                            Invoke-SharedScript Compute 'Receive-CustomScriptOutput' -LogFileName $CurrentContext.Get('TeamCityCustomScriptLogFile') -StorageAccountName $CurrentContext.Get('StorageAccountName') -StorageAccountKey $CurrentContext.Get('StorageAccountKey')
+                        }
+                    }
+                    9 {
                         $Heading = 'AutomationStack Deployment Complete'
                         {
                             Show-AutomationStackDetail

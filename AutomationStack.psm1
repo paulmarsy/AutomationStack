@@ -14,7 +14,7 @@ $TempPath = Join-Path $PSScriptRoot 'Temp'
 if (!(Test-Path $TempPath)) { New-Item -ItemType Directory -Path $TempPath | Out-Null }
 $script:TempPath = Get-Item -Path $TempPath | % FullName
 
-$script:TotalDeploymentStages = 8
+$script:TotalDeploymentStages = 9
 
 if (Test-Path (Join-Path $PSScriptRoot 'Resources\AzureRest\AzureRest.psd1')) {
     try {

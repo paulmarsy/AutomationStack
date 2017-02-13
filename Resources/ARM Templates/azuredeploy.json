@@ -65,6 +65,7 @@
         "automationName": "[concat('automation-', parameters('udp'))]",
         "sqlServerName": "[concat('azuresql-', parameters('udp'))]",
         "octopusVmName": "OctopusVM",
+        "teamcityVmName": "TeamCityVM",
         "storageAccountName": "[concat('stackresources', parameters('udp'))]"
     },
     "resources": [{
@@ -326,6 +327,42 @@
                 },
                 "scriptParameters": {
                     "value": "[concat('-LogFileName \"', parameters('octopusCustomScriptLogFile'), '\" -StorageAccountName \"', variables('storageAccountName'), '\" -StorageAccountKey \"', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, '\"')]"
+                }
+            }
+        }
+    }, {
+        "apiVersion": "2016-09-01",
+        "name": "TeamCityConfiguration",
+        "type": "Microsoft.Resources/deployments",
+        "dependsOn": [
+            "Microsoft.Resources/deployments/TeamCityAutomation",
+            "Microsoft.Resources/deployments/TeamCityCompute"
+        ],
+        "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Compute/extensions/CustomScript.Windows.json'), parameters('templateSasToken'))]"
+            },
+            "parameters": {
+                "udp": {
+                    "value": "[parameters('udp')]"
+                },
+                "vmName": {
+                    "value": "[variables('teamcityVmName')]"
+                },
+                "fileUris": {
+                    "value": [
+                        "[concat('https://',variables('storageAccountName'),'.blob.core.windows.net/scripts/TeamCity/TeamCityImport.ps1')]",
+                        "[concat('https://',variables('storageAccountName'),'.blob.core.windows.net/scripts/Shared/AutomationNodeCompliance.ps1')]",
+                        "[concat('https://',variables('storageAccountName'),'.blob.core.windows.net/scripts/Shared/CustomScriptLogging.ps1')]",
+                        "[concat('https://',variables('storageAccountName'),'.blob.core.windows.net/scripts/TeamCity.ps1')]"
+                    ]
+                },
+                "scriptFileName": {
+                    "value": "OctopusDeploy.ps1"
+                },
+                "scriptParameters": {
+                    "value": "[concat('-LogFileName \"', parameters('teamcityCustomScriptLogFile'), '\" -StorageAccountName \"', variables('storageAccountName'), '\" -StorageAccountKey \"', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, '\"')]"
                 }
             }
         }

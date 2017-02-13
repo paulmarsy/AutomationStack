@@ -9,11 +9,9 @@ if (Test-Path $teamcityStateFile) { throw 'TeamCity Configuration Already Run' }
 & (Join-Path -Resolve $PSScriptRoot '\TeamCity\TeamCityImport.ps1')
 
 "{0}[ Starting TeamCity Service ]{0}" -f ("-"*35) | Write-Log
-& "${env:SystemDrive}\TeamCity\bin\teamcity-server.bat" service install /runAsSystem
-Start-Service TeamCity
+& "${env:SystemDrive}\TeamCity\bin\teamcity-server.bat" service install /runAsSystem *>&1 | Write-Log
+Start-Service TeamCity -Verbose *>&1 | Write-Log
 
 "{0}[ Finished ]{0}" -f ("-"*44) | Write-Log
 [System.IO.FIle]::WriteAllText($teamcityStateFile, (Get-Date -Format 'u'), [System.Text.Encoding]::ASCII)
 Send-SignalTerminate
-
-
