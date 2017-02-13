@@ -7,8 +7,7 @@ function Upload-StackResources {
         $Tokenizer,
         $Context
     )
-    const UploadConcurrency = 4
-
+    const UploadConcurrency = 12
 
     $storageLocation = switch ($Type) {
         'BlobStorage' { Get-AzureStorageContainer -Name $Name -Context $Context -ErrorAction Ignore }
@@ -29,9 +28,8 @@ function Upload-StackResources {
             New-AzureStorageDirectory -Share $storageLocation -Path $dest -ErrorAction Ignore | Out-Null
         }
     }
-    $batch = @{}
-    0..$UploadConcurrency | % { $batch[$_ % $UploadConcurrency] = {@()}.Invoke() }
-    $i = 0
+    $batch = @()
+    0..$UploadConcurrency | % { $batch += New-Object psobject -Property @{ Size = 0; Files = {@()}.Invoke() } }
     Get-ChildItem -Path $Path -Recurse -File | Sort-Object -Descending -Property Length | % {
         if ($_.Name -in $FilesToTokenise) {
             $source = Join-Path $TempPath $_.Name
@@ -41,30 +39,30 @@ function Upload-StackResources {
             $source = $_.FullName
             $tokenised = $false
         }
-        $batch[$i % $UploadConcurrency].Add(@{
+        $assignedBatch = $batch | Sort-Object Size | Select-Object -First 1
+        $assignedBatch.Size += $_.Length
+        $assignedBatch.Files.Add(@{
             Tokenised = $tokenised
             Dest = $Tokenizer.Eval($_.FullName.Substring($Path.Length+1).Replace('\','/'))
             Source = $source
         })
-        $i++
     }
     $jobs = for ($runspaceId = 0; $runspaceId -lt $UploadConcurrency; $runspaceId++) {
         $ps = [powershell]::Create().AddScript({
             param($batch, $storageLocation, $runspaceId, $UploadConcurrency, $Type)   
             $batch | % {
                 $file = $_
+                switch ($Type) {
+                    'BlobStorage' { [void]($storageLocation | Set-AzureStorageBlobContent -File $file.Source -Blob $file.Dest -Force -ErrorAction Stop)}
+                    'FileShare' { Set-AzureStorageFileContent -Share $storageLocation -Source $file.Source -Path $file.Dest -Force -ErrorAction Stop }
+                }
                 if ($file.Tokenised) {
                     [void][System.Console]::Out.WriteLineAsync("  $runspaceId`t`tTokenise & Upload`t$(Split-Path -Leaf $file.Dest)")
                 } else {
                     [void][System.Console]::Out.WriteLineAsync("  $runspaceId`t`tUpload`t`t`t$(Split-Path -Leaf $file.Dest)")
                 }
-                switch ($Type) {
-                    'BlobStorage' { $storageLocation | Set-AzureStorageBlobContent -File $file.Source -Blob $file.Dest -Force -ErrorAction Stop | Out-Null }
-                    'FileShare' { Set-AzureStorageFileContent -Share $storageLocation -Source $file.Source -Path $file.Dest -Force -ErrorAction Stop }
-                }
-                
             }
-        }).AddArgument($batch[$runspaceId]).AddArgument($storageLocation).AddArgument($runspaceId).AddArgument($UploadConcurrency).AddArgument($Type)
+        }).AddArgument($batch[$runspaceId].Files).AddArgument($storageLocation).AddArgument($runspaceId).AddArgument($UploadConcurrency).AddArgument($Type)
         @{
             PowerShell = $ps
             Async = ($ps.BeginInvoke())

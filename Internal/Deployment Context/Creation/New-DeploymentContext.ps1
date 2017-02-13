@@ -49,4 +49,7 @@ function New-DeploymentContext {
     $CurrentContext.Set('OctopusConnectionString', 'Server=tcp:#{SqlServerName}.database.windows.net,1433;Initial Catalog=Octopus;Persist Security Info=False;User ID=#{SqlServerUsername};Password=#{SqlServerPassword};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;')
     $CurrentContext.Set('OctopusHostName', 'octopusstack-#{UDP}.#{AzureRegionValue}.cloudapp.azure.com')
     $CurrentContext.Set('OctopusHostHeader', 'http://#{OctopusHostName}/')
+
+    $CurrentContext.Set('TeamCityHostName', 'teamcitystack-#{UDP}.#{AzureRegionValue}.cloudapp.azure.com')
+    $CurrentContext.Set('TeamCityHostHeader', 'http://#{TeamCityHostName}/')
 }

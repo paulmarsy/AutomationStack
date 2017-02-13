@@ -5,6 +5,12 @@
         "templateSasToken": {
             "type": "securestring"
         },
+        "name": {
+            "type": "string"
+        },
+        "nodeConfigurationName": {
+            "type": "string"
+        },
         "udp": {
             "type": "string"
         },
@@ -21,8 +27,7 @@
     "variables": {
         "templateBaseUrl": "[concat('https://stackresources',parameters('udp'),'.blob.core.windows.net')]",
         "name": "Octopus",
-        "vmName": "[concat(variables('name'),'VM')]",
-        "nodeConfigurationName": "OctopusDeploy.Server"
+        "vmName": "[concat(variables('name'),'VM')]"
     },
     "resources": [{
         "apiVersion": "2016-09-01",
@@ -73,17 +78,45 @@
         "properties": {
             "mode": "Incremental",
             "templateLink": {
-                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Compute/virtualMachines/WindowsServer2016.json'), parameters('templateSasToken'))]"
+                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Compute/virtualMachines/virtualMachines.json'), parameters('templateSasToken'))]"
             },
             "parameters": {
-                "templateSasToken": {
-                    "value": "[parameters('templateSasToken')]"
-                },
                 "udp": {
                     "value": "[parameters('udp')]"
                 },
                 "name": {
                     "value": "[variables('name')]"
+                },
+                "osDiskType": {
+                    "value": "Managed"
+                },
+                "osProfileType": {
+                    "value": "Windows"
+                },
+                "vmAdminUsername": {
+                    "reference": {
+                        "keyVault": {
+                            "id": "[concat(resourceGroup().id, '/providers/Microsoft.KeyVault/vaults/keyvault-', parameters('udp'))]"
+                        },
+                        "secretName": "VMAdminUsername"
+                    }
+                },
+                "vmAdminPassword": {
+                    "reference": {
+                        "keyVault": {
+                            "id": "[concat(resourceGroup().id, '/providers/Microsoft.KeyVault/vaults/keyvault-', parameters('udp'))]"
+                        },
+                        "secretName": "VMAdminPassword"
+                    }
+                },
+                "publisher": {
+                    "value": "MicrosoftWindowsServer"
+                },
+                "offer": {
+                    "value": "WindowsServer"
+                },
+                "sku": {
+                    "value": "2016-Datacenter-with-Containers"
                 }
             }
         }

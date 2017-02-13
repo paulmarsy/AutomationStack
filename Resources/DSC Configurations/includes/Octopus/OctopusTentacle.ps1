@@ -58,7 +58,7 @@ Script OctopusDeployConfiguration
         if ($LASTEXITCODE -ne 0) { throw "Exit code $LASTEXITCODE from Octopus Tentacle: reset-trust" }
         & $octopusTentacleExe configure --console --instance "Tentacle" --home "C:\Octopus" --app "C:\Octopus\Applications" --port "10933" --noListen "False" *>> $using:octopusConfigLogFile
         if ($LASTEXITCODE -ne 0) { throw "Exit code $LASTEXITCODE from Octopus Tentacle: configure" }
-        & $octopusTentacleExe register-with --console --instance "Tentacle" --server $using:TentacleRegistrationUri --apikey="$($using:OctopusApiKey)"  --role="$($using:Node.Octopus.Role)" --environment="$($using:Node.Octopus.Environment)" --name="$($using:Node.Octopus.Name)" --comms-style TentaclePassive --Force *>> $using:octopusConfigLogFile
+        & $octopusTentacleExe register-with --console --instance "Tentacle" --server $using:TentacleRegistrationUri --apikey="$($using:TentacleRegistrationApiKey)"  --role="$($using:Node.Octopus.Role)" --environment="$($using:Node.Octopus.Environment)" --name="$($using:Node.Octopus.Name)" --comms-style TentaclePassive --Force *>> $using:octopusConfigLogFile
         if ($LASTEXITCODE -ne 0) { throw "Exit code $LASTEXITCODE from Octopus Tentacle: register-with" }
         & $octopusTentacleExe service --console --instance "Tentacle" --install --start *>> $using:octopusConfigLogFile
         if ($LASTEXITCODE -ne 0) { throw "Exit code $LASTEXITCODE from Octopus Tentacle: service" }
