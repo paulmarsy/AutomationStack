@@ -11,22 +11,17 @@ function New-AzureServicePrincipal {
     $CurrentContext.Set('ServicePrincipalObjectId', $servicePrincipal.Id.Guid)
 
     do {
-        try {
-            $roleAssignment = New-AzureRmRoleAssignment -RoleDefinitionName Contributor -ServicePrincipalName $app.ApplicationId
-        }
-        catch { Start-Sleep -Seconds 1 }
+        Start-Sleep -Seconds 1
+        $roleAssignment = New-AzureRmRoleAssignment -RoleDefinitionName Contributor -ServicePrincipalName $app.ApplicationId -ErrorAction Ignore
     } while (!$roleAssignment)
     $roleAssignment | Out-Host
 
     do {
-        try {
-            $appGet =  Get-AzureRmADApplication -ApplicationId $app.ApplicationId
-        }
-        catch { Start-Sleep -Seconds 1 }
+        Start-Sleep -Seconds 1
+        $appGet =  Get-AzureRmADApplication -ApplicationId $app.ApplicationId -ErrorAction Ignore
     } while (!$appGet)
     $appGet | Out-Host
 
     Start-Sleep -Seconds 5
-    
     $CurrentContext.Set('ServicePrincipalCreated', $true)
 }

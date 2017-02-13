@@ -137,7 +137,7 @@
         }
     }, {
         "apiVersion": "2016-09-01",
-        "name": "TeamCityDeployAutomation",
+        "name": "TeamCityAutomation",
         "type": "Microsoft.Resources/deployments",
         "dependsOn": [
             "Microsoft.Resources/deployments/AutomationAccounts"

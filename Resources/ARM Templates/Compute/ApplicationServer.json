@@ -26,12 +26,11 @@
     },
     "variables": {
         "templateBaseUrl": "[concat('https://stackresources',parameters('udp'),'.blob.core.windows.net')]",
-        "name": "Octopus",
-        "vmName": "[concat(variables('name'),'VM')]"
+        "vmName": "[concat(parameters('name'),'VM')]"
     },
     "resources": [{
         "apiVersion": "2016-09-01",
-        "name": "[concat(variables('name'), 'Networking')]",
+        "name": "[concat(parameters('name'), 'Networking')]",
         "type": "Microsoft.Resources/deployments",
         "properties": {
             "mode": "Incremental",
@@ -43,13 +42,13 @@
                     "value": "[parameters('udp')]"
                 },
                 "name": {
-                    "value": "[variables('name')]"
+                    "value": "[parameters('name')]"
                 }
             }
         }
     }, {
         "apiVersion": "2016-09-01",
-        "name": "[concat(variables('name'), 'SqlDatabase')]",
+        "name": "[concat(parameters('name'), 'SqlDatabase')]",
         "type": "Microsoft.Resources/deployments",
         "properties": {
             "mode": "Incremental",
@@ -61,19 +60,19 @@
                     "value": "[parameters('udp')]"
                 },
                 "name": {
-                    "value": "[variables('name')]"
+                    "value": "[parameters('name')]"
                 },
                 "publicIpAddress": {
-                    "value": "[reference(concat(variables('name'), 'Networking')).outputs.publicIpAddress.value]"
+                    "value": "[reference(concat(parameters('name'), 'Networking')).outputs.publicIpAddress.value]"
                 }
             }
         }
     }, {
         "apiVersion": "2016-09-01",
-        "name": "[concat(variables('name'), 'VirtualMachine')]",
+        "name": "[concat(parameters('name'), 'VirtualMachine')]",
         "type": "Microsoft.Resources/deployments",
         "dependsOn": [
-            "[concat('Microsoft.Resources/deployments/', variables('name'), 'Networking')]"
+            "[concat('Microsoft.Resources/deployments/', parameters('name'), 'Networking')]"
         ],
         "properties": {
             "mode": "Incremental",
@@ -85,7 +84,7 @@
                     "value": "[parameters('udp')]"
                 },
                 "name": {
-                    "value": "[variables('name')]"
+                    "value": "[parameters('name')]"
                 },
                 "osDiskType": {
                     "value": "Managed"
@@ -122,10 +121,10 @@
         }
     }, {
         "apiVersion": "2016-09-01",
-        "name": "[concat(variables('name'), 'Extensions', 'AzureDiskEncryption')]",
+        "name": "[concat(parameters('name'), 'Extensions', 'AzureDiskEncryption')]",
         "type": "Microsoft.Resources/deployments",
         "dependsOn": [
-            "[concat('Microsoft.Resources/deployments/', variables('name'), 'VirtualMachine')]"
+            "[concat('Microsoft.Resources/deployments/', parameters('name'), 'VirtualMachine')]"
         ],
         "properties": {
             "mode": "Incremental",
@@ -162,10 +161,10 @@
         }
     }, {
         "apiVersion": "2016-09-01",
-        "name": "[concat(variables('name'), 'Extensions', 'Microsoft.Powershell.DSC')]",
+        "name": "[concat(parameters('name'), 'Extensions', 'Microsoft.Powershell.DSC')]",
         "type": "Microsoft.Resources/deployments",
         "dependsOn": [
-            "[concat('Microsoft.Resources/deployments/', variables('name'), 'VirtualMachine')]"
+            "[concat('Microsoft.Resources/deployments/', parameters('name'), 'VirtualMachine')]"
         ],
         "properties": {
             "mode": "Incremental",
@@ -193,7 +192,7 @@
                     }
                 },
                 "nodeConfigurationName": {
-                    "value": "[variables('nodeConfigurationName')]"
+                    "value": "[parameters('nodeConfigurationName')]"
                 },
                 "timestamp": {
                     "value": "[parameters('timestamp')]"
@@ -202,10 +201,10 @@
         }
     }, {
         "apiVersion": "2016-09-01",
-        "name": "[concat(variables('name'), 'Extensions', 'ComputeVmShutdownTask')]",
+        "name": "[concat(parameters('name'), 'Extensions', 'ComputeVmShutdownTask')]",
         "type": "Microsoft.Resources/deployments",
         "dependsOn": [
-            "[concat('Microsoft.Resources/deployments/', variables('name'), 'VirtualMachine')]"
+            "[concat('Microsoft.Resources/deployments/', parameters('name'), 'VirtualMachine')]"
         ],
         "properties": {
             "mode": "Incremental",

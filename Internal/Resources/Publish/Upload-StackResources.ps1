@@ -47,7 +47,7 @@ function Upload-StackResources {
             Source = $source
         })
     }
-    $jobs = for ($runspaceId = 0; $runspaceId -lt $UploadConcurrency; $runspaceId++) {
+    $jobs = for ($runspaceId = 0; $runspaceId -le $UploadConcurrency; $runspaceId++) {
         $ps = [powershell]::Create().AddScript({
             param($batch, $storageLocation, $runspaceId, $UploadConcurrency, $Type)   
             $batch | % {
