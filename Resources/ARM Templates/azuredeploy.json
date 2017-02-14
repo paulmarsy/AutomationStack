@@ -359,7 +359,7 @@
                     ]
                 },
                 "scriptFileName": {
-                    "value": "OctopusDeploy.ps1"
+                    "value": "TeamCity.ps1"
                 },
                 "scriptParameters": {
                     "value": "[concat('-LogFileName \"', parameters('teamcityCustomScriptLogFile'), '\" -StorageAccountName \"', variables('storageAccountName'), '\" -StorageAccountKey \"', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, '\"')]"

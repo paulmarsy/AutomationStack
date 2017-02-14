@@ -47,7 +47,7 @@
     },
     {
       "apiVersion": "2016-09-01",
-      "name": "AzureDiskEncryptionUpdateVm",
+      "name": "[concat(parameters('vmName'), 'Extensions', 'AzureDiskEncryptionUpdateVm')]",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
