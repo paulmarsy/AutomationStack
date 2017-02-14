@@ -336,7 +336,8 @@
         "type": "Microsoft.Resources/deployments",
         "dependsOn": [
             "Microsoft.Resources/deployments/TeamCityAutomation",
-            "Microsoft.Resources/deployments/TeamCityCompute"
+            "Microsoft.Resources/deployments/TeamCityCompute",
+            "Microsoft.Resources/deployments/OctopusDeployCompute"
         ],
         "properties": {
             "mode": "Incremental",
