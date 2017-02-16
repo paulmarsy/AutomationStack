@@ -1,0 +1,65 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "automationName": {
+            "type": "string"
+        },
+        "octopusAutomationCredentialUsername": {
+            "type": "securestring"
+        },
+        "octopusAutomationCredentialPassword": {
+            "type": "securestring"
+        }
+    },
+    "resources": [{
+        "name": "[concat(parameters('automationName'), '/', 'OctopusDeployServiceAccount')]",
+        "type": "Microsoft.Automation/automationAccounts/credentials",
+        "tags": "[resourceGroup().tags]",
+        "apiVersion": "2015-10-31",
+        "properties": {
+            "userName": "[parameters('octopusAutomationCredentialUsername')]",
+            "password": "[parameters('octopusAutomationCredentialPassword')]"
+        }
+    }, {
+        "name": "[concat(parameters('automationName'), '/', 'xNetworking')]",
+        "type": "Microsoft.Automation/automationAccounts/modules",
+        "tags": "[resourceGroup().tags]",
+        "apiVersion": "2015-10-31",
+        "properties": {
+            "contentLink": {
+                "uri": "https://www.powershellgallery.com/api/v2/package/xNetworking/3.2.0.0"
+            }
+        }
+    }, {
+        "name": "[concat(parameters('automationName'), '/', 'xPSDesiredStateConfiguration')]",
+        "type": "Microsoft.Automation/automationAccounts/modules",
+        "tags": "[resourceGroup().tags]",
+        "apiVersion": "2015-10-31",
+        "properties": {
+            "contentLink": {
+                "uri": "https://www.powershellgallery.com/api/v2/package/xPSDesiredStateConfiguration/6.0.0.0"
+            }
+        }
+    }, {
+        "name": "[concat(parameters('automationName'), '/', 'PackageManagementProviderResource')]",
+        "type": "Microsoft.Automation/automationAccounts/modules",
+        "tags": "[resourceGroup().tags]",
+        "apiVersion": "2015-10-31",
+        "properties": {
+            "contentLink": {
+                "uri": "https://www.powershellgallery.com/api/v2/package/PackageManagementProviderResource/1.0.3"
+            }
+        }
+    }, {
+        "name": "[concat(parameters('automationName'), '/', 'xSystemSecurity')]",
+        "type": "Microsoft.Automation/automationAccounts/modules",
+        "tags": "[resourceGroup().tags]",
+        "apiVersion": "2015-10-31",
+        "properties": {
+            "contentLink": {
+                "uri": "https://www.powershellgallery.com/api/v2/package/xSystemSecurity/1.2.0.0"
+            }
+        }
+    }]
+}

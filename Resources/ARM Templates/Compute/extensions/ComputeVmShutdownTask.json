@@ -1,0 +1,31 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmName": {
+      "type": "string"
+    },
+    "computeVmShutdownStatus": {
+      "type": "string"
+    },
+    "computeVmShutdownTime": {
+      "type": "string"
+    }
+  },
+  "resources": [{
+    "type": "Microsoft.DevTestLab/schedules",
+    "name": "[concat('Shutdown-ComputeVM-', parameters('vmName'))]",
+    "apiVersion": "2016-05-15",
+    "location": "[resourceGroup().location]",
+    "tags": "[resourceGroup().tags]",
+    "properties": {
+      "status": "[parameters('computeVmShutdownStatus')]",
+      "taskType": "ComputeVmShutdownTask",
+      "dailyRecurrence": {
+        "time": "[parameters('computeVmShutdownTime')]"
+      },
+      "timeZoneId": "GMT Standard Time",
+      "targetResourceId": "[resourceId('Microsoft.Compute/virtualMachines',parameters('vmName'))]"
+    }
+  }]
+}

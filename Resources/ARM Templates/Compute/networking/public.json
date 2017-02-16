@@ -1,0 +1,65 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "udp": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "nicName": "[concat(parameters('name'),'NIC')]",
+    "nsgName": "[concat(parameters('name'),'NSG')]",
+    "publicIPAddressName": "[concat(parameters('name'),'PublicIP')]",
+    "virtualNetworkId": "[resourceId('Microsoft.Network/virtualNetworks', 'VirtualNetwork')]",
+    "subnetId": "[concat(variables('virtualNetworkId'),'/subnets/', 'Default')]"
+  },
+  "resources": [{
+    "apiVersion": "2016-12-01",
+    "type": "Microsoft.Network/networkInterfaces",
+    "name": "[variables('nicName')]",
+    "tags": "[resourceGroup().tags]",
+    "location": "[resourceGroup().location]",
+    "dependsOn": [
+      "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]"
+    ],
+    "properties": {
+      "ipConfigurations": [{
+        "name": "[concat(parameters('name'),'-IPConfig')]",
+        "properties": {
+          "privateIPAllocationMethod": "Dynamic",
+          "publicIPAddress": {
+            "id": "[resourceId('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]"
+          },
+          "subnet": {
+            "id": "[variables('subnetId')]"
+          }
+        }
+      }],
+      "networkSecurityGroup": {
+        "id": "[resourceId('Microsoft.Network/networkSecurityGroups/', variables('nsgName'))]"
+      }
+    }
+  }, {
+    "apiVersion": "2016-12-01",
+    "type": "Microsoft.Network/publicIPAddresses",
+    "name": "[variables('publicIPAddressName')]",
+    "tags": "[resourceGroup().tags]",
+    "location": "[resourceGroup().location]",
+    "properties": {
+      "publicIPAllocationMethod": "Static",
+      "idleTimeoutInMinutes": 30,
+      "dnsSettings": {
+        "domainNameLabel": "[toLower(concat(parameters('name'),'stack-',parameters('udp')))]"
+      }
+    }
+  }],
+  "outputs": {
+    "publicIpAddress": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressName'))).IpAddress]"
+    }
+  }
+}

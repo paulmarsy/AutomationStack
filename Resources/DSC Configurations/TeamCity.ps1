@@ -2,8 +2,8 @@ Configuration TeamCity
 {
     param(
         $TentacleRegistrationUri,
-        $OctopusApiKey,
-        $HostHeader,
+        $TentacleRegistrationApiKey,
+        $TeamCityHostHeader,
         $TeamCityVersion
     )
         
@@ -94,7 +94,7 @@ Configuration TeamCity
         Script TeamCityAgentConfig
         {
             SetScript = {
-                & "$($env:SystemDrive)\buildAgent\bin\changeAgentProps.bat" serverUrl $using:HostHeader "$($env:SystemDrive)\buildAgent\conf\buildAgent.properties" *>&1 | Write-Verbose
+                & "$($env:SystemDrive)\buildAgent\bin\changeAgentProps.bat" serverUrl $using:TeamCityHostHeader "$($env:SystemDrive)\buildAgent\conf\buildAgent.properties" *>&1 | Write-Verbose
                 if ($LASTEXITCODE -ne 0) { throw "Exit code $LASTEXITCODE from TeamCity Agent Configuration: changeAgentProps serverUrl" }
 
                 & "$($env:SystemDrive)\buildAgent\launcher\bin\TeamCityAgentService-windows-x86-32.exe" -i "$($env:SystemDrive)\buildAgent\launcher\conf\wrapper.conf" *>&1 | Write-Verbose

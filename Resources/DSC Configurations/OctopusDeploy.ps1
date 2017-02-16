@@ -2,9 +2,8 @@ Configuration OctopusDeploy
 {
     param(
         $OctopusNodeName,
-        $ConnectionString,
-        $HostHeader,
-        $FullyQualifiedUrl,
+        $OctopusConnectionString,
+        $OctopusHostName,
         $OctopusVersionToInstall = 'latest'
     )
     Import-DscResource -ModuleName PSDesiredStateConfiguration
@@ -12,7 +11,7 @@ Configuration OctopusDeploy
     Import-DscResource -ModuleName xNetworking
     Import-DscResource -ModuleName xSystemSecurity
     Import-DscResource -ModuleName PackageManagementProviderResource
-
+        
     Node Server
     {
         #include <Common>
@@ -100,21 +99,22 @@ Configuration OctopusDeploy
         Script OctopusDeployConfiguration
         {
             SetScript = {
+                $hostHeader = 'http://{0}/' -f $using:OctopusHostName
                 $octopusServerExe = Join-Path $env:ProgramFiles 'Octopus Deploy\Octopus\Octopus.Server.exe'
 
-                & $octopusServerExe create-instance --console --instance OctopusServer --config "$($env:SystemDrive)\Octopus\OctopusServer.config" *>&1  | Write-Verbose
+                & $octopusServerExe create-instance --console --instance OctopusServer --config "$($env:SystemDrive)\Octopus\OctopusServer.config" *>&1 | Tee-Object -Append -Path $using:octopusConfigLogFile
                 if ($LASTEXITCODE -ne 0) { throw "Exit code $LASTEXITCODE from Octopus Server: create-instance" }
-                & $octopusServerExe configure --console --instance OctopusServer --home "C:\Octopus" --storageConnectionString $using:ConnectionString --upgradeCheck "True" --upgradeCheckWithStatistics "True" --webAuthenticationMode "UsernamePassword" --webForceSSL "False" --webListenPrefixes $using:HostHeader --commsListenPort "10943" --serverNodeName $using:OctopusNodeName *>&1   | Write-Verbose
+                & $octopusServerExe configure --console --instance OctopusServer --home "C:\Octopus" --storageConnectionString $using:OctopusConnectionString --upgradeCheck "True" --upgradeCheckWithStatistics "True" --webAuthenticationMode "UsernamePassword" --webForceSSL "False" --webListenPrefixes $hostHeader --commsListenPort "10943" --serverNodeName $using:OctopusNodeName *>&1 | Tee-Object -Append -Path $using:octopusConfigLogFile
                 if ($LASTEXITCODE -ne 0) { throw "Exit code $LASTEXITCODE from Octopus Server: configure" }
-                & $octopusServerExe database --console --instance OctopusServer --create *>&1   | Write-Verbose
+                & $octopusServerExe database --console --instance OctopusServer --create *>&1 | Tee-Object -Append -Path $using:octopusConfigLogFile
                 if ($LASTEXITCODE -ne 0) { throw "Exit code $LASTEXITCODE from Octopus Server: database" }
                 
                 $response = Invoke-WebRequest -UseBasicParsing -Uri "https://octopusdeploy.com/api/licenses/trial" -Method POST -Body @{ FullName=$env:USERNAME; Organization=$env:USERDOMAIN; EmailAddress="${env:USERNAME}@${env:USERDOMAIN}.onmicrosoft.com"; Source="azure" } -Verbose
                 $licenseBase64 = [System.Convert]::ToBase64String(((New-Object System.Text.UTF8Encoding($false)).GetBytes($response.Content)))
-                & $octopusServerExe license --console --instance OctopusServer --licenseBase64 $licenseBase64 *>&1   | Write-Verbose
+                & $octopusServerExe license --console --instance OctopusServer --licenseBase64 $licenseBase64 *>&1 | Tee-Object -Append -Path $using:octopusConfigLogFile
                 if ($LASTEXITCODE -ne 0) { throw "Exit code $LASTEXITCODE from Octopus Server: license" }
 
-                & $octopusServerExe service --console --instance OctopusServer --install --reconfigure --stop *>&1   | Write-Verbose
+                & $octopusServerExe service --console --instance OctopusServer --install --reconfigure --stop *>&1 | Tee-Object -Append -Path $using:octopusConfigLogFile
                 if ($LASTEXITCODE -ne 0) { throw "Exit code $LASTEXITCODE from Octopus Server: service" }
 
                 [System.IO.FIle]::WriteAllText($using:octopusConfigStateFile, $LASTEXITCODE,[System.Text.Encoding]::ASCII)
@@ -143,6 +143,7 @@ Configuration OctopusDeploy
         Script URLAccessControlList
         {
             SetScript = {
+                $fullyQualifiedUrl = 'http://{0}:80/' -f $using:OctopusHostName
                 $netsh = Join-Path -Resolve ([System.Environment]::SystemDirectory) 'netsh.exe'
                 Write-Verbose "Found $netsh"
 
@@ -152,7 +153,7 @@ Configuration OctopusDeploy
                 
                 $username = '{0}\{1}' -f [System.Environment]::MachineName, $using:octopusServiceAccountUsername
                 Write-Verbose "Adding new HTTP URL acccess control entry for user $username"
-                & $netsh http add urlacl url=$using:FullyQualifiedUrl user=$username *>&1 |  Write-Verbose
+                & $netsh http add urlacl url=$fullyQualifiedUrl user=$username *>&1 |  Write-Verbose
                 if ($LASTEXITCODE -ne 0) { throw "Exit code $LASTEXITCODE from netsh add urlacl" }
                 
                 [System.IO.File]::WriteAllText($using:octopusUrlAclStateFile, $LASTEXITCODE,[System.Text.Encoding]::ASCII)

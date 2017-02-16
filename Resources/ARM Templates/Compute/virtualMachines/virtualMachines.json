@@ -1,0 +1,109 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "udp": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "osDiskType": {
+      "type": "string",
+      "allowedValues": [
+        "Managed",
+        "Unmanaged"
+      ]
+    },
+    "osProfileType": {
+      "type": "string",
+      "allowedValues": [
+        "Windows",
+        "Linux"
+      ]
+    },
+    "vmSize": {
+      "type": "string",
+      "defaultValue": "Standard_F2S"
+    },
+    "vmAdminUsername": {
+      "type": "securestring"
+    },
+    "vmAdminPassword": {
+      "type": "securestring"
+    },
+    "publisher": {
+      "type": "string"
+    },
+    "offer": {
+      "type": "string"
+    },
+    "sku": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "vmName": "[concat(parameters('name'),'VM')]",
+    "nicName": "[concat(parameters('name'),'NIC')]",
+    "osProfile": "[variables(concat('osProfile', parameters('osProfileType')))]",
+    "osProfileWindows": {
+      "computerName": "[variables('vmName')]",
+      "adminUsername": "[parameters('vmAdminUsername')]",
+      "adminPassword": "[parameters('vmAdminPassword')]",
+      "windowsConfiguration": {
+        "enableAutomaticUpdates": true,
+        "provisionVMAgent": true
+      }
+    },
+    "osProfileLinux": {
+      "computerName": "[variables('vmName')]",
+      "adminUsername": "[parameters('vmAdminUsername')]",
+      "adminPassword": "[parameters('vmAdminPassword')]"
+    },
+    "osDisk": "[variables(concat('osDisk', parameters('osDiskType')))]",
+    "osDiskManaged": {
+      "name": "[concat(variables('vmName'),'-OS')]",
+      "caching": "ReadWrite",
+      "createOption": "FromImage",
+      "managedDisk": {
+        "storageAccountType": "Premium_LRS"
+      }
+    },
+    "resourcesStorageName": "[concat('stackresources', parameters('udp'))]",
+    "osDiskUnmanaged": {
+      "name": "[concat(variables('vmName'),'-OS')]",
+      "vhd": {
+        "uri": "[concat('http://',variables('resourcesStorageName'),'.blob.core.windows.net/vhds/',variables('vmName'),'-OS.vhd')]"
+      },
+      "caching": "ReadWrite",
+      "createOption": "FromImage"
+    }
+  },
+  "resources": [{
+    "apiVersion": "2017-03-30",
+    "type": "Microsoft.Compute/virtualMachines",
+    "name": "[variables('vmName')]",
+    "tags": "[resourceGroup().tags]",
+    "location": "[resourceGroup().location]",
+    "properties": {
+      "hardwareProfile": {
+        "vmSize": "[parameters('vmSize')]"
+      },
+      "osProfile": "[variables('osProfile')]",
+      "storageProfile": {
+        "imageReference": {
+          "publisher": "[parameters('publisher')]",
+          "offer": "[parameters('offer')]",
+          "sku": "[parameters('sku')]",
+          "version": "latest"
+        },
+        "osDisk": "[variables('osDisk')]"
+      },
+      "networkProfile": {
+        "networkInterfaces": [{
+          "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]"
+        }]
+      }
+    }
+  }]
+}

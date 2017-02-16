@@ -1,0 +1,39 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "udp": {
+      "type": "string"
+    },
+    "vmName": {
+      "type": "string"
+    },
+    "scriptFileName": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "resourcesStorageName": "[concat('stackresources', parameters('udp'))]"
+  },
+  "resources": [{
+    "type": "Microsoft.Compute/virtualMachines/extensions",
+    "name": "[concat(parameters('vmName'),'/CustomScript')]",
+    "tags": "[resourceGroup().tags]",
+    "apiVersion": "2017-03-30",
+    "location": "[resourceGroup().location]",
+    "properties": {
+      "publisher": "Microsoft.Azure.Extensions",
+      "type": "CustomScript",
+      "typeHandlerVersion": "2.0",
+      "autoUpgradeMinorVersion": true,
+      "settings": {
+        "fileUris": ["[concat('http://',variables('resourcesStorageName'),'.blob.core.windows.net/scripts/',parameters('scriptFileName'))]"],
+        "commandToExecute": "[concat('sh ', parameters('scriptFileName'))]"
+      },
+      "protectedSettings": {
+        "storageAccountName": "[variables('resourcesStorageName')]",
+        "storageAccountKey": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('resourcesStorageName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value]"
+      }
+    }
+  }]
+}

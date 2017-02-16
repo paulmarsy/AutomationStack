@@ -1,0 +1,74 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "udp": {
+            "type": "string"
+        },
+        "jobId": {
+            "type": "string"
+        },
+        "configurationName": {
+            "type": "string",
+            "defaultValue": "TeamCity"
+        },
+        "configuration": {
+            "type": "string"
+        },
+        "configurationData": {
+            "type": "string"
+        },
+        "teamcityTentacleRegistrationUri": {
+            "type": "string"
+        },
+        "teamCityTentacleRegistrationApiKey": {
+            "type": "string"
+        },
+        "teamCityHostHeader": {
+            "type": "string"
+        },
+        "teamCityVersion": {
+            "type": "string",
+            "defaultValue": "10.0.4"
+        }
+    },
+    "variables": {
+        "automationName": "[concat('automation-', parameters('udp'))]"
+    },
+    "resources": [{
+        "name": "[concat(variables('automationName'), '/', parameters('configurationName'))]",
+        "type": "Microsoft.Automation/automationAccounts/configurations",
+        "tags": "[resourceGroup().tags]",
+        "apiVersion": "2015-10-31",
+        "properties": {
+            "description": "[concat('DSC Configuration ', parameters('configurationName'))]",
+            "logVerbose": true,
+            "state": "Published",
+            "overwrite": true,
+            "source": {
+                "type": "embeddedContent",
+                "value": "[parameters('configuration')]"
+            }
+        }
+    }, {
+        "name": "[concat(variables('automationName'), '/', parameters('jobId'))]",
+        "type": "Microsoft.Automation/automationAccounts/compilationjobs",
+        "tags": "[resourceGroup().tags]",
+        "apiVersion": "2015-10-31",
+        "dependsOn": [
+            "[concat('Microsoft.Automation/automationAccounts/', variables('automationName'),'/Configurations/', parameters('configurationName'))]"
+        ],
+        "properties": {
+            "configuration": {
+                "name": "[parameters('configurationName')]"
+            },
+            "parameters": {
+                "ConfigurationData": "[parameters('configurationData')]",
+                "TentacleRegistrationUri": "[parameters('teamcityTentacleRegistrationUri')]",
+                "TentacleRegistrationApiKey": "[parameters('teamCityTentacleRegistrationApiKey')]",
+                "TeamCityHostHeader": "[parameters('teamCityHostHeader')]",
+                "TeamCityVersion": "[parameters('teamCityVersion')]"
+            }
+        }
+    }]
+}

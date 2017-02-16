@@ -1,0 +1,28 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "sqlServerName": {
+            "type": "string"
+        },
+        "sqlAdminUsername": {
+            "type": "securestring"
+        },
+        "sqlAdminPassword": {
+            "type": "securestring"
+        }
+    },
+    "resources": [{
+        "apiVersion": "2014-04-01-preview",
+        "type": "Microsoft.Sql/servers",
+        "name": "[parameters('sqlServerName')]",
+        "tags": "[resourceGroup().tags]",
+        "location": "[resourceGroup().location]",
+        "kind": "v12.0",
+        "properties": {
+            "administratorLogin": "[parameters('sqlAdminUsername')]",
+            "administratorLoginPassword": "[parameters('sqlAdminPassword')]",
+            "version": "12.0"
+        }
+    }]
+}

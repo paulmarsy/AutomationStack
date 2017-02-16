@@ -1,0 +1,71 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "templateSasToken": {
+      "type": "securestring"
+    },
+    "udp": {
+      "type": "string"
+    },
+    "vmName": {
+      "type": "string"
+    },
+    "clientID": {
+      "type": "securestring"
+    },
+    "clientSecret": {
+      "type": "securestring"
+    }
+  },
+  "variables": {
+    "templateBaseUrl": "[concat('https://stackresources',parameters('udp'),'.blob.core.windows.net')]",
+    "keyVaultName": "[concat('keyvault-', parameters('udp'))]"
+  },
+  "resources": [{
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(parameters('vmName'),'/AzureDiskEncryption')]",
+      "tags": "[resourceGroup().tags]",
+      "apiVersion": "2017-03-30",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "publisher": "Microsoft.Azure.Security",
+        "type": "AzureDiskEncryption",
+        "typeHandlerVersion": "1.1",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "AADClientID": "[parameters('clientId')]",
+          "KeyVaultURL": "[concat('https://', variables('keyVaultName'), '.vault.azure.net/')]",
+          "KeyEncryptionAlgorithm": "RSA-OAEP",
+          "VolumeType": "All",
+          "EncryptionOperation": "EnableEncryption"
+        },
+        "protectedSettings": {
+          "AADClientSecret": "[parameters('clientSecret')]"
+        }
+      }
+    },
+    {
+      "apiVersion": "2016-09-01",
+      "name": "[concat(parameters('vmName'), 'Extensions', 'AzureDiskEncryptionUpdateVm')]",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Compute/extensions/AzureDiskEncryption.UpdateVM.json'), parameters('templateSasToken'))]"
+        },
+        "parameters": {
+          "vmName": {
+            "value": "[parameters('vmName')]"
+          },
+          "keyVaultSecretUrl": {
+            "value": "[reference(resourceId('Microsoft.Compute/virtualMachines/extensions',  parameters('vmName'),  'AzureDiskEncryption')).instanceView.statuses[0].message]"
+          },
+          "keyVaultName": {
+            "value": "[variables('keyVaultName')]"
+          }
+        }
+      }
+    }
+  ]
+}
