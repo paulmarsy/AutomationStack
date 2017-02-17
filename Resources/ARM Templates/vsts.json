@@ -1,0 +1,35 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "templateSasToken": {
+            "type": "securestring"
+        },
+        "udp": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "templateBaseUrl": "[concat('https://stackresources',parameters('udp'),'.blob.core.windows.net')]",
+        "accountName": "[concat('vsts-', parameters('udp'))]"
+    },
+    "resources": [{
+        "apiVersion": "2016-09-01",
+        "name": "VSTS",
+        "type": "Microsoft.Resources/deployments",
+        "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/infrastructure/visualstudio.json'), parameters('templateSasToken'))]"
+            },
+            "parameters": {
+                "accountName": {
+                    "value": "[variables('accountName')]"
+                },
+                "projectName": {
+                    "value": "AutomationStack"
+                }
+            }
+        }
+    }]
+}

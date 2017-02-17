@@ -1,0 +1,150 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "templateSasToken": {
+            "type": "securestring"
+        },
+        "udp": {
+            "type": "string"
+        },
+        "timestamp": {
+            "type": "string"
+        },
+        "computeVmShutdownStatus": {
+            "type": "string"
+        },
+        "computeVmShutdownTime": {
+            "type": "string"
+        },
+        "teamcityDscJobId": {
+            "type": "string"
+        },
+        "teamcityDscConfiguration": {
+            "type": "string"
+        },
+        "teamcityDscConfigurationData": {
+            "type": "string"
+        },
+        "teamcityDscTentacleRegistrationUri": {
+            "type": "string"
+        },
+        "teamcityDscTentacleRegistrationApiKey": {
+            "type": "string"
+        },
+        "teamcityDscHostHeader": {
+            "type": "string"
+        },
+        "teamcityCustomScriptLogFile": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "templateBaseUrl": "[concat('https://stackresources',parameters('udp'),'.blob.core.windows.net')]",
+        "teamcityVmName": "TeamCityVM",
+        "storageAccountName": "[concat('stackresources', parameters('udp'))]"
+    },
+    "resources": [{
+        "apiVersion": "2016-09-01",
+        "name": "TeamCityAutomation",
+        "type": "Microsoft.Resources/deployments",
+        "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Automation/TeamCity.json'), parameters('templateSasToken'))]"
+            },
+            "parameters": {
+                "udp": {
+                    "value": "[parameters('udp')]"
+                },
+                "jobId": {
+                    "value": "[parameters('teamcityDscJobId')]"
+                },
+                "configuration": {
+                    "value": "[parameters('teamcityDscConfiguration')]"
+                },
+                "configurationData": {
+                    "value": "[parameters('teamcityDscConfigurationData')]"
+                },
+                "teamcityTentacleRegistrationUri": {
+                    "value": "[parameters('teamcityDscTentacleRegistrationUri')]"
+                },
+                "teamCityTentacleRegistrationApiKey": {
+                    "value": "[parameters('teamcityDscTentacleRegistrationApiKey')]"
+                },
+                "teamCityHostHeader": {
+                    "value": "[parameters('teamcityDscHostHeader')]"
+                }
+            }
+        }
+    }, {
+        "apiVersion": "2016-09-01",
+        "name": "TeamCityCompute",
+        "type": "Microsoft.Resources/deployments",
+        "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Compute/ApplicationServer.json'), parameters('templateSasToken'))]"
+            },
+            "parameters": {
+                "templateSasToken": {
+                    "value": "[parameters('templateSasToken')]"
+                },
+                "udp": {
+                    "value": "[parameters('udp')]"
+                },
+                "name": {
+                    "value": "TeamCity"
+                },
+                "nodeConfigurationName": {
+                    "value": "TeamCity.Server"
+                },
+                "timestamp": {
+                    "value": "[parameters('timestamp')]"
+                },
+                "computeVmShutdownStatus": {
+                    "value": "[parameters('computeVmShutdownStatus')]"
+                },
+                "computeVmShutdownTime": {
+                    "value": "[parameters('computeVmShutdownTime')]"
+                }
+            }
+        }
+    }, {
+        "apiVersion": "2016-09-01",
+        "name": "TeamCityConfiguration",
+        "type": "Microsoft.Resources/deployments",
+        "dependsOn": [
+            "Microsoft.Resources/deployments/TeamCityAutomation",
+            "Microsoft.Resources/deployments/TeamCityCompute"
+        ],
+        "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Compute/extensions/CustomScript.Windows.json'), parameters('templateSasToken'))]"
+            },
+            "parameters": {
+                "udp": {
+                    "value": "[parameters('udp')]"
+                },
+                "vmName": {
+                    "value": "[variables('teamcityVmName')]"
+                },
+                "fileUris": {
+                    "value": [
+                        "[concat('https://',variables('storageAccountName'),'.blob.core.windows.net/scripts/TeamCity/TeamCityImport.ps1')]",
+                        "[concat('https://',variables('storageAccountName'),'.blob.core.windows.net/scripts/Shared/AutomationNodeCompliance.ps1')]",
+                        "[concat('https://',variables('storageAccountName'),'.blob.core.windows.net/scripts/Shared/CustomScriptLogging.ps1')]",
+                        "[concat('https://',variables('storageAccountName'),'.blob.core.windows.net/scripts/TeamCity.ps1')]"
+                    ]
+                },
+                "scriptFileName": {
+                    "value": "TeamCity.ps1"
+                },
+                "scriptParameters": {
+                    "value": "[concat('-LogFileName \"', parameters('teamcityCustomScriptLogFile'), '\" -StorageAccountName \"', variables('storageAccountName'), '\" -StorageAccountKey \"', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, '\"')]"
+                }
+            }
+        }
+    }]
+}

@@ -5,6 +5,15 @@
         "udp": {
             "type": "string"
         },
+        "servicePrincipalCertificateValue": {
+            "type": "string"
+        },
+        "servicePrincipalCertificateThumbprint": {
+            "type": "string"
+        },
+        "servicePrincipalApplicationId": {
+            "type": "string"
+        },
         "servicePrincipalObjectId": {
             "type": "string"
         },
@@ -18,66 +27,105 @@
         "resourcesStorageName": "[concat('stackresources', parameters('udp'))]"
     },
     "resources": [{
-        "apiVersion": "2015-10-31",
-        "type": "Microsoft.Automation/automationAccounts",
-        "name": "[variables('automationName')]",
-        "tags": "[resourceGroup().tags]",
-        "location": "westeurope",
-        "properties": {
-            "sku": {
-                "name": "Free"
-            }
-        }
-    }, {
-        "type": "Microsoft.KeyVault/vaults",
-        "name": "[variables('keyVaultName')]",
-        "tags": "[resourceGroup().tags]",
-        "apiVersion": "2015-06-01",
-        "location": "[resourceGroup().location]",
-        "properties": {
-            "tenantId": "[subscription().tenantId]",
-            "accessPolicies": [{
-                "tenantId": "[subscription().tenantId]",
-                "objectId": "[parameters('servicePrincipalObjectId')]",
-                "permissions": {
-                    "keys": ["create", "decrypt", "encrypt", "get", "sign", "unwrapKey", "verify", "wrapKey"],
-                    "secrets": ["get", "set"]
+            "apiVersion": "2015-10-31",
+            "type": "Microsoft.Automation/automationAccounts",
+            "name": "[variables('automationName')]",
+            "tags": "[resourceGroup().tags]",
+            "location": "westeurope",
+            "properties": {
+                "sku": {
+                    "name": "Free"
+                }
+            },
+            "resources": [{
+                "name": "UDP",
+                "type": "variables",
+                "apiVersion": "2015-10-31",
+                "tags": "[resourceGroup().tags]",
+                "properties": {
+                    "description": "",
+                    "isEncrypted": 0,
+                    "type": "string",
+                    "value": "[concat('\"', parameters('udp'),'\"')]"
                 }
             }, {
-                "tenantId": "[subscription().tenantId]",
-                "objectId": "[parameters('azureUserObjectId')]",
-                "permissions": {
-                    "keys": ["all"],
-                    "secrets": ["all"]
+                "name": "AzureRunAsCertificate",
+                "type": "certificates",
+                "apiVersion": "2015-10-31",
+                "tags": "[resourceGroup().tags]",
+                "properties": {
+                    "base64Value": "[parameters('servicePrincipalCertificateValue')]",
+                    "thumbprint": "[parameters('servicePrincipalCertificateThumbprint')]"
                 }
-            }],
-            "sku": {
-                "name": "Standard",
-                "family": "A"
+            }, {
+                "name": "AzureRunAsConnection",
+                "type": "connections",
+                "tags": "[resourceGroup().tags]",
+                "apiVersion": "2015-10-31",
+                "fieldDefinitionValues": {
+                    "CertificateThumbprint": "[parameters('servicePrincipalCertificateThumbprint')]",
+                    "ApplicationId": "[parameters('servicePrincipalApplicationId')]",
+                    "SubscriptionId": "[subscription().subscriptionId]",
+                    "TenantId": "[subscription().tenantId]"
+                },
+                "connectionType": {
+                    "name": "AzureServicePrincipal"
+                },
+                "description": "",
+                "isGlobal": false
+            }]
+        }, {
+            "type": "Microsoft.KeyVault/vaults",
+            "name": "[variables('keyVaultName')]",
+            "tags": "[resourceGroup().tags]",
+            "apiVersion": "2015-06-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "tenantId": "[subscription().tenantId]",
+                "accessPolicies": [{
+                    "tenantId": "[subscription().tenantId]",
+                    "objectId": "[parameters('servicePrincipalObjectId')]",
+                    "permissions": {
+                        "keys": ["create", "decrypt", "encrypt", "get", "sign", "unwrapKey", "verify", "wrapKey"],
+                        "secrets": ["get", "set"]
+                    }
+                }, {
+                    "tenantId": "[subscription().tenantId]",
+                    "objectId": "[parameters('azureUserObjectId')]",
+                    "permissions": {
+                        "keys": ["all"],
+                        "secrets": ["all"]
+                    }
+                }],
+                "sku": {
+                    "name": "Standard",
+                    "family": "A"
+                }
             }
-        }
-    }, {
-        "apiVersion": "2016-12-01",
-        "type": "Microsoft.Storage/storageAccounts",
-        "name": "[variables('resourcesStorageName')]",
-        "tags": "[resourceGroup().tags]",
-        "location": "[resourceGroup().location]",
-        "sku": {
-            "name": "Standard_LRS",
-            "tier": "Standard"
         },
-        "kind": "Storage",
-        "properties": {
-            "encryption": {
-                "keySource": "Microsoft.Storage",
-                "services": {
-                    "blob": {
-                        "enabled": true
+        {
+            "apiVersion": "2016-12-01",
+            "type": "Microsoft.Storage/storageAccounts",
+            "name": "[variables('resourcesStorageName')]",
+            "tags": "[resourceGroup().tags]",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "kind": "Storage",
+            "properties": {
+                "encryption": {
+                    "keySource": "Microsoft.Storage",
+                    "services": {
+                        "blob": {
+                            "enabled": true
+                        }
                     }
                 }
             }
         }
-    }],
+    ],
     "outputs": {
         "keyVaultResourceId": {
             "type": "string",

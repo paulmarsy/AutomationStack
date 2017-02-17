@@ -1,0 +1,100 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "templateSasToken": {
+            "type": "securestring"
+        },
+        "udp": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "templateBaseUrl": "[concat('https://stackresources',parameters('udp'),'.blob.core.windows.net')]",
+        "automationName": "[concat('automation-', parameters('udp'))]",
+        "sqlServerName": "[concat('azuresql-', parameters('udp'))]"
+    },
+    "resources": [{
+        "apiVersion": "2016-09-01",
+        "name": "AutomationAccounts",
+        "type": "Microsoft.Resources/deployments",
+        "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Infrastructure/automationAccounts.dsc.json'), parameters('templateSasToken'))]"
+            },
+            "parameters": {
+                "automationName": {
+                    "value": "[variables('automationName')]"
+                },
+                "octopusAutomationCredentialUsername": {
+                    "reference": {
+                        "keyVault": {
+                            "id": "[concat(resourceGroup().id, '/providers/Microsoft.KeyVault/vaults/keyvault-', parameters('udp'))]"
+                        },
+                        "secretName": "OctopusAutomationCredentialUsername"
+                    }
+                },
+                "octopusAutomationCredentialPassword": {
+                    "reference": {
+                        "keyVault": {
+                            "id": "[concat(resourceGroup().id, '/providers/Microsoft.KeyVault/vaults/keyvault-', parameters('udp'))]"
+                        },
+                        "secretName": "OctopusAutomationCredentialPassword"
+                    }
+                }
+            }
+        }
+    }, {
+        "apiVersion": "2016-09-01",
+        "name": "NetworkSecurityGroups",
+        "type": "Microsoft.Resources/deployments",
+        "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Infrastructure/networkSecurityGroups.json'), parameters('templateSasToken'))]"
+            }
+        }
+    }, {
+        "apiVersion": "2016-09-01",
+        "name": "SqlServers",
+        "type": "Microsoft.Resources/deployments",
+        "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Infrastructure/sqlServers.json'), parameters('templateSasToken'))]"
+            },
+            "parameters": {
+                "sqlServerName": {
+                    "value": "[variables('sqlServerName')]"
+                },
+                "sqlAdminUsername": {
+                    "reference": {
+                        "keyVault": {
+                            "id": "[concat(resourceGroup().id, '/providers/Microsoft.KeyVault/vaults/keyvault-', parameters('udp'))]"
+                        },
+                        "secretName": "SqlAdminUsername"
+                    }
+                },
+                "sqlAdminPassword": {
+                    "reference": {
+                        "keyVault": {
+                            "id": "[concat(resourceGroup().id, '/providers/Microsoft.KeyVault/vaults/keyvault-', parameters('udp'))]"
+                        },
+                        "secretName": "SqlAdminPassword"
+                    }
+                }
+            }
+        }
+    }, {
+        "apiVersion": "2016-09-01",
+        "name": "VirtualNetworks",
+        "type": "Microsoft.Resources/deployments",
+        "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Infrastructure/virtualNetworks.json'), parameters('templateSasToken'))]"
+            }
+        }
+    }]
+}

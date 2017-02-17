@@ -1,0 +1,150 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "templateSasToken": {
+            "type": "securestring"
+        },
+        "udp": {
+            "type": "string"
+        },
+        "timestamp": {
+            "type": "string"
+        },
+        "computeVmShutdownStatus": {
+            "type": "string"
+        },
+        "computeVmShutdownTime": {
+            "type": "string"
+        },
+        "octopusDscJobId": {
+            "type": "string"
+        },
+        "octopusDscConfiguration": {
+            "type": "string"
+        },
+        "octopusDscConfigurationData": {
+            "type": "string"
+        },
+        "octopusDscNodeName": {
+            "type": "string"
+        },
+        "octopusDscConnectionString": {
+            "type": "string"
+        },
+        "octopusDscHostName": {
+            "type": "string"
+        },
+        "octopusCustomScriptLogFile": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "templateBaseUrl": "[concat('https://stackresources',parameters('udp'),'.blob.core.windows.net')]",
+        "octopusVmName": "OctopusVM",
+        "storageAccountName": "[concat('stackresources', parameters('udp'))]"
+    },
+    "resources": [{
+        "apiVersion": "2016-09-01",
+        "name": "OctopusDeployAutomation",
+        "type": "Microsoft.Resources/deployments",
+        "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Automation/OctopusDeploy.json'), parameters('templateSasToken'))]"
+            },
+            "parameters": {
+                "udp": {
+                    "value": "[parameters('udp')]"
+                },
+                "jobId": {
+                    "value": "[parameters('octopusDscJobId')]"
+                },
+                "configuration": {
+                    "value": "[parameters('octopusDscConfiguration')]"
+                },
+                "configurationData": {
+                    "value": "[parameters('octopusDscConfigurationData')]"
+                },
+                "octopusNodeName": {
+                    "value": "[parameters('octopusDscNodeName')]"
+                },
+                "octopusConnectionString": {
+                    "value": "[parameters('octopusDscConnectionString')]"
+                },
+                "octopusHostName": {
+                    "value": "[parameters('octopusDscHostName')]"
+                }
+            }
+        }
+    }, {
+        "apiVersion": "2016-09-01",
+        "name": "OctopusDeployCompute",
+        "type": "Microsoft.Resources/deployments",
+        "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Compute/ApplicationServer.json'), parameters('templateSasToken'))]"
+            },
+            "parameters": {
+                "templateSasToken": {
+                    "value": "[parameters('templateSasToken')]"
+                },
+                "udp": {
+                    "value": "[parameters('udp')]"
+                },
+                "name": {
+                    "value": "Octopus"
+                },
+                "nodeConfigurationName": {
+                    "value": "OctopusDeploy.Server"
+                },
+                "timestamp": {
+                    "value": "[parameters('timestamp')]"
+                },
+                "computeVmShutdownStatus": {
+                    "value": "[parameters('computeVmShutdownStatus')]"
+                },
+                "computeVmShutdownTime": {
+                    "value": "[parameters('computeVmShutdownTime')]"
+                }
+            }
+        }
+    }, {
+        "apiVersion": "2016-09-01",
+        "name": "OctopusDeployConfiguration",
+        "type": "Microsoft.Resources/deployments",
+        "dependsOn": [
+            "Microsoft.Resources/deployments/OctopusDeployAutomation",
+            "Microsoft.Resources/deployments/OctopusDeployCompute"
+        ],
+        "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Compute/extensions/CustomScript.Windows.json'), parameters('templateSasToken'))]"
+            },
+            "parameters": {
+                "udp": {
+                    "value": "[parameters('udp')]"
+                },
+                "vmName": {
+                    "value": "[variables('octopusVmName')]"
+                },
+                "fileUris": {
+                    "value": [
+                        "[concat('https://',variables('storageAccountName'),'.blob.core.windows.net/scripts/OctopusDeploy/OctopusImport.ps1')]",
+                        "[concat('https://',variables('storageAccountName'),'.blob.core.windows.net/scripts/Shared/AutomationNodeCompliance.ps1')]",
+                        "[concat('https://',variables('storageAccountName'),'.blob.core.windows.net/scripts/Shared/CustomScriptLogging.ps1')]",
+                        "[concat('https://',variables('storageAccountName'),'.blob.core.windows.net/scripts/OctopusDeploy.ps1')]"
+                    ]
+                },
+                "scriptFileName": {
+                    "value": "OctopusDeploy.ps1"
+                },
+                "scriptParameters": {
+                    "value": "[concat('-LogFileName \"', parameters('octopusCustomScriptLogFile'), '\" -StorageAccountName \"', variables('storageAccountName'), '\" -StorageAccountKey \"', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, '\"')]"
+                }
+            }
+        }
+    }]
+}

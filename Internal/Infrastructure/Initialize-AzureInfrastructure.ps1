@@ -23,12 +23,5 @@ function Initialize-AzureInfrastructure {
         octopusDscConnectionString = $CurrentContext.Get('OctopusConnectionString')
         octopusDscHostName = $CurrentContext.Get('OctopusHostName')
         octopusCustomScriptLogFile = $CurrentContext.Get('OctopusCustomScriptLogFile')
-        teamcityDscJobId = [System.Guid]::NewGuid().ToString()
-        teamcityDscConfiguration = $teamcityDscConfiguration
-        teamcityDscConfigurationData = $teamcityDscConfigurationData
-        teamcityDscTentacleRegistrationUri = $CurrentContext.Get('OctopusHostHeader')
-        teamcityDscTentacleRegistrationApiKey = $CurrentContext.Get('ApiKey')
-        teamcityDscHostHeader = $CurrentContext.Get('TeamCityHostHeader')
-        teamcityCustomScriptLogFile = $CurrentContext.Get('TeamCityCustomScriptLogFile')
     } | Out-Null
 }

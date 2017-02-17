@@ -1,0 +1,35 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "accountName": {
+            "type": "string"
+        },
+        "projectName": {
+            "type": "string"
+        }
+    },
+    "resources": [{
+        "name": "[parameters('accountName')]",
+        "type": "microsoft.visualstudio/account",
+        "location": "West Europe",
+        "apiVersion": "2014-04-01-preview",
+        "properties": {
+            "operationType": "Create",
+            "accountName": "[parameters('accountName')]"
+        },
+        "resources": [{
+            "name": "[parameters('projectName')]",
+            "type": "project",
+            "location": "West Europe",
+            "apiVersion": "2014-04-01-preview",
+            "dependsOn": [
+                "[concat('microsoft.visualstudio/account/', parameters('accountName'))]"
+            ],
+            "properties": {
+                "ProcessTemplateId": "Agile",
+                "VersionControlOption": "Git"
+            }
+        }]
+    }]
+}

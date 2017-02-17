@@ -7,6 +7,9 @@ function Initialize-CoreInfrastructure {
 
     $coreInfrastructureDeploy = Start-ARMDeployment -Mode File -ResourceGroupName $CurrentContext.Get('ResourceGroup') -Template 'coreinfrastructure' -TemplateParameters @{
         udp = $CurrentContext.Get('UDP')
+        servicePrincipalCertificateValue = $CurrentContext.Get('ServicePrincipalCertificate')
+        servicePrincipalCertificateThumbprint = $CurrentContext.Get('ServicePrincipalCertificateThumbprint')
+        servicePrincipalApplicationId = $CurrentContext.Get('ServicePrincipalClientId')
         servicePrincipalObjectId = $CurrentContext.Get('ServicePrincipalObjectId')
         azureUserObjectId = $CurrentContext.Get('AzureUserObjectId')
     }

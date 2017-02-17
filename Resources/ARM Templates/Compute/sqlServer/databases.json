@@ -35,6 +35,19 @@
     "properties": {
       "edition": "Basic",
       "requestedServiceObjectiveName": "Basic"
-    }
+    },
+    "resources": [{
+      "name": "current",
+      "type": "transparentDataEncryption",
+      "dependsOn": [
+        "[variables('databaseName')]"
+      ],
+      "location": "[resourceGroup().location]",
+      "tags": "[resourceGroup().tags]",
+      "apiVersion": "2015-05-01-preview",
+      "properties": {
+        "status": "Enabled"
+      }
+    }]
   }]
 }
