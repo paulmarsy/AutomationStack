@@ -2,9 +2,6 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "automationName": {
-            "type": "string"
-        },
         "octopusAutomationCredentialUsername": {
             "type": "securestring"
         },
@@ -12,8 +9,11 @@
             "type": "securestring"
         }
     },
+    "variables": {
+        "automationName": "[concat('automation-', resourceGroup().tags.udp)]"
+    },
     "resources": [{
-        "name": "[concat(parameters('automationName'), '/', 'OctopusDeployServiceAccount')]",
+        "name": "[concat(variables('automationName'), '/', 'OctopusDeployServiceAccount')]",
         "type": "Microsoft.Automation/automationAccounts/credentials",
         "tags": "[resourceGroup().tags]",
         "apiVersion": "2015-10-31",
@@ -22,7 +22,7 @@
             "password": "[parameters('octopusAutomationCredentialPassword')]"
         }
     }, {
-        "name": "[concat(parameters('automationName'), '/', 'xNetworking')]",
+        "name": "[concat(variables('automationName'), '/', 'xNetworking')]",
         "type": "Microsoft.Automation/automationAccounts/modules",
         "tags": "[resourceGroup().tags]",
         "apiVersion": "2015-10-31",
@@ -32,7 +32,7 @@
             }
         }
     }, {
-        "name": "[concat(parameters('automationName'), '/', 'xPSDesiredStateConfiguration')]",
+        "name": "[concat(variables('automationName'), '/', 'xPSDesiredStateConfiguration')]",
         "type": "Microsoft.Automation/automationAccounts/modules",
         "tags": "[resourceGroup().tags]",
         "apiVersion": "2015-10-31",
@@ -42,7 +42,7 @@
             }
         }
     }, {
-        "name": "[concat(parameters('automationName'), '/', 'PackageManagementProviderResource')]",
+        "name": "[concat(variables('automationName'), '/', 'PackageManagementProviderResource')]",
         "type": "Microsoft.Automation/automationAccounts/modules",
         "tags": "[resourceGroup().tags]",
         "apiVersion": "2015-10-31",
@@ -52,7 +52,7 @@
             }
         }
     }, {
-        "name": "[concat(parameters('automationName'), '/', 'xSystemSecurity')]",
+        "name": "[concat(variables('automationName'), '/', 'xSystemSecurity')]",
         "type": "Microsoft.Automation/automationAccounts/modules",
         "tags": "[resourceGroup().tags]",
         "apiVersion": "2015-10-31",

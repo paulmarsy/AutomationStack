@@ -61,7 +61,7 @@ function New-AutomationStack {
                         }
                     }
                     4 {
-                        $Heading = 'Uploading Octopus & TeamCity Data Imports to Azure Storage'
+                        $Heading = 'Uploading Data Imports to Azure Storage'
                         {
                             Publish-AutomationStackResources -SkipAuth -Upload DataImports
                         }

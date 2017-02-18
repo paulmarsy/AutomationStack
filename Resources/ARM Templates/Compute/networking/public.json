@@ -2,9 +2,6 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "udp": {
-      "type": "string"
-    },
     "name": {
       "type": "string"
     }
@@ -12,7 +9,8 @@
   "variables": {
     "nicName": "[concat(parameters('name'),'NIC')]",
     "nsgName": "[concat(parameters('name'),'NSG')]",
-    "publicIPAddressName": "[concat(parameters('name'),'PublicIP')]",
+    "publicIpAddressName": "[concat(parameters('name'),'PublicIP')]",
+    "publicIpAddressDnsLabel": "[toLower(concat(parameters('name'),'stack-',resourceGroup().tags.udp))]",
     "virtualNetworkId": "[resourceId('Microsoft.Network/virtualNetworks', 'VirtualNetwork')]",
     "subnetId": "[concat(variables('virtualNetworkId'),'/subnets/', 'Default')]"
   },
@@ -23,7 +21,7 @@
     "tags": "[resourceGroup().tags]",
     "location": "[resourceGroup().location]",
     "dependsOn": [
-      "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]"
+      "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIpAddressName'))]"
     ],
     "properties": {
       "ipConfigurations": [{
@@ -31,7 +29,7 @@
         "properties": {
           "privateIPAllocationMethod": "Dynamic",
           "publicIPAddress": {
-            "id": "[resourceId('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]"
+            "id": "[resourceId('Microsoft.Network/publicIPAddresses/', variables('publicIpAddressName'))]"
           },
           "subnet": {
             "id": "[variables('subnetId')]"
@@ -45,21 +43,21 @@
   }, {
     "apiVersion": "2016-12-01",
     "type": "Microsoft.Network/publicIPAddresses",
-    "name": "[variables('publicIPAddressName')]",
+    "name": "[variables('publicIpAddressName')]",
     "tags": "[resourceGroup().tags]",
     "location": "[resourceGroup().location]",
     "properties": {
       "publicIPAllocationMethod": "Static",
       "idleTimeoutInMinutes": 30,
       "dnsSettings": {
-        "domainNameLabel": "[toLower(concat(parameters('name'),'stack-',parameters('udp')))]"
+        "domainNameLabel": "[variables('publicIpAddressDnsLabel')]"
       }
     }
   }],
   "outputs": {
     "publicIpAddress": {
       "type": "string",
-      "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressName'))).IpAddress]"
+      "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', variables('publicIpAddressName'))).IpAddress]"
     }
   }
 }

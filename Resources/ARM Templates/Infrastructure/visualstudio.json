@@ -9,14 +9,19 @@
             "type": "string"
         }
     },
+    "variables": {
+        "agileProcessTemplateId": "ADCC42AB-9882-485E-A3ED-7678F01F66BC",
+        "scrumProcessTemplateId": "6B724908-EF14-45CF-84F8-768B5384DA45",
+        "cmmiProcessTemplateId": "27450541-8E31-4150-9947-DC59F998FC01"
+    },
     "resources": [{
         "name": "[parameters('accountName')]",
         "type": "microsoft.visualstudio/account",
         "location": "West Europe",
         "apiVersion": "2014-04-01-preview",
         "properties": {
-            "operationType": "Create",
-            "accountName": "[parameters('accountName')]"
+            "OperationType": "Create",
+            "AccountName": "[parameters('accountName')]"
         },
         "resources": [{
             "name": "[parameters('projectName')]",
@@ -27,7 +32,7 @@
                 "[concat('microsoft.visualstudio/account/', parameters('accountName'))]"
             ],
             "properties": {
-                "ProcessTemplateId": "Agile",
+                "ProcessTemplateId": "[variables('agileProcessTemplateId')]",
                 "VersionControlOption": "Git"
             }
         }]

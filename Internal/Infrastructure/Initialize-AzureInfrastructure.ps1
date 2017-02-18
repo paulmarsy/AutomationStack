@@ -12,7 +12,6 @@ function Initialize-AzureInfrastructure {
     $CurrentContext.Set('TeamCityCustomScriptLogFile', ('TeamCity.{0}.log' -f ([datetime]::UtcNow.ToString('o').Replace(':','.').Substring(0,19))))
 
     Start-ARMDeployment -Mode Uri -ResourceGroupName $CurrentContext.Get('ResourceGroup') -Template 'azuredeploy' -TemplateParameters @{
-        udp = $CurrentContext.Get('UDP')
         timestamp = ([DateTimeOffset]::UtcNow.ToString("o"))
         computeVmShutdownStatus = $CurrentContext.Get('ComputeVmShutdownTask.Status')
         computeVmShutdownTime = $CurrentContext.Get('ComputeVmShutdownTask.Time')

@@ -2,11 +2,8 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "udp": {
-            "type": "string"
-        },
         "servicePrincipalCertificateValue": {
-            "type": "string"
+            "type": "securestring"
         },
         "servicePrincipalCertificateThumbprint": {
             "type": "string"
@@ -22,9 +19,9 @@
         }
     },
     "variables": {
-        "automationName": "[concat('automation-', parameters('udp'))]",
-        "keyVaultName": "[concat('keyvault-', parameters('udp'))]",
-        "resourcesStorageName": "[concat('stackresources', parameters('udp'))]"
+        "automationName": "[concat('automation-', resourceGroup().tags.udp)]",
+        "keyVaultName": "[concat('keyvault-', resourceGroup().tags.udp)]",
+        "resourcesStorageName": "[concat('stackresources', resourceGroup().tags.udp)]"
     },
     "resources": [{
             "apiVersion": "2015-10-31",
@@ -38,21 +35,13 @@
                 }
             },
             "resources": [{
-                "name": "UDP",
-                "type": "variables",
-                "apiVersion": "2015-10-31",
-                "tags": "[resourceGroup().tags]",
-                "properties": {
-                    "description": "",
-                    "isEncrypted": 0,
-                    "type": "string",
-                    "value": "[concat('\"', parameters('udp'),'\"')]"
-                }
-            }, {
                 "name": "AzureRunAsCertificate",
                 "type": "certificates",
                 "apiVersion": "2015-10-31",
                 "tags": "[resourceGroup().tags]",
+                "dependsOn": [
+                    "[concat('Microsoft.Automation/automationAccounts/',variables('automationName'))]"
+                ],
                 "properties": {
                     "base64Value": "[parameters('servicePrincipalCertificateValue')]",
                     "thumbprint": "[parameters('servicePrincipalCertificateThumbprint')]"
@@ -62,17 +51,23 @@
                 "type": "connections",
                 "tags": "[resourceGroup().tags]",
                 "apiVersion": "2015-10-31",
-                "fieldDefinitionValues": {
-                    "CertificateThumbprint": "[parameters('servicePrincipalCertificateThumbprint')]",
-                    "ApplicationId": "[parameters('servicePrincipalApplicationId')]",
-                    "SubscriptionId": "[subscription().subscriptionId]",
-                    "TenantId": "[subscription().tenantId]"
-                },
-                "connectionType": {
-                    "name": "AzureServicePrincipal"
-                },
-                "description": "",
-                "isGlobal": false
+                "dependsOn": [
+                    "[concat('Microsoft.Automation/automationAccounts/',variables('automationName'))]"
+                ],
+                "properties": {
+                    "name": "AzureRunAsConnection",
+                    "fieldDefinitionValues": {
+                        "CertificateThumbprint": "[parameters('servicePrincipalCertificateThumbprint')]",
+                        "ApplicationId": "[parameters('servicePrincipalApplicationId')]",
+                        "SubscriptionId": "[subscription().subscriptionId]",
+                        "TenantId": "[subscription().tenantId]"
+                    },
+                    "connectionType": {
+                        "name": "AzureServicePrincipal"
+                    },
+                    "description": "",
+                    "isGlobal": false
+                }
             }]
         }, {
             "type": "Microsoft.KeyVault/vaults",

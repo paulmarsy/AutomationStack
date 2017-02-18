@@ -4,19 +4,16 @@
     "parameters": {
         "templateSasToken": {
             "type": "securestring"
-        },
-        "udp": {
-            "type": "string"
         }
     },
     "variables": {
-        "templateBaseUrl": "[concat('https://stackresources',parameters('udp'),'.blob.core.windows.net')]",
-        "automationName": "[concat('automation-', parameters('udp'))]",
-        "sqlServerName": "[concat('azuresql-', parameters('udp'))]"
+        "templateBaseUrl": "[concat('https://stackresources',resourceGroup().tags.udp,'.blob.core.windows.net')]",
+        "sqlServerName": "[concat('azuresql-', resourceGroup().tags.udp)]",
+        "keyVaultId": "[concat(resourceGroup().id, '/providers/Microsoft.KeyVault/vaults/keyvault-', resourceGroup().tags.udp)]"
     },
     "resources": [{
         "apiVersion": "2016-09-01",
-        "name": "AutomationAccounts",
+        "name": "AutomationAccountsDSC",
         "type": "Microsoft.Resources/deployments",
         "properties": {
             "mode": "Incremental",
@@ -24,13 +21,10 @@
                 "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Infrastructure/automationAccounts.dsc.json'), parameters('templateSasToken'))]"
             },
             "parameters": {
-                "automationName": {
-                    "value": "[variables('automationName')]"
-                },
                 "octopusAutomationCredentialUsername": {
                     "reference": {
                         "keyVault": {
-                            "id": "[concat(resourceGroup().id, '/providers/Microsoft.KeyVault/vaults/keyvault-', parameters('udp'))]"
+                            "id": "[variables('keyVaultId')]"
                         },
                         "secretName": "OctopusAutomationCredentialUsername"
                     }
@@ -38,11 +32,21 @@
                 "octopusAutomationCredentialPassword": {
                     "reference": {
                         "keyVault": {
-                            "id": "[concat(resourceGroup().id, '/providers/Microsoft.KeyVault/vaults/keyvault-', parameters('udp'))]"
+                            "id": "[variables('keyVaultId')]"
                         },
                         "secretName": "OctopusAutomationCredentialPassword"
                     }
                 }
+            }
+        }
+    }, {
+        "apiVersion": "2016-09-01",
+        "name": "AutomationAccountsVariables",
+        "type": "Microsoft.Resources/deployments",
+        "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Infrastructure/automationAccounts.variables.json'), parameters('templateSasToken'))]"
             }
         }
     }, {
@@ -71,7 +75,7 @@
                 "sqlAdminUsername": {
                     "reference": {
                         "keyVault": {
-                            "id": "[concat(resourceGroup().id, '/providers/Microsoft.KeyVault/vaults/keyvault-', parameters('udp'))]"
+                            "id": "[variables('keyVaultId')]"
                         },
                         "secretName": "SqlAdminUsername"
                     }
@@ -79,7 +83,7 @@
                 "sqlAdminPassword": {
                     "reference": {
                         "keyVault": {
-                            "id": "[concat(resourceGroup().id, '/providers/Microsoft.KeyVault/vaults/keyvault-', parameters('udp'))]"
+                            "id": "[variables('keyVaultId')]"
                         },
                         "secretName": "SqlAdminPassword"
                     }

@@ -14,6 +14,7 @@ function Connect-AzureRmServicePrincipal {
     
     $securePassword = ConvertTo-SecureString $CurrentContext.Get('ServicePrincipalClientSecret') -AsPlainText -Force
     $credential = New-Object System.Management.Automation.PSCredential ($CurrentContext.Get('ServicePrincipalClientId'), $securePassword)
+
     try {
         Write-Host -ForegroundColor White -BackgroundColor Black -NoNewline "Authenticating as AutomationStack Service Principal.. "
         $rmContext = Add-AzureRmAccount -Credential $credential -SubscriptionId $CurrentContext.Get('AzureSubscriptionId') -TenantId $CurrentContext.Get('AzureTenantId') -ServicePrincipal
@@ -22,8 +23,7 @@ function Connect-AzureRmServicePrincipal {
         $rmContext | % Account | Format-List | Out-String | % Trim |  Out-Host
     }
     catch [Microsoft.IdentityModel.Clients.ActiveDirectory.AdalServiceException] {
-        if ($_.Exception.ServiceErrorCodes -eq '70001') {
-            Write-Warning 'Service Principal creation still propogating...'
+        if ($_.Exception.Message.StartsWith('AADSTS70001')) {
             Start-Sleep -Seconds 1
             Connect-AzureRmServicePrincipal
             return

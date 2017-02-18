@@ -2,9 +2,6 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "udp": {
-            "type": "string"
-        },
         "jobId": {
             "type": "string"
         },
@@ -33,7 +30,7 @@
         }
     },
     "variables": {
-        "automationName": "[concat('automation-', parameters('udp'))]"
+        "automationName": "[concat('automation-', resourceGroup().tags.udp)]"
     },
     "resources": [{
         "name": "[concat(variables('automationName'), '/', parameters('configurationName'))]",

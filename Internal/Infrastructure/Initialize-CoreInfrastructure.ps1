@@ -6,8 +6,7 @@ function Initialize-CoreInfrastructure {
     Invoke-SharedScript Resources 'New-ResourceGroup' -UDP $CurrentContext.Get('UDP') -ResourceGroupName $CurrentContext.Get('ResourceGroup') -Location ($CurrentContext.Get('AzureRegion'))
 
     $coreInfrastructureDeploy = Start-ARMDeployment -Mode File -ResourceGroupName $CurrentContext.Get('ResourceGroup') -Template 'coreinfrastructure' -TemplateParameters @{
-        udp = $CurrentContext.Get('UDP')
-        servicePrincipalCertificateValue = $CurrentContext.Get('ServicePrincipalCertificate')
+        servicePrincipalCertificateValue = (ConvertTo-SecureString -String $CurrentContext.Get('ServicePrincipalCertificate') -AsPlainText -Force)
         servicePrincipalCertificateThumbprint = $CurrentContext.Get('ServicePrincipalCertificateThumbprint')
         servicePrincipalApplicationId = $CurrentContext.Get('ServicePrincipalClientId')
         servicePrincipalObjectId = $CurrentContext.Get('ServicePrincipalObjectId')

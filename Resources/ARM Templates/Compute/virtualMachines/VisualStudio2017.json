@@ -5,15 +5,13 @@
 		"templateSasToken": {
 			"type": "securestring"
 		},
-		"udp": {
-			"type": "string"
-		},
 		"name": {
 			"type": "string"
 		}
 	},
 	"variables": {
-		"templateBaseUrl": "[concat('https://stackresources',parameters('udp'),'.blob.core.windows.net')]"
+		"templateBaseUrl": "[concat('https://stackresources',resourceGroup().tags.udp,'.blob.core.windows.net')]",
+		"keyVaultId": "[concat(resourceGroup().id, '/providers/Microsoft.KeyVault/vaults/keyvault-', resourceGroup().tags.udp)]"
 	},
 	"resources": [{
 		"apiVersion": "2016-09-01",
@@ -25,9 +23,6 @@
 				"uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Compute/virtualMachines/virtualMachines.json'), parameters('templateSasToken'))]"
 			},
 			"parameters": {
-				"udp": {
-					"value": "[parameters('udp')]"
-				},
 				"name": {
 					"value": "[parameters('name')]"
 				},
@@ -40,7 +35,7 @@
 				"vmAdminUsername": {
 					"reference": {
 						"keyVault": {
-							"id": "[concat(resourceGroup().id, '/providers/Microsoft.KeyVault/vaults/keyvault-', parameters('udp'))]"
+                            "id": "[variables('keyVaultId')]"
 						},
 						"secretName": "VMAdminUsername"
 					}
@@ -48,7 +43,7 @@
 				"vmAdminPassword": {
 					"reference": {
 						"keyVault": {
-							"id": "[concat(resourceGroup().id, '/providers/Microsoft.KeyVault/vaults/keyvault-', parameters('udp'))]"
+                            "id": "[variables('keyVaultId')]"
 						},
 						"secretName": "VMAdminPassword"
 					}

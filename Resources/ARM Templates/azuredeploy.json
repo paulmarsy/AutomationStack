@@ -5,9 +5,6 @@
         "templateSasToken": {
             "type": "securestring"
         },
-        "udp": {
-            "type": "string"
-        },
         "timestamp": {
             "type": "string"
         },
@@ -40,7 +37,7 @@
         }
     },
     "variables": {
-        "templateBaseUrl": "[concat('https://stackresources',parameters('udp'),'.blob.core.windows.net')]"
+        "templateBaseUrl": "[concat('https://stackresources',resourceGroup().tags.udp,'.blob.core.windows.net')]"
     },
     "resources": [{
         "apiVersion": "2016-09-01",
@@ -54,27 +51,6 @@
             "parameters": {
                 "templateSasToken": {
                     "value": "[parameters('templateSasToken')]"
-                },
-                "udp": {
-                    "value": "[parameters('udp')]"
-                }
-            }
-        }
-    }, {
-        "apiVersion": "2016-09-01",
-        "name": "VSTS",
-        "type": "Microsoft.Resources/deployments",
-        "properties": {
-            "mode": "Incremental",
-            "templateLink": {
-                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/vsts.json'), parameters('templateSasToken'))]"
-            },
-            "parameters": {
-                "accountName": {
-                    "value": "[parameters('templateSasToken')]"
-                },
-                "projectName": {
-                    "value": "[parameters('udp')]"
                 }
             }
         }
@@ -82,14 +58,17 @@
         "apiVersion": "2016-09-01",
         "name": "OctopusDeploy",
         "type": "Microsoft.Resources/deployments",
+        "dependsOn": [
+            "Microsoft.Resources/deployments/Infrastructure"
+        ],
         "properties": {
             "mode": "Incremental",
             "templateLink": {
                 "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/octopusdeploy.json'), parameters('templateSasToken'))]"
             },
             "parameters": {
-                "udp": {
-                    "value": "[parameters('udp')]"
+                "templateSasToken": {
+                    "value": "[parameters('templateSasToken')]"
                 },
                 "timestamp": {
                     "value": "[parameters('timestamp')]"

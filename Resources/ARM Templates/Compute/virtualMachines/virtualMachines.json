@@ -2,9 +2,6 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "udp": {
-      "type": "string"
-    },
     "name": {
       "type": "string"
     },
@@ -69,7 +66,7 @@
         "storageAccountType": "Premium_LRS"
       }
     },
-    "resourcesStorageName": "[concat('stackresources', parameters('udp'))]",
+    "resourcesStorageName": "[concat('stackresources', resourceGroup().tags.udp)]",
     "osDiskUnmanaged": {
       "name": "[concat(variables('vmName'),'-OS')]",
       "vhd": {

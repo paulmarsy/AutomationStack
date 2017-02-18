@@ -11,9 +11,6 @@
         "nodeConfigurationName": {
             "type": "string"
         },
-        "udp": {
-            "type": "string"
-        },
         "timestamp": {
             "type": "string"
         },
@@ -25,8 +22,9 @@
         }
     },
     "variables": {
-        "templateBaseUrl": "[concat('https://stackresources',parameters('udp'),'.blob.core.windows.net')]",
-        "vmName": "[concat(parameters('name'),'VM')]"
+        "templateBaseUrl": "[concat('https://stackresources',resourceGroup().tags.udp,'.blob.core.windows.net')]",
+        "vmName": "[concat(parameters('name'),'VM')]",
+        "keyVaultId": "[concat(resourceGroup().id, '/providers/Microsoft.KeyVault/vaults/keyvault-', resourceGroup().tags.udp)]"
     },
     "resources": [{
         "apiVersion": "2016-09-01",
@@ -38,9 +36,6 @@
                 "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Compute/networking/public.json'), parameters('templateSasToken'))]"
             },
             "parameters": {
-                "udp": {
-                    "value": "[parameters('udp')]"
-                },
                 "name": {
                     "value": "[parameters('name')]"
                 }
@@ -56,9 +51,6 @@
                 "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Compute/sqlServer/databases.json'), parameters('templateSasToken'))]"
             },
             "parameters": {
-                "udp": {
-                    "value": "[parameters('udp')]"
-                },
                 "name": {
                     "value": "[parameters('name')]"
                 },
@@ -80,9 +72,6 @@
                 "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Compute/virtualMachines/virtualMachines.json'), parameters('templateSasToken'))]"
             },
             "parameters": {
-                "udp": {
-                    "value": "[parameters('udp')]"
-                },
                 "name": {
                     "value": "[parameters('name')]"
                 },
@@ -95,7 +84,7 @@
                 "vmAdminUsername": {
                     "reference": {
                         "keyVault": {
-                            "id": "[concat(resourceGroup().id, '/providers/Microsoft.KeyVault/vaults/keyvault-', parameters('udp'))]"
+                            "id": "[variables('keyVaultId')]"
                         },
                         "secretName": "VMAdminUsername"
                     }
@@ -103,7 +92,7 @@
                 "vmAdminPassword": {
                     "reference": {
                         "keyVault": {
-                            "id": "[concat(resourceGroup().id, '/providers/Microsoft.KeyVault/vaults/keyvault-', parameters('udp'))]"
+                            "id": "[variables('keyVaultId')]"
                         },
                         "secretName": "VMAdminPassword"
                     }
@@ -135,16 +124,13 @@
                 "templateSasToken": {
                     "value": "[parameters('templateSasToken')]"
                 },
-                "udp": {
-                    "value": "[parameters('udp')]"
-                },
                 "vmName": {
                     "value": "[variables('vmName')]"
                 },
                 "clientID": {
                     "reference": {
                         "keyVault": {
-                            "id": "[concat(resourceGroup().id, '/providers/Microsoft.KeyVault/vaults/keyvault-', parameters('udp'))]"
+                            "id": "[variables('keyVaultId')]"
                         },
                         "secretName": "ServicePrincipalClientId"
                     }
@@ -152,7 +138,7 @@
                 "clientSecret": {
                     "reference": {
                         "keyVault": {
-                            "id": "[concat(resourceGroup().id, '/providers/Microsoft.KeyVault/vaults/keyvault-', parameters('udp'))]"
+                            "id": "[variables('keyVaultId')]"
                         },
                         "secretName": "ServicePrincipalClientSecret"
                     }
@@ -178,7 +164,7 @@
                 "registrationKey": {
                     "reference": {
                         "keyVault": {
-                            "id": "[concat(resourceGroup().id, '/providers/Microsoft.KeyVault/vaults/keyvault-', parameters('udp'))]"
+                            "id": "[variables('keyVaultId')]"
                         },
                         "secretName": "AutomationRegistrationKey"
                     }
@@ -186,7 +172,7 @@
                 "registrationUrl": {
                     "reference": {
                         "keyVault": {
-                            "id": "[concat(resourceGroup().id, '/providers/Microsoft.KeyVault/vaults/keyvault-', parameters('udp'))]"
+                            "id": "[variables('keyVaultId')]"
                         },
                         "secretName": "AutomationRegistrationUrl"
                     }

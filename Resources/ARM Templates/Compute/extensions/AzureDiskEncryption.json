@@ -5,9 +5,6 @@
     "templateSasToken": {
       "type": "securestring"
     },
-    "udp": {
-      "type": "string"
-    },
     "vmName": {
       "type": "string"
     },
@@ -19,8 +16,8 @@
     }
   },
   "variables": {
-    "templateBaseUrl": "[concat('https://stackresources',parameters('udp'),'.blob.core.windows.net')]",
-    "keyVaultName": "[concat('keyvault-', parameters('udp'))]"
+    "templateBaseUrl": "[concat('https://stackresources',resourceGroup().tags.udp,'.blob.core.windows.net')]",
+    "keyVaultName": "[concat('keyvault-', resourceGroup().tags.udp)]"
   },
   "resources": [{
       "type": "Microsoft.Compute/virtualMachines/extensions",

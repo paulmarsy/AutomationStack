@@ -5,9 +5,6 @@
         "templateSasToken": {
             "type": "securestring"
         },
-        "udp": {
-            "type": "string"
-        },
         "timestamp": {
             "type": "string"
         },
@@ -40,9 +37,9 @@
         }
     },
     "variables": {
-        "templateBaseUrl": "[concat('https://stackresources',parameters('udp'),'.blob.core.windows.net')]",
+        "templateBaseUrl": "[concat('https://',variables('storageAccountName'),'.blob.core.windows.net')]",
         "octopusVmName": "OctopusVM",
-        "storageAccountName": "[concat('stackresources', parameters('udp'))]"
+        "storageAccountName": "[concat('stackresources', resourceGroup().tags.udp)]"
     },
     "resources": [{
         "apiVersion": "2016-09-01",
@@ -54,9 +51,6 @@
                 "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Automation/OctopusDeploy.json'), parameters('templateSasToken'))]"
             },
             "parameters": {
-                "udp": {
-                    "value": "[parameters('udp')]"
-                },
                 "jobId": {
                     "value": "[parameters('octopusDscJobId')]"
                 },
@@ -90,9 +84,6 @@
                 "templateSasToken": {
                     "value": "[parameters('templateSasToken')]"
                 },
-                "udp": {
-                    "value": "[parameters('udp')]"
-                },
                 "name": {
                     "value": "Octopus"
                 },
@@ -124,9 +115,6 @@
                 "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Compute/extensions/CustomScript.Windows.json'), parameters('templateSasToken'))]"
             },
             "parameters": {
-                "udp": {
-                    "value": "[parameters('udp')]"
-                },
                 "vmName": {
                     "value": "[variables('octopusVmName')]"
                 },

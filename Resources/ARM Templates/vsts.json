@@ -4,27 +4,24 @@
     "parameters": {
         "templateSasToken": {
             "type": "securestring"
-        },
-        "udp": {
-            "type": "string"
         }
     },
     "variables": {
-        "templateBaseUrl": "[concat('https://stackresources',parameters('udp'),'.blob.core.windows.net')]",
-        "accountName": "[concat('vsts-', parameters('udp'))]"
+        "templateBaseUrl": "[concat('https://stackresources',resourceGroup().tags.udp,'.blob.core.windows.net')]",
+        "vstsAccountName": "[concat('vsts-', resourceGroup().tags.udp)]"
     },
     "resources": [{
         "apiVersion": "2016-09-01",
-        "name": "VSTS",
+        "name": "VisualStudioTeamServices",
         "type": "Microsoft.Resources/deployments",
         "properties": {
             "mode": "Incremental",
             "templateLink": {
-                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/infrastructure/visualstudio.json'), parameters('templateSasToken'))]"
+                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Infrastructure/visualstudio.json'), parameters('templateSasToken'))]"
             },
             "parameters": {
                 "accountName": {
-                    "value": "[variables('accountName')]"
+                    "value": "[variables('vstsAccountName')]"
                 },
                 "projectName": {
                     "value": "AutomationStack"
