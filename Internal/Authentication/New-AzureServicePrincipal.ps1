@@ -11,7 +11,7 @@ function New-AzureServicePrincipal {
     $cert = New-SelfSignedCertificateEx -Subject $CurrentContext.Eval('CN=#{UDP}, O=AutomationStack') -FriendlyName $CurrentContext.Get('Name')
     $CurrentContext.Set('ServicePrincipalCertificate', $cert.Base64Pfx)
     $CurrentContext.Set('ServicePrincipalCertificateThumbprint', $cert.Thumbprint)
-    New-AzureRmADSpCredential -ObjectId $spObjectId -CertValue $keyValue -StartDate $cert.GetEffectiveDateString() -EndDate $cert.GetExpirationDateString()
+    New-AzureRmADSpCredential -ObjectId $spObjectId -CertValue $cert.Base64Pfx -StartDate $cert.StartDate -EndDate $cert.EndDate
 
     do {
         try { New-AzureRmRoleAssignment -ServicePrincipalName $servicePrincipal.ApplicationId -RoleDefinitionName Contributor -Scope $CurrentContext.Eval('/subscriptions/#{AzureSubscriptionId}') -ErrorAction Stop | Out-Host; $assigned = $true }

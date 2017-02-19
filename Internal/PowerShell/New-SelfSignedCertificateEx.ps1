@@ -72,5 +72,7 @@
     @{
         Base64Pfx = $pfx
         Thumbprint = $x509Cert.Thumbprint
+        StartDate = $x509Cert.GetEffectiveDateString()
+        EndDate = $x509Cert.GetExpirationDateString()
     }
 }
