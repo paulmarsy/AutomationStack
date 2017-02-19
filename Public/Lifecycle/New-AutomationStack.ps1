@@ -15,7 +15,7 @@ function New-AutomationStack {
         $firstRun = if ($null -eq $CurrentContext) {$true} else {$false}
 
         if ($firstRun) {
-            Install-AzureReqs -Basic
+            Install-AzureModules
         }
         Connect-AzureRm
         if ($firstRun) {
@@ -34,7 +34,7 @@ function New-AutomationStack {
                     1 {
                         $Heading = 'Creating AutomationStack Deployment Context'
                         {
-                            Install-AzureReqs
+                            Install-AzureModules -All
 
                             if ($null -eq $CurrentContext) {
                                 New-DeploymentContext -AzureRegion $azureRegion -ComputeVmAutoShutdown $computeVmShutdown

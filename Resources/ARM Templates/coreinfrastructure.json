@@ -44,7 +44,8 @@
                 ],
                 "properties": {
                     "base64Value": "[parameters('servicePrincipalCertificateValue')]",
-                    "thumbprint": "[parameters('servicePrincipalCertificateThumbprint')]"
+                    "thumbprint": "[parameters('servicePrincipalCertificateThumbprint')]",
+                    "isExportable": true
                 }
             }, {
                 "name": "AzureRunAsConnection",
@@ -64,9 +65,7 @@
                     },
                     "connectionType": {
                         "name": "AzureServicePrincipal"
-                    },
-                    "description": "",
-                    "isGlobal": false
+                    }
                 }
             }]
         }, {

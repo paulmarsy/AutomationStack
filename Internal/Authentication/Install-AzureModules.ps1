@@ -1,5 +1,5 @@
-function Install-AzureReqs {
-    param([switch]$Basic)
+function Install-AzureModules {
+    param([switch]$All)
 
     filter Import-AzureModule {
         Write-Host -NoNewLine "Importing $_ Module... "
@@ -37,11 +37,11 @@ function Install-AzureReqs {
         $_ | Import-AzureModule
      }
 
-    if ($Basic) {
-        @('AzureRM.Profile','AzureRM.Resources') | Assert-AzureModule
+    if (!$All) {
+        @('AzureRM.Profile'
+          'AzureRM.Resources') | Assert-AzureModule
     } else {
         @('AzureRM.Automation'
-          'AzureRM.Compute'
           'AzureRM.KeyVault'
           'AzureRM.Storage'
           'AzureRM.Tags'
