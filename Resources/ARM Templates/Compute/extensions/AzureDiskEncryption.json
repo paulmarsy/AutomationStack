@@ -56,7 +56,7 @@
             "value": "[parameters('vmName')]"
           },
           "keyVaultSecretUrl": {
-            "value": "[reference(resourceId('Microsoft.Compute/virtualMachines/extensions',  parameters('vmName'),  'AzureDiskEncryption')).instanceView.statuses[0].message]"
+            "value": "[reference(resourceId('Microsoft.Compute/virtualMachines/extensions', parameters('vmName'),  'AzureDiskEncryption')).instanceView.statuses[0].message]"
           },
           "keyVaultName": {
             "value": "[variables('keyVaultName')]"

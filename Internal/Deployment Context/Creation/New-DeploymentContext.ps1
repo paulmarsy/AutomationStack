@@ -17,23 +17,27 @@ function New-DeploymentContext {
     $CurrentContext.Set('AzureRegion', $AzureRegion.Name)
     $CurrentContext.Set('AzureRegionValue', $AzureRegion.Value)
 
-    Get-AzureRmContext | % Account | ? AccountType -eq 'User' | % Id | % { Get-AzureRmADUser -UserPrincipalName $_ -ErrorAction Ignore } | ? { $null -ne $_ } | % {
-        $CurrentContext.Set('AzureUserObjectId', $_.Id.Guid)
-    }
+    $authority = (@([Microsoft.WindowsAzure.Commands.Common.AzureRmProfileProvider]::Instance.Profile.Context.Environment.GetEndpoint([Microsoft.Azure.Commands.Common.Authentication.Models.AzureEnvironment+Endpoint]::ActiveDirectory),
+                    [Microsoft.WindowsAzure.Commands.Common.AzureRmProfileProvider]::Instance.Profile.Context.Tenant.Id.Guid) -join '')
+    $authContext = [Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationContext]::new($authority, [Microsoft.IdentityModel.Clients.ActiveDirectory.TokenCache]::DefaultShared)
+    $accessToken = $authContext.AcquireToken([Microsoft.Azure.Commands.Common.Authentication.Models.AzureEnvironmentConstants]::AzureServiceEndpoint, [Microsoft.Azure.Commands.Common.Authentication.AdalConfiguration]::PowerShellClientId, [Microsoft.Azure.Commands.Common.Authentication.AdalConfiguration]::PowerShellRedirectUri)
+    Write-Host ('{0} {1} ({2}) will be given full permission to KeyVault' -f $accessToken.UserInfo.GivenName, $accessToken.UserInfo.FamilyName, $accessToken.UserInfo.DisplayableId)
 
+    $CurrentContext.Set('AzureUserObjectId', $accessToken.UserInfo.UniqueId)
+   
     $CurrentContext.Set('ComputeVmShutdownTask.Status', $ComputeVmAutoShutdown.Status)    
     $CurrentContext.Set('ComputeVmShutdownTask.Time', $ComputeVmAutoShutdown.Time)
 
     Write-Host 'Generating deployment passwords...'
     Add-Type -AssemblyName System.Web
     
-    $CurrentContext.Set('StackAdminUsername', 'Stack')
+    $CurrentContext.Set('StackAdminUsername', $accessToken.UserInfo.GivenName)
     do {
         $CurrentContext.Set('StackAdminPassword', ((Get-GuidPart 8) + ((Get-GuidPart 4 -ToUpper))))
     } while  ($CurrentContext.Get('StackAdminPassword') -cnotmatch '^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$')
 
     $CurrentContext.Set('SqlServerName', 'azuresql-#{UDP}')
-    $CurrentContext.Set('SqlServerUsername', '#{StackAdminUsername}')
+    $CurrentContext.Set('SqlServerUsername', 'SqlAdmin')
     do {
         $CurrentContext.Set('SqlServerPassword', ((Get-GuidPart 12) + ((Get-GuidPart 8 -ToUpper))))
     } while  ($CurrentContext.Get('SqlServerPassword') -cnotmatch '^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{12,}$')
