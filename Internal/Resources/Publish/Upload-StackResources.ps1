@@ -3,6 +3,7 @@ function Upload-StackResources {
         [ValidateSet('BlobStorage','FileShare')]$Type,
         $Name,
         $Path,
+        $Value,
         $FilesToTokenise = @(),
         $Tokenizer,
         $Context
@@ -19,15 +20,27 @@ function Upload-StackResources {
             'FileShare' { New-AzureStorageShare -Name $Name -Context $Context }
         }
     }
+    if ($Value -or -not (Get-Item -Path $Path).PSIsContainer) {
+        $dest = $Tokenizer.Eval([System.IO.Path]::GetFileName($Path))
+        $reference = switch ($Type) {
+            'BlobStorage' { $storageLocation.CloudBlobContainer.GetBlockBlobReference($dest) }
+            'FileShare' { $storageLocation.GetRootDirectoryReference().GetFileReference($dest) }
+        }
+        if ($Value) { $reference.UploadText($Value) }
+        else { $reference.UploadFromFile(($Path | Convert-Path), [System.IO.FileMode]::Open) }
+        [Console]::WriteLine("   `t`t`t`tUpload`t`t`t$dest")
+        return
+    }
+    Write-Host "  Runspace ID`tProgress`tAction`t`t`tFile`n$('-'*120)"
     $Path = Get-Item -Path $Path | % FullName
     if ($Type -eq 'FileShare') {
-        [Console]::WriteLine("  Runspace ID`tAction`t`t`tFile`n$('-'*120)")
         Get-ChildItem -Path $Path -Recurse -Directory | % {
             $dest = $Tokenizer.Eval($_.FullName.Substring($Path.Length+1).Replace('\','/'))
-            [void][System.Console]::Out.WriteLineAsync("  -`t`tCreate Directory`t$dest")
+             [Console]::WriteLine("  `t`t`t`tCreate Directory`t$dest")
             New-AzureStorageDirectory -Share $storageLocation -Path $dest -ErrorAction Ignore | Out-Null
         }
     }
+    $totalSize = 0
     $batch = @()
     0..$UploadConcurrency | % { $batch += New-Object psobject -Property @{ Size = 0; Files = {@()}.Invoke() } }
     Get-ChildItem -Path $Path -Recurse -File | Sort-Object -Descending -Property Length | % {
@@ -41,41 +54,66 @@ function Upload-StackResources {
         }
         $assignedBatch = $batch | Sort-Object Size | Select-Object -First 1
         $assignedBatch.Size += $_.Length
+        $totalSize += $_.Length
         $assignedBatch.Files.Add(@{
             Tokenised = $tokenised
             Dest = $Tokenizer.Eval($_.FullName.Substring($Path.Length+1).Replace('\','/'))
             Source = $source
+            Length = $_.Length
         })
     }
-    $jobs = for ($runspaceId = 0; $runspaceId -le $UploadConcurrency; $runspaceId++) {
-        $ps = [powershell]::Create().AddScript({
-            param($batch, $storageLocation, $runspaceId, $UploadConcurrency, $Type)   
-            $batch | % {
-                $file = $_
-                switch ($Type) {
-                    'BlobStorage' { [void]($storageLocation | Set-AzureStorageBlobContent -File $file.Source -Blob $file.Dest -Force -ErrorAction Stop)}
-                    'FileShare' { Set-AzureStorageFileContent -Share $storageLocation -Source $file.Source -Path $file.Dest -Force -ErrorAction Stop }
-                }
-                if ($file.Tokenised) {
-                    [void][System.Console]::Out.WriteLineAsync("  $runspaceId`t`tTokenise & Upload`t$(Split-Path -Leaf $file.Dest)")
-                } else {
-                    [void][System.Console]::Out.WriteLineAsync("  $runspaceId`t`tUpload`t`t`t$(Split-Path -Leaf $file.Dest)")
-                }
-            }
-        }).AddArgument($batch[$runspaceId].Files).AddArgument($storageLocation).AddArgument($runspaceId).AddArgument($UploadConcurrency).AddArgument($Type)
-        @{
-            PowerShell = $ps
-            Async = ($ps.BeginInvoke())
-        }
+    $SharedState = [PSCustomObject]@{
+        TotalSize = $totalSize
+        Uploaded = 0
     }
-    do {
-        $running = $false
-        $jobs.GetEnumerator() | % {
-            if ($_.Async.IsCompleted) {
-                $_.Powershell.EndInvoke($_.Async)
-                $_.PowerShell.Dispose()
+    $sessionState = [System.Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
+    $sessionState.Variables.Add(([System.Management.Automation.Runspaces.SessionStateVariableEntry]::new('SharedState', $SharedState, $null)))
+    $runspacePool = [RunspaceFactory]::CreateRunspacePool($UploadConcurrency, $UploadConcurrency, $sessionState, $Host)
+    $runspacePool.Open()
+    $startTime = Get-Date
+    try {
+        $jobs = for ($runspaceId = 0; $runspaceId -le $UploadConcurrency; $runspaceId++) {
+            $pipeline = [powershell]::Create().AddScript({
+                param($batch, $storageLocation, $runspaceId, $UploadConcurrency, $Type)
+                $batch | % {
+                    $file = $_
+                    switch ($Type) {
+                        'BlobStorage' { [void]($storageLocation | Set-AzureStorageBlobContent -File $file.Source -Blob $file.Dest -Force -ErrorAction Stop)}
+                        'FileShare' { Set-AzureStorageFileContent -Share $storageLocation -Source $file.Source -Path $file.Dest -Force -ErrorAction Stop }
+                    }
+                    try {
+                        [System.Threading.Monitor]::Enter($SharedState)
+                        $SharedState.Uploaded += $file.Length
+                        $percentComplete = $SharedState.Uploaded / $SharedState.TotalSize * 100
+                    }
+                    finally { [System.Threading.Monitor]::Exit($SharedState) } 
+
+                    $percentComplete = [System.Math]::Round($percentComplete, 1).ToString('0.0').PadLeft(5)
+                    $action = if ($file.Tokenised) { 'Tokenise & Upload' } else { "Upload`t`t" }
+                    [Console]::WriteLine("  $runspaceId`t`t${percentComplete}%`t`t$action`t$(Split-Path -Leaf $file.Dest)")
+                }
+            }).AddArgument($batch[$runspaceId].Files).AddArgument($storageLocation).AddArgument($runspaceId).AddArgument($UploadConcurrency).AddArgument($Type)   
+            $pipeline.RunspacePool = $runspacePool
+            @{
+                Pipeline = $pipeline
+                Async = ($pipeline.BeginInvoke())
             }
-            else { $running = $true }
         }
-    } while ($running)
+        do {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+            Start-Sleep -Seconds 2
+            $running = $false
+            $jobs.GetEnumerator() | % {
+                if ($_.Async.IsCompleted) {
+                    $_.Pipeline.EndInvoke($_.Async)
+                    $_.Pipeline.Dispose()
+                }
+                else { $running = $true }
+            }
+        } while ($running)
+        $byteRate = [Humanizer.ByteSizeExtensions]::Per([Humanizer.ByteSizeExtensions]::Bytes($totalSize), ((Get-Date) - $startTime))
+        Write-Host ('Upload speed: {0}' -f $byteRate.Humanize('#.00', [Humanizer.Localisation.TimeUnit]::Second))
+    }
+    finally {
+        $runspacePool.Close()
+    }
 }
