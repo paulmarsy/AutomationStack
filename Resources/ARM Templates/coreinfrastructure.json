@@ -114,6 +114,8 @@
                 "properties": {
                     "runbookType": "PowerShell",
                     "state": "Published",
+                    "logProgress": false,
+                    "logVerbose": false,
                     "publishContentLink": {
                         "uri": "[parameters('startTemplateDeploymentRunbookUri')]"
                     }
@@ -131,8 +133,8 @@
                 "properties": {
                     "runbookType": "PowerShell",
                     "state": "Published",
-                    "logProgress": "true",
-                    "logVerbose": "true",
+                    "logProgress": false,
+                    "logVerbose": false,
                     "publishContentLink": {
                         "uri": "[parameters('infrastructureRunbookUri')]"
                     }

@@ -33,6 +33,9 @@ $body = (@{
       uri = (New-AzureStorageBlobSASToken -Container arm -Blob "${Template}.json" -Permission r -ExpiryTime (Get-Date).AddHours(1) -FullUri -Context $Context)
     }
     mode = 'Incremental'
+    debugSetting = @{
+        detailLevel = 'requestContent,responseContent'
+    }
     parameters = $parameters
   }
 } | ConvertTo-Json -Depth 5) 
@@ -41,7 +44,7 @@ Write-Output "ARM Deployment Request: $body`n"
 Write-Output 'Submitting deployment...'
 
 $response = Invoke-WebRequest -Uri $uri -Method Put -Body $body -Headers @{ [Microsoft.WindowsAzure.Commands.Common.ApiConstants]::AuthorizationHeaderName = $accessToken.CreateAuthorizationHeader() }  -ContentType 'application/json' -UseBasicParsing
-Write-Output ($response | Out-String)
+Write-Output ($response | Format-List * -Force | Out-String)
 $deployAsyncOperationUri = $response.Headers['Azure-AsyncOperation']
 do {
     Start-Sleep -Seconds 20

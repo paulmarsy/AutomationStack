@@ -25,11 +25,11 @@
         "location": "West Europe",
         "properties": {
             "runbookType": "PowerShell",
-            "logProgress": true,
-            "logVerbose": true,
             "state": "Published",
+            "logVerbose": false,
+            "logProgress": false,
             "publishContentLink": {
-                "uri": "[concat(uri(variables('runbookBaseUri'), concat('/runbooks/', parameters('runbooks')[copyIndex()], '.json')), parameters('runbookSasToken'))]"
+                "uri": "[concat(uri(variables('runbookBaseUri'), concat('/runbooks/', parameters('runbooks')[copyIndex()], '.ps1')), parameters('runbookSasToken'))]"
             }
         }
     }]

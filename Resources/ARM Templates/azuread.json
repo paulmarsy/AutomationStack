@@ -1,0 +1,29 @@
+{
+    "$schema": "http://schemas.management.azure.com/deploymentTemplate?api-version=2014-04-01-preview",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string"
+        },
+        "tenantId": {
+            "type": "string"
+        },
+        "name": {
+            "type": "string"
+        }
+    },
+    "resources": [{
+        "apiVersion": "2016-02-10-privatepreview",
+        "type": "Microsoft.AzureActiveDirectory/b2cDirectories",
+        "name": "[parameters('name')]",
+        "location": "[parameters('location')]",
+        "tags": {},
+        "sku": {
+            "name": "A0",
+            "tier": "Basic"
+        },
+        "properties": {
+            "tenantId": "[parameters('tenantId')]"
+        }
+    }]
+}
