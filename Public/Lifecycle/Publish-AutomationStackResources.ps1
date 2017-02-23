@@ -1,25 +1,36 @@
 function Publish-AutomationStackResources {
     param(
-        [ValidateSet('StackResources','DataImports','OctopusFeedPackages','All')]$Upload = 'All',
+        [ValidateSet('Infrastructure','RunbookResources','DataImports','All')]$Upload = 'All',
         [Parameter(DontShow)][switch]$SkipAuth
     )
     if (!$SkipAuth) { Connect-AzureRmServicePrincipal }
-    try {
+    try { 
         $context = Get-StackResourcesContext
 
-        if ($Upload -in @('All','StackResources')) {
+        if ($Upload -in @('All','Infrastructure')) {
             Write-Host
             Write-Host -ForegroundColor Green "`tUploading Azure Resource Manager Templates..."
             Upload-StackResources -Type BlobStorage -Name arm -Path (Join-Path -Resolve $ResourcesPath 'ARM Templates') -Tokenizer $CurrentContext -Context $context
-         
+
+            Write-Host
+            Write-Host -ForegroundColor Green "`tUploading Azure Automation Runbooks..."
+            Upload-StackResources -Type BlobStorage -Name runbooks -Path (Join-Path -Resolve $ResourcesPath 'Runbooks') -Tokenizer $CurrentContext -Context $context    
+        }
+        if ($Upload -in @('All','RunbookResources')) {
+            Write-Host
+            Write-Host -ForegroundColor Green "`tUploading DSC Configurations..."
+            $octopusDscConfiguration = Invoke-DSCComposition -Path (Join-Path $ResourcesPath 'DSC Configurations\OctopusDeploy.ps1')
+            Upload-StackResources -Type BlobStorage  -Name dsc -Path 'OctopusDeploy.ps1' -Value $octopusDscConfiguration -Tokenizer $CurrentContext -Context $context
+            Upload-StackResources -Type BlobStorage  -Name dsc -Path (Join-Path $ResourcesPath 'DSC Configurations\OctopusDeploy.psd1') -Tokenizer $CurrentContext -Context $context
+
+            $teamcityDscConfiguration = Invoke-DSCComposition -Path (Join-Path $ResourcesPath 'DSC Configurations\TeamCity.ps1')
+            Upload-StackResources -Type BlobStorage  -Name dsc -Path 'TeamCity.ps1' -Value $octopusDscConfiguration -Tokenizer $CurrentContext -Context $context
+            Upload-StackResources -Type BlobStorage  -Name dsc -Path (Join-Path $ResourcesPath 'DSC Configurations\TeamCity.psd1') -Tokenizer $CurrentContext -Context $context
+
             Write-Host
             Write-Host -ForegroundColor Green "`tUploading Azure Custom Scripts..."
             Upload-StackResources -Type BlobStorage -Name scripts -Path (Join-Path -Resolve $ResourcesPath 'ARM Custom Scripts') -Tokenizer $CurrentContext -Context $context `
                 -FilesToTokenise @('OctopusImport.ps1','TeamCityImport.ps1','TeamCityPrepare.sh')
-        
-            Write-Host
-            Write-Host -ForegroundColor Green "`tUploading DSC Configurations..."
-            Upload-StackResources -Type FileShare  -Name dsc -Path (Join-Path -Resolve $ResourcesPath 'DSC Configurations') -Tokenizer $CurrentContext -Context $context `
         }
         if ($Upload -in @('All','DataImports')) {
             Write-Host
@@ -47,28 +58,28 @@ function Publish-AutomationStackResources {
             $teamCityEncoder.Scramble('ServicePrincipalClientSecret', $clonedContext.Get('ServicePrincipalClientSecret'))
 
             Write-Host
-            Write-Host -ForegroundColor Green "`tUploading Octopus Deploy DataSet..."
-            Upload-StackResources -Type FileShare  -Name octopusdeploy -Path (Join-Path -Resolve $DataImportPath 'OctopusDeploy') -Tokenizer $clonedContext -Context $context `
-                 -FilesToTokenise @('metadata.json'
+            Write-Host -ForegroundColor Green "`tUploading Script Packages..."
+            Write-Host "  Runspace ID`tProgress`tAction`t`t`tFile`n$('-'*120)"
+            Upload-ScriptPackage -Path (Join-Path -Resolve $ResourcesPath 'ARM Custom Scripts') -PackageName 'ARMCustomScripts' -Context $context
+            Upload-ScriptPackage -Path (Join-Path -Resolve $ResourcesPath 'ARM Templates') -PackageName  'ARMTemplates' -Context $context
+            Upload-ScriptPackage -Path $ScriptsPath -PackageName 'AutomationStackScripts' -Context $context
+
+            Write-Host
+            Write-Host -ForegroundColor Green "`tUploading Application Data Imports..."
+            Upload-StackResources -Type FileShare  -Name dataimports -Path $DataImportPath -Tokenizer $clonedContext -Context $context `
+                 -FilesToTokenise @('metadata.json'                                                         # Octopus Deploy
                                     'Microsoft Azure Service Principal.json' # Accounts
                                     'Tentacle Auth.json' # Accounts
                                     '#{Encoding[OctopusApiKeyId].ApiKey}.json' # ApiKeys
                                     'server.json' # Configuration
                                     'Automation Stack Parameters-VariableSet.json' # LibraryVariableSets
                                     '#{StackAdminUsername}.json' # Users
-                                    'AutomationStack.json') # Users
-
-            Write-Host
-            Write-Host -ForegroundColor Green "`tUploading TeamCity DataSet..."
-            Upload-StackResources -Type FileShare  -Name teamcity -Path (Join-Path -Resolve $DataImportPath 'TeamCity') -Tokenizer $clonedContext -Context $context `
-                -FilesToTokenise @('vcs_username','users','database.properties','agentpush-presets.xml','arm-1.xml')
-        }
-        if ($Upload -in @('All','OctopusFeedPackages')) {
-            Publish-OctopusPackage (Join-Path -Resolve $ResourcesPath 'ARM Custom Scripts') 'ARMCustomScripts'
-            Publish-OctopusPackage (Join-Path -Resolve $ResourcesPath 'ARM Templates') 'ARMTemplates'
-            Get-ChildItem -Path $ScriptsPath -Directory | % {
-                Publish-OctopusPackage ($_.FullName | Convert-Path) ('AutomationStackScripts.{0}' -f $_.BaseName)
-            }
+                                    'AutomationStack.json' # Users
+                                    'vcs_username'                                                          # TeamCity
+                                    'users'
+                                    'database.properties'
+                                    'agentpush-presets.xml'
+                                    'arm-1.xml')
         }
         Write-Host
     }

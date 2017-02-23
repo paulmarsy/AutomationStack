@@ -76,6 +76,7 @@ FunctionsToExport = 'Get-AutomationStackConfig',
                     'Invoke-OctopusStackApi',
                     'Publish-AutomationStackResources',
 
+                    'Add-AutomationStackFeature',
                     'Find-AutomationStackDeployment',
                     'New-AutomationStack',
                     'Remove-AutomationStack',

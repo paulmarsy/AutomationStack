@@ -2,39 +2,34 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "automationName": {
-            "type": "string"
+        "runbookSasToken": {
+            "type": "securestring"
         },
-        "storageAccountName": {
-            "type": "string"
+        "runbooks": {
+            "type": "array"
         }
     },
     "variables": {
-                "runbookBaseUrl": "[concat('https://',parameters('storageAccountName'),'.blob.core.windows.net')]"
+        "runbookBaseUri": "[concat('https://stackresources',resourceGroup().tags.udp,'.blob.core.windows.net/')]",
+        "automationName": "[concat('automation-', resourceGroup().tags.udp)]"
     },
-    "resources": [
-        {
-        "name": "[concat(parameters('automationName'), '/', 'Infrastructure')]",
-          "type": "Microsoft.Automation/automationAccounts/runbooks",
-        "tags": "[resourceGroup().tags]",
+    "resources": [{
+        "copy": {
+            "name": "AutomationRunbookImport",
+            "count": "[length(parameters('runbooks'))]"
+        },
+        "name": "[concat(variables('automationName'), '/', parameters('runbooks')[copyIndex()])]",
         "apiVersion": "2015-10-31",
-          "properties": {
-            "runbookType": "PowerShell",
-            "logProgress": "true",
-            "logVerbose": "true",
-            "description": "Provision AutomationStack's Infrastructure",
-            "publishContentLink": {
-              "uri": "[concat(uri(variables('runbookBaseUrl'), '/runbooks/Infrastructure.ps1'))]",
-              "version": "1.0.0.0"
-            }
-          }{
-        "name": "[concat(parameters('automationName'), '/', 'xSystemSecurity')]",
-        "type": "Microsoft.Automation/automationAccounts/modules",
         "tags": "[resourceGroup().tags]",
-        "apiVersion": "2015-10-31",
+        "type": "Microsoft.Automation/automationAccounts/runbooks",
+        "location": "West Europe",
         "properties": {
-            "contentLink": {
-                "uri": "https://www.powershellgallery.com/api/v2/package/xSystemSecurity/1.2.0.0"
+            "runbookType": "PowerShell",
+            "logProgress": true,
+            "logVerbose": true,
+            "state": "Published",
+            "publishContentLink": {
+                "uri": "[concat(uri(variables('runbookBaseUri'), concat('/runbooks/', parameters('runbooks')[copyIndex()], '.json')), parameters('runbookSasToken'))]"
             }
         }
     }]

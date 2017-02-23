@@ -44,7 +44,7 @@ function New-AutomationStack {
                             
                             Show-AutomationStackDetail
                             Write-Host ('Azure Region: {0}' -f $CurrentContext.Get('AzureRegion'))
-                            Start-Sleep -Seconds 2
+                            Start-Sleep -Seconds 1
                         }
                     }
                     2 {
@@ -61,30 +61,27 @@ function New-AutomationStack {
                         }
                     }
                     4 {
-                        $Heading = 'Uploading Data Imports to Azure Storage'
+                        $Heading = 'Provisioning Infrastructure'
                         {
-                            Publish-AutomationStackResources -SkipAuth -Upload DataImports
+                            $global:job = Add-AutomationStackFeature -Feature Infrastructure
                         }
                     }
                     5 {
-                        $Heading = 'Provisioning Azure Infrastructure'
+                        $Heading = 'Uploading to Azure Storage'
                         {
-                            Initialize-AzureInfrastructure
+                            Publish-AutomationStackResources -SkipAuth -Upload RunbookResources
+                            Publish-AutomationStackResources -SkipAuth -Upload DataImports
                         }
                     }
                     6 {
-                        $Heading = 'Octopus Deploy First Run Configuration'
+                        $Heading = 'Provisioning Octopus Deploy'
                         {
-                            Invoke-SharedScript Compute 'Receive-CustomScriptOutput' -LogFileName $CurrentContext.Get('OctopusCustomScriptLogFile') -StorageAccountName $CurrentContext.Get('StorageAccountName') -StorageAccountKey $CurrentContext.Get('StorageAccountKey')
+                            $job.Join()
+                            $global:job = Add-AutomationStackFeature -Feature OctopusDeploy
+                            $job.Join()
                         }
                     }
                     7 {
-                        $Heading = 'Octopus Deploy - Publishing AutomationStack Packages'
-                        {
-                            Publish-AutomationStackResources -SkipAuth -Upload OctopusFeedPackages
-                        }
-                    }
-                    8 {
                         $Heading = 'AutomationStack Deployment Complete'
                         {
                             Show-AutomationStackDetail

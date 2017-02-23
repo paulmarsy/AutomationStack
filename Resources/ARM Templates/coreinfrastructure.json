@@ -2,6 +2,12 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "startTemplateDeploymentRunbookUri": {
+            "type": "securestring"
+        },
+        "infrastructureRunbookUri": {
+            "type": "securestring"
+        },
         "servicePrincipalCertificateValue": {
             "type": "securestring"
         },
@@ -20,15 +26,16 @@
     },
     "variables": {
         "automationName": "[concat('automation-', resourceGroup().tags.udp)]",
+        "automationLocation": "West Europe",
         "keyVaultName": "[concat('keyvault-', resourceGroup().tags.udp)]",
-        "resourcesStorageName": "[concat('stackresources', resourceGroup().tags.udp)]"
+        "storageAccountName": "[concat('stackresources', resourceGroup().tags.udp)]"
     },
     "resources": [{
             "apiVersion": "2015-10-31",
             "type": "Microsoft.Automation/automationAccounts",
             "name": "[variables('automationName')]",
             "tags": "[resourceGroup().tags]",
-            "location": "westeurope",
+            "location": "[variables('automationLocation')]",
             "properties": {
                 "sku": {
                     "name": "Free"
@@ -36,9 +43,10 @@
             },
             "resources": [{
                 "name": "AzureRunAsCertificate",
-                "type": "certificates",
                 "apiVersion": "2015-10-31",
                 "tags": "[resourceGroup().tags]",
+                "type": "certificates",
+                "location": "[variables('automationLocation')]",
                 "dependsOn": [
                     "[concat('Microsoft.Automation/automationAccounts/',variables('automationName'))]"
                 ],
@@ -49,9 +57,10 @@
                 }
             }, {
                 "name": "AzureRunAsConnection",
-                "type": "connections",
-                "tags": "[resourceGroup().tags]",
                 "apiVersion": "2015-10-31",
+                "tags": "[resourceGroup().tags]",
+                "type": "connections",
+                "location": "[variables('automationLocation')]",
                 "dependsOn": [
                     "[concat('Microsoft.Automation/automationAccounts/',variables('automationName'))]"
                 ],
@@ -65,6 +74,67 @@
                     },
                     "connectionType": {
                         "name": "AzureServicePrincipal"
+                    }
+                }
+            }, {
+                "name": "ResourceGroupName",
+                "apiVersion": "2015-10-31",
+                "tags": "[resourceGroup().tags]",
+                "type": "variables",
+                "location": "[variables('automationLocation')]",
+                "dependsOn": [
+                    "[concat('Microsoft.Automation/automationAccounts/',variables('automationName'))]"
+                ],
+                "properties": {
+                    "type": "string",
+                    "value": "[concat('\"', resourceGroup().name,'\"')]"
+                }
+            }, {
+                "name": "StorageAccountName",
+                "apiVersion": "2015-10-31",
+                "tags": "[resourceGroup().tags]",
+                "type": "variables",
+                "location": "[variables('automationLocation')]",
+                "dependsOn": [
+                    "[concat('Microsoft.Automation/automationAccounts/',variables('automationName'))]"
+                ],
+                "properties": {
+                    "type": "string",
+                    "value": "[concat('\"', variables('storageAccountName'),'\"')]"
+                }
+            }, {
+                "name": "StartTemplateDeployment",
+                "apiVersion": "2015-10-31",
+                "tags": "[resourceGroup().tags]",
+                "type": "runbooks",
+                "location": "[variables('automationLocation')]",
+                "dependsOn": [
+                    "[concat('Microsoft.Automation/automationAccounts/',variables('automationName'))]"
+                ],
+                "properties": {
+                    "runbookType": "PowerShell",
+                    "state": "Published",
+                    "publishContentLink": {
+                        "uri": "[parameters('startTemplateDeploymentRunbookUri')]"
+                    }
+                }
+            }, {
+                "name": "DeployInfrastructure",
+                "apiVersion": "2015-10-31",
+                "tags": "[resourceGroup().tags]",
+                "type": "runbooks",
+                "location": "[variables('automationLocation')]",
+                "dependsOn": [
+                    "[concat('Microsoft.Automation/automationAccounts/',variables('automationName'))]",
+                    "[concat('Microsoft.Automation/automationAccounts/',variables('automationName'), '/runbooks/StartTemplateDeployment')]"
+                ],
+                "properties": {
+                    "runbookType": "PowerShell",
+                    "state": "Published",
+                    "logProgress": "true",
+                    "logVerbose": "true",
+                    "publishContentLink": {
+                        "uri": "[parameters('infrastructureRunbookUri')]"
                     }
                 }
             }]
@@ -100,7 +170,7 @@
         {
             "apiVersion": "2016-12-01",
             "type": "Microsoft.Storage/storageAccounts",
-            "name": "[variables('resourcesStorageName')]",
+            "name": "[variables('storageAccountName')]",
             "tags": "[resourceGroup().tags]",
             "location": "[resourceGroup().location]",
             "sku": {

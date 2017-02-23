@@ -4,6 +4,12 @@
     "parameters": {
         "templateSasToken": {
             "type": "securestring"
+        },
+        "runbookSasToken": {
+            "type": "securestring"
+        },
+        "runbooks": {
+            "type": "array"
         }
     },
     "variables": {
@@ -41,12 +47,20 @@
         }
     }, {
         "apiVersion": "2016-09-01",
-        "name": "AutomationAccountsVariables",
+        "name": "AutomationAccountsRunbooks",
         "type": "Microsoft.Resources/deployments",
         "properties": {
             "mode": "Incremental",
             "templateLink": {
-                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Infrastructure/automationAccounts.variables.json'), parameters('templateSasToken'))]"
+                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Infrastructure/automationAccounts.runbooks.json'), parameters('templateSasToken'))]"
+            },
+            "parameters": {
+                "runbookSasToken": {
+                    "value": "[parameters('runbookSasToken')]"
+                },
+                "runbooks": {
+                    "value": "[parameters('runbooks')]"
+                }
             }
         }
     }, {
