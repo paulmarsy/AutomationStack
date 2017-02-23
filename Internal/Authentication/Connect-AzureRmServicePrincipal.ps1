@@ -23,7 +23,8 @@ function Connect-AzureRmServicePrincipal {
         $rmContext | % Account | Format-List | Out-String | % Trim |  Out-Host
     }
     catch [Microsoft.IdentityModel.Clients.ActiveDirectory.AdalServiceException] {
-        if ($_.Exception.Message.StartsWith('AADSTS70001')) {
+        if ($_.Exception.Message.StartsWith('AADSTS70001') -or $_.Exception.Message.StartsWith('AADSTS70002')) {
+            Write-Warning 'AzureAd Service Principal still synchronising...'
             Start-Sleep -Seconds 1
             Connect-AzureRmServicePrincipal
             return

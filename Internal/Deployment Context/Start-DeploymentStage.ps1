@@ -27,7 +27,7 @@ function Start-DeploymentStage {
             Write-Host
             if ($attempt -eq $RetryAttemptsAllowed) {
                 Write-Host -ForegroundColor Red 'FATAL: Retry attempts exceeded'
-              throw
+                throw
             }
             Write-Host ('Retrying stage in {0} minute(s)...' -f $attempt)
             Start-Sleep -Seconds (60 * $attempt)
