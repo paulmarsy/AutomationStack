@@ -5,7 +5,7 @@ function Upload-ScriptPackage {
         $Context
     )
 
-    [Console]::WriteLine("   `t`t`t`tPackaging`t`t$PackageName")
+    [void][System.Console]::Out.WriteLineAsync("   `t`t`t`tPackaging`t`t$PackageName")
     $packageFile = Join-Path $TempPath ('{0}.zip' -f $PackageName)
 
     try {

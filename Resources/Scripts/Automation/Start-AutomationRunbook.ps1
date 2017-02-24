@@ -4,7 +4,7 @@ $automationJob = Start-AzureRmAutomationRunbook -AutomationAccountName $Automati
 
 $readOutput = @()
 While ($status -notin @("Completed","Failed","Suspended","Stopped")) {
-   $automationJobjob = Get-AzureRmAutomationJob -AutomationAccountName $AutomationAccountName -ResourceGroupName $ResourceGroupName -Id $automationJob.JobId
+   $automationJob = Get-AzureRmAutomationJob -AutomationAccountName $AutomationAccountName -ResourceGroupName $ResourceGroupName -Id $automationJob.JobId
    if ($status -ne $automationJob.Status) {
        $status = $automationJob.Status
        Write-Output "Azure Runbook $Name runbook is $status" 
@@ -13,11 +13,11 @@ While ($status -notin @("Completed","Failed","Suspended","Stopped")) {
         $readOutput += $_.StreamRecordId
         $record = Get-AzureRmAutomationJobOutputRecord -AutomationAccountName $AutomationAccountName -ResourceGroupName $ResourceGroupName -JobId $automationJob.JobId -Id $_.StreamRecordId
         switch ($record.Type) {
-            'Output' { Write-Output $record.Value.Values }
-            'Error' { Write-Error ($record.Value.Exception | Format-List * -Force | Out-String) }
-            'Warning' { Write-Warning $record.Value.Message }
-            'Verbose' { Write-Verbose $record.Value.Message }
-            'Progress' { Write-Output $record.Value.Activity }
+            'Output' { $record.Value.Values | Write-Output }
+            'Error' { Write-Error -Exception $record.Value.Exception }
+            'Warning' { Write-Warning -Message $record.Value.Message }
+            'Verbose' { Write-Verbose -Message $record.Value.Message }
+            'Progress' { Write-Progress -Activity $record.Value.Activity }
             default { Write-Output $record.Summary }
         }
         Write-Verbose $record.Summary

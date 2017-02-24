@@ -22,13 +22,13 @@ $octopusCustomScriptLogFile = 'OctopusDeploy.{0}.log' -f ([datetime]::UtcNow.ToS
 
 .\StartTemplateDeployment.ps1 -ServicePrincipalConnection $ServicePrincipalConnection -ResourceGroupName $resourceGroupName -Context $context -Template octopusdeploy -TemplateParameters @{
         timestamp = ([DateTimeOffset]::UtcNow.ToString("o"))
-        computeVmShutdownStatus = $CurrentContext.Get('ComputeVmShutdownTask.Status')
-        computeVmShutdownTime = $CurrentContext.Get('ComputeVmShutdownTask.Time')
+        computeVmShutdownStatus = $ComputeVmShutdownStatus
+        computeVmShutdownTime = $ComputeVmShutdownTime
         octopusDscJobId = [System.Guid]::NewGuid().ToString()
         octopusDscConfiguration = $dscContainer.CloudBlobContainer.GetBlockBlobReference('OctopusDeploy.ps1').DownloadText()
         octopusDscConfigurationData =  $dscContainer.CloudBlobContainer.GetBlockBlobReference('OctopusDeploy.psd1').DownloadText()
-        octopusDscConnectionString = $CurrentContext.Get('OctopusConnectionString')
-        octopusDscHostName = $CurrentContext.Get('OctopusHostName')
+        octopusDscConnectionString = $OctopusConnectionString
+        octopusDscHostName = $OctopusHostName
         octopusCustomScriptLogFile = $octopusCustomScriptLogFile 
 }
 
