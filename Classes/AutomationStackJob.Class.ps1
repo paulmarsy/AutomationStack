@@ -25,6 +25,7 @@ class AutomationStackJob {
     [string]$Name
     hidden [PowerShell]$PowerShell
     hidden [System.IAsyncResult]$Async
+    hidden $Output
     [datetime]$BeginTime
     [datetime]$EndTime
     [timespan]$Duration
@@ -42,23 +43,67 @@ class AutomationStackJob {
             Start-ARMDeployment -Mode Uri -ResourceGroupName $CurrentContext.Get('ResourceGroup') -Template $TemplateName -TemplateParameters @{}
         }, @($TemplateName))
     }
-
+    static [AutomationStackJob] ScriptBlock([ScriptBlock]$ScriptBlock) {
+        return [AutomationStackJob]::new('ScriptBlock', $ScriptBlock, @())
+    }
     Start() {
-         $this.Async = $this.PowerShell.BeginInvoke()
-         $this.BeginTime = Get-Date
+        $in = New-Object System.Management.Automation.PSDataCollection[psobject]
+        $in.Complete()
+        $out = New-Object System.Management.Automation.PSDataCollection[psobject]
+        Register-ObjectEvent -InputObject $out -EventName DataAdded -Action { $Event.MessageData.AddStreamMessage('Output', $Sender[$EventArgs.Index]) } -MessageData $this -SupportEvent
+
+        $this.Output = {@()}.Invoke()
+        $this.Async = $this.PowerShell.BeginInvoke($in, $out)
+        $this.BeginTime = Get-Date
     }
     Join() {
+        $logPosition = 0
         while (!$this.IsCompleted) {
-            Write-Host "Waiting for AutomationJob $($this.Name) to finish..."
-            Start-Sleep -Seconds 5
+            Start-Sleep -Milliseconds 250
+            try {
+                [System.Threading.Monitor]::Enter($this.Output)
+                $this.Output | Select-Object -Skip $logPosition | % {
+                    $color = switch ($_.Stream) {
+                        'Error' {[System.ConsoleColor]::Red}
+                        'Warning' {[System.ConsoleColor]::Yellow}
+                        'Progress' {[System.ConsoleColor]::Blue}
+                        default {[Console]::ForegroundColor}
+                    }
+                    $logPosition++
+                    Write-Host -ForegroundColor $color ('[{0}.{1}] {2}: {3}' -f $this.Name, $_.Stream, $_.DateTime.ToShortTimeString(), $_.Message)
+                }
+            }
+            finally { [System.Threading.Monitor]::Exit($this.Output) } 
         }
-        $this.PowerShell.EndInvoke($this.Async) | Out-Host
-        $this.PowerShell.Streams.Error | % { Write-Error -ErrorRecord $_ }
+
+        # $this.PowerShell.EndInvoke($this.Async) | Out-Host
+        # $this.PowerShell.Streams.Error | % { Write-Error -ErrorRecord $_ }
         if ($this.PowerShell.HadErrors) {
             throw "Job $($this.Name) completed with errors"
         }
 
-        $this.PowerShell.Dispose()
-        
+        $this.PowerShell.Dispose()  
+    }
+    hidden [void] AddStreamMessage([string]$Stream, [string]$Message) {
+        try {
+            [System.Threading.Monitor]::Enter($this.Output)
+            $this.Output.Add([pscustomobject]@{
+                Stream = $Stream
+                DateTime = (Get-Date)
+                Message = $Message
+            })
+        }
+        finally { [System.Threading.Monitor]::Exit($this.Output) } 
+    }
+    [void] DisplayStream([int]$Skip) {
+        $this.Output | % {
+            $color = switch ($_.Stream) {
+                'Error' {[System.ConsoleColor]::Red}
+                'Warning' {[System.ConsoleColor]::Yellow}
+                'Progress' {[System.ConsoleColor]::Blue}
+                default {[Console]::ForegroundColor}
+            }
+            Write-Host -ForegroundColor $color ('[{0}.{1}] {2}: {3}' -f $this.Name, $_.Stream, $_.DateTime.ToShortTimeString(), $_.Message)
+        }
     }
 }
