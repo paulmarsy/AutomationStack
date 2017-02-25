@@ -63,7 +63,7 @@ function New-AutomationStack {
                     4 {
                         $Heading = 'Provisioning Infrastructure'
                         {
-                            $global:job = Add-AutomationStackFeature -Feature Infrastructure
+                            $global:job = Add-AutomationStackFeature -Feature Infrastructure -DontJoin
                         }
                     }
                     5 {
@@ -77,7 +77,7 @@ function New-AutomationStack {
                         $Heading = 'Provisioning Octopus Deploy'
                         {
                             $job.Join()
-                            $global:job = Add-AutomationStackFeature -Feature OctopusDeploy
+                            $global:job = Add-AutomationStackFeature -Feature OctopusDeploy -DontJoin
                             $job.Join()
                         }
                     }

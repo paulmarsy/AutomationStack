@@ -1,6 +1,7 @@
 function Add-AutomationStackFeature { 
     param(
-        [ValidateSet('Infrastructure','OctopusDeploy','TeamCity','VisualStudioTeamServices')]$Feature
+        [ValidateSet('Infrastructure','OctopusDeploy','TeamCity','VisualStudioTeamServices')]$Feature,
+        [Parameter(DontShow)][switch]$DontJoin
     )
 
     $job = switch ($Feature) {
@@ -14,6 +15,8 @@ function Add-AutomationStackFeature {
         'VisualStudioTeamServices' { [AutomationStackJob]::ResourceGroupDeployment('vsts', @{}) }
     }
     $job.Start()
-
+    if (!$DontJoin) {
+        $job.Join()
+    }
     return $job
 }

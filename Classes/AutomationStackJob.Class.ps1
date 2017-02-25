@@ -51,6 +51,10 @@ class AutomationStackJob {
         $in.Complete()
         $out = New-Object System.Management.Automation.PSDataCollection[psobject]
         Register-ObjectEvent -InputObject $out -EventName DataAdded -Action { $Event.MessageData.AddStreamMessage('Output', $Sender[$EventArgs.Index]) } -MessageData $this -SupportEvent
+        Register-ObjectEvent -InputObject $this.PowerShell.Streams.Error -EventName DataAdded -Action { $Event.MessageData.AddStreamMessage('Error', $Sender[$EventArgs.Index].Exception.Message + "`n" + $Sender[$EventArgs.Index].sScriptStackTrace) } -MessageData $this -SupportEvent
+        Register-ObjectEvent -InputObject $this.PowerShell.Streams.Warning -EventName DataAdded -Action { $Event.MessageData.AddStreamMessage('Warning', $Sender[$EventArgs.Index]) } -MessageData $this -SupportEvent
+        Register-ObjectEvent -InputObject $this.PowerShell.Streams.Verbose -EventName DataAdded -Action { $Event.MessageData.AddStreamMessage('Verbose', $Sender[$EventArgs.Index]) } -MessageData $this -SupportEvent
+        Register-ObjectEvent -InputObject $this.PowerShell.Streams.Progress -EventName DataAdded -Action { $Event.MessageData.AddStreamMessage('Progress', $Sender[$EventArgs.Index].Activity) } -MessageData $this -SupportEvent
 
         $this.Output = {@()}.Invoke()
         $this.Async = $this.PowerShell.BeginInvoke($in, $out)
@@ -76,13 +80,11 @@ class AutomationStackJob {
             finally { [System.Threading.Monitor]::Exit($this.Output) } 
         }
 
-        # $this.PowerShell.EndInvoke($this.Async) | Out-Host
-        # $this.PowerShell.Streams.Error | % { Write-Error -ErrorRecord $_ }
+        $this.PowerShell.EndInvoke($this.Async)
+        $this.PowerShell.Dispose()  
         if ($this.PowerShell.HadErrors) {
             throw "Job $($this.Name) completed with errors"
         }
-
-        $this.PowerShell.Dispose()  
     }
     hidden [void] AddStreamMessage([string]$Stream, [string]$Message) {
         try {

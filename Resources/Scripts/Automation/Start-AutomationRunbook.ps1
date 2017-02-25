@@ -9,20 +9,21 @@ While ($status -notin @("Completed","Failed","Suspended","Stopped")) {
        $status = $automationJob.Status
        Write-Output "Azure Runbook $Name runbook is $status" 
    }
-    Get-AzureRmAutomationJobOutput -AutomationAccountName $AutomationAccountName -ResourceGroupName $ResourceGroupName -Id $automationJob.JobId | ? StreamRecordId -notin $readOutput | % {
-        $readOutput += $_.StreamRecordId
-        $record = Get-AzureRmAutomationJobOutputRecord -AutomationAccountName $AutomationAccountName -ResourceGroupName $ResourceGroupName -JobId $automationJob.JobId -Id $_.StreamRecordId
-        switch ($record.Type) {
-            'Output' { $record.Value.Values | Write-Output }
-            'Error' { Write-Error -Exception $record.Value.Exception }
-            'Warning' { Write-Warning -Message $record.Value.Message }
-            'Verbose' { Write-Verbose -Message $record.Value.Message }
-            'Progress' { Write-Progress -Activity $record.Value.Activity }
-            default { Write-Output $record.Summary }
+   if ($status -eq 'Running') {
+        Get-AzureRmAutomationJobOutput -AutomationAccountName $AutomationAccountName -ResourceGroupName $ResourceGroupName -Id $automationJob.JobId | ? StreamRecordId -notin $readOutput | % {
+            $readOutput += $_.StreamRecordId
+            $record = Get-AzureRmAutomationJobOutputRecord -AutomationAccountName $AutomationAccountName -ResourceGroupName $ResourceGroupName -JobId $automationJob.JobId -Id $_.StreamRecordId
+            switch ($record.Type) {
+                'Output' { $record.Value.Values | Write-Output }
+                'Error' { Write-Error -Exception $record.Value.Exception -TargetObject $record.Value.TargetObject -ErrorId $record.Value.FullyQualifiedErrorId -CategoryActivity $record.Value.CategoryInfo.Activity -CategoryReason $record.Value.CategoryInfo.Reason -Category $record.Value.CategoryInfo.Category -CategoryTargetName $record.Value.CategoryInfo.TargetName -CategoryTargetType $record.Value.CategoryInfo.TargetType }
+                'Warning' { Write-Warning -Message $record.Value.Message }
+                'Verbose' { Write-Verbose -Message $record.Value.Message }
+                'Progress' { Write-Progress -Activity $record.Value.Activity }
+                default { Write-Output $record.Summary }
+            }
         }
-        Write-Verbose $record.Summary
-    }
-   Start-Sleep -Seconds 1
+   }
+    Start-Sleep -Milliseconds 250
 }
 if ($status -eq "Completed") { Write-Output "Runbook $Name completed successfully" }
 else {
