@@ -22,20 +22,20 @@ Write-Output "Deployment Uri: $uri"
 
 $parameters= @{
     templateSasToken = @{
-        value = (New-AzureStorageContainerSASToken -Name arm -Permission r -ExpiryTime (Get-Date).AddHours(1))
+        value = [string](New-AzureStorageContainerSASToken -Name arm -Permission r -ExpiryTime (Get-Date).AddHours(1))
     }
 }
-$TemplateParameters.GetEnumerator() | % { $parameters += @{ $_.Key = @{ value = $_.Value } } }
+$TemplateParameters.GetEnumerator() | % { $parameters += @{ ([string]$_.Key) = @{ value = $_.Value.psobject.baseobject } } }
 
 $body = [Newtonsoft.Json.JsonConvert]::SerializeObject((@{
   properties = @{
     templateLink = @{
-      uri = (New-AzureStorageBlobSASToken -Container arm -Blob "${Template}.json" -Permission r -ExpiryTime (Get-Date).AddHours(1) -FullUri)
+      uri = [string](New-AzureStorageBlobSASToken -Container arm -Blob "${Template}.json" -Permission r -ExpiryTime (Get-Date).AddHours(1) -FullUri)
     }
     mode = 'Incremental'
     parameters = $parameters
   }
-}), [Newtonsoft.Json.Formatting]::Indented)
+}), [Newtonsoft.Json.JsonSerializerSettings]@{Formatting=[Newtonsoft.Json.Formatting]::Indented})
 Write-Output "Deployment Request:`n$body`n"
 
 Write-Output 'Submitting deployment...'

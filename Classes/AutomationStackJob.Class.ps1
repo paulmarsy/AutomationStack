@@ -62,23 +62,14 @@ class AutomationStackJob {
     }
     Join() {
         $logPosition = 0
-        while (!$this.IsCompleted) {
+        do {
             Start-Sleep -Milliseconds 250
             try {
                 [System.Threading.Monitor]::Enter($this.Output)
-                $this.Output | Select-Object -Skip $logPosition | % {
-                    $color = switch ($_.Stream) {
-                        'Error' {[System.ConsoleColor]::Red}
-                        'Warning' {[System.ConsoleColor]::Yellow}
-                        'Progress' {[System.ConsoleColor]::Blue}
-                        default {[Console]::ForegroundColor}
-                    }
-                    $logPosition++
-                    Write-Host -ForegroundColor $color ('[{0}.{1}] {2}: {3}' -f $this.Name, $_.Stream, $_.DateTime.ToShortTimeString(), $_.Message)
-                }
+                $logPosition += [AutomationStackJob]::DisplayStream(($this.Output | Select-Object -Skip $logPosition))
             }
             finally { [System.Threading.Monitor]::Exit($this.Output) } 
-        }
+        } while (!$this.IsCompleted)
 
         $this.PowerShell.EndInvoke($this.Async)
         $this.PowerShell.Dispose()  
@@ -97,15 +88,19 @@ class AutomationStackJob {
         }
         finally { [System.Threading.Monitor]::Exit($this.Output) } 
     }
-    [void] DisplayStream([int]$Skip) {
-        $this.Output | % {
+    [void] DisplayStream() { [AutomationStackJob]::DisplayStream($this.Output) }
+    hidden static [int] DisplayStream($Stream) {
+        $recordsRead = 0
+        $Stream | ? { -not [string]::IsNullOrWhitespace($_) } | % {
             $color = switch ($_.Stream) {
                 'Error' {[System.ConsoleColor]::Red}
                 'Warning' {[System.ConsoleColor]::Yellow}
                 'Progress' {[System.ConsoleColor]::Blue}
                 default {[Console]::ForegroundColor}
             }
-            Write-Host -ForegroundColor $color ('[{0}.{1}] {2}: {3}' -f $this.Name, $_.Stream, $_.DateTime.ToShortTimeString(), $_.Message)
+            Write-Host -ForegroundColor $color ('[{0}] {1}: {2}' -f $_.Stream, $_.DateTime.ToShortTimeString(), $_.Message)
+            $recordsRead++
         }
+        return $recordsRead
     }
 }

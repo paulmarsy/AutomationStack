@@ -1,13 +1,14 @@
 param($ResourceGroupName, $AutomationAccountName, $Name, $Parameters)
 
 $automationJob = Start-AzureRmAutomationRunbook -AutomationAccountName $AutomationAccountName -ResourceGroupName $ResourceGroupName -Name $Name -Parameters $Parameters
+Write-Output "Azure Runbook $Name job created with id: $($automationJob.JobId)" 
 
 $readOutput = @()
 While ($status -notin @("Completed","Failed","Suspended","Stopped")) {
    $automationJob = Get-AzureRmAutomationJob -AutomationAccountName $AutomationAccountName -ResourceGroupName $ResourceGroupName -Id $automationJob.JobId
    if ($status -ne $automationJob.Status) {
        $status = $automationJob.Status
-       Write-Output "Azure Runbook $Name runbook is $status" 
+       Write-Output "Azure Runbook $Name job is $status" 
    }
    if ($status -eq 'Running') {
         Get-AzureRmAutomationJobOutput -AutomationAccountName $AutomationAccountName -ResourceGroupName $ResourceGroupName -Id $automationJob.JobId | ? StreamRecordId -notin $readOutput | % {
@@ -27,6 +28,6 @@ While ($status -notin @("Completed","Failed","Suspended","Stopped")) {
 }
 if ($status -eq "Completed") { Write-Output "Runbook $Name completed successfully" }
 else {
-    Write-Warning "Runbook $Name did not complete successfully"
-    throw "Runbook failed with status: $status"
+    Write-Warning "Runbook Job Exception:`n$($automationJob.Exception)"
+    throw $automationJob.Exception
 }

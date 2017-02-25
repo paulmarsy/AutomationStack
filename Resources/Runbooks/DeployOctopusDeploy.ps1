@@ -11,7 +11,7 @@ Write-Output ("Authenticating with:`n{0}" -f ($ServicePrincipalConnection | Out-
 Add-AzureRmAccount -ServicePrincipal -TenantId $ServicePrincipalConnection.TenantId -ApplicationId $ServicePrincipalConnection.ApplicationId -CertificateThumbprint $ServicePrincipalConnection.CertificateThumbprint | Out-Null
 Write-Output 'Connected to Azure'
 $ResourceGroupName = Get-AutomationVariable -Name "ResourceGroupName"
-Set-AzureRmCurrentStorageAccount -ResourceGroupName $ResourceGroupName -Name (Get-AutomationVariable -Name "StorageAccountName") | Out-Null
+Set-AzureRmCurrentStorageAccount -ResourceGroupName $ResourceGroupName -StorageAccountName (Get-AutomationVariable -Name "StorageAccountName") | Out-Null
 Write-Output 'Storage Account Context Set'
 Write-Output ("AzureRm Context:`nResource Group: {0}`n{1}" -f $ResourceGroupName, (Get-AzureRmContext | Out-String | % Trim))
 
