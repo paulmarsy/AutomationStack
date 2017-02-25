@@ -17,3 +17,4 @@ Write-Output ("AzureRm Context:`nResource Group: {0}`n{1}" -f $ResourceGroupName
     runbookSasToken = (New-AzureStorageContainerSASToken -Name runbooks -Permission r -ExpiryTime (Get-Date).AddHours(1))
     runbooks = (Get-AzureStorageBlob -Container runbooks | % { [System.IO.Path]::GetFileNameWithoutExtension($_.Name) })
 }
+Write-Output "DeployInfrastructure Runbook completed successfully"

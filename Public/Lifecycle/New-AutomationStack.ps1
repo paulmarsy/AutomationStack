@@ -19,6 +19,7 @@ function New-AutomationStack {
         }
         Connect-AzureRm
         if ($firstRun) {
+            Set-AzureSubscriptionSelection
             $azureRegion = Select-AzureLocation
             $computeVmShutdown = Select-ComputeVmAutoShutdown
         }     
@@ -71,12 +72,12 @@ function New-AutomationStack {
                         {
                             Publish-AutomationStackResources -SkipAuth -Upload RunbookResources
                             Publish-AutomationStackResources -SkipAuth -Upload DataImports
+                            $job.Join()
                         }
                     }
                     6 {
                         $Heading = 'Provisioning Octopus Deploy'
                         {
-                            $job.Join()
                             $global:job = Add-AutomationStackFeature -Feature OctopusDeploy -DontJoin
                             $job.Join()
                         }

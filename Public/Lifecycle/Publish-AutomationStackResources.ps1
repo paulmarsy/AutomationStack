@@ -18,6 +18,10 @@ function Publish-AutomationStackResources {
         }
         if ($Upload -in @('All','Runbooks')) {
             Write-Host
+            Write-Host -ForegroundColor Green "`tUploading Azure Automation Runbooks..."
+            Upload-StackResources -Type BlobStorage -Name runbooks -Path (Join-Path -Resolve $ResourcesPath 'Runbooks') -Tokenizer $CurrentContext -Context $context    
+
+            Write-Host
             Write-Host -ForegroundColor Green "`Importing Azure Automation Runbooks..."
             Get-ChildItem -Path  (Join-Path $ResourcesPath 'Runbooks') -File | % {
                 Import-AzureRmAutomationRunbook -Path $_.FullName -Name $_.BaseName -Type PowerShell -Published -Force -ResourceGroupName $CurrentContext.Get('ResourceGroup') -AutomationAccountName $CurrentContext.Get('AutomationAccountName') | Out-Null
@@ -28,12 +32,14 @@ function Publish-AutomationStackResources {
             Write-Host
             Write-Host -ForegroundColor Green "`tUploading DSC Configurations..."
             $octopusDscConfiguration = Invoke-DSCComposition -Path (Join-Path $ResourcesPath 'DSC Configurations\OctopusDeploy.ps1')
-            Upload-StackResources -Type BlobStorage  -Name dsc -Path 'OctopusDeploy.ps1' -Value $octopusDscConfiguration -Tokenizer $CurrentContext -Context $context
-            Upload-StackResources -Type BlobStorage  -Name dsc -Path (Join-Path $ResourcesPath 'DSC Configurations\OctopusDeploy.psd1') -Tokenizer $CurrentContext -Context $context
+            Upload-StackResources -Type BlobStorage -Name dsc -Path 'OctopusDeploy.ps1' -Value $octopusDscConfiguration -Tokenizer $CurrentContext -Context $context
+            $octopusDscConfigurationData = Get-Content (Join-Path $ResourcesPath 'DSC Configurations\OctopusDeploy.psd1') -Raw | Invoke-Expression | ConvertTo-Json -Depth 10
+            Upload-StackResources -Type BlobStorage -Name dsc -Path 'OctopusDeploy.json' -Value $octopusDscConfigurationData -Tokenizer $CurrentContext -Context $context
 
             $teamcityDscConfiguration = Invoke-DSCComposition -Path (Join-Path $ResourcesPath 'DSC Configurations\TeamCity.ps1')
-            Upload-StackResources -Type BlobStorage  -Name dsc -Path 'TeamCity.ps1' -Value $octopusDscConfiguration -Tokenizer $CurrentContext -Context $context
-            Upload-StackResources -Type BlobStorage  -Name dsc -Path (Join-Path $ResourcesPath 'DSC Configurations\TeamCity.psd1') -Tokenizer $CurrentContext -Context $context
+            Upload-StackResources -Type BlobStorage -Name dsc -Path 'TeamCity.ps1' -Value $octopusDscConfiguration -Tokenizer $CurrentContext -Context $context
+            $teamCityDscConfigurationData = Get-Content (Join-Path $ResourcesPath 'DSC Configurations\TeamCity.psd1') -Raw | Invoke-Expression | ConvertTo-Json -Depth 10
+            Upload-StackResources -Type BlobStorage -Name dsc -Path 'TeamCity.json' -Value $teamCityDscConfigurationData -Tokenizer $CurrentContext -Context $context
 
             Write-Host
             Write-Host -ForegroundColor Green "`tUploading Azure Custom Scripts..."

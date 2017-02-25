@@ -23,10 +23,10 @@ $octopusCustomScriptLogFile = 'OctopusDeploy.{0}.log' -f ([datetime]::UtcNow.ToS
         computeVmShutdownTime = $ComputeVmShutdownTime
         octopusDscJobId = [System.Guid]::NewGuid().ToString()
         octopusDscConfiguration = (Get-AzureStorageBlob -Container dsc -Blob 'OctopusDeploy.ps1').ICloudBlob.DownloadText()
-        octopusDscConfigurationData =  (Get-AzureStorageBlob -Container dsc -Blob 'OctopusDeploy.psd1').ICloudBlob.DownloadText()
+        octopusDscConfigurationData =  (Get-AzureStorageBlob -Container dsc -Blob 'OctopusDeploy.json').ICloudBlob.DownloadText()
         octopusDscConnectionString = $OctopusDscConnectionString
         octopusDscHostName = $OctopusDscHostName
         octopusCustomScriptLogFile = $octopusCustomScriptLogFile 
 }
-
-#Invoke-SharedScript Compute 'Receive-CustomScriptOutput' -LogFileName $CurrentContext.Get('OctopusCustomScriptLogFile') -StorageAccountName $CurrentContext.Get('StorageAccountName') -StorageAccountKey $CurrentContext.Get('StorageAccountKey')
+.\Receive-CustomScriptOutput.ps1 -LogFileName $octopusCustomScriptLogFile
+Write-Output "DeployOctopusDeploy Runbook completed successfully"

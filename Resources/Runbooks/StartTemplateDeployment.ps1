@@ -42,12 +42,16 @@ Write-Output 'Submitting deployment...'
 $request = Invoke-WebRequest -Uri $uri -Method Put -Body $body -Headers @{ [Microsoft.WindowsAzure.Commands.Common.ApiConstants]::AuthorizationHeaderName = $accessToken.CreateAuthorizationHeader() }  -ContentType 'application/json' -UseBasicParsing
 Write-Output "Deployment Response:`n$($request.RawContent)`n"
 
-$deployAsyncOperationUri = $response.Headers['Azure-AsyncOperation']
+$deployAsyncOperationUri = $request.Headers['Azure-AsyncOperation']
 $response = Invoke-WebRequest -Uri $deployAsyncOperationUri -Headers @{ [Microsoft.WindowsAzure.Commands.Common.ApiConstants]::AuthorizationHeaderName = $accessToken.CreateAuthorizationHeader() }  -ContentType 'application/json' -UseBasicParsing
 Write-Output $response.RawContent
  
 while (($response.Content | ConvertFrom-Json).Status -notin @('Failed','Succeeded')) {
-    Start-Sleep -Seconds 20
+    Start-Sleep -Seconds 10
     $response = Invoke-WebRequest -Uri $deployAsyncOperationUri -Headers @{ [Microsoft.WindowsAzure.Commands.Common.ApiConstants]::AuthorizationHeaderName = $accessToken.CreateAuthorizationHeader() }  -ContentType 'application/json' -UseBasicParsing
-    Write-Output $response.RawContent
+    [pscustomobject]@{
+        Date = $response.Headers['Date']
+        Status = "$($response.StatusCode) $($response.StatusDescription)"
+        Content = $response.Content
+    } | Format-List | Out-String | Write-Output
 }
