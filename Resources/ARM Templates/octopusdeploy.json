@@ -23,9 +23,6 @@
         "octopusDscConfigurationData": {
             "type": "string"
         },
-        "octopusDscNodeName": {
-            "type": "string"
-        },
         "octopusDscConnectionString": {
             "type": "string"
         },
@@ -61,7 +58,7 @@
                     "value": "[parameters('octopusDscConfigurationData')]"
                 },
                 "octopusNodeName": {
-                    "value": "[parameters('octopusDscNodeName')]"
+                    "value": "[variables('octopusVmName')]"
                 },
                 "octopusConnectionString": {
                     "value": "[parameters('octopusDscConnectionString')]"

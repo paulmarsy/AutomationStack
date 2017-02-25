@@ -1,16 +1,20 @@
-param($LogFileName, $StorageAccountName, $StorageAccountKey)
+param($LogFileName)
 
-Write-Host 'Connecting to Azure Storage Account...'
-$context = New-AzureStorageContext -StorageAccountName $StorageAccountName -StorageAccountKey $StorageAccountKey
-$storageContainer = Get-AzureStorageContainer -Name 'scriptlogs' -Context $context -ErrorAction SilentlyContinue
+$ErrorActionPreference = "Stop"
+$VerbosePreference = "SilentlyContinue"
+$DebugPreference = "SilentlyContinue"
+$ProgressPreference = "SilentlyContinue"
+
+Write-Output 'Connecting to Azure Storage Account...'
+$storageContainer = Get-AzureStorageContainer -Name 'scriptlogs' -ErrorAction Ignore
 if (!$storageContainer) {
-    $storageContainer = New-AzureStorageContainer -Name 'scriptlogs' -Context $context -Permission Off
+    $storageContainer = New-AzureStorageContainer -Name 'scriptlogs' -Permission Off
 }
 $logFileBlobRef = $storageContainer.CloudBlobContainer.GetAppendBlobReference($LogFileName)
 
-Write-Host 'Waiting for script to connect...'
+Write-Output 'Waiting for script to connect...'
 while (!$logFileBlobRef.Exists()) { Start-Sleep -Seconds 5 }
-Write-Host 'Script connected, waiting...'
+Write-Output 'Script connected, waiting...'
 $logPosition = 0
 $terminateSignaled = $false
 do {
@@ -18,6 +22,6 @@ do {
     $logFileBlobRef.DownloadText().Split([System.Environment]::NewLine) | ? { -not [string]::IsNullOrEmpty($_) } | Select-Object -Skip $logPosition | % { 
         $logPosition++
         if ($_.Trim() -eq 'SIGTERM') { $terminateSignaled = $true }
-        $_ | Out-Host
+        $_ | Write-Output
     }
 } while (!$terminateSignaled)

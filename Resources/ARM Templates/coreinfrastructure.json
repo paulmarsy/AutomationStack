@@ -21,54 +21,20 @@
     "variables": {
         "automationName": "[concat('automation-', resourceGroup().tags.udp)]",
         "keyVaultName": "[concat('keyvault-', resourceGroup().tags.udp)]",
-        "resourcesStorageName": "[concat('stackresources', resourceGroup().tags.udp)]"
+        "storageAccountName": "[concat('stackresources', resourceGroup().tags.udp)]"
     },
     "resources": [{
             "apiVersion": "2015-10-31",
             "type": "Microsoft.Automation/automationAccounts",
             "name": "[variables('automationName')]",
             "tags": "[resourceGroup().tags]",
-            "location": "westeurope",
+            "location": "West Europe",
             "properties": {
                 "sku": {
                     "name": "Free"
                 }
-            },
-            "resources": [{
-                "name": "AzureRunAsCertificate",
-                "type": "certificates",
-                "apiVersion": "2015-10-31",
-                "tags": "[resourceGroup().tags]",
-                "dependsOn": [
-                    "[concat('Microsoft.Automation/automationAccounts/',variables('automationName'))]"
-                ],
-                "properties": {
-                    "base64Value": "[parameters('servicePrincipalCertificateValue')]",
-                    "thumbprint": "[parameters('servicePrincipalCertificateThumbprint')]",
-                    "isExportable": true
-                }
+            }
             }, {
-                "name": "AzureRunAsConnection",
-                "type": "connections",
-                "tags": "[resourceGroup().tags]",
-                "apiVersion": "2015-10-31",
-                "dependsOn": [
-                    "[concat('Microsoft.Automation/automationAccounts/',variables('automationName'))]"
-                ],
-                "properties": {
-                    "name": "AzureRunAsConnection",
-                    "fieldDefinitionValues": {
-                        "CertificateThumbprint": "[parameters('servicePrincipalCertificateThumbprint')]",
-                        "ApplicationId": "[parameters('servicePrincipalApplicationId')]",
-                        "SubscriptionId": "[subscription().subscriptionId]",
-                        "TenantId": "[subscription().tenantId]"
-                    },
-                    "connectionType": {
-                        "name": "AzureServicePrincipal"
-                    }
-                }
-            }]
-        }, {
             "type": "Microsoft.KeyVault/vaults",
             "name": "[variables('keyVaultName')]",
             "tags": "[resourceGroup().tags]",
@@ -100,7 +66,7 @@
         {
             "apiVersion": "2016-12-01",
             "type": "Microsoft.Storage/storageAccounts",
-            "name": "[variables('resourcesStorageName')]",
+            "name": "[variables('storageAccountName')]",
             "tags": "[resourceGroup().tags]",
             "location": "[resourceGroup().location]",
             "sku": {

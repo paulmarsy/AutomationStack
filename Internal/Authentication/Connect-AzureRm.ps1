@@ -24,6 +24,4 @@ function Connect-AzureRm {
             throw
         }
      }
-
-    Set-AzureSubscriptionSelection
 }

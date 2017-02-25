@@ -1,7 +1,5 @@
 function Remove-AutomationStack {
-    param(
-        $UDP
-    )
+    param([string]$UDP)
 
     if (!$UDP) {
         $UDP = $CurrentContext.Get('UDP')

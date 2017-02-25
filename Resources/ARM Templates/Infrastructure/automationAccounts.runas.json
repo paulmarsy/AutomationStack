@@ -1,0 +1,25 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "variables": {
+        "automationName": "[concat('automation-', resourceGroup().tags.udp)]",
+        "storageAccountName": "[concat('stackresources', resourceGroup().tags.udp)]"
+    },
+    "resources": [{
+        "name": "[concat(variables('automationName'), '/', 'ResourceGroupName')]",
+        "type": "Microsoft.Automation/automationAccounts/variables",
+        "apiVersion": "2015-10-31",
+        "properties": {
+            "type": "string",
+            "value": "[concat('\"', resourceGroup().name,'\"')]"
+        }
+    }, {
+        "name": "[concat(variables('automationName'), '/', 'StorageAccountName')]",
+        "type": "Microsoft.Automation/automationAccounts/variables",
+        "apiVersion": "2015-10-31",
+        "properties": {
+            "type": "string",
+            "value": "[concat('\"', variables('storageAccountName'),'\"')]"
+        }
+    }]
+}

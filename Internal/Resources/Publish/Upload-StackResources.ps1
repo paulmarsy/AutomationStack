@@ -28,15 +28,15 @@ function Upload-StackResources {
         }
         if ($Value) { $reference.UploadText($Value) }
         else { $reference.UploadFromFile(($Path | Convert-Path), [System.IO.FileMode]::Open) }
-        [Console]::WriteLine("   `t`t`t`tUpload`t`t`t$dest")
+        [void][System.Console]::Out.WriteLineAsync("   `t`t`t`tUpload`t`t`t$dest")
         return
     }
-    Write-Host "  Runspace ID`tProgress`tAction`t`t`tFile`n$('-'*120)"
+    [void][System.Console]::Out.WriteLineAsync("  Runspace ID`tProgress`tAction`t`t`tFile`n$('-'*120)")
     $Path = Get-Item -Path $Path | % FullName
     if ($Type -eq 'FileShare') {
         Get-ChildItem -Path $Path -Recurse -Directory | % {
             $dest = $Tokenizer.Eval($_.FullName.Substring($Path.Length+1).Replace('\','/'))
-             [Console]::WriteLine("  `t`t`t`tCreate Directory`t$dest")
+            [void][System.Console]::Out.WriteLineAsync("  `t`t`t`tCreate Directory`t$dest")
             New-AzureStorageDirectory -Share $storageLocation -Path $dest -ErrorAction Ignore | Out-Null
         }
     }
@@ -61,7 +61,7 @@ function Upload-StackResources {
             Source = $source
             Length = $_.Length
         })
-    }
+    } 
     $SharedState = [PSCustomObject]@{
         TotalSize = $totalSize
         Uploaded = 0
@@ -90,7 +90,7 @@ function Upload-StackResources {
 
                     $percentComplete = [System.Math]::Round($percentComplete, 1).ToString('0.0').PadLeft(5)
                     $action = if ($file.Tokenised) { 'Tokenise & Upload' } else { "Upload`t`t" }
-                    [Console]::WriteLine("  $runspaceId`t`t${percentComplete}%`t`t$action`t$(Split-Path -Leaf $file.Dest)")
+                    [void][System.Console]::Out.WriteLineAsync("  $runspaceId`t`t${percentComplete}%`t`t$action`t$(Split-Path -Leaf $file.Dest)")
                 }
             }).AddArgument($batch[$runspaceId].Files).AddArgument($storageLocation).AddArgument($runspaceId).AddArgument($UploadConcurrency).AddArgument($Type)   
             $pipeline.RunspacePool = $runspacePool
@@ -111,7 +111,7 @@ function Upload-StackResources {
             }
         } while ($running)
         $byteRate = [Humanizer.ByteSizeExtensions]::Per([Humanizer.ByteSizeExtensions]::Bytes($totalSize), ((Get-Date) - $startTime))
-        Write-Host ('Upload speed: {0}' -f $byteRate.Humanize('#.00', [Humanizer.Localisation.TimeUnit]::Second))
+        [void][System.Console]::Out.WriteLineAsync('Upload speed: {0}' -f $byteRate.Humanize('#.00', [Humanizer.Localisation.TimeUnit]::Second))
     }
     finally {
         $runspacePool.Close()

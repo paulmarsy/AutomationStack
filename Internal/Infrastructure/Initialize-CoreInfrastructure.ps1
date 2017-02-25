@@ -1,5 +1,5 @@
 function Initialize-CoreInfrastructure {
-    Write-Host 'Creating Tags...'
+    Write-Host "Creating Tags..."
     New-AzureRmTag -Name application -Value AutomationStack
     New-AzureRmTag -Name udp -Value $CurrentContext.Get('UDP') 
 
@@ -14,19 +14,19 @@ function Initialize-CoreInfrastructure {
     }
     $CurrentContext.Set('KeyVaultResourceId', $coreInfrastructureDeploy.keyVaultResourceId.Value)
 
-    Write-Host 'Getting Azure Automation Registration Info...'
+    Write-Host "`nGetting Azure Automation Registration Info..."
     $CurrentContext.Set('AutomationAccountName', 'automation-#{UDP}')
     $automationRegInfo = Get-AzureRmAutomationRegistrationInfo -ResourceGroupName $CurrentContext.Get('ResourceGroup') -AutomationAccountName $CurrentContext.Get('AutomationAccountName')
     $CurrentContext.Set('AutomationRegistrationUrl', $automationRegInfo.Endpoint)
 
-    Write-Host 'Getting Storage Account Info...'
+    Write-Host "`nGetting Storage Account Info..."
     $CurrentContext.Set('StorageAccountName', 'stackresources#{UDP}')
     $storageAccountKeys = Get-AzureRmStorageAccountKey -ResourceGroupName $CurrentContext.Get('ResourceGroup')  -Name $CurrentContext.Get('StorageAccountName')
     if ($storageAccountKeys[0].Value.StartsWith('/')) { $storageKey = $storageAccountKeys[1].Value }
     else { $storageKey = $storageAccountKeys[0].Value }
     $CurrentContext.Set('StorageAccountKey', $storageKey)
 
-    Write-Host 'Configuring KeyVault...'
+    Write-Host "`nConfiguring KeyVault..."
     Set-AzureRmKeyVaultAccessPolicy -VaultName $CurrentContext.Eval('keyvault-#{UDP}') -ResourceGroupName $CurrentContext.Get('ResourceGroup') -EnabledForTemplateDeployment -EnabledForDiskEncryption 
 
     New-KeyVaultSecret -Name AutomationRegistrationKey -Value $automationRegInfo.PrimaryKey
@@ -45,4 +45,7 @@ function Initialize-CoreInfrastructure {
     
     New-KeyVaultSecret -Name ServicePrincipalClientId -Value $CurrentContext.Get('ServicePrincipalClientId')
     New-KeyVaultSecret -Name ServicePrincipalClientSecret -Value $CurrentContext.Get('ServicePrincipalClientSecret')
+
+    Write-Host "`nConfiguring Storage Account..."
+    Publish-AutomationStackResources -SkipAuth -Upload Infrastructure
 }
