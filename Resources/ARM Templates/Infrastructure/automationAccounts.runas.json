@@ -1,25 +1,45 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
+    "parameters":{
+        "servicePrincipalCertificateValue": {
+            "type": "securestring"
+        },
+        "servicePrincipalCertificateThumbprint": {
+            "type": "string"
+        },
+        "servicePrincipalApplicationId": {
+            "type": "string"
+        }
+    },
     "variables": {
         "automationName": "[concat('automation-', resourceGroup().tags.udp)]",
         "storageAccountName": "[concat('stackresources', resourceGroup().tags.udp)]"
     },
     "resources": [{
-        "name": "[concat(variables('automationName'), '/', 'ResourceGroupName')]",
-        "type": "Microsoft.Automation/automationAccounts/variables",
+        "name": "[concat(variables('automationName'), '/', 'AzureRunAsCertificate')]",
         "apiVersion": "2015-10-31",
+        "type": "Microsoft.Automation/automationAccounts/certificates",
         "properties": {
-            "type": "string",
-            "value": "[concat('\"', resourceGroup().name,'\"')]"
+            "base64Value": "[parameters('servicePrincipalCertificateValue')]",
+            "thumbprint": "[parameters('servicePrincipalCertificateThumbprint')]",
+            "isExportable": true
         }
     }, {
-        "name": "[concat(variables('automationName'), '/', 'StorageAccountName')]",
-        "type": "Microsoft.Automation/automationAccounts/variables",
+        "name": "[concat(variables('automationName'), '/', 'AzureRunAsConnection')]",
         "apiVersion": "2015-10-31",
+        "type": "Microsoft.Automation/automationAccounts/connections",
         "properties": {
-            "type": "string",
-            "value": "[concat('\"', variables('storageAccountName'),'\"')]"
+            "name": "AzureRunAsConnection",
+            "fieldDefinitionValues": {
+                "CertificateThumbprint": "[parameters('servicePrincipalCertificateThumbprint')]",
+                "ApplicationId": "[parameters('servicePrincipalApplicationId')]",
+                "SubscriptionId": "[subscription().subscriptionId]",
+                "TenantId": "[subscription().tenantId]"
+            },
+            "connectionType": {
+                "name": "AzureServicePrincipal"
+            }
         }
     }]
 }

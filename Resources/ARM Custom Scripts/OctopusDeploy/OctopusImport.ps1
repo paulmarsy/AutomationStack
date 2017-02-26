@@ -35,9 +35,8 @@ try {
         
         Copy-Item -Path "O:\${_}.zip" -Destination $versionedFile
         
-        [System.Net.WebClient]::new().UploadFile(('#{OctopusHostHeader}/api/packages/raw?apiKey=#{ApiKey}', $versionedFile) | Out-Null
+        [System.Net.WebClient]::new().UploadFile('#{OctopusHostHeader}/api/packages/raw?apiKey=#{ApiKey}', $versionedFile) | Out-Null
     }
-
 }
 finally {
     & net use O: /DELETE /Y *>&1 | Write-Log

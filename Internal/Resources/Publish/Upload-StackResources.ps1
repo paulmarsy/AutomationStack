@@ -68,6 +68,7 @@ function Upload-StackResources {
     }
     $sessionState = [System.Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
     $sessionState.Variables.Add(([System.Management.Automation.Runspaces.SessionStateVariableEntry]::new('SharedState', $SharedState, $null)))
+    $sessionState.Variables.Add(([System.Management.Automation.Runspaces.SessionStateVariableEntry]::new('ProgressPreference', 'SilentlyContinue', $null)))
     $runspacePool = [RunspaceFactory]::CreateRunspacePool($UploadConcurrency, $UploadConcurrency, $sessionState, $Host)
     $runspacePool.Open()
     $startTime = Get-Date

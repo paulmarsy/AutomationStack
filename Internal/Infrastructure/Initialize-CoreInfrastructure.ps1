@@ -6,9 +6,6 @@ function Initialize-CoreInfrastructure {
     Invoke-SharedScript Resources 'New-ResourceGroup' -UDP $CurrentContext.Get('UDP') -ResourceGroupName $CurrentContext.Get('ResourceGroup') -Location ($CurrentContext.Get('AzureRegion'))
 
     $coreInfrastructureDeploy = Start-ARMDeployment -Mode File -ResourceGroupName $CurrentContext.Get('ResourceGroup') -Template 'coreinfrastructure' -TemplateParameters @{
-        servicePrincipalCertificateValue = (ConvertTo-SecureString -String $CurrentContext.Get('ServicePrincipalCertificate') -AsPlainText -Force)
-        servicePrincipalCertificateThumbprint = $CurrentContext.Get('ServicePrincipalCertificateThumbprint')
-        servicePrincipalApplicationId = $CurrentContext.Get('ServicePrincipalClientId')
         servicePrincipalObjectId = $CurrentContext.Get('ServicePrincipalObjectId')
         azureUserObjectId = $CurrentContext.Get('AzureUserObjectId')
     }
@@ -45,6 +42,8 @@ function Initialize-CoreInfrastructure {
     
     New-KeyVaultSecret -Name ServicePrincipalClientId -Value $CurrentContext.Get('ServicePrincipalClientId')
     New-KeyVaultSecret -Name ServicePrincipalClientSecret -Value $CurrentContext.Get('ServicePrincipalClientSecret')
+    New-KeyVaultSecret -Name ServicePrincipalCertificate -Value $CurrentContext.Get('ServicePrincipalCertificate')
+    New-KeyVaultSecret -Name ServicePrincipalCertificateThumbprint -Value $CurrentContext.Get('ServicePrincipalCertificateThumbprint')
 
     Write-Host "`nConfiguring Storage Account..."
     Publish-AutomationStackResources -SkipAuth -Upload Infrastructure

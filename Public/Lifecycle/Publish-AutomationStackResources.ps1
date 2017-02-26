@@ -11,22 +11,6 @@ function Publish-AutomationStackResources {
             Write-Host
             Write-Host -ForegroundColor Green "`tUploading Azure Resource Manager Templates..."
             Upload-StackResources -Type BlobStorage -Name arm -Path (Join-Path -Resolve $ResourcesPath 'ARM Templates') -Tokenizer $CurrentContext -Context $context
-
-            Write-Host
-            Write-Host -ForegroundColor Green "`tUploading Azure Automation Runbooks..."
-            Upload-StackResources -Type BlobStorage -Name runbooks -Path (Join-Path -Resolve $ResourcesPath 'Runbooks') -Tokenizer $CurrentContext -Context $context    
-        }
-        if ($Upload -in @('All','Runbooks')) {
-            Write-Host
-            Write-Host -ForegroundColor Green "`tUploading Azure Automation Runbooks..."
-            Upload-StackResources -Type BlobStorage -Name runbooks -Path (Join-Path -Resolve $ResourcesPath 'Runbooks') -Tokenizer $CurrentContext -Context $context    
-
-            Write-Host
-            Write-Host -ForegroundColor Green "`Importing Azure Automation Runbooks..."
-            Get-ChildItem -Path  (Join-Path $ResourcesPath 'Runbooks') -File | % {
-                Import-AzureRmAutomationRunbook -Path $_.FullName -Name $_.BaseName -Type PowerShell -Published -Force -ResourceGroupName $CurrentContext.Get('ResourceGroup') -AutomationAccountName $CurrentContext.Get('AutomationAccountName') | Out-Null
-                [void][System.Console]::Out.WriteLineAsync("   `t`t`t`tImporting`t`t$($_.BaseName)")
-            }
         }
         if ($Upload -in @('All','RunbookResources')) {
             Write-Host

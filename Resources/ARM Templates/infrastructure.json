@@ -13,6 +13,42 @@
     },
     "resources": [{
         "apiVersion": "2016-09-01",
+        "name": "AutomationAccountsRunas",
+        "type": "Microsoft.Resources/deployments",
+        "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Infrastructure/automationAccounts.runas.json'), parameters('templateSasToken'))]"
+            },
+            "parameters": {
+                "servicePrincipalCertificateValue": {
+                    "reference": {
+                        "keyVault": {
+                            "id": "[variables('keyVaultId')]"
+                        },
+                        "secretName": "ServicePrincipalCertificate"
+                    }
+                },
+                "servicePrincipalCertificateThumbprint": {
+                    "reference": {
+                        "keyVault": {
+                            "id": "[variables('keyVaultId')]"
+                        },
+                        "secretName": "ServicePrincipalCertificateThumbprint"
+                    }
+                },
+                "servicePrincipalApplicationId": {
+                    "reference": {
+                        "keyVault": {
+                            "id": "[variables('keyVaultId')]"
+                        },
+                        "secretName": "ServicePrincipalClientId"
+                    }
+                }
+            }
+        }
+    }, {
+        "apiVersion": "2016-09-01",
         "name": "AutomationAccountsDSC",
         "type": "Microsoft.Resources/deployments",
         "properties": {
