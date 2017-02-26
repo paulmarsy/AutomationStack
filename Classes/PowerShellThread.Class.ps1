@@ -77,6 +77,10 @@ class PowerShellThread {
         $this.PowerShell.EndInvoke($this.Async)
         $this.PowerShell.Dispose()  
         [PowerShellThread]::DisplayStream(($this.Output | Select-Object -Skip $logPosition))
+
+        if ($this.HadErrors) {
+            throw 'Error'
+        }
     }
     hidden static [int] DisplayStream($Stream) {
         $recordsRead = 0

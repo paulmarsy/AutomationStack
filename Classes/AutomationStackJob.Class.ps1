@@ -45,16 +45,16 @@ class AutomationStackJob {
     }
     [AutomationStackJob] ResourceGroupDeployment($Template, $TemplateParameters) {
         $this.PowerShell.AddStep({
-            param($ScriptsPath, $ResourceGroupName, $Template, $TemplateParameters)
+            param($ScriptsPath, $ServicePrincipalCertificate, $ServicePrincipalClientId, $ResourceGroupName, $Template, $TemplateParameters)
             
-            $SharedState.DeploymentAsyncOperationUri = & (Join-Path $ScriptsPath 'Resources\Start-ResourceGroupDeployment.ps1') -ResourceGroupName $ResourceGroupName -Template $Template -TemplateParameters $TemplateParameters
-        }, @($script:ScriptsPath, $this.CurrentContext.Get('ResourceGroup'), $Template, $TemplateParameters))
+            $SharedState.DeploymentAsyncOperationUri = & (Join-Path $ScriptsPath 'Resources\Start-ResourceGroupDeployment.ps1') -ServicePrincipalCertificate $ServicePrincipalCertificate -ServicePrincipalClientId $ServicePrincipalClientId -ResourceGroupName $ResourceGroupName -Template $Template -TemplateParameters $TemplateParameters
+        }, @($script:ScriptsPath, $this.CurrentContext.Get('ServicePrincipalCertificate'), $this.CurrentContext.Get('ServicePrincipalClientId'), $this.CurrentContext.Get('ResourceGroup'), $Template, $TemplateParameters))
 
         $this.PowerShell.AddStep({
-            param($ScriptsPath)
+            param($ScriptsPath, $ServicePrincipalCertificate, $ServicePrincipalClientId)
             
-            & (Join-Path $ScriptsPath 'Resources\Wait-ResourceGroupDeployment.ps1') -DeploymentAsyncOperationUri $SharedState.DeploymentAsyncOperationUri
-        }, @($script:ScriptsPath))
+            & (Join-Path $ScriptsPath 'Resources\Wait-ResourceGroupDeployment.ps1') -ServicePrincipalCertificate $ServicePrincipalCertificate -ServicePrincipalClientId $ServicePrincipalClientId -DeploymentAsyncOperationUri $SharedState.DeploymentAsyncOperationUri
+        }, @($script:ScriptsPath, $this.CurrentContext.Get('ServicePrincipalCertificate'), $this.CurrentContext.Get('ServicePrincipalClientId')))
 
         return $this
     }

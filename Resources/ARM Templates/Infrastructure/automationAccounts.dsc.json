@@ -28,7 +28,7 @@
         "apiVersion": "2015-10-31",
         "properties": {
             "contentLink": {
-                "uri": "https://www.powershellgallery.com/api/v2/package/xNetworking/3.2.0.0"
+                "uri": "https://devopsgallerystorage.blob.core.windows.net/packages/xnetworking.3.2.0.nupkg"
             }
         }
     }, {
@@ -38,7 +38,7 @@
         "apiVersion": "2015-10-31",
         "properties": {
             "contentLink": {
-                "uri": "https://www.powershellgallery.com/api/v2/package/xPSDesiredStateConfiguration/6.0.0.0"
+                "uri": "https://devopsgallerystorage.blob.core.windows.net/packages/xpsdesiredstateconfiguration.6.0.0.nupkg"
             }
         }
     }, {
@@ -48,7 +48,7 @@
         "apiVersion": "2015-10-31",
         "properties": {
             "contentLink": {
-                "uri": "https://www.powershellgallery.com/api/v2/package/PackageManagementProviderResource/1.0.3"
+                "uri": "https://devopsgallerystorage.blob.core.windows.net/packages/packagemanagementproviderresource.1.0.3.nupkg"
             }
         }
     }, {
@@ -58,7 +58,7 @@
         "apiVersion": "2015-10-31",
         "properties": {
             "contentLink": {
-                "uri": "https://www.powershellgallery.com/api/v2/package/xSystemSecurity/1.2.0.0"
+                "uri": "https://devopsgallerystorage.blob.core.windows.net/packages/xsystemsecurity.1.2.0.nupkg"
             }
         }
     }]

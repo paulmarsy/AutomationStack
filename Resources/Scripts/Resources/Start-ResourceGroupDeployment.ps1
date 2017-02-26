@@ -2,11 +2,13 @@ using namespace Microsoft.WindowsAzure.Commands.Common
 using namespace Microsoft.IdentityModel.Clients.ActiveDirectory
 using namespace Microsoft.Azure.Commands.Common.Authentication
 
-param($ResourceGroupName, $Template, $TemplateParameters)
+param($ServicePrincipalCertificate, $ServicePrincipalClientId, $ResourceGroupName, $Template, $TemplateParameters)
 
+$cert = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new([System.Convert]::FromBase64String($ServicePrincipalCertificate))
+$assertionClientCert = [ClientAssertionCertificate]::new($ServicePrincipalClientId, $cert)
 $authContext = [AuthenticationContext]::new(([AzureRmProfileProvider]::Instance.Profile.Context.Environment.GetEndpoint('ActiveDirectory')+[AzureRmProfileProvider]::Instance.Profile.Context.Tenant.Id.Guid), [TokenCache]::DefaultShared)
-$accessToken = $authContext.AcquireToken([Models.AzureEnvironmentConstants]::AzureServiceEndpoint, [AdalConfiguration]::PowerShellClientId, [AdalConfiguration]::PowerShellRedirectUri)
-Write-Host ("ARM Deployment Authentication:`n{0}" -f ($accessToken.UserInfo | Out-String | % Trim))
+$accessToken = $authContext.AcquireToken([Models.AzureEnvironmentConstants]::AzureServiceEndpoint, $assertionClientCert)
+Write-Host ("Deployment Authentication:`n{0}" -f ($assertionClientCert | Format-List | Out-String | % Trim))
 
 $uri = '{0}{1}?api-version=2016-09-01'-f `
         [AzureRmProfileProvider]::Instance.Profile.Context.Environment.GetEndpoint('ResourceManager'),    

@@ -2,7 +2,7 @@ using namespace Microsoft.WindowsAzure.Commands.Common
 using namespace Microsoft.IdentityModel.Clients.ActiveDirectory
 using namespace Microsoft.Azure.Commands.Common.Authentication
 
-param($DeploymentAsyncOperationUri)
+param($ServicePrincipalCertificate, $ServicePrincipalClientId, $DeploymentAsyncOperationUri)
 
 function Write-StatusUpdate {
     param($Response,[switch]$WithHeader)
@@ -20,8 +20,11 @@ function Write-StatusUpdate {
     
     Write-Host $entry
 }
+
+$cert = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new([System.Convert]::FromBase64String($ServicePrincipalCertificate))
+$assertionClientCert = [ClientAssertionCertificate]::new($ServicePrincipalClientId, $cert)
 $authContext = [AuthenticationContext]::new(([AzureRmProfileProvider]::Instance.Profile.Context.Environment.GetEndpoint('ActiveDirectory')+[AzureRmProfileProvider]::Instance.Profile.Context.Tenant.Id.Guid), [TokenCache]::DefaultShared)
-$accessToken = $authContext.AcquireToken([Models.AzureEnvironmentConstants]::AzureServiceEndpoint, [AdalConfiguration]::PowerShellClientId, [AdalConfiguration]::PowerShellRedirectUri)
+$accessToken = $authContext.AcquireToken([Models.AzureEnvironmentConstants]::AzureServiceEndpoint, $assertionClientCert)
 
 $response = Invoke-WebRequest -Uri $DeploymentAsyncOperationUri -Headers @{ [ApiConstants]::AuthorizationHeaderName = $accessToken.CreateAuthorizationHeader() }  -ContentType 'application/json' -UseBasicParsing
 Write-Host $response.RawContent
@@ -29,13 +32,14 @@ $json = $response.Content | ConvertFrom-Json
 Write-StatusUpdate $response -WithHeader
 
 while ($json.Status -in @('Accepted','Running')) {
-    Start-Sleep -Seconds 10
+    Start-Sleep -Seconds 30
     $response = Invoke-WebRequest -Uri $DeploymentAsyncOperationUri -Headers @{ [ApiConstants]::AuthorizationHeaderName = $accessToken.CreateAuthorizationHeader() }  -ContentType 'application/json' -UseBasicParsing
     Write-StatusUpdate $response
     $json = $response.Content | ConvertFrom-Json
 } 
 if ($json.Status -eq 'Failed') {
     Write-Host ([regex]::Unescape(($json.error | Format-List | Out-String)))
+    throw $json.error.message
 } else {
     Write-Host $response.RawContent
 }

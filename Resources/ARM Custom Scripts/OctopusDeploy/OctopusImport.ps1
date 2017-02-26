@@ -25,6 +25,10 @@ try {
     "{0}[ Starting Octopus Service ]{0}" -f ("-"*36) | Write-Log
     & "${env:ProgramFiles}\Octopus Deploy\Octopus\Octopus.Server.exe" service --console --start *>&1 | Write-Log
     if ($LASTEXITCODE -ne 0) { throw "Exit code $LASTEXITCODE from Octopus Server" }
+    do {
+        'Waiting for Octopus Deploy Service to start...' | Write-Log
+        Start-Sleep -Seconds 30
+    } while ((Get-Service OctopusDeploy).Status -ne 'Running')
 
     "{0}[ Publishing Octopus Deploy Packages ]{0}" -f ("-"*31) | Write-Log
     $totalPackages = Invoke-WebRequest -Uri '#{OctopusHostHeader}/api/serverstatus/nuget' -Headers @{ "X-Octopus-ApiKey" = '#{ApiKey}' } -UseBasicParsing -ErrorAction Stop | % Content | ConvertFrom-Json | % TotalPackages
