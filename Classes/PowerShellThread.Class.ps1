@@ -1,15 +1,13 @@
 class PowerShellThread {
-    static [System.Collections.Generic.List[PowerShellThread]]$ThreadPool = [System.Collections.Generic.List[PowerShellThread]]::new()
     [datetime]$BeginTime
     [datetime]$EndTime
     [timespan]$Duration
     [hashtable]$SharedState
     hidden [PowerShell]$PowerShell
     hidden [System.IAsyncResult]$Async
-    hidden [System.Collections.ObjectModel.Collection[psobject]]$Output
+    [System.Collections.ObjectModel.Collection[psobject]]$Output
 
     PowerShellThread() {
-        [PowerShellThread]::ThreadPool.Add($this)
         $this.SharedState = [hashtable]::Synchronized(@{})
         $sessionState = [System.Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
         $sessionState.Variables.Add(([System.Management.Automation.Runspaces.SessionStateVariableEntry]::new('SharedState', $this.SharedState, $null)))
@@ -60,7 +58,6 @@ class PowerShellThread {
         Register-ObjectEvent -InputObject $this.PowerShell.Streams.Information -EventName DataAdded -Action { $Event.MessageData.AddStreamRecord('Information', $Sender[$EventArgs.Index]) } -MessageData $this -SupportEvent
         Register-ObjectEvent -InputObject $this.PowerShell.Streams.Verbose -EventName DataAdded -Action { $Event.MessageData.AddStreamRecord('Verbose', $Sender[$EventArgs.Index]) } -MessageData $this -SupportEvent
         Register-ObjectEvent -InputObject $this.PowerShell.Streams.Debug -EventName DataAdded -Action { $Event.MessageData.AddStreamRecord('Debug', $Sender[$EventArgs.Index]) } -MessageData $this -SupportEvent
-        Register-ObjectEvent -InputObject $this.PowerShell.Streams.Progress -EventName DataAdded -Action { $Event.MessageData.AddStreamRecord('Progress', $Sender[$EventArgs.Index]) } -MessageData $this -SupportEvent
  
         $this.Async = $this.PowerShell.BeginInvoke($streams.Input, $streams.Output)
 
@@ -81,7 +78,6 @@ class PowerShellThread {
         $this.PowerShell.Dispose()  
         [PowerShellThread]::DisplayStream(($this.Output | Select-Object -Skip $logPosition))
     }
-    [void] DisplayStream() { [PowerShellThread]::DisplayStream($this.Output) }
     hidden static [int] DisplayStream($Stream) {
         $recordsRead = 0
         $Stream | ? { $null -ne $_ } | % {
@@ -93,7 +89,6 @@ class PowerShellThread {
                 'Information' { Write-Information -MessageData $record.MessageData -InformationAction Continue }
                 'Verbose' { Write-Verbose -Message $record.Message -Verbose }
                 'Debug' { Write-Debug -Message $record.Message -Debug }
-                'Progress' { Write-Progress -Activity $record.Activity -Status $record.StatusDescription -Id $record.ActivityId -PercentComplete $record.PercentComplete -SecondsRemaining $record.SecondsRemaining -CurrentOperation $record.CurrentOperation -ParentId $record.ParentActivityId }
             }
             $recordsRead++
         }

@@ -1,5 +1,5 @@
 try {
-    & net use O: \\#{StorageAccountName}.file.core.windows.net\octopusdeploy /USER:"#{StorageAccountName}" "#{StorageAccountKey}" *>&1 | Write-Log
+    & net use O: \\#{StorageAccountName}.file.core.windows.net\dataimports /USER:"#{StorageAccountName}" "#{StorageAccountKey}" *>&1 | Write-Log
 
     "{0}[ Stopping Octopus Service ]{0}" -f ("-"*36) | Write-Log
     Stop-Service OctopusDeploy -Force -Verbose *>&1 | Write-Log

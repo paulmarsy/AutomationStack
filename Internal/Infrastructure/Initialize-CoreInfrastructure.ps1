@@ -5,7 +5,7 @@ function Initialize-CoreInfrastructure {
 
     Invoke-SharedScript Resources 'New-ResourceGroup' -UDP $CurrentContext.Get('UDP') -ResourceGroupName $CurrentContext.Get('ResourceGroup') -Location ($CurrentContext.Get('AzureRegion'))
 
-    $coreInfrastructureDeploy = Start-ARMDeployment -Mode File -ResourceGroupName $CurrentContext.Get('ResourceGroup') -Template 'coreinfrastructure' -TemplateParameters @{
+    $coreInfrastructureDeploy = Start-ARMDeployment -ResourceGroupName $CurrentContext.Get('ResourceGroup') -Template 'coreinfrastructure' -TemplateParameters @{
         servicePrincipalObjectId = $CurrentContext.Get('ServicePrincipalObjectId')
         azureUserObjectId = $CurrentContext.Get('AzureUserObjectId')
     }

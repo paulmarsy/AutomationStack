@@ -77,7 +77,6 @@ FunctionsToExport = 'Get-AutomationStackConfig',
                     'Publish-AutomationStackResources',
 
                     'Add-AutomationStackFeature',
-                    'Get-AutomationStackJob',
                     'Find-AutomationStackDeployment',
                     'New-AutomationStack',
                     'Remove-AutomationStack',
