@@ -25,6 +25,7 @@ $accessToken = $authContext.AcquireToken([Models.AzureEnvironmentConstants]::Azu
 
 $response = Invoke-WebRequest -Uri $DeploymentAsyncOperationUri -Headers @{ [ApiConstants]::AuthorizationHeaderName = $accessToken.CreateAuthorizationHeader() }  -ContentType 'application/json' -UseBasicParsing
 Write-Host $response.RawContent
+$json = $response.Content | ConvertFrom-Json
 Write-StatusUpdate $response -WithHeader
 
 while ($json.Status -in @('Accepted','Running')) {

@@ -13,10 +13,10 @@ Write-Host 'Script connected, waiting...'
 $logPosition = 0
 $terminateSignaled = $false
 do {
-    Start-Sleep -Milliseconds 250
+    Start-Sleep -Milliseconds 100
     $logFileBlobRef.DownloadText().Split([System.Environment]::NewLine) | ? { -not [string]::IsNullOrEmpty($_) } | Select-Object -Skip $logPosition | % { 
         $logPosition++
         if ($_.Trim() -eq 'SIGTERM') { $terminateSignaled = $true }
-        $_ | Out-Host
+        Write-Host $_
     }
 } while (!$terminateSignaled)
