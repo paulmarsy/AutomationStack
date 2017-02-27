@@ -1,18 +1,19 @@
 function Publish-AutomationStackResources {
     param(
-        [ValidateSet('Infrastructure','Runbooks','RunbookResources','DataImports','All')]$Upload = 'All',
+        [ValidateSet('AzureTemplates','FeatureResources','DataImports','All')]$Upload = 'All',
         [Parameter(DontShow)][switch]$SkipAuth
     )
     if (!$SkipAuth) { Connect-AzureRmServicePrincipal }
     try { 
+        $ProgressPreference = 'SilentlyContinue'
         $context = Get-StackResourcesContext
 
-        if ($Upload -in @('All','Infrastructure')) {
+        if ($Upload -in @('All','AzureTemplates')) {
             Write-Host
             Write-Host -ForegroundColor Green "`tUploading Azure Resource Manager Templates..."
             Upload-StackResources -Type BlobStorage -Name arm -Path (Join-Path -Resolve $ResourcesPath 'ARM Templates') -Tokenizer $CurrentContext -Context $context
         }
-        if ($Upload -in @('All','RunbookResources')) {
+        if ($Upload -in @('All','FeatureResources')) {
             Write-Host
             Write-Host -ForegroundColor Green "`tUploading DSC Configurations..."
             $octopusDscConfiguration = Invoke-DSCComposition -Path (Join-Path $ResourcesPath 'DSC Configurations\OctopusDeploy.ps1')
@@ -82,6 +83,7 @@ function Publish-AutomationStackResources {
         Write-Host
     }
     finally {
+        $ProgressPreference = 'Continue'
         if (!$SkipAuth) { Restore-AzureRmAuthContext }
     }
 }

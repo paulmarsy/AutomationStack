@@ -62,27 +62,35 @@ function New-AutomationStack {
                         }
                     }
                     4 {
-                        $Heading = 'Provisioning Infrastructure'
+                        $Heading = 'Provisioning Infrastructure - Start'
                         {
-                            $global:job = Add-AutomationStackFeature -Feature Infrastructure -DontJoin
+                            Write-Host 'Starting Infrastructure Deployment Job... ' -NoNewLine
+                            $script:infrastructureJob = Add-AutomationStackFeature -Feature Infrastructure -DontJoin
+                            Write-Host 'started asynchronously'
                         }
                     }
                     5 {
                         $Heading = 'Uploading to Azure Storage'
                         {
-                            Publish-AutomationStackResources -SkipAuth -Upload RunbookResources
+                            Publish-AutomationStackResources -SkipAuth -Upload FeatureResources
                             Publish-AutomationStackResources -SkipAuth -Upload DataImports
-                            $job.Join()
                         }
                     }
                     6 {
-                        $Heading = 'Provisioning Octopus Deploy'
+                        $Heading = 'Provisioning Infrastructure - Finish'
                         {
-                            $global:job = Add-AutomationStackFeature -Feature OctopusDeploy -DontJoin
-                            $job.Join()
+                            Write-Host 'Rejoining Infrastructure Deployment Job... '
+                            $script:infrastructureJob.Join()
+                            Write-Host 'started asynchronously'
                         }
                     }
                     7 {
+                        $Heading = 'Provisioning Octopus Deploy'
+                        {
+                            Add-AutomationStackFeature -Feature OctopusDeploy
+                        }
+                    }
+                    8 {
                         $Heading = 'AutomationStack Deployment Complete'
                         {
                             Show-AutomationStackDetail

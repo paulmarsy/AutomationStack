@@ -46,5 +46,5 @@ function Initialize-CoreInfrastructure {
     New-KeyVaultSecret -Name ServicePrincipalCertificateThumbprint -Value $CurrentContext.Get('ServicePrincipalCertificateThumbprint')
 
     Write-Host "`nConfiguring Storage Account..."
-    Publish-AutomationStackResources -SkipAuth -Upload Infrastructure
+    Publish-AutomationStackResources -SkipAuth -Upload AzureTemplates
 }

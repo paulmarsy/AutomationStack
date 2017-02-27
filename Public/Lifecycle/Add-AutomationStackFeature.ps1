@@ -23,6 +23,22 @@ function Add-AutomationStackFeature {
                 octopusCustomScriptLogFile = $octopusCustomScriptLogFile 
             }).GetCustomScriptOutput($octopusCustomScriptLogFile).Start()
         }
+        'TeamCity' {
+            $context = Get-StackResourcesContext
+            $teamcityCustomScriptLogFile = 'TeamCity.{0}.log' -f ([datetime]::UtcNow.ToString('o').Replace(':','.').Substring(0,19))
+            [AutomationStackJob]::Create('TeamCity', $CurrentContext).AzureAuth().StorageContext().ResourceGroupDeployment('teamcity', @{
+                timestamp = ([DateTimeOffset]::UtcNow.ToString("o"))
+                computeVmShutdownStatus = $CurrentContext.Get('ComputeVmShutdownTask.Status')
+                computeVmShutdownTime = $CurrentContext.Get('ComputeVmShutdownTask.Time')
+                teamcityDscJobId = [System.Guid]::NewGuid().ToString()
+                teamcityDscConfiguration = (Get-AzureStorageBlob -Container dsc -Blob 'TeamCity.ps1' -Context $context).ICloudBlob.DownloadText()
+                teamcityDscConfigurationData = (Get-AzureStorageBlob -Container dsc -Blob 'TeamCity.json' -Context $context).ICloudBlob.DownloadText()
+                teamcityDscTentacleRegistrationUri = $CurrentContext.Get('OctopusHostHeader')
+                teamcityDscTentacleRegistrationApiKey = $CurrentContext.Get('ApiKey')
+                teamcityDscHostHeader = $CurrentContext.Get('TeamCityHostHeader')
+                teamcityCustomScriptLogFile = $teamcityCustomScriptLogFile
+            }).GetCustomScriptOutput($teamcityCustomScriptLogFile).Start()
+        }
     }
     if (!$DontJoin) {
         $job.Join()
