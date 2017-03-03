@@ -42,4 +42,4 @@ Register-NuGetAssembly 'Humanizer.Core'  '2.1.0' 'netstandard1.0' 'Humanizer'
 . (Join-Path $PSScriptRoot 'TeamCityEncoder.Class.ps1')
 . (Join-Path $PSScriptRoot 'AutoMetrics.Class.ps1')
 . (Join-Path $PSScriptRoot 'PowerShellThread.Class.ps1')
-. (Join-Path $PSScriptRoot 'AutomationStackJob.Class.ps1')
+. (Join-Path $PSScriptRoot 'JobBuilder.Class.ps1')

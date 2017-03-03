@@ -4,21 +4,22 @@ function Add-AutomationStackFeature {
         [Parameter(DontShow)][switch]$DontJoin
     )
 
+    $jobBuilder = [JobBuilder]::Create($Feature, $CurrentContext).AzureAuth().StorageContext()
     $context = Get-StackResourcesContext
-    $job = switch ($Feature) {
+    switch ($Feature) {
         'Infrastructure' {            
             $runbooks = Get-AzureStorageBlob -Container runbooks -Context $context | % Name
-            [AutomationStackJob]::Create('Infrastructure', $CurrentContext).AzureAuth().StorageContext().ResourceGroupDeployment('infrastructure', @{
+            $jobBuilder.ResourceGroupDeployment('infrastructure', @{
                 runbookSasToken = (New-AzureStorageContainerSASToken -Name runbooks -Permission r -ExpiryTime (Get-Date).AddHours(1) -Context $context)
                 runbookLibPaths = @($runbooks | ? { $_.StartsWith('Library/') } | % { [string]$_ })
                 runbookLibNames = @($runbooks | ? { $_.StartsWith('Library/') } | % { [string][System.IO.Path]::GetFileNameWithoutExtension($_) })
                 runbookPaths = @($runbooks | ? { -not $_.StartsWith('Library/') } | % { [string]$_ })
                 runbookNames = @($runbooks | ? { -not $_.StartsWith('Library/') } | % { [string][System.IO.Path]::GetFileNameWithoutExtension($_) })
-            }).Start()
+            }).WaitForDeployment()
         }
         'OctopusDeploy' { 
             $octopusCustomScriptLogFile = 'OctopusDeploy.{0}.log' -f ([datetime]::UtcNow.ToString('o').Replace(':','.').Substring(0,19))
-            [AutomationStackJob]::Create('Octopus Deploy', $CurrentContext).AzureAuth().StorageContext().ResourceGroupDeployment('octopusdeploy', @{
+            $jobBuilder.ResourceGroupDeployment('octopusdeploy', @{
                 timestamp = ([DateTimeOffset]::UtcNow.ToString("o"))
                 computeVmShutdownStatus = $CurrentContext.Get('ComputeVmShutdownTask.Status')
                 computeVmShutdownTime = $CurrentContext.Get('ComputeVmShutdownTask.Time')
@@ -28,13 +29,13 @@ function Add-AutomationStackFeature {
                 octopusDscConnectionString = $CurrentContext.Get('OctopusConnectionString')
                 octopusDscHostName = $CurrentContext.Get('OctopusHostName')
                 octopusCustomScriptLogFile = $octopusCustomScriptLogFile 
-            }).GetCustomScriptOutput($octopusCustomScriptLogFile).Runbook('Enable-AzureDiskEncryption', @{
+            }).WaitForDeployment().GetCustomScriptOutput($octopusCustomScriptLogFile).Runbook('Enable-AzureDiskEncryption', @{
                 name = 'Octopus'
-            }).Start()
+            }
         }
         'TeamCity' {
             $teamcityCustomScriptLogFile = 'TeamCity.{0}.log' -f ([datetime]::UtcNow.ToString('o').Replace(':','.').Substring(0,19))
-            [AutomationStackJob]::Create('TeamCity', $CurrentContext).AzureAuth().StorageContext().ResourceGroupDeployment('teamcity', @{
+            $jobBuilder.ResourceGroupDeployment('teamcity', @{
                 timestamp = ([DateTimeOffset]::UtcNow.ToString("o"))
                 computeVmShutdownStatus = $CurrentContext.Get('ComputeVmShutdownTask.Status')
                 computeVmShutdownTime = $CurrentContext.Get('ComputeVmShutdownTask.Time')
@@ -45,9 +46,15 @@ function Add-AutomationStackFeature {
                 teamcityDscTentacleRegistrationApiKey = $CurrentContext.Get('ApiKey')
                 teamcityDscHostHeader = $CurrentContext.Get('TeamCityHostHeader')
                 teamcityCustomScriptLogFile = $teamcityCustomScriptLogFile
-            }).GetCustomScriptOutput($teamcityCustomScriptLogFile).Start()
+            }).WaitForDeployment().GetCustomScriptOutput($teamcityCustomScriptLogFile).Runbook('Enable-AzureDiskEncryption', @{
+                name = 'TeamCity'
+            }
         }
     }
+    if (!$DontJoin -and $Feature -in @('OctopusDeploy','TeamCity')) {
+        $jobBuilder.WaitForRunbook()
+    }
+    $job = $jobBuilder.Start()
     if (!$DontJoin) {
         $job.Join()
     }
