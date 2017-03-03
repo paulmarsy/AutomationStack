@@ -4,12 +4,19 @@ function Add-AutomationStackFeature {
         [Parameter(DontShow)][switch]$DontJoin
     )
 
+    $context = Get-StackResourcesContext
     $job = switch ($Feature) {
-        'Infrastructure' {
-            [AutomationStackJob]::Create('Infrastructure', $CurrentContext).AzureAuth().StorageContext().ResourceGroupDeployment('infrastructure').Start()
+        'Infrastructure' {            
+            $runbooks = Get-AzureStorageBlob -Container runbooks -Context $context | % Name
+            [AutomationStackJob]::Create('Infrastructure', $CurrentContext).AzureAuth().StorageContext().ResourceGroupDeployment('infrastructure', @{
+                runbookSasToken = (New-AzureStorageContainerSASToken -Name runbooks -Permission r -ExpiryTime (Get-Date).AddHours(1) -Context $context)
+                runbookLibPaths = @($runbooks | ? { $_.StartsWith('Library/') } | % { [string]$_ })
+                runbookLibNames = @($runbooks | ? { $_.StartsWith('Library/') } | % { [string][System.IO.Path]::GetFileNameWithoutExtension($_) })
+                runbookPaths = @($runbooks | ? { -not $_.StartsWith('Library/') } | % { [string]$_ })
+                runbookNames = @($runbooks | ? { -not $_.StartsWith('Library/') } | % { [string][System.IO.Path]::GetFileNameWithoutExtension($_) })
+            }).Start()
         }
         'OctopusDeploy' { 
-            $context = Get-StackResourcesContext
             $octopusCustomScriptLogFile = 'OctopusDeploy.{0}.log' -f ([datetime]::UtcNow.ToString('o').Replace(':','.').Substring(0,19))
             [AutomationStackJob]::Create('Octopus Deploy', $CurrentContext).AzureAuth().StorageContext().ResourceGroupDeployment('octopusdeploy', @{
                 timestamp = ([DateTimeOffset]::UtcNow.ToString("o"))
@@ -21,10 +28,11 @@ function Add-AutomationStackFeature {
                 octopusDscConnectionString = $CurrentContext.Get('OctopusConnectionString')
                 octopusDscHostName = $CurrentContext.Get('OctopusHostName')
                 octopusCustomScriptLogFile = $octopusCustomScriptLogFile 
-            }).GetCustomScriptOutput($octopusCustomScriptLogFile).Start()
+            }).GetCustomScriptOutput($octopusCustomScriptLogFile).Runbook('Enable-AzureDiskEncryption', @{
+                name = 'Octopus'
+            }).Start()
         }
         'TeamCity' {
-            $context = Get-StackResourcesContext
             $teamcityCustomScriptLogFile = 'TeamCity.{0}.log' -f ([datetime]::UtcNow.ToString('o').Replace(':','.').Substring(0,19))
             [AutomationStackJob]::Create('TeamCity', $CurrentContext).AzureAuth().StorageContext().ResourceGroupDeployment('teamcity', @{
                 timestamp = ([DateTimeOffset]::UtcNow.ToString("o"))

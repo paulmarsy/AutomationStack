@@ -110,43 +110,6 @@
         }
     }, {
         "apiVersion": "2016-09-01",
-        "name": "[concat(parameters('name'), 'Extensions', 'AzureDiskEncryption')]",
-        "type": "Microsoft.Resources/deployments",
-        "dependsOn": [
-            "[concat('Microsoft.Resources/deployments/', parameters('name'), 'VirtualMachine')]"
-        ],
-        "properties": {
-            "mode": "Incremental",
-            "templateLink": {
-                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Compute/extensions/AzureDiskEncryption.json'), parameters('templateSasToken'))]"
-            },
-            "parameters": {
-                "templateSasToken": {
-                    "value": "[parameters('templateSasToken')]"
-                },
-                "vmName": {
-                    "value": "[variables('vmName')]"
-                },
-                "clientID": {
-                    "reference": {
-                        "keyVault": {
-                            "id": "[variables('keyVaultId')]"
-                        },
-                        "secretName": "ServicePrincipalClientId"
-                    }
-                },
-                "clientSecret": {
-                    "reference": {
-                        "keyVault": {
-                            "id": "[variables('keyVaultId')]"
-                        },
-                        "secretName": "ServicePrincipalClientSecret"
-                    }
-                }
-            }
-        }
-    }, {
-        "apiVersion": "2016-09-01",
         "name": "[concat(parameters('name'), 'Extensions', 'Microsoft.Powershell.DSC')]",
         "type": "Microsoft.Resources/deployments",
         "dependsOn": [

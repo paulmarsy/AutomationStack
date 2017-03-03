@@ -4,6 +4,21 @@
     "parameters": {
         "templateSasToken": {
             "type": "securestring"
+        },
+        "runbookSasToken": {
+            "type": "securestring"
+        },
+        "runbookLibNames": {
+            "type": "array"
+        },
+        "runbookLibPaths": {
+            "type": "array"
+        },
+        "runbookNames": {
+            "type": "array"
+        },
+        "runbookPaths": {
+            "type": "array"
         }
     },
     "variables": {
@@ -12,129 +27,179 @@
         "keyVaultId": "[concat(resourceGroup().id, '/providers/Microsoft.KeyVault/vaults/keyvault-', resourceGroup().tags.udp)]"
     },
     "resources": [{
-        "apiVersion": "2016-09-01",
-        "name": "AutomationAccountsRunas",
-        "type": "Microsoft.Resources/deployments",
-        "properties": {
-            "mode": "Incremental",
-            "templateLink": {
-                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Infrastructure/automationAccounts.runas.json'), parameters('templateSasToken'))]"
-            },
-            "parameters": {
-                "servicePrincipalCertificateValue": {
-                    "reference": {
-                        "keyVault": {
-                            "id": "[variables('keyVaultId')]"
-                        },
-                        "secretName": "ServicePrincipalCertificate"
-                    }
+            "apiVersion": "2016-09-01",
+            "name": "AutomationAccountsRunas",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Automation/runas.json'), parameters('templateSasToken'))]"
                 },
-                "servicePrincipalCertificateThumbprint": {
-                    "reference": {
-                        "keyVault": {
-                            "id": "[variables('keyVaultId')]"
-                        },
-                        "secretName": "ServicePrincipalCertificateThumbprint"
-                    }
-                },
-                "servicePrincipalApplicationId": {
-                    "reference": {
-                        "keyVault": {
-                            "id": "[variables('keyVaultId')]"
-                        },
-                        "secretName": "ServicePrincipalClientId"
+                "parameters": {
+                    "servicePrincipalCertificateValue": {
+                        "reference": {
+                            "keyVault": {
+                                "id": "[variables('keyVaultId')]"
+                            },
+                            "secretName": "ServicePrincipalCertificate"
+                        }
+                    },
+                    "servicePrincipalCertificateThumbprint": {
+                        "reference": {
+                            "keyVault": {
+                                "id": "[variables('keyVaultId')]"
+                            },
+                            "secretName": "ServicePrincipalCertificateThumbprint"
+                        }
+                    },
+                    "servicePrincipalApplicationId": {
+                        "reference": {
+                            "keyVault": {
+                                "id": "[variables('keyVaultId')]"
+                            },
+                            "secretName": "ServicePrincipalClientId"
+                        }
                     }
                 }
             }
-        }
-    }, {
-        "apiVersion": "2016-09-01",
-        "name": "AutomationAccountsDSC",
-        "type": "Microsoft.Resources/deployments",
-        "properties": {
-            "mode": "Incremental",
-            "templateLink": {
-                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Infrastructure/automationAccounts.dsc.json'), parameters('templateSasToken'))]"
-            },
-            "parameters": {
-                "octopusAutomationCredentialUsername": {
-                    "reference": {
-                        "keyVault": {
-                            "id": "[variables('keyVaultId')]"
-                        },
-                        "secretName": "OctopusAutomationCredentialUsername"
-                    }
+        }, {
+            "apiVersion": "2016-09-01",
+            "name": "AutomationAccountsLibRunbooks",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Automation/runbooks.json'), parameters('templateSasToken'))]"
                 },
-                "octopusAutomationCredentialPassword": {
-                    "reference": {
-                        "keyVault": {
-                            "id": "[variables('keyVaultId')]"
-                        },
-                        "secretName": "OctopusAutomationCredentialPassword"
+                "parameters": {
+                    "runbookSasToken": {
+                        "value": "[parameters('runbookSasToken')]"
+                    },
+                    "runbookNames": {
+                        "value": "[parameters('runbookLibNames')]"
+                    },
+                    "runbookPaths": {
+                        "value": "[parameters('runbookLibPaths')]"
                     }
                 }
             }
-        }
-    }, {
-        "apiVersion": "2016-09-01",
-        "name": "AutomationAccountsVariables",
-        "type": "Microsoft.Resources/deployments",
-        "properties": {
-            "mode": "Incremental",
-            "templateLink": {
-                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Infrastructure/automationAccounts.variables.json'), parameters('templateSasToken'))]"
-            }
-        }
-    }, {
-        "apiVersion": "2016-09-01",
-        "name": "NetworkSecurityGroups",
-        "type": "Microsoft.Resources/deployments",
-        "properties": {
-            "mode": "Incremental",
-            "templateLink": {
-                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Infrastructure/networkSecurityGroups.json'), parameters('templateSasToken'))]"
-            }
-        }
-    }, {
-        "apiVersion": "2016-09-01",
-        "name": "SqlServers",
-        "type": "Microsoft.Resources/deployments",
-        "properties": {
-            "mode": "Incremental",
-            "templateLink": {
-                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Infrastructure/sqlServers.json'), parameters('templateSasToken'))]"
-            },
-            "parameters": {
-                "sqlServerName": {
-                    "value": "[variables('sqlServerName')]"
+        }, {
+            "apiVersion": "2016-09-01",
+            "name": "AutomationAccountsRunbooks",
+            "type": "Microsoft.Resources/deployments",
+            "dependsOn": [
+                "Microsoft.Resources/deployments/AutomationAccountsLibRunbooks"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Automation/runbooks.json'), parameters('templateSasToken'))]"
                 },
-                "sqlAdminUsername": {
-                    "reference": {
-                        "keyVault": {
-                            "id": "[variables('keyVaultId')]"
-                        },
-                        "secretName": "SqlAdminUsername"
-                    }
-                },
-                "sqlAdminPassword": {
-                    "reference": {
-                        "keyVault": {
-                            "id": "[variables('keyVaultId')]"
-                        },
-                        "secretName": "SqlAdminPassword"
+                "parameters": {
+                    "runbookSasToken": {
+                        "value": "[parameters('runbookSasToken')]"
+                    },
+                    "runbookNames": {
+                        "value": "[parameters('runbookNames')]"
+                    },
+                    "runbookPaths": {
+                        "value": "[parameters('runbookPaths')]"
                     }
                 }
             }
-        }
-    }, {
-        "apiVersion": "2016-09-01",
-        "name": "VirtualNetworks",
-        "type": "Microsoft.Resources/deployments",
-        "properties": {
-            "mode": "Incremental",
-            "templateLink": {
-                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Infrastructure/virtualNetworks.json'), parameters('templateSasToken'))]"
+        }, {
+            "apiVersion": "2016-09-01",
+            "name": "AutomationAccountsDSC",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Automation/dsc.json'), parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "octopusAutomationCredentialUsername": {
+                        "reference": {
+                            "keyVault": {
+                                "id": "[variables('keyVaultId')]"
+                            },
+                            "secretName": "OctopusAutomationCredentialUsername"
+                        }
+                    },
+                    "octopusAutomationCredentialPassword": {
+                        "reference": {
+                            "keyVault": {
+                                "id": "[variables('keyVaultId')]"
+                            },
+                            "secretName": "OctopusAutomationCredentialPassword"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2016-09-01",
+            "name": "AutomationAccountsVariables",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Automation/variables.json'), parameters('templateSasToken'))]"
+                }
+            }
+        },
+        {
+            "apiVersion": "2016-09-01",
+            "name": "NetworkSecurityGroups",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Infrastructure/networkSecurityGroups.json'), parameters('templateSasToken'))]"
+                }
+            }
+        },
+        {
+            "apiVersion": "2016-09-01",
+            "name": "SqlServers",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Infrastructure/sqlServers.json'), parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "sqlServerName": {
+                        "value": "[variables('sqlServerName')]"
+                    },
+                    "sqlAdminUsername": {
+                        "reference": {
+                            "keyVault": {
+                                "id": "[variables('keyVaultId')]"
+                            },
+                            "secretName": "SqlAdminUsername"
+                        }
+                    },
+                    "sqlAdminPassword": {
+                        "reference": {
+                            "keyVault": {
+                                "id": "[variables('keyVaultId')]"
+                            },
+                            "secretName": "SqlAdminPassword"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2016-09-01",
+            "name": "VirtualNetworks",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Infrastructure/virtualNetworks.json'), parameters('templateSasToken'))]"
+                }
             }
         }
-    }]
+    ]
 }

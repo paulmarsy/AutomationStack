@@ -1,0 +1,39 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "runbookSasToken": {
+            "type": "securestring"
+        },
+        "runbookNames": {
+            "type": "array"
+        },
+        "runbookPaths": {
+            "type": "array"
+        }
+    },
+    "variables": {
+        "storageAccountBlobUri": "[concat('https://stackresources',resourceGroup().tags.udp,'.blob.core.windows.net/')]",
+        "automationName": "[concat('automation-', resourceGroup().tags.udp)]"
+    },
+    "resources": [{
+        "copy": {
+            "name": "AutomationRunbookImport",
+            "count": "[length(parameters('runbookNames'))]"
+        },
+        "name": "[concat(variables('automationName'), '/', parameters('runbookNames')[copyIndex()])]",
+        "apiVersion": "2015-10-31",
+        "tags": "[resourceGroup().tags]",
+        "type": "Microsoft.Automation/automationAccounts/runbooks",
+        "location": "West Europe",
+        "properties": {
+            "runbookType": "PowerShell",
+            "state": "Published",
+            "logVerbose": false,
+            "logProgress": false,
+            "publishContentLink": {
+                "uri": "[concat(uri(variables('storageAccountBlobUri'), concat('/runbooks/', parameters('runbookPaths')[copyIndex()])), parameters('runbookSasToken'))]"
+            }
+        }
+    }]
+}

@@ -32,22 +32,12 @@ $body = [Newtonsoft.Json.JsonConvert]::SerializeObject((@{
   }
 }), [Newtonsoft.Json.JsonSerializerSettings]@{Formatting=[Newtonsoft.Json.Formatting]::Indented})
 Write-Host "Deployment Request:`n$body`n"
+if ($body -like '*"CliXml"*') {
+  throw 'Invalid JSON serialization'
+}
 
 Write-Host 'Submitting deployment...'
 $request = Invoke-WebRequest -Uri $uri -Method Put -Body $body -Headers @{ [ApiConstants]::AuthorizationHeaderName = $accessToken.CreateAuthorizationHeader() }  -ContentType 'application/json' -UseBasicParsing
 Write-Host "Deployment Response:`n$($request.RawContent)`n"
 
 return $request.Headers['Azure-AsyncOperation']
-$deployAsyncOperationUri = 
-$response = Invoke-WebRequest -Uri $deployAsyncOperationUri -Headers @{ [ApiConstants]::AuthorizationHeaderName = $accessToken.CreateAuthorizationHeader() }  -ContentType 'application/json' -UseBasicParsing
-Write-Host $response.RawContent
- 
-while (($response.Content | ConvertFrom-Json).Status -notin @('Failed','Succeeded')) {
-    Start-Sleep -Seconds 10
-    $response = Invoke-WebRequest -Uri $deployAsyncOperationUri -Headers @{ [ApiConstants]::AuthorizationHeaderName = $accessToken.CreateAuthorizationHeader() }  -ContentType 'application/json' -UseBasicParsing
-    [pscustomobject]@{
-        Date = $response.Headers['Date']
-        Status = "$($response.StatusCode) $($response.StatusDescription)"
-        Content = $response.Content
-    } | Format-List | Out-String | Write-Host
-}

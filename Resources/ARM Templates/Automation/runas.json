@@ -13,8 +13,7 @@
         }
     },
     "variables": {
-        "automationName": "[concat('automation-', resourceGroup().tags.udp)]",
-        "storageAccountName": "[concat('stackresources', resourceGroup().tags.udp)]"
+        "automationName": "[concat('automation-', resourceGroup().tags.udp)]"
     },
     "resources": [{
         "name": "[concat(variables('automationName'), '/', 'AzureRunAsCertificate')]",

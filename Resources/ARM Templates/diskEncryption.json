@@ -1,0 +1,52 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "templateSasToken": {
+            "type": "securestring"
+        },
+        "name": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "templateBaseUrl": "[concat('https://stackresources',resourceGroup().tags.udp,'.blob.core.windows.net')]",
+        "vmName": "[concat(parameters('name'),'VM')]",
+        "keyVaultId": "[concat(resourceGroup().id, '/providers/Microsoft.KeyVault/vaults/keyvault-', resourceGroup().tags.udp)]"
+    },
+    "resources": [ {
+        "apiVersion": "2016-09-01",
+        "name": "[concat(parameters('name'), 'Extensions', 'AzureDiskEncryption')]",
+        "type": "Microsoft.Resources/deployments",
+        "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+                "uri": "[concat(uri(variables('templateBaseUrl'), '/arm/Compute/extensions/AzureDiskEncryption.json'), parameters('templateSasToken'))]"
+            },
+            "parameters": {
+                "templateSasToken": {
+                    "value": "[parameters('templateSasToken')]"
+                },
+                "vmName": {
+                    "value": "[variables('vmName')]"
+                },
+                "clientID": {
+                    "reference": {
+                        "keyVault": {
+                            "id": "[variables('keyVaultId')]"
+                        },
+                        "secretName": "ServicePrincipalClientId"
+                    }
+                },
+                "clientSecret": {
+                    "reference": {
+                        "keyVault": {
+                            "id": "[variables('keyVaultId')]"
+                        },
+                        "secretName": "ServicePrincipalClientSecret"
+                    }
+                }
+            }
+        }
+    }]
+}

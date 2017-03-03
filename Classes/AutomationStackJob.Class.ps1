@@ -58,6 +58,21 @@ class AutomationStackJob {
 
         return $this
     }
+    [AutomationStackJob] Runbook($RunbookName, $RunbookParameters) {
+        $this.PowerShell.AddStep({
+            param($ScriptsPath, $ResourceGroupName, $AutomationAccountName, $RunbookName, $Parameters)
+            
+            $SharedState.AutomationJobID = & (Join-Path $ScriptsPath 'Automation\Start-AutomationRunbook.ps1') -Name $RunbookName -ResourceGroupName $ResourceGroupName -AutomationAccountName $AutomationAccountName -Parameters $Parameters
+        }, @($script:ScriptsPath, $this.CurrentContext.Get('ResourceGroup'), $this.CurrentContext.Get('AutomationAccountName'), $RunbookName, $RunbookParameters))
+        
+        $this.PowerShell.AddStep({
+            param($ScriptsPath, $ResourceGroupName, $AutomationAccountName)
+            
+            $SharedState.AutomationJobID = & (Join-Path $ScriptsPath 'Automation\Wait-AutomationRunbook.ps1') -ResourceGroupName $ResourceGroupName -AutomationAccountName $AutomationAccountName -JobID $SharedState.AutomationJobID
+        }, @($script:ScriptsPath, $this.CurrentContext.Get('ResourceGroup'), $this.CurrentContext.Get('AutomationAccountName')))
+
+        return $this
+    }
     [AutomationStackJob] GetCustomScriptOutput($LogFileName) {
         $this.PowerShell.AddStep({
             param($ScriptsPath, $LogFileName)
