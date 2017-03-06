@@ -33,8 +33,8 @@ function Compare-DeploymentResources {
             $previousResourceStatus = 'New'
         }
         
-        if ($_.ResourceType -eq 'Microsoft.Resources/deployments' -and $DeploymentName -ne $_.ResourceName -and $previousResourceStatus -ne 'New') {
-            Compare-DeploymentResources -Resources $Resources -DeploymentName $_.ResourceName -ResourceComparitor $ResourceComparitor
+        if ($_.Type -eq 'Microsoft.Resources/deployments' -and $DeploymentName -ne $_.Name -and $previousResourceStatus -ne 'New') {
+            Compare-DeploymentResources -Resources $Resources -DeploymentName $_.Name -ResourceComparitor $ResourceComparitor
         }
         if ($previousResourceStatus -ne $currentResourceStatus) {
             if ($_.Type -eq 'Microsoft.Resources/deployments') {
@@ -46,7 +46,7 @@ function Compare-DeploymentResources {
             Write-Host @fg "$($_.Type)/$($_.Name) $previousResourceStatus -> $currentResourceStatus"
         }
 
-        if ($_.Type -eq 'Microsoft.Resources/deployments' -and $DeploymentName -ne $_.ResourceName -and $previousResourceStatus -eq 'New') {
+        if ($_.Type -eq 'Microsoft.Resources/deployments' -and $DeploymentName -ne $_.Name -and $previousResourceStatus -eq 'New') {
             Compare-DeploymentResources -Resources $Resources -DeploymentName $_.Name -ResourceComparitor $ResourceComparitor
         }
     }
