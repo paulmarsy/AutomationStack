@@ -1,3 +1,18 @@
+class StreamRecord {
+    [long]$Id
+    [string]$Stream
+    [object]$Record
+
+    StreamRecord([string]$Stream, [object]$Record) {
+        $this.Id = [System.Diagnostics.Stopwatch]::GetTimestamp()
+        $this.Stream = $Stream
+        $this.Record = $Record
+    }
+
+    [string] ToString() {
+        return ($this.Record | Out-String)
+    }
+}
 class PowerShellThread {
     [datetime]$BeginTime
     [datetime]$EndTime
@@ -5,7 +20,7 @@ class PowerShellThread {
     [hashtable]$SharedState
     hidden [PowerShell]$PowerShell
     hidden [System.IAsyncResult]$Async
-    [System.Collections.ObjectModel.Collection[psobject]]$Output
+    [System.Collections.Concurrent.ConcurrentBag[psobject]]$Output
 
     PowerShellThread() {
         $this.SharedState = [hashtable]::Synchronized(@{})
@@ -25,18 +40,9 @@ class PowerShellThread {
         @($ArgumentList) | ? { $null -ne $_ } | % { $this.PowerShell.AddArgument($_) }
         return $this
     }
-    hidden [void] AddStreamRecord([string]$Stream, [object]$Record) {
-        try {
-            [System.Threading.Monitor]::Enter($this.Output)
-            $this.Output.Add([pscustomobject]@{
-                PSTypeName = 'StreamRecord'
-                Stream = $Stream
-                Record = $Record
-            })
-        }
-        finally { [System.Threading.Monitor]::Exit($this.Output) } 
+    hidden [void] AddOutputRecord([string]$Stream, [object]$Record) {
+        $this.Output.Add([StreamRecord]::new($Stream, $Record))
     }
-
     [PowerShellThread] Start() {
         $this.AddStep({
             param($this)
@@ -44,7 +50,7 @@ class PowerShellThread {
             $this.Duration = $this.EndTime - $this.BeginTime
         }, @($this))
 
-        $this.Output = {@()}.Invoke()
+        $this.Output = [System.Collections.Concurrent.ConcurrentBag[psobject]]::new()
 
         $streams = @{
             Input = (New-Object System.Management.Automation.PSDataCollection[psobject])
@@ -52,12 +58,12 @@ class PowerShellThread {
         }
        $streams.Input.Complete()
 
-        Register-ObjectEvent -InputObject $streams.Output -EventName DataAdded -Action { $Event.MessageData.AddStreamRecord('Output', $Sender[$EventArgs.Index]) } -MessageData $this -SupportEvent
-        Register-ObjectEvent -InputObject $this.PowerShell.Streams.Error -EventName DataAdded -Action { $Event.MessageData.AddStreamRecord('Error', $Sender[$EventArgs.Index]) } -MessageData $this -SupportEvent
-        Register-ObjectEvent -InputObject $this.PowerShell.Streams.Warning -EventName DataAdded -Action { $Event.MessageData.AddStreamRecord('Warning', $Sender[$EventArgs.Index]) } -MessageData $this -SupportEvent
-        Register-ObjectEvent -InputObject $this.PowerShell.Streams.Information -EventName DataAdded -Action { $Event.MessageData.AddStreamRecord('Information', $Sender[$EventArgs.Index]) } -MessageData $this -SupportEvent
-        Register-ObjectEvent -InputObject $this.PowerShell.Streams.Verbose -EventName DataAdded -Action { $Event.MessageData.AddStreamRecord('Verbose', $Sender[$EventArgs.Index]) } -MessageData $this -SupportEvent
-        Register-ObjectEvent -InputObject $this.PowerShell.Streams.Debug -EventName DataAdded -Action { $Event.MessageData.AddStreamRecord('Debug', $Sender[$EventArgs.Index]) } -MessageData $this -SupportEvent
+        Register-ObjectEvent -InputObject $streams.Output -EventName DataAdded -Action { $Event.MessageData.AddOutputRecord('Output', $Sender[$EventArgs.Index]) } -MessageData $this -SupportEvent
+        Register-ObjectEvent -InputObject $this.PowerShell.Streams.Error -EventName DataAdded -Action { $Event.MessageData.AddOutputRecord('Error', $Sender[$EventArgs.Index]) } -MessageData $this -SupportEvent
+        Register-ObjectEvent -InputObject $this.PowerShell.Streams.Warning -EventName DataAdded -Action { $Event.MessageData.AddOutputRecord('Warning', $Sender[$EventArgs.Index]) } -MessageData $this -SupportEvent
+        Register-ObjectEvent -InputObject $this.PowerShell.Streams.Information -EventName DataAdded -Action { $Event.MessageData.AddOutputRecord('Information', $Sender[$EventArgs.Index]) } -MessageData $this -SupportEvent
+        Register-ObjectEvent -InputObject $this.PowerShell.Streams.Verbose -EventName DataAdded -Action { $Event.MessageData.AddOutputRecord('Verbose', $Sender[$EventArgs.Index]) } -MessageData $this -SupportEvent
+        Register-ObjectEvent -InputObject $this.PowerShell.Streams.Debug -EventName DataAdded -Action { $Event.MessageData.AddOutputRecord('Debug', $Sender[$EventArgs.Index]) } -MessageData $this -SupportEvent
  
         $this.Async = $this.PowerShell.BeginInvoke($streams.Input, $streams.Output)
 
@@ -67,16 +73,19 @@ class PowerShellThread {
         $logPosition = 0
         do {
             Start-Sleep -Milliseconds 100
-            try {
-                [System.Threading.Monitor]::Enter($this.Output)
-                $logPosition += [PowerShellThread]::DisplayStream(($this.Output | Select-Object -Skip $logPosition))
-            }
-            finally { [System.Threading.Monitor]::Exit($this.Output) } 
+            $logPosition += [PowerShellThread]::DisplayStream(($this.Output | Sort-Object -Property Id | Select-Object -Skip $logPosition))
         } while (!$this.IsCompleted)
+        try {
+            $this.PowerShell.EndInvoke($this.Async)
 
-        $this.PowerShell.EndInvoke($this.Async)
-        $this.PowerShell.Dispose()  
-        [PowerShellThread]::DisplayStream(($this.Output | Select-Object -Skip $logPosition))
+        }
+        catch {
+            Write-Host -Foregroundcolor Red ($_ | Out-String)    
+        }
+        finally {
+            $this.PowerShell.Dispose()
+        }
+        $logPosition += [PowerShellThread]::DisplayStream(($this.Output | Sort-Object -Property Id | Select-Object -Skip $logPosition))
 
         if ($this.HadErrors) {
             throw 'Error'
@@ -101,6 +110,10 @@ class PowerShellThread {
 
     static [PowerShellThread] Create() {
         $thread = [PowerShellThread]::new()
+        if (!$Global:PowerShellThreadPool) {
+            $Global:PowerShellThreadPool = {@()}.Invoke()
+        }
+        $Global:PowerShellThreadPool.Add($thread)
         $thread.AddStep({
             param($this)
             $ErrorActionPreference = 'Stop'

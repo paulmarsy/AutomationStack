@@ -1,6 +1,6 @@
 param($Name)
 
-Write-Output "Starting Enable-AzureDiskEncryption Runbook..."
+Write-Host "Starting Enable-AzureDiskEncryption Runbook..."
 $ErrorActionPreference = "Stop"
 $VerbosePreference = "SilentlyContinue"
 $DebugPreference = "SilentlyContinue"
@@ -10,5 +10,5 @@ $ProgressPreference = "SilentlyContinue"
 $deploymentAsyncOperationUri = & .\Start-ResourceGroupDeployment.ps1 -Template diskEncryption -TemplateParameters @{
     name = $Name
 }
-.\Wait-ResourceGroupDeployment.ps1 -DeploymentAsyncOperationUri $deploymentAsyncOperationUri
-Write-Output "Enable-AzureDiskEncryption Runbook completed successfully"
+.\Wait-ResourceGroupDeployment.ps1 -DeploymentAsyncOperationUri $deploymentAsyncOperationUri -DeploymentName diskEncryption
+Write-Host "Enable-AzureDiskEncryption Runbook completed successfully"

@@ -1,8 +1,7 @@
 param($LogFileName, $StorageAccountName, $StorageAccountKey, $ContainerName = 'scriptlogs')
 
+[System.Environment]::SetEnvironmentVariable('Azure_PS_Data_Collection', 'false')
 if (!(Get-Module -ListAvailable -Name Azure.Storage)) {
-    New-Item -Path "$env:APPDATA\Windows Azure Powershell" -Type Directory | Out-Null
-    Set-Content -Path "$env:APPDATA\Windows Azure Powershell\AzureDataCollectionProfile.json" -Value '{"enableAzureDataCollection":false}'
 
     Install-PackageProvider -Name NuGet -Force | Out-Null
     Set-PSRepository -Name PSGallery -InstallationPolicy Trusted | Out-Null

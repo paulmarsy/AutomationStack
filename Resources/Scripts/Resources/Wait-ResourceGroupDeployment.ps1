@@ -2,23 +2,67 @@ using namespace Microsoft.WindowsAzure.Commands.Common
 using namespace Microsoft.IdentityModel.Clients.ActiveDirectory
 using namespace Microsoft.Azure.Commands.Common.Authentication
 
-param($ServicePrincipalCertificate, $ServicePrincipalClientId, $DeploymentAsyncOperationUri)
+param($ServicePrincipalCertificate, $ServicePrincipalClientId, $DeploymentAsyncOperationUri, $DeploymentName)
 
-function Write-StatusUpdate {
-    param($Response,[switch]$WithHeader)
+function Get-DeploymentResource {     
+    param($ResourceGroupName, $DeploymentName)  
+    Get-AzureRmResourceGroupDeploymentOperation -ResourceGroupName $ResourceGroupName -DeploymentName $DeploymentName  | % properties | ? { $_.provisioningOperation -eq 'Create' } | % {
+        [pscustomobject]@{
+            Id = $_.targetResource.id
+            DeploymentName = $DeploymentName
+            ProvisioningState = $_.provisioningState
+            Status = $_.statusCode
+            Type = $_.targetResource.resourceType
+            Name = $_.targetResource.resourceName
+        }
+        if ($_.targetResource.resourceType -eq 'Microsoft.Resources/deployments') {
+            Get-DeploymentResource -ResourceGroupName $ResourceGroupName -DeploymentName $_.targetResource.resourceName
+        }
+    }
+}
+function Compare-DeploymentResources {
+    param($Resources, $DeploymentName, $ResourceComparitor)
+    $Resources | ? DeploymentName -eq $DeploymentName | % {
+        $currentResourceStatus = @($_.ProvisioningState,$_.Status) -join '/'
+        $previousResource = $ResourceComparitor | ? Id -eq $_.Id
+        if ($previousResource) {
+            $previousResourceStatus = @($previousResource.ProvisioningState,$previousResource.Status) -join '/'
+        } else {
+            $previousResourceStatus = 'New'
+        }
+        
+        if ($_.ResourceType -eq 'Microsoft.Resources/deployments' -and $previousResourceStatus -ne 'New') {
+            Compare-DeploymentResources -Resources $Resources -DeploymentName $_.ResourceName -ResourceComparitor $ResourceComparitor
+        }
+        if ($previousResourceStatus -ne $currentResourceStatus) {
+            if ($_.Type -eq 'Microsoft.Resources/deployments') {
+                if ($_.ProvisioningState -eq 'Succeeded') { $fg = @{ForegroundColor = [System.ConsoleColor]::Green} }
+                elseif ($previousResourceStatus -eq 'New') {$fg = @{ForegroundColor = [System.ConsoleColor]::Blue} }
+            } else {
+                $fg = @{}
+            }
+            Write-Host @fg "$($_.Type)/$($_.Name) $previousResourceStatus -> $currentResourceStatus"
+        }
 
-    $showHeader = if ($WithHeader) {$false} else {$true}
-    $entry = [pscustomobject]@{
-        Date = $response.Headers['Date']
-        Status = $Response.RawContent.Split([System.Environment]::NewLine)[0]
-        Content = $Response.Content
-    } | Format-Table -HideTableHeaders:$showHeader -Property @(
-        @{Label = 'Date';Expression = {$_.Date}; Width=30},
-        @{Label = 'Status';Expression = {$_.Status}; Width=20},
-        @{Label = 'Content';Expression = {$_.Content}}
-    ) | Out-String | % Trim
-    
-    Write-Host $entry
+        if ($_.Type -eq 'Microsoft.Resources/deployments' -and $previousResourceStatus -eq 'New') {
+            Compare-DeploymentResources -Resources $Resources -DeploymentName $_.Name -ResourceComparitor $ResourceComparitor
+        }
+    }
+}
+function Get-DeploymentResourceState {  
+    param($ResourceGroupName, $DeploymentName, $ResourceComparitor, $OperationJson)   
+    $resources = @([pscustomobject]@{
+            Id = $DeploymentName
+            DeploymentName = $DeploymentName
+            ProvisioningState = $OperationJson.status
+            Status = 'Created'
+            Type = 'Microsoft.Resources/deployments'
+            Name = $DeploymentName
+        })
+    $resources += Get-DeploymentResource -ResourceGroupName $ResourceGroupName -DeploymentName $DeploymentName
+    Compare-DeploymentResources -Resources $resources -DeploymentName $DeploymentName -ResourceComparitor $ResourceComparitor
+
+    return $resources
 }
 
 $cert = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new([System.Convert]::FromBase64String($ServicePrincipalCertificate))
@@ -26,17 +70,17 @@ $assertionClientCert = [ClientAssertionCertificate]::new($ServicePrincipalClient
 $authContext = [AuthenticationContext]::new(([AzureRmProfileProvider]::Instance.Profile.Context.Environment.GetEndpoint('ActiveDirectory')+[AzureRmProfileProvider]::Instance.Profile.Context.Tenant.Id.Guid), [TokenCache]::DefaultShared)
 $accessToken = $authContext.AcquireToken([Models.AzureEnvironmentConstants]::AzureServiceEndpoint, $assertionClientCert)
 
-$response = Invoke-WebRequest -Uri $DeploymentAsyncOperationUri -Headers @{ [ApiConstants]::AuthorizationHeaderName = $accessToken.CreateAuthorizationHeader() }  -ContentType 'application/json' -UseBasicParsing
+$response = Invoke-WebRequest -Uri $DeploymentAsyncOperationUri -Headers @{ [Microsoft.WindowsAzure.Commands.Common.ApiConstants]::AuthorizationHeaderName = $accessToken.CreateAuthorizationHeader() }  -ContentType 'application/json' -UseBasicParsing
 Write-Host $response.RawContent
 $json = $response.Content | ConvertFrom-Json
-Write-StatusUpdate $response -WithHeader
 
-while ($json.Status -in @('Accepted','Running')) {
-    Start-Sleep -Seconds 30
-    $response = Invoke-WebRequest -Uri $DeploymentAsyncOperationUri -Headers @{ [ApiConstants]::AuthorizationHeaderName = $accessToken.CreateAuthorizationHeader() }  -ContentType 'application/json' -UseBasicParsing
-    Write-StatusUpdate $response
+do {
+    $resources = Get-DeploymentResourceState -ResourceGroupName $ResourceGroupName -DeploymentName $DeploymentName -ResourceComparitor $resources -OperationJson $json
+    Start-Sleep 1
+    $response = Invoke-WebRequest -Uri $DeploymentAsyncOperationUri -Headers @{ [Microsoft.WindowsAzure.Commands.Common.ApiConstants]::AuthorizationHeaderName = $accessToken.CreateAuthorizationHeader() }  -ContentType 'application/json' -UseBasicParsing
     $json = $response.Content | ConvertFrom-Json
-} 
+} while ($json.Status -in @('Accepted','Running'))
+
 if ($json.Status -eq 'Failed') {
     Write-Host ([regex]::Unescape(($json.error | Format-List | Out-String)))
     throw $json.error.message

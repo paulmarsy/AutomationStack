@@ -65,7 +65,7 @@ function New-AutomationStack {
                         $Heading = 'Provisioning Infrastructure - Start'
                         {
                             Write-Host 'Starting Infrastructure Deployment Job... ' -NoNewLine
-                            $script:infrastructureJob = Add-AutomationStackFeature -Feature Infrastructure -DontJoin
+                            $script:infrastructureJob = Add-AutomationStackFeature -Feature Infrastructure -DontJoin -SkipAuth
                             Write-Host 'started asynchronously'
                         }
                     }
@@ -81,13 +81,12 @@ function New-AutomationStack {
                         {
                             Write-Host 'Rejoining Infrastructure Deployment Job... '
                             $script:infrastructureJob.Join()
-                            Write-Host 'started asynchronously'
                         }
                     }
                     7 {
                         $Heading = 'Provisioning Octopus Deploy'
                         {
-                            Add-AutomationStackFeature -Feature OctopusDeploy
+                            Add-AutomationStackFeature -Feature OctopusDeploy -SkipAuth
                         }
                     }
                     8 {

@@ -40,6 +40,7 @@ function Upload-StackResources {
             New-AzureStorageDirectory -Share $storageLocation -Path $dest -ErrorAction Ignore | Out-Null
         }
     }
+    $totalCount = 0
     $totalSize = 0
     $batch = @()
     0..$UploadConcurrency | % { $batch += New-Object psobject -Property @{ Size = 0; Files = {@()}.Invoke() } }
@@ -52,6 +53,7 @@ function Upload-StackResources {
             $source = $_.FullName
             $tokenised = $false
         }
+        $totalCount++
         $assignedBatch = $batch | Sort-Object Size | Select-Object -First 1
         $assignedBatch.Size += $_.Length
         $totalSize += $_.Length
@@ -100,8 +102,8 @@ function Upload-StackResources {
                 Async = ($pipeline.BeginInvoke())
             }
         }
-        do {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
-            Start-Sleep -Seconds 2
+        do {    
+            Start-Sleep -Seconds 1
             $running = $false
             $jobs.GetEnumerator() | % {
                 if ($_.Async.IsCompleted) {
@@ -113,6 +115,16 @@ function Upload-StackResources {
         } while ($running)
         $byteRate = [Humanizer.ByteSizeExtensions]::Per([Humanizer.ByteSizeExtensions]::Bytes($totalSize), ((Get-Date) - $startTime))
         [void][System.Console]::Out.WriteLineAsync('Upload speed: {0}' -f $byteRate.Humanize('#.00', [Humanizer.Localisation.TimeUnit]::Second))
+
+        if ($Type -eq 'BlobStorage') {
+            $destCount = (Get-AzureStorageBlob -Container $Name -Context $Context).Count
+            if ($destCount -ne $totalCount) {
+                Write-Warning "Expected $totalCount files, found $destCount, retrying..."
+                Upload-StackResources -Type:$Type -Name:$Name -Path:$Path -Value:$Value -FilesToTokenise:$FilesToTokenise -Tokenizer:$Tokenizer -Context:$Context
+            } else {
+                Write-Host "Expected $totalCount files & found $destCount"
+            }
+        }
     }
     finally {
         $runspacePool.Close()

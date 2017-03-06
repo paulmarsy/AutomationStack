@@ -51,12 +51,12 @@ class JobBuilder {
 
         return $this
     }
-    [JobBuilder] WaitForDeployment() {
+    [JobBuilder] WaitForDeployment($Template) {
         $this.PowerShell.AddStep({
-            param($ScriptsPath, $ServicePrincipalCertificate, $ServicePrincipalClientId)
+            param($ScriptsPath, $ServicePrincipalCertificate, $ServicePrincipalClientId, $Template)
             
-            & (Join-Path $ScriptsPath 'Resources\Wait-ResourceGroupDeployment.ps1') -ServicePrincipalCertificate $ServicePrincipalCertificate -ServicePrincipalClientId $ServicePrincipalClientId -DeploymentAsyncOperationUri $SharedState.DeploymentAsyncOperationUri
-        }, @($script:ScriptsPath, $this.CurrentContext.Get('ServicePrincipalCertificate'), $this.CurrentContext.Get('ServicePrincipalClientId')))
+            & (Join-Path $ScriptsPath 'Resources\Wait-ResourceGroupDeployment.ps1') -ServicePrincipalCertificate $ServicePrincipalCertificate -ServicePrincipalClientId $ServicePrincipalClientId -DeploymentAsyncOperationUri $SharedState.DeploymentAsyncOperationUri -DeploymentName $Template
+        }, @($script:ScriptsPath, $this.CurrentContext.Get('ServicePrincipalCertificate'), $this.CurrentContext.Get('ServicePrincipalClientId'), $Template))
 
         return $this
     }

@@ -1,4 +1,4 @@
-param($ResourceGroupName, $AutomationAccountName, [guid]$JobID)
+param($ResourceGroupName, $AutomationAccountName, $JobID)
 
 $readOutput = @()
 While ($status -notin @("Completed","Failed","Suspended","Stopped")) {

@@ -172,26 +172,6 @@ Configuration OctopusDeploy
             DependsOn = @('[User]OctopusServiceAccount','[Script]OctopusDeployConfiguration')
         }
 
-        $octopusServiceStartedStateFile = Join-Path $octopusDeployRoot 'service.statefile'
-        Script OctopusServiceStart
-        {
-            SetScript = {
-                Stop-Service OctopusDeploy -Force -Verbose | Write-Verbose
-                if ((Get-Service OctopusDeploy | % Status) -eq "Running") {
-                    Stop-Process -Name Octopus.Server -Force -Verbose | Write-Verbose
-                }
-
-                Start-Service OctopusDeploy -Verbose | Write-Verbose
-
-                [System.IO.FIle]::WriteAllText($using:octopusServiceStartedStateFile, (Get-Service OctopusDeploy | % Status),[System.Text.Encoding]::ASCII)
-            }
-            TestScript = {
-                ((Test-Path $using:octopusServiceStartedStateFile) -and ([System.IO.FIle]::ReadAllText($using:octopusServiceStartedStateFile).Trim()) -eq 'Running')
-            }
-            GetScript = { @{} }
-            DependsOn = @('[xFirewall]OctopusDeployServer','[Script]URLAccessControlList','[Service]OctopusDeploy','[Script]OctopusDeployConfiguration','[User]OctopusServiceAccount','[Script]SetOctopusUserGroups','[xFileSystemAccessRule]OctopusConfigFile')
-        }
-
         PSModule AzureRM
         {
             Name              = 'AzureRM'
